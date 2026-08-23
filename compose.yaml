@@ -1,0 +1,71 @@
+name: labm
+services:
+  db:
+    image: mariadb:11.4.8@sha256:bc474f00629f0123c10f9e1bca193a45d18af15a274cf0656acda64f1086c3b6
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:?DB_NAME requerido}
+      MARIADB_USER: ${DB_USER:?DB_USER requerido}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD requerido}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD requerido}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  wordpress:
+    image: wordpress:6.8.2-php8.3-apache@sha256:09ac1315368f234db7559e4f9dcca3178a5efc6f2193b88289252abe18551522
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WP_PORT:?WP_PORT requerido}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:?DB_NAME requerido}
+      WORDPRESS_DB_USER: ${DB_USER:?DB_USER requerido}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD requerido}
+      WORDPRESS_DEBUG: "1"
+    volumes:
+      - wordpress_core:/var/www/html
+      - wordpress_uploads:/var/www/html/wp-content/uploads
+      - ./wp-content/themes/labm:/var/www/html/wp-content/themes/labm:ro
+      - ./wp-content/plugins/labm-core:/var/www/html/wp-content/plugins/labm-core:ro
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80,$$e,$$m,2); exit($$s?0:1);'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  wp-cli:
+    image: wordpress:cli-2.11.0-php8.3@sha256:8620869ecf48e0eda305b4ee466990fa318664c638b861ebd5ce443d9904abde
+    profiles: ["tools"]
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
+    user: "33:33"
+    entrypoint: ["wp"]
+    working_dir: /var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:?DB_NAME requerido}
+      WORDPRESS_DB_USER: ${DB_USER:?DB_USER requerido}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD requerido}
+    volumes:
+      - wordpress_core:/var/www/html
+      - wordpress_uploads:/var/www/html/wp-content/uploads
+      - ./wp-content/themes/labm:/var/www/html/wp-content/themes/labm:ro
+      - ./wp-content/plugins/labm-core:/var/www/html/wp-content/plugins/labm-core:ro
+
+volumes:
+  db_data:
+  wordpress_core:
+  wordpress_uploads:

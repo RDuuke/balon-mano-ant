@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="LABM">
+  <description>WordPress Coding Standards para LABM.</description>
+  <file>wp-content/plugins/labm-core</file>
+  <file>wp-content/themes/labm/functions.php</file>
+  <exclude-pattern>vendor/*</exclude-pattern>
+  <rule ref="WordPress"/>
+  <config name="testVersion" value="8.3-"/>
+</ruleset>
+

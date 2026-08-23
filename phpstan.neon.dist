@@ -1,0 +1,10 @@
+includes:
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+parameters:
+  level: 5
+  bootstrapFiles:
+    - tools/phpstan-stubs.php
+  paths:
+    - wp-content/plugins/labm-core
+    - wp-content/themes/labm/functions.php
+

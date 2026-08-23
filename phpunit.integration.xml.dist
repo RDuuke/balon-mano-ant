@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/php/integration-bootstrap.php" colors="true" cacheDirectory="/tmp/labm-phpunit-integration-cache">
+  <testsuites>
+    <testsuite name="WordPress runtime">
+      <file>tests/php/WordPressRuntimeTest.php</file>
+      <file>tests/php/DomainModelTest.php</file>
+      <file>tests/php/FixturesDomainTest.php</file>
+      <file>tests/php/PublicExperienceTest.php</file>
+      <file>tests/php/FrontendTokensTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>

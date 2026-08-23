@@ -1,0 +1,29 @@
+# Configuracion local y secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Estado y datos generados
+.docker-data/
+volumes/
+*.sql
+*.sql.gz
+*.dump
+wp-content/uploads/
+wordpress/
+
+# Dependencias y evidencia
+vendor/
+node_modules/
+.pnpm-store/
+artifacts/
+playwright-report/
+test-results/
+.lighthouseci/
+
+# Archivos locales
+.DS_Store
+Thumbs.db

@@ -1,0 +1,167 @@
+---
+name: flow-nea-init
+description: >
+  Initialize flow-nea context in a project. Detects stack and bootstraps the
+  active persistence backend (OpenSpec).
+trigger: >
+  When user wants to initialize flow-nea or says "flow-nea init".
+license: MIT
+metadata:
+  author: juan-duque
+  version: "1.0"
+  scope: [root]
+  invoker: flow-nea-orchestrator
+---
+
+## Purpose
+
+You initialize the flow-nea context, detect stack and conventions, and bootstrap
+the selected persistence backend.
+
+## Execution and Persistence Contract
+
+Read and follow: skills/_shared/persistence-contract.md
+
+## What to Do
+
+### Step 1: Detect Project Context
+
+- Tech stack (package.json, go.mod, pyproject.toml, etc.)
+- Conventions (linters, test frameworks, CI)
+- Architecture patterns
+
+### Step 2: Initialize Persistence Backend
+
+If mode is openspec, ensure this structure exists:
+
+openspec/
+  config.yaml
+  specs/
+  changes/
+    archive/
+
+If mode is none, do not create project files.
+
+### Step 3: Generate Config (openspec mode only)
+
+If openspec/config.yaml is missing, create it with agnostic placeholders, then
+fill the context with the detected values in the same run.
+
+**REQUIRED:** the generated `config.yaml` MUST contain ALL top-level blocks
+from the template below, including `gates:` and `experimental:`. Do NOT
+omit blocks because their defaults are "disabled" — downstream skills rely
+on the presence of `gates.apply.tdd`, `gates.apply.review_budget` and
+`gates.verify.coverage_threshold`. Missing blocks = misconfigured project.
+
+Validate after writing: if any of these keys is absent, rewrite the file
+with the full template before returning.
+
+Base template:
+
+```yaml
+schema: flow-nea
+
+context: |
+  Tech stack: not assessed
+  Architecture: not assessed
+  Testing: not assessed
+  Style: not assessed
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Identify affected modules/packages
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+  tasks:
+    - Group tasks by phase
+    - Use hierarchical numbering (1.1, 1.2, etc.)
+  apply:
+    - Follow existing code patterns and conventions
+  verify:
+    - Run tests if test infrastructure exists
+  archive:
+    - Warn before destructive merges
+
+gates:
+  apply:
+    tdd: false                 # false | true | "strict" — enables RED/GREEN evidence gate
+    review_budget:
+      max_diff_lines: 0        # 0 disables the diff size gate
+      sensitive_paths: []      # e.g. ["**/auth/**", "**/payments/**", "**/.env*"]
+  verify:
+    coverage_threshold: 80     # only used when a coverage command is detected
+
+experimental:
+  neabrain: false
+```
+
+> **Note:** `rules.<phase>` keeps free-form prose guidance for each phase.
+> `gates.<phase>` carries the structured, machine-read flags (TDD, review
+> budget, coverage). Skills MUST read gates from `gates.<phase>` and ignore
+> `rules` for behavior decisions.
+
+### Step 4: Persist Context (openspec mode only)
+
+- Save detected context into openspec/config.yaml.
+- **Post-write validation:** re-read the file and assert that all of the
+  following keys exist:
+  - `schema`
+  - `context`
+  - `rules.proposal`, `rules.specs`, `rules.design`, `rules.tasks`,
+    `rules.apply`, `rules.verify`, `rules.archive`
+  - `gates.apply.tdd`, `gates.apply.review_budget.max_diff_lines`,
+    `gates.apply.review_budget.sensitive_paths`
+  - `gates.verify.coverage_threshold`
+  - `experimental.neabrain`
+
+  If ANY key is missing, rewrite the file with the full template and add a
+  warning to `risks` describing which keys were missing on the first pass.
+- Write openspec/changes/.status.yaml:
+  ```yaml
+  schema_version: "1.3"
+  phase: INIT
+  change: null
+  awaiting_approval: false
+  completed: false
+  pending_tasks: []
+  modified_artifacts: []
+  notes: ""
+  ```
+
+### Step 5: Return Summary
+
+Return a structured envelope with: status, executive_summary,
+detailed_report (optional), artifacts, next_recommended, risks.
+
+## Rules
+
+- Never create placeholder specs.
+- Always detect real stack, do not guess.
+- If openspec/ already exists, report what exists before writing config.
+- If config.yaml exists, update only the context block; preserve rules.
+- Keep config.yaml context concise (no more than 10 lines).
+- All artifact content MUST be written in Spanish.
+
+## Output Contract (JSON)
+
+```json
+{
+  "status": "ok | warning | failed",
+  "executive_summary": "Initialization summary and persistence mode.",
+  "detailed_report": "Optional notes.",
+  "artifacts": [
+    {
+      "name": "config",
+      "path": "openspec/config.yaml",
+      "type": "yaml"
+    }
+  ],
+  "next_recommended": "EXPLORE",
+  "risks": ["list of risks or blockers"],
+  "skill_resolution": "injected | fallback-registry | fallback-path | none"
+}
+```

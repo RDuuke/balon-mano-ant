@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "layout": { "contentSize": "720px", "wideSize": "1200px" },
+    "color": {
+      "palette": [
+        { "slug": "azul-labm", "name": "Azul LABM", "color": "#123a66" },
+        { "slug": "amarillo-labm", "name": "Amarillo LABM", "color": "#f4c542" },
+        { "slug": "blanco", "name": "Blanco", "color": "#ffffff" }
+      ]
+    },
+    "typography": { "fluid": true },
+    "custom": {
+      "labm": {
+        "spacing": {
+          "small": "clamp(.5rem, 1vw, .75rem)",
+          "medium": "clamp(1rem, 2vw, 1.5rem)",
+          "large": "clamp(1.5rem, 4vw, 3rem)"
+        },
+        "radius": ".75rem"
+      }
+    }
+  },
+  "styles": {
+    "typography": { "fontFamily": "system-ui, sans-serif", "lineHeight": "1.6" },
+    "elements": { "link": { "color": { "text": "var:preset|color|azul-labm" } } }
+  }
+}
