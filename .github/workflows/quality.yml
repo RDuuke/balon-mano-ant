@@ -1,0 +1,49 @@
+name: Calidad LABM
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Gates reproducibles
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Descargar fuentes
+        uses: actions/checkout@v4
+
+      - name: Preparar Node y pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - name: Preparar configuración ficticia
+        shell: pwsh
+        run: Copy-Item -LiteralPath .env.example -Destination .env
+
+      - name: Levantar e inicializar WordPress
+        shell: pwsh
+        run: ./scripts/bootstrap.ps1
+
+      - name: Ejecutar gates obligatorios
+        shell: pwsh
+        run: ./scripts/gate.ps1 -IncludeBrowser
+
+      - name: Conservar reportes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-calidad-${{ github.run_id }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+

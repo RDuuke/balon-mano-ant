@@ -5,6 +5,8 @@ const publicRoutes = ['/', '/nosotros/', '/actualidad/', '/selecciones/'];
 
 test('3.1 navegación global, páginas institucionales, foco y ruta ausente', async ({ page }) => {
   await page.goto('/');
+  const openMenu = page.getByRole('button', { name: /open menu|abrir menÃº/i });
+  if (await openMenu.isVisible()) await openMenu.click();
   const navigation = page.getByRole('navigation', { name: /navegación principal/i });
   await expect(navigation).toBeVisible();
   await expect(navigation.getByRole('link', { name: 'Inicio', exact: true })).toBeVisible();

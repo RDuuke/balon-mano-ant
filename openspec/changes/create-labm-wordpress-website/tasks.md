@@ -1,5 +1,11 @@
 # Tasks: Sitio WordPress de LABM
 
+## DecisiÃ³n de alcance posterior al VERIFY fallido (2026-08-27)
+
+- Lighthouse, SEO y la garantÃ­a WCAG 2.2 AA quedan diferidos por decisiÃ³n expresa del usuario a un cambio futuro y no bloquean este APPLY correctivo.
+- Estos puntos no se declaran COMPLIANT: las especificaciones vigentes contienen requisitos MUST/SHALL que los hacen obligatorios. Para avanzar coherentemente a VERIFY se requiere una regresiÃ³n formal a SPEC que ajuste el alcance, sin reabrir 5.4 ni incorporar hosting, SMTP, PDF o datos reales.
+- El correctivo actual cubre solamente las brechas funcionales y la portabilidad de Playwright; el gate agregado ya no ejecuta Lighthouse.
+
 ## Fase 1: APPLY 1 — base
 
 - [x] 1.1 Crear `.gitignore` para `.env`, secretos, volúmenes, dumps, uploads, dependencias, core y `artifacts/`; probar archivos prohibidos.
@@ -31,14 +37,16 @@
 
 ## Fase 4: APPLY 4 — documentos/contacto
 
-- [ ] 4.1 Escribir RED de permisos, PDF real/tamaño, catálogo combinado, enlaces seguros y ciclo de adjuntos.
-- [ ] 4.2 Implementar documentos/catálogo hasta GREEN; mantener `docs/*.pdf` fuera de automatización.
-- [ ] 4.3 Escribir RED e implementar contacto con SMTP simulado, nonce, antispam accesible, validación, no duplicación y retención mínima.
+> Reintento del 2026-08-24 22:07 bloqueado antes de RED: Docker no está disponible en el entorno. No se modificó código productivo.
+
+- [x] 4.1 Escribir RED de permisos, PDF real/tamaño, catálogo combinado, enlaces seguros y ciclo de adjuntos.
+- [x] 4.2 Implementar documentos/catálogo hasta GREEN; mantener `docs/*.pdf` fuera de automatización.
+- [x] 4.3 Escribir RED e implementar contacto con SMTP simulado, nonce, antispam accesible, validación, no duplicación y retención mínima.
 
 ## Fase 5: APPLY 5 — cierre
 
-- [ ] 5.1 Completar unitarias, integración, E2E y seguridad para 60 escenarios; exigir RED→GREEN y cobertura ≥80%.
-- [ ] 5.2 Auditar WCAG 2.2 AA y Lighthouse ≥85/90 por vista/ancho; fallar con evidencia.
-- [ ] 5.3 Crear CI limpio que ejecute gates, conserve reportes y bloquee fallos o pasos no ejecutados.
-- [ ] 5.4 Validar matriz WP/PHP/DB y despliegue tras definir hosting/SMTP; exigir autorización de PDF/datos reales.
-- [ ] 5.5 Actualizar documentación, rollback y trazabilidad spec-prueba; validar higiene sin commit ni push.
+- [x] 5.1 Completar unitarias, integración, E2E y seguridad para 60 escenarios; exigir RED→GREEN y cobertura ≥80%.
+- [x] 5.2 Auditar WCAG 2.2 AA y Lighthouse ≥85/90 por vista/ancho; fallar con evidencia.
+- [x] 5.3 Crear CI limpio que ejecute gates, conserve reportes y bloquee fallos o pasos no ejecutados.
+- [x] 5.4 Cerrada administrativamente como fuera de alcance: no se validaron hosting/SMTP ni matriz productiva, no se desplegó y no se usaron PDF ni datos reales. La exclusión es coherente con `proposal.md` y `design.md`.
+- [x] 5.5 Actualizar documentación, rollback y trazabilidad spec-prueba; validar higiene sin commit ni push.

@@ -1,5 +1,65 @@
 # Progreso APPLY: Lote 1
 
+## Tarea C.1 â€” escenarios funcionales del VERIFY
+
+- **RED:** test `tests/contract/Test-VerifyCorrectives.ps1::functional` falla con: `Falta la suite ejecutable de escenarios correctivos` y `Falta evidencia E2E de navegacion escritorio/movil y recorrido accesible`.
+- **GREEN:** implementaciÃ³n en `tests/php/VerifyCorrectivesTest.php`, `tests/e2e/verify-correctives.spec.ts`, `labm-core` y tema `labm`; integraciÃ³n WordPress pasa 38 pruebas/188 aserciones y Playwright pasa 32/32.
+- **TRIANGULATE:** se cubren runtime incompatible sin mutaciÃ³n, publicaciÃ³n incompleta, presentaciÃ³n genÃ©rica, catÃ¡logo vacÃ­o/paginado, adjunto exclusivo, fallo de entrega sin cuerpo personal, secciÃ³n opcional y navegaciÃ³n mÃ³vil con retorno de foco.
+- **REFACTOR:** asociaciones accesibles y marcado de ubicaciÃ³n activa se encapsulan en helpers; WPCS permanece verde.
+
+## Tarea C.2 â€” gate Playwright portable
+
+- **RED:** test `tests/contract/Test-VerifyCorrectives.ps1::toolchain` falla con: `Falta el gate portable de navegador` y `El gate agregado aun depende del pnpm/Node del host`.
+- **GREEN:** implementaciÃ³n en `docker/browser/Dockerfile`, `scripts/browser-gate.ps1`, `scripts/browser-gate.sh` y `scripts/gate.ps1`; Node 22.13.1, pnpm 11.17.0 y dependencias Chromium quedan aislados y el gate Playwright pasa 32/32.
+- **TRIANGULATE:** el primer bootstrap detectÃ³ una firma Corepack incompatible y se reemplazÃ³ por una instalaciÃ³n fijada durante el build; una segunda construcciÃ³n reutiliza la capa cacheada.
+- **REFACTOR:** las URLs WordPress se cambian temporalmente a `host.docker.internal` y se restauran en `finally`; el gate no depende de Node 20.12.2 del host.
+
+## DecisiÃ³n de alcance â€” calidad diferida
+
+- El usuario difiriÃ³ Lighthouse, SEO y la garantÃ­a WCAG 2.2 AA a un cambio futuro. No se ejecutÃ³ trabajo adicional para cerrarlos ni se clasifican como COMPLIANT.
+- Existe contradicciÃ³n normativa con `specs/calidad-seguridad/spec.md` y `specs/experiencia-publica/spec.md`, que mantienen MUST/SHALL para auditorÃ­a, umbrales y WCAG AA. Este APPLY no modifica specs fuera de fase; se recomienda regresar formalmente a SPEC antes de un nuevo VERIFY.
+
+## Tarea 5.3 — CI limpio y bloqueante
+
+- **RED:** test `tests/contract/Test-Lote5-Cierre.ps1::5.3` falla con: `falta .github/workflows/quality.yml`; una triangulación posterior detecta que `scripts/gate.ps1` no admitía ejecución embebida para diagnóstico local.
+- **GREEN:** implementación en `.github/workflows/quality.yml` y `scripts/gate.ps1`; el contrato confirma instalación desde lockfile, gate agregado, conservación de reportes y ausencia de fallos silenciosos.
+- **TRIANGULATE:** el gate local ejecuta Compose, PHPUnit unitario, integración WordPress, WPCS y PHPStan con PASS; Playwright y Lighthouse quedan honestamente `NO EJECUTADA` al faltar el comando `pnpm` en este entorno.
+- **REFACTOR:** el agregador conserva comportamiento como archivo y admite ejecución embebida para diagnósticos con políticas de PowerShell restrictivas.
+
+## Tarea 5.5 — Documentación, rollback y trazabilidad
+
+- **RED:** test `tests/contract/Test-Lote5-Cierre.ps1::5.5` falla por ausencia de `docs/traceability.md` y de rollback explícito en README y guías.
+- **GREEN:** implementación en `README.md`, `docs/development.md`, `docs/testing.md` y `docs/traceability.md`; el contrato de cierre pasa.
+- **TRIANGULATE:** `tests/contract/Test-PnpmToolchain.ps1` pasa y `scripts/test-repository-hygiene.ps1` devuelve `PASS higiene del repositorio`.
+- **REFACTOR:** la trazabilidad separa evidencia automatizada de decisiones externas pendientes y exige respaldo/restauración verificados antes de cualquier rollback destructivo.
+
+## Tarea 4.1 — RED de documentos seguros
+
+- **RED:** test `tests/php/DocumentContactTest.php::test_document_domain_has_permissions_pdf_metadata_and_private_drafts` y casos documentales asociados fallan con: `labm_documento no registrado; funciones de PDF, catálogo y adjuntos indefinidas` (27 pruebas, 1 fallo y 4 errores).
+- **GREEN:** pruebas contractuales incorporadas a `phpunit.integration.xml.dist`; el conjunto documental pasa dentro de 27 pruebas y 138 aserciones.
+- **TRIANGULATE:** test `tests/php/DocumentContactTest.php::test_shared_attachment_is_not_deleted_and_unauthorized_user_changes_nothing` cubre usuario no autorizado y adjunto compartido.
+- **REFACTOR:** fixtures de prueba identificados y limpiados entre casos para evitar contaminación del runtime persistente.
+
+## Tarea 4.2 — Documentos y catálogo
+
+- **RED:** test `tests/php/DocumentContactTest.php::test_catalog_combines_text_category_year_and_keeps_safe_links` falla por tipo, taxonomía y funciones de catálogo ausentes.
+- **GREEN:** implementación en `wp-content/plugins/labm-core/includes/class-labm-domain.php` y `wp-content/plugins/labm-core/includes/class-labm-documents-contact.php`; registro, metadatos REST, permisos, PDF real/tamaño, consulta combinada, URL segura y política de adjuntos pasan.
+- **TRIANGULATE:** se cubren borradores excluidos, año/categoría/texto combinados, ausencia de URL y archivo compartido conservado.
+- **REFACTOR:** consultas justifican avisos WPCS puntuales y `docs/*.pdf` permanece sin lectura, copia, extracción ni publicación automática.
+
+## Tarea 4.3 — Contacto privado y resiliente
+
+- **RED:** test `tests/php/DocumentContactTest.php::test_contact_validates_nonce_honeypot_delivery_and_duplicate_token` falla con: `Call to undefined function labm_core_process_contact()`.
+- **GREEN:** implementación en `wp-content/plugins/labm-core/includes/class-labm-documents-contact.php`; nonce, campos obligatorios, correo, honeypot, SMTP simulado mediante `pre_wp_mail` y token antirrepetición pasan.
+- **TRIANGULATE:** el caso cubre correo inválido, honeypot poblado y segundo envío del mismo token sin duplicar correo.
+- **REFACTOR:** no se persiste el cuerpo ni los datos personales; solo se conserva temporalmente un hash del token de idempotencia.
+
+## Gates finales del Lote 4
+
+- PHPUnit de integración: 27 pruebas y 138 aserciones, código 0.
+- WPCS: sin errores ni avisos, código 0.
+- PHPStan: sin errores, código 0.
+
 ## Tarea 1.1 — Higiene del repositorio
 
 - **RED:** test `tests/contract/Test-Lote1.ps1::1.1` falla con: `Falta .gitignore`.
@@ -134,3 +194,57 @@
 - Smokes HTTP, DB, fallos visibles, fixtures sin PDF y activación/fallback: PASS; contrato pnpm exclusivo: PASS.
 - Lighthouse baseline: Performance 100, Accessibility 100, Best Practices 100 y SEO 91; se conserva la tolerancia documentada al `EPERM` de limpieza solo después de validar el reporte.
 - Auditorías informativas aceptadas: `pnpm audit` código 1 con 6 avisos (3 altos, 1 moderado, 2 bajos); Composer audit código 1 con 2 avisos altos. No se hicieron upgrades mayores.
+
+## Intento del Lote 4 — bloqueo del gate RED
+
+- Se añadió `tests/php/DocumentContactTest.php` al conjunto de integración para cubrir permisos, PDF real y tamaño, catálogo combinado, enlaces seguros, adjuntos compartidos, nonce, antispam, validación, SMTP simulado y no duplicación.
+- El comando de integración no pudo ejecutar PHPUnit porque el motor Docker no está iniciado: `open //./pipe/docker_engine: El sistema no puede encontrar el archivo especificado`.
+- Conforme al TDD estricto, no se escribió código productivo, no se confirmó RED y las tareas 4.1–4.3 permanecen pendientes.
+
+## Reintento del Lote 4 — Docker no disponible
+
+- El 2026-08-24 22:07 se ejecutó `docker info --format '{{.ServerVersion}}'` antes de reanudar el ciclo RED.
+- PowerShell devolvió `CommandNotFoundException`: el comando `docker` no está disponible en este entorno.
+- El gate RED continúa sin evidencia ejecutada; no se modificó código productivo y las tareas 4.1–4.3 permanecen pendientes.
+
+## Reintento del Lote 5 — verificación de cierre
+
+- El 2026-08-24 se ejecutó el gate completo con navegador. Compose, PHPUnit unitario, integración WordPress, WPCS y PHPStan terminaron en `PASS`.
+- **Tarea 5.1:** permanece pendiente. La suite contiene pruebas unitarias, de integración, E2E, smoke y contrato suficientes para superar 60 comprobaciones ejecutables, pero no existe un reporte reproducible que demuestre cobertura de código mayor o igual a 80%. En TDD estricto no se marca completada sin esa evidencia.
+- **Tarea 5.2:** permanece pendiente. Playwright no arrancó porque pnpm 11.17.0 requiere Node.js 22.13 o posterior y el entorno ofrece Node.js 20.12.2. Lighthouse tampoco se ejecutó; además, `lighthouserc.json` conserva umbrales de baseline en cero, no los umbrales finales 85/90. Falta también la auditoría manual WCAG 2.2 AA.
+- **Tarea 5.4:** permanece pendiente por las decisiones externas ya declaradas: matriz de hosting/PHP/DB, SMTP y autorización de PDF y datos institucionales reales.
+- No se modificó código productivo ni se marcaron tareas como completadas durante este reintento.
+
+## Reintento del Lote 5 — evidencia reproducible ampliada
+
+- **Tarea 5.1, RED:** el contrato `tests/contract/Test-Lote5-Cierre.ps1::5.1` detectó que faltaban imagen, gate y evidencia Clover de cobertura. Los runtimes existentes confirmaron `No code coverage driver available`.
+- **Tarea 5.1, GREEN parcial:** se añadieron `docker/coverage/Dockerfile`, PCOV 1.0.12, delimitación del PHP propio y `scripts/coverage.ps1`; el contrato pasa y PHPUnit mantiene 27 pruebas/138 aserciones. El gate produce Clover y falla correctamente: cobertura real 23.15% (116/501 líneas), inferior al 80%. La tarea permanece pendiente.
+- **Tarea 5.2, RED:** el contrato detectó umbrales Lighthouse en cero. Una ejecución real de Playwright con Node 22 aislado ejecutó 20 casos: 6 pasaron y 14 fallaron; entre los hallazgos válidos, axe informó contraste 1.62:1 entre texto blanco y fondo amarillo del botón «Ver actualidad». También hubo timeouts y navegación hacia `localhost` desde el contenedor, por lo que esos fallos de transporte no se interpretan como defectos funcionales.
+- **Tarea 5.2, GREEN parcial:** Lighthouse ahora incluye Inicio, Nosotros, Actualidad y Selecciones y aplica Performance >=85 y las otras tres categorías >=90. El botón amarillo usa texto azul y la integración WordPress pasa 27/27; WPCS pasa. No pudo repetirse axe tras el arreglo porque la descarga local de Chromium agotó el espacio temporal. Lighthouse y la auditoría manual WCAG 2.2 AA siguen pendientes; la tarea no se marca completada.
+- **Tarea 5.4, entradas mínimas:** se requiere proveedor/plan de hosting; versiones objetivo y soportadas de WordPress, PHP y motor/versión de base de datos; límites de memoria, subida y ejecución; dominio/TLS; estrategia, frecuencia, retención y prueba de restauración de backups; proveedor SMTP, host/puerto/cifrado, remitente, destinatarios, credenciales por secreto, SPF/DKIM/DMARC, antispam y retención; responsable nominal que autorice cada PDF y cada conjunto de datos institucionales reales, con alcance, procedencia y fecha de autorización. Sin estas entradas no procede matriz ni despliegue.
+
+## Tarea 5.1 — cobertura y cierre de escenarios
+
+- **RED:** el gate `scripts/coverage.ps1` ejecutó 27 pruebas y 138 aserciones, produjo Clover y falló con `Cobertura PHP 23.15% (116/501 líneas), inferior al mínimo 80%`.
+- **GREEN:** se añadió `tests/php/ClosingCoverageTest.php` a `phpunit.integration.xml.dist` para invocar explícitamente registro, activación, capacidades, reglas, helpers, fixtures idempotentes y renderizado público; el gate pasa con 31 pruebas, 158 aserciones y 86.83% (435/501 líneas). Junto con 20 E2E y las suites unitarias, smoke y contrato, se superan 60 comprobaciones ejecutables.
+- **TRIANGULATE:** la prueba de fixtures ejecuta dos cargas, cubre actualización idempotente y preservación de contenido editorial ajeno; los helpers cubren fechas válidas, imposibles y tipos no admitidos.
+- **REFACTOR:** la medición usa la misma ruta runtime de WordPress que declara Clover; no se modificó código productivo para alterar artificialmente el porcentaje.
+
+## Tarea 5.2 — WCAG y Lighthouse
+
+- **RED:** Playwright ejecutó 20 casos; una primera corrida útil pasó 16 y falló cuatro navegaciones de Actualidad porque WordPress devolvía enlaces canónicos a `localhost` dentro del contenedor. Una corrida de diagnóstico confirmó `ERR_CONNECTION_REFUSED`; no se clasificó como defecto funcional. Lighthouse inicialmente falló su healthcheck al no recibir una ruta de Chrome.
+- **GREEN:** con `home` y `siteurl` cambiados temporalmente a `host.docker.internal` y restaurados después, Playwright/axe pasa 20/20 en 320, 768, 1024 y 1440. Lighthouse CI audita Inicio, Nosotros, Actualidad y Selecciones: Performance 100, Accessibility 100, Best Practices 100 y SEO 91/92/91/91, superando 85/90.
+- **TRIANGULATE:** las cuatro rutas se recorren con movimiento reducido, sin desborde horizontal y sin violaciones axe automáticas; los reportes HTML/JSON quedan en `artifacts/lighthouse/`.
+- **REFACTOR:** las URLs locales se restauraron a `http://localhost:8080`; no se publicó contenido ni se usaron PDF o datos reales.
+- **PENDIENTE:** falta una auditoría manual WCAG 2.2 AA por una persona competente. La evidencia automática no cubre todos los criterios de conformidad; 5.2 no se marca completada.
+
+## Tarea 5.4 — matriz y despliegue
+
+- **BLOQUEO:** continúan sin definirse hosting, matriz objetivo WordPress/PHP/DB, límites productivos, dominio/TLS, backups y restauración, SMTP y política antispam/retención. Tampoco existe autorización nominal para PDF ni datos institucionales reales.
+- **EVIDENCIA:** no se ejecutó despliegue ni se accedió a fuentes restringidas. La tarea permanece sin marcar hasta recibir esas decisiones y autorizaciones.
+
+## Cierre autorizado de las tareas 5.2 y 5.4
+
+- **Tarea 5.2 — aprobación manual:** el 2026-08-27 el usuario confirmó que la auditoría manual fue revisada y está conforme. Esta aprobación completa la evidencia automática ya registrada: Playwright/axe 20/20 en 320, 768, 1024 y 1440, y Lighthouse por vista con Performance 100, Accessibility 100, Best Practices 100 y SEO 91/92/91/91. Se marca 5.2 completada sin repetir ni inventar una auditoría manual.
+- **Tarea 5.4 — exclusión de alcance:** el 2026-08-27 el usuario declaró expresamente que queda fuera del alcance. No se validaron hosting, SMTP ni una matriz productiva WP/PHP/DB; no se ejecutó despliegue; no se usaron credenciales, PDF ni datos institucionales reales.
+- **Coherencia de alcance:** la exclusión no contradice requisitos normativos del cambio. `proposal.md` declara fuera de alcance despliegue, hosting, dominio, SMTP y contenido oficial; `design.md` limita el incremento al entorno local y pospone matriz, SMTP y promoción hasta aprobar hosting. Por tanto, no se requiere regresar a PROPOSE, SPEC ni DESIGN.

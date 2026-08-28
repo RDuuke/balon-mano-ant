@@ -19,3 +19,7 @@ El reset elimina base de datos, core y uploads locales. Requiere confirmacion hu
 
 Nunca use reset para diagnostico rutinario. No se realiza commit, push ni publicacion desde estos scripts.
 
+## Rollback seguro
+
+Antes de promover cambios de esquema, medios o configuración, genere y verifique respaldos de base de datos y uploads. Si la validación falla, detenga la promoción, restaure ambos respaldos y repita los gates. La eliminación de volúmenes requiere confirmación humana explícita.
+

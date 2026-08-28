@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="tests/php/integration-bootstrap.php" colors="true" cacheDirectory="/tmp/labm-phpunit-integration-cache">
+  <source>
+    <include>
+      <directory suffix=".php">/wordpress/wp-content/plugins/labm-core</directory>
+      <directory suffix=".php">/wordpress/wp-content/themes/labm</directory>
+    </include>
+  </source>
   <testsuites>
     <testsuite name="WordPress runtime">
       <file>tests/php/WordPressRuntimeTest.php</file>
@@ -7,6 +13,9 @@
       <file>tests/php/FixturesDomainTest.php</file>
       <file>tests/php/PublicExperienceTest.php</file>
       <file>tests/php/FrontendTokensTest.php</file>
+      <file>tests/php/DocumentContactTest.php</file>
+      <file>tests/php/ClosingCoverageTest.php</file>
+      <file>tests/php/VerifyCorrectivesTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>

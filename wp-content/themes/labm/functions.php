@@ -41,6 +41,41 @@ function labm_theme_skip_link() {
 add_action( 'wp_body_open', 'labm_theme_skip_link' );
 
 /**
+ * Devuelve las secciones habilitadas de portada conservando su orden.
+ *
+ * @param array $configuration Estado de secciones.
+ * @return array
+ */
+function labm_theme_home_sections( $configuration ) {
+	$sections = array();
+	foreach ( array( 'modalidades', 'actualidad', 'contacto' ) as $section ) {
+		if ( ! empty( $configuration[ $section ] ) ) {
+			$sections[] = $section;
+		}
+	}
+	return $sections;
+}
+
+/**
+ * Marca semanticamente el destino activo de la navegacion global.
+ *
+ * @param string $content HTML del enlace.
+ * @param array  $block Bloque de navegacion.
+ * @return string
+ */
+function labm_theme_mark_current_navigation_link( $content, $block ) {
+	$url          = isset( $block['attrs']['url'] ) ? (string) $block['attrs']['url'] : '';
+	$request_uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
+	$current_path = wp_parse_url( $request_uri, PHP_URL_PATH );
+	$target_path  = wp_parse_url( $url, PHP_URL_PATH );
+	if ( untrailingslashit( (string) $current_path ) === untrailingslashit( (string) $target_path ) ) {
+		return preg_replace( '/<a\s/', '<a aria-current="page" ', $content, 1 ) ?? $content;
+	}
+	return $content;
+}
+add_filter( 'render_block_core/navigation-link', 'labm_theme_mark_current_navigation_link', 10, 2 );
+
+/**
  * Consulta publica, paginada y filtrada sin exponer estados no publicos.
  *
  * @param string $post_type Tipo de contenido.

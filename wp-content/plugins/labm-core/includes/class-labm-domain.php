@@ -10,8 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Version del esquema de capacidades. */
-const LABM_CORE_CAPABILITIES_VERSION = '3';
-
+const LABM_CORE_CAPABILITIES_VERSION = '4';
 /** Version de las rutas publicas del dominio. */
 const LABM_CORE_REWRITE_VERSION = '1';
 
@@ -29,6 +28,7 @@ function labm_core_register_content_types() {
 		'labm_club'       => array( __( 'Clubes', 'labm-core' ), __( 'Club', 'labm-core' ), 'labm_club', 'labm_clubes' ),
 		'labm_integrante' => array( __( 'Integrantes', 'labm-core' ), __( 'Integrante', 'labm-core' ), 'labm_integrante', 'labm_integrantes' ),
 		'labm_horario'    => array( __( 'Horarios', 'labm-core' ), __( 'Horario', 'labm-core' ), 'labm_horario', 'labm_horarios' ),
+		'labm_documento'  => array( __( 'Documentos', 'labm-core' ), __( 'Documento', 'labm-core' ), 'labm_documento', 'labm_documentos' ),
 	);
 
 	foreach ( $types as $post_type => $names ) {
@@ -86,6 +86,20 @@ function labm_core_register_content_types() {
 			'show_in_rest' => true,
 		)
 	);
+
+	register_taxonomy(
+		'labm_documento_categoria',
+		array( 'labm_documento' ),
+		array(
+			'labels'       => array(
+				'name'          => __( 'Categorías de documentos', 'labm-core' ),
+				'singular_name' => __( 'Categoría de documento', 'labm-core' ),
+			),
+			'public'       => true,
+			'hierarchical' => true,
+			'show_in_rest' => true,
+		)
+	);
 }
 add_action( 'init', 'labm_core_register_content_types', 5 );
 
@@ -114,6 +128,56 @@ function labm_core_sanitize_iso_date( $value ) {
 }
 
 /**
+ * Normaliza un identificador editorial o devuelve un error verificable.
+ *
+ * @param mixed $value Valor editorial.
+ * @return string|WP_Error
+ */
+function labm_core_validate_identifier( $value ) {
+	$identifier = sanitize_title( (string) $value );
+	return '' !== $identifier ? $identifier : new WP_Error( 'labm_invalid_identifier', __( 'El identificador no contiene caracteres vÃ¡lidos.', 'labm-core' ) );
+}
+
+/**
+ * Valida los campos minimos antes de publicar una entidad.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @param array  $data Datos propuestos.
+ * @return true|WP_Error
+ */
+function labm_core_validate_publishable( $post_type, $data ) {
+	$required = 'labm_documento' === $post_type ? array( 'post_title', 'labm_documento_fecha', 'labm_documento_pdf_id' ) : array( 'post_title', 'post_content' );
+	$missing  = array();
+	foreach ( $required as $field ) {
+		if ( empty( trim( (string) ( $data[ $field ] ?? '' ) ) ) ) {
+			$missing[] = $field;
+		}
+	}
+	return $missing ? new WP_Error( 'labm_incomplete_content', __( 'Completa los campos obligatorios antes de publicar.', 'labm-core' ), $missing ) : true;
+}
+
+/**
+ * Comprueba compatibilidad antes de liberar, sin mutar contenido.
+ *
+ * @param array $requirements Versiones minimas.
+ * @param array $runtime Versiones observadas.
+ * @return true|WP_Error
+ */
+function labm_core_validate_runtime_compatibility( $requirements, $runtime ) {
+	foreach (
+		array(
+			'php'       => 'PHP',
+			'wordpress' => 'WordPress',
+		) as $key => $label
+	) {
+		if ( empty( $requirements[ $key ] ) || empty( $runtime[ $key ] ) || version_compare( $runtime[ $key ], $requirements[ $key ], '<' ) ) {
+			return new WP_Error( 'labm_incompatible_runtime', sprintf( ' %s incompatible: se requiere %s y se detectÃ³ %s. La liberaciÃ³n fue bloqueada.', $label, (string) ( $requirements[ $key ] ?? '?' ), (string) ( $runtime[ $key ] ?? '?' ) ) );
+		}
+	}
+	return true;
+}
+
+/**
  * Autoriza metadatos usando la capacidad de edicion del contenido.
  *
  * @param bool   $allowed Valor previo.
@@ -133,6 +197,10 @@ function labm_core_register_meta() {
 		'labm_club'       => array( 'labm_ciudad' => 'sanitize_text_field' ),
 		'labm_integrante' => array( 'labm_cargo' => 'sanitize_text_field' ),
 		'labm_horario'    => array( 'labm_inicio' => 'sanitize_text_field' ),
+		'labm_documento'  => array(
+			'labm_documento_pdf_id' => 'absint',
+			'labm_documento_fecha'  => 'labm_core_sanitize_iso_date',
+		),
 	);
 
 	foreach ( $fields as $post_type => $meta_fields ) {
@@ -164,7 +232,7 @@ function labm_core_ensure_capabilities() {
 		if ( ! $role ) {
 			continue;
 		}
-		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario' ) as $post_type ) {
+		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			if ( $object ) {
 				foreach ( array_unique( (array) $object->cap ) as $capability ) {
