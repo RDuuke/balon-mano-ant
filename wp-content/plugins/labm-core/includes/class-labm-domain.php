@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Version del esquema de capacidades. */
-const LABM_CORE_CAPABILITIES_VERSION = '4';
+const LABM_CORE_CAPABILITIES_VERSION = '5';
 /** Version de las rutas publicas del dominio. */
 const LABM_CORE_REWRITE_VERSION = '1';
 
@@ -223,7 +223,15 @@ add_action( 'init', 'labm_core_register_meta', 6 );
 
 /** Concede capacidades de dominio a roles editoriales autorizados. */
 function labm_core_ensure_capabilities() {
-	if ( LABM_CORE_CAPABILITIES_VERSION === get_option( 'labm_core_capabilities_version' ) ) {
+	$capabilities_ready = true;
+	foreach ( array( 'administrator', 'editor' ) as $role_name ) {
+		$role = get_role( $role_name );
+		if ( ! $role || ! $role->has_cap( 'edit_labm_slides' ) || ! $role->has_cap( 'edit_labm_aliados' ) ) {
+			$capabilities_ready = false;
+			break;
+		}
+	}
+	if ( LABM_CORE_CAPABILITIES_VERSION === get_option( 'labm_core_capabilities_version' ) && $capabilities_ready ) {
 		return;
 	}
 
@@ -232,7 +240,7 @@ function labm_core_ensure_capabilities() {
 		if ( ! $role ) {
 			continue;
 		}
-		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento' ) as $post_type ) {
+		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento', 'labm_slide', 'labm_aliado' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			if ( $object ) {
 				foreach ( array_unique( (array) $object->cap ) as $capability ) {
@@ -257,8 +265,11 @@ add_action( 'init', 'labm_core_ensure_rewrite_rules', 30 );
 
 /** Activa registro, capacidades y reglas de URL. */
 function labm_core_activate() {
+
 	labm_core_register_content_types();
+	labm_core_register_home_content_types();
 	labm_core_register_meta();
+	labm_core_register_home_meta();
 	delete_option( 'labm_core_capabilities_version' );
 	delete_option( 'labm_core_rewrite_version' );
 	labm_core_ensure_capabilities();

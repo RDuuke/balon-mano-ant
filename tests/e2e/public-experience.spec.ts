@@ -60,3 +60,15 @@ test('3.3 no hay desborde, axe pasa y reduced motion se respeta', async ({ page 
   const motion = await page.locator('main').evaluate((element) => getComputedStyle(element).scrollBehavior);
   expect(motion).toBe('auto');
 });
+
+test('portada y Selecciones conservan contenido en los anchos objetivo', async ({ page }) => {
+  for (const width of [320, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of ['/', '/selecciones/?modalidad=Piso', '/selecciones/?modalidad=Playa']) {
+      await page.goto(route);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+      expect(overflow, `desborde en ${route} a ${width}px`).toBe(false);
+      await expect(page.locator('main h1')).toBeVisible();
+    }
+  }
+});

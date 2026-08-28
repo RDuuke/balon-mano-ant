@@ -8,6 +8,8 @@ docker compose --env-file (Join-Path $root '.env.example') run --rm wp-cli optio
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 docker compose --env-file (Join-Path $root '.env.example') run --rm wp-cli option update siteurl http://host.docker.internal:8080 | Out-Null
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+docker compose --env-file (Join-Path $root '.env.example') run --rm wp-cli labm fixtures load | Out-Null
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 try {
     docker run --rm --add-host host.docker.internal:host-gateway `
         -e CI=true -e WP_URL=http://host.docker.internal:8080 -e LABM_BROWSER_TASK=$Task `

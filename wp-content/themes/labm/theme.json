@@ -6,8 +6,10 @@
     "layout": { "contentSize": "720px", "wideSize": "1200px" },
     "color": {
       "palette": [
-        { "slug": "azul-labm", "name": "Azul LABM", "color": "#123a66" },
-        { "slug": "amarillo-labm", "name": "Amarillo LABM", "color": "#f4c542" },
+        { "slug": "verde-labm", "name": "Verde LABM", "color": "#AECD25" },
+        { "slug": "verde-oscuro-labm", "name": "Verde oscuro LABM", "color": "#789614" },
+        { "slug": "negro-labm", "name": "Negro LABM", "color": "#202020" },
+        { "slug": "neutro-labm", "name": "Neutro LABM", "color": "#F3F6E8" },
         { "slug": "blanco", "name": "Blanco", "color": "#ffffff" }
       ]
     },
@@ -25,6 +27,6 @@
   },
   "styles": {
     "typography": { "fontFamily": "system-ui, sans-serif", "lineHeight": "1.6" },
-    "elements": { "link": { "color": { "text": "var:preset|color|azul-labm" } } }
+    "elements": { "link": { "color": { "text": "var:preset|color|negro-labm" } } }
   }
 }

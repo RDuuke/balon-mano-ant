@@ -21,9 +21,13 @@ function labm_theme_domain_summary() {
 	return '<p class="labm-notice">' . esc_html__( 'LABM Core no esta activo; el contenido institucional sigue disponible.', 'labm' ) . '</p>';
 }
 
-/** Registra el estilo publico del tema. */
+/** Registra los activos publicos del tema. */
 function labm_theme_enqueue_public_style() {
+
 	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	if ( is_front_page() ) {
+		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'labm_theme_enqueue_public_style' );
 
@@ -46,16 +50,189 @@ add_action( 'wp_body_open', 'labm_theme_skip_link' );
  * @param array $configuration Estado de secciones.
  * @return array
  */
-function labm_theme_home_sections( $configuration ) {
+function labm_theme_home_sections( $configuration = array() ) {
+
 	$sections = array();
-	foreach ( array( 'modalidades', 'actualidad', 'contacto' ) as $section ) {
-		if ( ! empty( $configuration[ $section ] ) ) {
+	foreach ( array( 'slider', 'presentacion', 'clubes', 'evento', 'actualidad', 'vinculacion', 'aliados' ) as $section ) {
+		if ( ! array_key_exists( $section, $configuration ) || ! empty( $configuration[ $section ] ) ) {
 			$sections[] = $section;
 		}
 	}
 	return $sections;
 }
 
+/**
+ * Consulta una coleccion acotada para la portada.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @param int    $limit Limite de elementos.
+ * @return WP_Query
+ */
+function labm_theme_home_query( $post_type, $limit ) {
+
+	return new WP_Query(
+		array(
+			'post_type'      => sanitize_key( $post_type ),
+			'post_status'    => 'publish',
+			'posts_per_page' => max( 1, absint( $limit ) ),
+			'orderby'        => array(
+				'menu_order' => 'ASC',
+				'title'      => 'ASC',
+			),
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+		)
+	);
+}
+
+/**
+ * Devuelve publicaciones o una lista vacia si el tipo no esta disponible.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @param int    $limit Limite de elementos.
+ * @return array
+ */
+function labm_theme_home_posts( $post_type, $limit ) {
+
+	if ( ! post_type_exists( $post_type ) ) {
+		return array();
+	}
+	return labm_theme_home_query( $post_type, $limit )->posts;
+}
+
+/**
+ * Renderiza el slider editorial.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @return string
+ */
+function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
+
+	$posts = labm_theme_home_posts( $post_type, 5 );
+	if ( empty( $posts ) ) {
+		return '';
+	}
+	ob_start();
+	?>
+	<section class="labm-home-slider" data-labm-section="slider" data-labm-slider aria-label="<?php esc_attr_e( 'Destacados', 'labm' ); ?>">
+		<div class="labm-home-slider__items">
+			<?php
+			foreach ( $posts as $index => $post ) :
+				?>
+				<article data-labm-slide <?php echo 0 === $index ? '' : 'hidden'; ?>>
+					<?php echo get_the_post_thumbnail( $post, 'full', array( 'loading' => 0 === $index ? 'eager' : 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado. ?>
+					<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
+					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 30 ) ); ?></p>
+					<?php $destination = get_post_meta( $post->ID, 'labm_destino_url', true ); ?>
+					<?php
+					if ( $destination ) :
+						?>
+						<a href="<?php echo esc_url( $destination ); ?>"><?php echo esc_html( get_post_meta( $post->ID, 'labm_cta_texto', true ) ? get_post_meta( $post->ID, 'labm_cta_texto', true ) : __( 'Conocer más', 'labm' ) ); ?></a><?php endif; ?>
+				</article>
+			<?php endforeach; ?>
+		</div>
+		<?php
+		if ( count( $posts ) > 1 ) :
+			?>
+			<div class="labm-home-slider__controls"><button type="button" data-labm-slider-prev><?php esc_html_e( 'Anterior', 'labm' ); ?></button><button type="button" data-labm-slider-pause aria-pressed="false"><?php esc_html_e( 'Pausar', 'labm' ); ?></button><button type="button" data-labm-slider-next><?php esc_html_e( 'Siguiente', 'labm' ); ?></button></div>
+			<div class="labm-home-slider__indicators" aria-label="<?php esc_attr_e( 'Elegir destacado', 'labm' ); ?>">
+			<?php
+			foreach ( $posts as $index => $post ) :
+				?>
+				<button type="button" data-labm-slide-to="<?php echo esc_attr( (string) $index ); ?>" aria-label="<?php /* translators: %d: numero ordinal del destacado. */ echo esc_attr( sprintf( __( 'Ir al destacado %d', 'labm' ), $index + 1 ) ); ?>" aria-current="<?php echo 0 === $index ? 'true' : 'false'; ?>"></button><?php endforeach; ?></div>
+		<?php endif; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza tarjetas sencillas de una coleccion editorial.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @param int    $limit Limite de elementos.
+ * @param string $section Identificador de seccion.
+ * @param string $heading Titulo visible.
+ * @return string
+ */
+function labm_theme_render_home_cards( $post_type, $limit, $section, $heading ) {
+
+	$posts = labm_theme_home_posts( $post_type, $limit );
+	if ( empty( $posts ) ) {
+		return '';
+	}
+	ob_start();
+	?>
+	<section class="labm-home-section labm-home-<?php echo esc_attr( $section ); ?>" data-labm-section="<?php echo esc_attr( $section ); ?>"><h2><?php echo esc_html( $heading ); ?></h2><div class="labm-card-grid">
+	<?php
+	foreach ( $posts as $post ) :
+		?>
+		<article class="labm-card"><h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h3><p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 24 ) ); ?></p></article><?php endforeach; ?>
+	</div></section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/** Renderiza clubes publicados. */
+function labm_theme_render_home_clubs() {
+
+	return labm_theme_render_home_cards( 'labm_club', 6, 'clubes', __( 'Clubes asociados', 'labm' ) );
+}
+
+/** Renderiza el evento editorial destacado. */
+function labm_theme_render_home_event() {
+
+	return labm_theme_render_home_cards( 'labm_actualidad', 1, 'evento', __( 'Evento destacado', 'labm' ) );
+}
+
+/** Renderiza actualidad publicada. */
+function labm_theme_render_home_news() {
+
+	return labm_theme_render_home_cards( 'labm_actualidad', 3, 'actualidad', __( 'Actualidad', 'labm' ) );
+}
+
+/**
+ * Renderiza aliados con una lista semantica unica y una copia solo visual.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @return string
+ */
+function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
+
+	$posts = labm_theme_home_posts( $post_type, 12 );
+	if ( empty( $posts ) ) {
+		return '';
+	}
+	$list = static function () use ( $posts ) {
+
+		foreach ( $posts as $post ) {
+			$url = get_post_meta( $post->ID, 'labm_destino_url', true );
+			echo '<li>';
+			if ( $url ) {
+				echo '<a href="' . esc_url( $url ) . '">';
+			}
+			echo get_the_post_thumbnail(
+				$post,
+				'medium',
+				array(
+					'alt'     => get_the_title( $post ),
+					'loading' => 'lazy',
+				)
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<span>' . esc_html( get_the_title( $post ) ) . '</span>';
+			if ( $url ) {
+				echo '</a>';
+			}
+			echo '</li>';
+		}
+	};
+	ob_start();
+	?>
+	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies><h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2><button type="button" data-labm-allies-pause aria-pressed="false"><?php esc_html_e( 'Pausar movimiento', 'labm' ); ?></button><ul class="labm-allies__list"><?php $list(); ?></ul><div class="labm-allies__visual" aria-hidden="true" inert><ul><?php $list(); ?></ul></div></section>
+	
+	<?php
+	return (string) ob_get_clean();
+}
 /**
  * Marca semanticamente el destino activo de la navegacion global.
  *

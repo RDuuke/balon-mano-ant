@@ -50,7 +50,10 @@ function Invoke-Gate([string] $Name, [string] $Tool, [scriptblock] $Command, [st
 Invoke-Gate 'compose-config' 'docker' { docker compose --env-file .env.example config --quiet }
 Invoke-Gate 'composer-test' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 test }
 Invoke-Gate 'wordpress-integration' 'docker' { docker run --rm --network labm_default --entrypoint php -e WORDPRESS_DB_HOST=db:3306 -e WORDPRESS_DB_NAME=labm_demo -e WORDPRESS_DB_USER=labm_demo -e WORDPRESS_DB_PASSWORD=demo_password_change_me -e WP_TESTS_RUNTIME_ROOT=/wordpress -v "${root}:/app" -v labm_composer_vendor:/app/vendor -v labm_wordpress_core:/wordpress -v "${root}/wp-content/themes/labm:/wordpress/wp-content/themes/labm:ro" -v "${root}/wp-content/plugins/labm-core:/wordpress/wp-content/plugins/labm-core:ro" -w /app wordpress:cli-2.11.0-php8.3 /app/vendor/bin/phpunit -c phpunit.integration.xml.dist }
-Invoke-Gate 'php-coverage' 'docker' { & (Join-Path $root 'scripts/coverage.ps1') } -IsolatedScript (Join-Path $root 'scripts/coverage.ps1')
+Invoke-Gate 'php-coverage' 'docker' {
+    $coverageScript = Get-Content -Raw -LiteralPath (Join-Path $root 'scripts/coverage.ps1')
+    & ([scriptblock]::Create($coverageScript))
+}
 Invoke-Gate 'composer-lint' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint }
 Invoke-Gate 'composer-analyse' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress }
 if ($IncludeBrowser) {

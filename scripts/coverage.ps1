@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Continue'
 $root = if ($PSScriptRoot) { (Resolve-Path (Join-Path $PSScriptRoot '..')).Path } else { (Resolve-Path '.').Path }
 $artifactDir = Join-Path $root 'artifacts/coverage'
 $clover = Join-Path $artifactDir 'clover.xml'

@@ -10,8 +10,11 @@
     <testsuite name="WordPress runtime">
       <file>tests/php/WordPressRuntimeTest.php</file>
       <file>tests/php/DomainModelTest.php</file>
+      <file>tests/php/HomeContentTest.php</file>
+      <file>tests/php/HomeEditorialFlowsTest.php</file>
       <file>tests/php/FixturesDomainTest.php</file>
       <file>tests/php/PublicExperienceTest.php</file>
+      <file>tests/php/HomePresentationTest.php</file>
       <file>tests/php/FrontendTokensTest.php</file>
       <file>tests/php/DocumentContactTest.php</file>
       <file>tests/php/ClosingCoverageTest.php</file>

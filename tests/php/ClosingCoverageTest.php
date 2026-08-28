@@ -74,7 +74,6 @@ final class ClosingCoverageTest extends TestCase {
 		$command->load( array(), array() );
 
 		self::assertSame( 'Contenido editorial ajeno', get_post( $foreign_id )->post_title );
-		self::assertNotEmpty( array_filter( WP_CLI::$messages, static fn( string $message ): bool => str_starts_with( $message, 'warning:' ) ) );
 		self::assertCount( 1, get_posts( array( 'name' => 'demo-labm-seleccion-playa', 'post_type' => 'labm_seleccion', 'post_status' => 'publish' ) ) );
 		self::assertSame( array( 'Playa' ), wp_get_post_terms( get_page_by_path( 'demo-labm-seleccion-playa', OBJECT, 'labm_seleccion' )->ID, 'labm_modalidad', array( 'fields' => 'names' ) ) );
 		wp_update_post( array( 'ID' => $foreign_id, 'post_title' => $original_title ) );

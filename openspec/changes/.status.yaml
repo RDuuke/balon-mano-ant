@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: PROPOSE
+phase: APPLY
 change: "implement-labm-home"
-awaiting_approval: true
+awaiting_approval: false
 completed: false
-pending_tasks: []
+pending_tasks: ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6"]
 modified_artifacts: []
-notes: "Exploración completada. El cambio create-labm-wordpress-website permanece archivado y no se reabre."
+notes: "tdd_strict; APPLY correctivo iniciado para cerrar 12 PARTIAL y 1 UNTESTED detectados por VERIFY."

@@ -12,18 +12,40 @@ Text Domain: labm
 	--labm-space-2: clamp(1rem, 2vw, 1.5rem);
 	--labm-space-3: clamp(1.5rem, 4vw, 3rem);
 	--labm-radius: .75rem;
-	--labm-shadow: 0 .5rem 1.5rem rgb(18 58 102 / 12%);
+	--labm-green: #AECD25;
+	--labm-green-dark: #789614;
+	--labm-black: #202020;
+	--labm-neutral: #F3F6E8;
+	--labm-shadow: 0 .5rem 1.5rem rgb(32 32 32 / 12%);
 }
 
 html { scroll-behavior: smooth; }
-body { margin: 0; overflow-wrap: anywhere; }
-.labm-main { padding-block: var(--labm-space-3); }
-.labm-skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 9999; padding: .75rem 1rem; background: #fff; color: #123a66; }
+body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
+.labm-main { padding-block: 0; }
+.labm-skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 9999; padding: .75rem 1rem; background: #fff; color: var(--labm-black); }
 .labm-skip-link:focus { top: 1rem; }
-:where(a, button, input, select):focus-visible { outline: 3px solid #c28a00; outline-offset: 3px; }
+:where(a, button, input, select):focus-visible { outline: 3px solid var(--labm-green-dark); outline-offset: 3px; }
+.labm-institutional-bar { padding-block: .35rem; background: var(--labm-black); color: #fff; font-size: .8rem; }
+.labm-institutional-bar p { margin: 0; }
+.labm-navigation-shell { display: flex; align-items: center; justify-content: space-between; gap: var(--labm-space-2); }
+.labm-header-cta .wp-block-button__link { background: var(--labm-green); color: var(--labm-black); font-weight: 800; }
 .wp-block-navigation__container { flex-wrap: wrap; gap: .5rem 1rem; }
-.labm-hero { padding: var(--labm-space-3); color: #fff; background: #123a66; border-radius: var(--labm-radius); }
-.labm-hero a { color: #123a66; }
+.labm-section { padding: clamp(2.5rem, 7vw, 6rem) max(var(--labm-space-2), calc((100% - 1200px) / 2)); }
+.labm-section:nth-child(even) { background: var(--labm-neutral); }
+.labm-hero { min-height: min(620px, 75vh); padding: var(--labm-space-3); color: #fff; background: var(--labm-black); }
+.labm-hero a { color: var(--labm-black); }
+.labm-slider, .labm-home-slider { position: relative; overflow: hidden; }
+.labm-slider__controls, .labm-home-slider__controls { display: flex; align-items: center; gap: .5rem; position: absolute; z-index: 2; right: var(--labm-space-2); bottom: var(--labm-space-2); }
+.labm-slider button, .labm-home-slider button, .labm-allies button { min-width: 2.75rem; min-height: 2.75rem; border: 2px solid var(--labm-black); background: #fff; color: var(--labm-black); }
+.labm-allies { overflow: hidden; background: var(--labm-black); color: #fff; }
+.labm-allies__list, .labm-allies__visual ul { display: flex; align-items: center; gap: var(--labm-space-3); padding: 0; list-style: none; }
+.labm-allies__visual { width: max-content; animation: labm-marquee 24s linear infinite; }
+.labm-allies__visual[aria-hidden="true"] { pointer-events: none; }
+[data-labm-paused="true"] .labm-allies__visual, [data-labm-focus-paused="true"] .labm-allies__visual { animation-play-state: paused; }
+@keyframes labm-marquee { to { transform: translateX(-50%); } }
+.labm-footer { padding-block: var(--labm-space-3); background: var(--labm-black); color: #fff; }
+.labm-footer a { color: var(--labm-green); }
+.labm-footer__legal { border-top: 1px solid rgb(255 255 255 / 25%); padding-top: var(--labm-space-2); }
 .labm-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--labm-space-2); margin-block: var(--labm-space-2); }
 .labm-card { min-width: 0; padding: var(--labm-space-2); border: 1px solid #ccd5df; border-radius: var(--labm-radius); box-shadow: var(--labm-shadow); }
 .labm-card__eyebrow { color: #365166; font-size: .875rem; font-weight: 700; }
@@ -38,10 +60,13 @@ body { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 480px) {
 	.wp-block-site-title { width: 100%; }
 	.wp-block-navigation { font-size: .875rem; }
-	.labm-hero { padding: var(--labm-space-2); }
+	.labm-hero { min-height: 30rem; padding: var(--labm-space-2); }
+	.labm-navigation-shell { align-items: flex-start; }
+	.labm-header-cta { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
 	*, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+	.labm-allies__visual { animation: none !important; transform: none; }
 }
