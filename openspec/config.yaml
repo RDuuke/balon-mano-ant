@@ -1,11 +1,11 @@
 schema: flow-nea
 
 context: |
-  Stack actual: no hay WordPress, PHP ni dependencias inicializadas en el repositorio.
-  Fuente funcional: website-liga-antioquena-wordpress.md.
-  Arquitectura objetivo: WordPress con tema propio y plugin para funcionalidad persistente.
-  Pruebas: no existe infraestructura de pruebas todavía.
-  Estilo: WordPress Coding Standards, Gutenberg, accesibilidad WCAG 2.2 AA y contenido en español.
+  Stack actual: WordPress 6.8+, PHP 8.3+, tema de bloques LABM y plugin labm-core.
+  Frontend: patrones Gutenberg y CSS del tema en wp-content/themes/labm.
+  Funcionalidad persistente: plugin wp-content/plugins/labm-core.
+  Pruebas: PHPUnit, PHPStan/WPCS y Playwright con pruebas de accesibilidad.
+  Estilo: WordPress Coding Standards, Gutenberg, WCAG 2.2 AA y contenido en español.
 
 rules:
   proposal:

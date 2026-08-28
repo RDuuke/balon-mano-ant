@@ -56,8 +56,8 @@ El sitio SHALL mostrar actualidad cronológica con detalle, categorías, paginac
 - CUANDO un visitante no autenticado consulta listados, búsqueda o URL directa
 - ENTONCES el sitio no revela su contenido ni metadatos restringidos.
 
-### Requirement: Experiencia responsive y accesible
-Las vistas públicas MUST cumplir WCAG 2.2 AA y MUST ser usables a 320, 768, 1024 y 1440 px, incluyendo teclado, foco, jerarquía, alternativas textuales y movimiento reducido.
+### Requirement: Experiencia responsive y accesibilidad verificable
+Las vistas públicas MUST ser usables a 320, 768, 1024 y 1440 px, incluyendo teclado, foco, jerarquía, alternativas textuales y movimiento reducido. La garantía integral de cumplimiento WCAG 2.2 AA SHALL quedar diferida a un cambio futuro y MUST NOT declararse COMPLIANT en este cambio.
 
 #### Scenario: Recorrido accesible
 - DADO una página representativa y navegación solo por teclado
@@ -69,7 +69,7 @@ Las vistas públicas MUST cumplir WCAG 2.2 AA y MUST ser usables a 320, 768, 102
 - CUANDO se redimensiona la vista
 - ENTONCES no hay pérdida de información, solapamientos ni desplazamiento horizontal funcionalmente innecesario.
 
-#### Scenario: Incumplimiento AA
-- DADO una auditoría que detecta contraste, semántica o interacción no conforme
-- CUANDO se evalúa el criterio de aceptación
-- ENTONCES la entrega falla y registra el elemento y la vista afectados.
+#### Scenario: Hallazgo o afirmación no sustentada
+- DADO una comprobación concreta que falla o un informe que afirma cumplimiento integral WCAG 2.2 AA
+- CUANDO se evalúa el criterio de aceptación de este cambio
+- ENTONCES falla el criterio concreto afectado o se retira la afirmación global, y la garantía integral permanece declarada como diferida.

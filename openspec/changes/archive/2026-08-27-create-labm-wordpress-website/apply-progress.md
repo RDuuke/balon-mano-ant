@@ -248,3 +248,11 @@
 - **Tarea 5.2 — aprobación manual:** el 2026-08-27 el usuario confirmó que la auditoría manual fue revisada y está conforme. Esta aprobación completa la evidencia automática ya registrada: Playwright/axe 20/20 en 320, 768, 1024 y 1440, y Lighthouse por vista con Performance 100, Accessibility 100, Best Practices 100 y SEO 91/92/91/91. Se marca 5.2 completada sin repetir ni inventar una auditoría manual.
 - **Tarea 5.4 — exclusión de alcance:** el 2026-08-27 el usuario declaró expresamente que queda fuera del alcance. No se validaron hosting, SMTP ni una matriz productiva WP/PHP/DB; no se ejecutó despliegue; no se usaron credenciales, PDF ni datos institucionales reales.
 - **Coherencia de alcance:** la exclusión no contradice requisitos normativos del cambio. `proposal.md` declara fuera de alcance despliegue, hosting, dominio, SMTP y contenido oficial; `design.md` limita el incremento al entorno local y pospone matriz, SMTP y promoción hasta aprobar hosting. Por tanto, no se requiere regresar a PROPOSE, SPEC ni DESIGN.
+
+## Tarea correctivo APPLY — portabilidad de gates
+
+- **RED:** comprobación de finales de línea y captura nativa falló: CRLF en `class-labm-documents-contact.php`, `class-labm-domain.php`, `labm-core.php`, `functions.php` y `scripts/browser-gate.sh`; `gate.ps1` no aislaba stderr nativo.
+- **GREEN:** los cinco archivos quedaron normalizados a LF; `scripts/gate.ps1` aísla cobertura y navegador con `System.Diagnostics.Process`, redirige stdout/stderr y conserva códigos de salida. Contratos de toolchain y sintaxis pasan; el gate alcanzó PASS en Compose, PHPUnit, integración WordPress, cobertura, WPCS y PHPStan.
+- **TRIANGULATE:** el primer gate aislado confirmó cobertura PASS y detectó el argumento entrecomillado incorrectamente; se corrigió la construcción de `-Task` antes del intento final.
+- **REFACTOR:** se eliminó la dependencia de `Start-Process`, incompatible con el entorno por claves duplicadas `Path/PATH`, y se mantuvo la captura OS-level sin tocar specs ni diseño.
+- **PENDIENTE:** por decisión de alcance, no se repite el gate agregado ni el browser gate. El artefacto disponible conserva el fallo previo de argumento; no se ejecutó VERIFY formal ni ARCHIVE.

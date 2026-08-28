@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: APPLY
-change: "create-labm-wordpress-website"
-awaiting_approval: false
+phase: PROPOSE
+change: "implement-labm-home"
+awaiting_approval: true
 completed: false
-pending_tasks: ["scope-spec-lighthouse-seo-wcag-aa"]
-modified_artifacts: ["tasks.md", "apply-progress.md"]
-notes: "APPLY correctivo funcional completado; Node/pnpm portable y Playwright 32/32. Lighthouse, SEO y garantÃ­a WCAG 2.2 AA diferidos expresamente, nunca COMPLIANT. ContradicciÃ³n con MUST/SHALL vigentes: se recomienda regresiÃ³n formal a SPEC antes de VERIFY. 5.4 sigue fuera de alcance."
+pending_tasks: []
+modified_artifacts: []
+notes: "Exploración completada. El cambio create-labm-wordpress-website permanece archivado y no se reabre."

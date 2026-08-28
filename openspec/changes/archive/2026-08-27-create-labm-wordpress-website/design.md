@@ -2,7 +2,7 @@
 
 ## Enfoque técnico
 
-El primer incremento será local: Compose levanta WordPress, MariaDB y WP-CLI; monta el tema `labm` y `labm-core`. Un bootstrap idempotente instala, activa, carga fixtures ficticios y genera evidencia. Excluye despliegue, correo real, PDF y contenido oficial.
+El incremento es local: Compose levanta WordPress, MariaDB y WP-CLI con el tema `labm` y el plugin `labm-core`. El bootstrap idempotente instala, activa, carga fixtures ficticios y genera evidencia. La tarea 5.4 queda cerrada y fuera de alcance: despliegue, hosting o matriz productiva, SMTP real, PDF reales y datos institucionales reales.
 
 ## Decisiones de arquitectura
 
@@ -34,7 +34,7 @@ El primer incremento será local: Compose levanta WordPress, MariaDB y WP-CLI; m
 
 ## Interfaces / contratos
 
-Comandos: `docker compose config`, `up -d --wait`, bootstrap, fixtures, `composer test|lint|analyse` y `pnpm exec playwright test`. Cada gate registra comando, versiones, salida y retorno en un directorio ignorado. Git incluye fuentes, ejemplos, locks y documentación; ignora `.env`, secretos, volúmenes, dumps, uploads, dependencias, core y evidencia. DESIGN no inicia Git ni hace push.
+Comandos: `docker compose config`, `up -d --wait`, bootstrap, fixtures, `composer test|lint|analyse` y `pnpm exec playwright test`. Cada gate registra comando, versiones, salida y retorno en un directorio ignorado. Git incluye fuentes, ejemplos, locks y documentación; ignora `.env`, secretos, volúmenes, dumps, uploads, dependencias, core y evidencia.
 
 ## Estrategia de pruebas
 
@@ -43,9 +43,9 @@ Comandos: `docker compose config`, `up -d --wait`, bootstrap, fixtures, `compose
 | Primero | Smoke Compose | Validar configuración, healthchecks, HTTP, persistencia y fallo visible |
 | Primero | PHPUnit + suite WordPress | Activación independiente, registro mínimo, capacidades y fixtures RED/GREEN |
 | Primero | PHPCS/WPCS + PHPStan | Estilo, tipos y errores seguros; baseline solo justificado |
-| Primero | Playwright + axe | Rutas mínimas, teclado, 320/768/1024/1440 y violaciones automáticas |
-| Primero | Lighthouse CI | Baseline reproducible; umbrales finales cuando existan vistas completas |
-| Posteriores | Integración/E2E/manual | Consultas, permisos, PDF, SMTP simulado, WCAG manual y umbrales 85/90 |
+| Primero | Playwright + axe | Rutas mínimas, teclado, foco, 320/768/1024/1440 y comprobaciones automáticas concretas |
+| Posteriores | Integración/E2E/manual | Consultas, permisos, PDF ficticios y entrega de contacto simulada |
+| Cambio futuro | Auditorías diferidas | Lighthouse, metas de rendimiento y SEO, y garantía integral WCAG 2.2 AA; este cambio no las declara `COMPLIANT` |
 
 CI recreará `.env`, levantará Compose limpio, ejecutará gates y conservará reportes; una herramienta ausente no aprobará.
 
@@ -57,11 +57,11 @@ CI recreará `.env`, levantará Compose limpio, ejecutará gates y conservará r
 | Arquitectura CMS | separación tema/plugin, fallback y suite WP: activación, cambio de tema, edición y extensibilidad |
 | Experiencia pública | tema de bloques, fixtures y Playwright/axe: navegación, estados, responsive y accesibilidad |
 | Documentos/contacto | plugin, PDF restringidos y pruebas posteriores: permisos, filtros, adjuntos y entrega simulada |
-| Calidad/seguridad | gates, evidencia, pinning y revisión humana: ejecución parcial, entradas hostiles, WCAG y Lighthouse |
+| Calidad/seguridad | gates, evidencia, pinning y revisión humana: ejecución parcial, entradas hostiles, responsive y accesibilidad concreta; Lighthouse, SEO y garantía integral WCAG 2.2 AA quedan diferidos sin declaración `COMPLIANT` |
 
 ## Migración / despliegue
 
-No hay migración. Tras aprobar hosting se validará la matriz, configurará SMTP fuera de Git y promoverán lotes respaldados.
+No hay migración ni despliegue. Hosting, matriz productiva, SMTP real y promoción con PDF o datos reales requieren autorización y un cambio futuro.
 
 ## Preguntas abiertas
 

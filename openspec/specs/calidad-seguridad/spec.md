@@ -38,23 +38,23 @@ La verificación MUST cubrir permisos, consultas, publicación y rechazo de PDF,
 - CUANDO se intenta una operación protegida
 - ENTONCES se rechaza sin cambios indebidos, trazas públicas ni datos sensibles expuestos.
 
-### Requirement: Auditoría visual, accesible y de rendimiento
-El sitio completo MUST auditar vistas representativas a 320, 768, 1024 y 1440 px; SHALL cumplir WCAG 2.2 AA y SHALL alcanzar Lighthouse Performance >= 85 y Accessibility, Best Practices y SEO >= 90 bajo condiciones documentadas.
+### Requirement: Alcance verificable de calidad visual y accesibilidad
+La verificación de este cambio MUST conservar evidencia de las comprobaciones responsive y de accesibilidad realmente ejecutadas a 320, 768, 1024 y 1440 px; SHALL registrar Lighthouse, sus metas de rendimiento y SEO, y la garantía integral WCAG 2.2 AA como diferidos a un cambio futuro; MUST NOT presentarlos como COMPLIANT.
 
-#### Scenario: Auditoría conforme
-- DADO contenido y condiciones de medición controladas
-- CUANDO se ejecutan auditorías automáticas y revisión manual
-- ENTONCES se alcanzan los umbrales y se conserva evidencia por vista y ancho aplicable.
+#### Scenario: Evidencia dentro del alcance
+- DADO vistas representativas y comprobaciones ejecutadas en los anchos objetivo
+- CUANDO se revisa la evidencia del cambio
+- ENTONCES el informe identifica vistas, anchos, comprobaciones y resultados sin ampliar la conclusión más allá de lo demostrado.
 
-#### Scenario: Variación controlada
-- DADO una dependencia externa deshabilitada o simulada conforme al protocolo
-- CUANDO se repite Lighthouse
-- ENTONCES la evidencia declara la condición y permite comparar resultados reproducibles.
+#### Scenario: Auditorías diferidas
+- DADO que Lighthouse, la validación SEO o la auditoría integral WCAG 2.2 AA no forman parte de este cambio
+- CUANDO se evalúa su cierre
+- ENTONCES se registran como alcance diferido con seguimiento futuro y no como resultados aprobados ni requisitos de cierre actuales.
 
-#### Scenario: Umbral incumplido
-- DADO una métrica inferior al objetivo o una violación WCAG 2.2 AA
-- CUANDO se evalúa la liberación
-- ENTONCES el gate falla e identifica URL, condición y hallazgo.
+#### Scenario: Declaración de cumplimiento no sustentada
+- DADO un informe que afirma cumplimiento Lighthouse, SEO o WCAG 2.2 AA sin evidencia integral
+- CUANDO se valida el resultado del cambio
+- ENTONCES el gate falla hasta retirar la afirmación y declarar correctamente el alcance diferido.
 
 ### Requirement: Protección de información y procedencia
 El sistema MUST aplicar mínimo privilegio, validación de entradas, escape de salidas y protección de acciones mutables; MUST NOT publicar secretos ni datos personales de los PDF sin revisión y autorización explícitas.
