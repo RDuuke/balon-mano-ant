@@ -107,3 +107,36 @@
 - **GREEN:** implementacion revisada contra `specs/` y `design.md`; test pasa.
 - **TRIANGULATE:** test `public-experience.spec.ts` cubre `conservación de Piso y Playa`.
 - **REFACTOR:** `sin eliminación de CPT, taxonomías, datos ni rutas`.
+
+## Tarea 6.1 — Persistencia al cambiar de tema
+- **RED:** test `HomeEditorialFlowsTest::test_slides_y_aliados_persisten_al_cambiar_de_tema` faltaba y el escenario figuraba `UNTESTED`.
+- **GREEN:** implementación en `tests/php/HomeEditorialFlowsTest.php`; conserva entradas, estados, metadatos y capacidades tras `switch_theme`.
+- **REFACTOR:** usuario, tema y contenido se restauran de forma aislada.
+
+## Tarea 6.2 — Fallback sin registros de labm-core
+- **RED:** test `HomePresentationTest::test_portada_degrada_sin_registros_de_labm_core` no existía y el escenario figuraba `PARTIAL`.
+- **GREEN:** implementación en `tests/php/HomePresentationTest.php`; la portada mantiene presentación y omite slider/aliados sin fatal.
+- **REFACTOR:** los tipos se vuelven a registrar en `finally`.
+
+## Tarea 6.3 — Operaciones editoriales autorizadas y denegadas
+- **RED:** test `HomeEditorialFlowsTest::test_editor_realiza_flujo_editorial_completo_por_rest` falla con: `El editor carece de edit_labm_slides` al reutilizar usuarios persistentes.
+- **GREEN:** implementación en `tests/php/HomeEditorialFlowsTest.php`; usuarios aislados ejercen crear, publicar, editar y eliminar por REST, y el suscriptor recibe 401/403 sin mutación.
+- **TRIANGULATE:** test `HomeEditorialFlowsTest::test_suscriptor_no_puede_mutar_contenido_por_rest` cubre el rechazo completo.
+- **REFACTOR:** usuarios temporales se eliminan al terminar.
+
+## Tarea 6.4 — Valores límite y entradas manipuladas
+- **RED:** test `HomeEditorialFlowsTest::test_limites_y_datos_no_publicos_no_se_exponen` faltaba y los escenarios figuraban `PARTIAL`.
+- **GREEN:** implementación en `tests/php/HomeEditorialFlowsTest.php`; texto largo, medio ausente, borrador, privado y URL manipulada tienen resultado seguro.
+- **REFACTOR:** 10 pruebas focales y 76 aserciones en verde.
+
+## Tarea 6.5 — E2E con fixtures publicados
+- **RED:** test `home.spec.ts::slider y aliados ofrecen controles accesibles y pausa` falla en cuatro viewports por locator mutable; axe detecta enlaces enfocables bajo `aria-hidden`.
+- **GREEN:** implementación en `tests/e2e/home.spec.ts`, `functions.php` y `assets/home.js`; se ejercen slider, indicadores, pausa, movimiento reducido y aliados.
+- **TRIANGULATE:** axe cubre que la copia visual sea inerte y que sus enlaces no sean enfocables.
+- **REFACTOR:** locator estable y defensa HTML/JavaScript para la copia visual.
+
+## Tarea 6.6 — Gates y remapeo
+- **RED:** test `scripts/browser-gate.ps1 -Task playwright` falla con: `12 fallos; aria-hidden-focus y locator de pausa mutable`.
+- **GREEN:** implementación validada por `scripts/gate.ps1` con seis componentes PASS y `scripts/browser-gate.ps1` con 48/48 pruebas PASS.
+- **TRIANGULATE:** matriz de `verify-report.md` remapeada a 24 escenarios con evidencia correctiva.
+- **REFACTOR:** APPLY queda sin tareas pendientes y recomienda VERIFY.

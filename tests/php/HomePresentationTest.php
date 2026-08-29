@@ -36,6 +36,25 @@ final class HomePresentationTest extends TestCase {
 		self::assertSame( '', labm_theme_render_home_allies( 'tipo_inexistente' ) );
 	}
 
+	/** El tema omite el contenido dependiente si labm-core no registra sus tipos. */
+	public function test_portada_degrada_sin_registros_de_labm_core(): void {
+		self::assertTrue( unregister_post_type( 'labm_slide' ) );
+		self::assertTrue( unregister_post_type( 'labm_aliado' ) );
+
+		try {
+			self::assertSame( '', labm_theme_render_home_slider() );
+			self::assertSame( '', labm_theme_render_home_allies() );
+			ob_start();
+			require dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/inicio.php';
+			$html = (string) ob_get_clean();
+			self::assertStringContainsString( 'data-labm-section="presentacion"', $html );
+			self::assertStringNotContainsString( 'data-labm-slider', $html );
+			self::assertStringNotContainsString( 'data-labm-allies', $html );
+		} finally {
+			labm_core_register_home_content_types();
+		}
+	}
+
 	/** Los renderizadores incluyen únicamente contenido publicado y controles útiles. */
 	public function test_renderizadores_de_portada_componen_contenido_publicado(): void {
 		$created = array();

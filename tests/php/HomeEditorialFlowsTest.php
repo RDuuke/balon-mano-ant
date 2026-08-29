@@ -12,6 +12,9 @@ final class HomeEditorialFlowsTest extends TestCase {
 	/** IDs creados durante la prueba. */
 	private array $created = array();
 
+	/** IDs de usuarios temporales creados por la prueba. */
+	private array $created_users = array();
+
 	/** Garantiza la migracion de capacidades antes de cada flujo aislado. */
 	protected function setUp(): void {
 		parent::setUp();
@@ -24,7 +27,23 @@ final class HomeEditorialFlowsTest extends TestCase {
 		foreach ( array_reverse( $this->created ) as $post_id ) {
 			wp_delete_post( $post_id, true );
 		}
+		if ( $this->created_users && ! function_exists( 'wp_delete_user' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+		foreach ( $this->created_users as $user_id ) {
+			wp_delete_user( $user_id );
+		}
 		parent::tearDown();
+	}
+
+	/** Crea un usuario aislado con el rol solicitado. */
+	private function create_user_with_role( string $role ): WP_User {
+		$user_id = wp_create_user( 'labm-' . $role . '-' . wp_generate_uuid4(), wp_generate_password(), 'labm-' . wp_generate_uuid4() . '@example.org' );
+		self::assertIsInt( $user_id );
+		$this->created_users[] = $user_id;
+		$user                  = new WP_User( $user_id );
+		$user->set_role( $role );
+		return $user;
 	}
 
 	/** Crea un adjunto minimo valido como imagen destacada. */
@@ -54,7 +73,7 @@ final class HomeEditorialFlowsTest extends TestCase {
 
 	/** Un editor puede crear, modificar, publicar y eliminar slides y aliados. */
 	public function test_editor_realiza_flujo_editorial_completo_por_rest(): void {
-		$editor = get_users( array( 'role' => 'editor', 'number' => 1 ) )[0];
+		$editor = $this->create_user_with_role( 'editor' );
 		wp_set_current_user( $editor->ID );
 		self::assertTrue( current_user_can( 'edit_labm_slides' ), 'El editor carece de edit_labm_slides.' );
 		self::assertTrue( current_user_can( get_post_type_object( 'labm_slide' )->cap->create_posts ), 'El editor carece de la capacidad REST create_posts.' );
@@ -95,7 +114,7 @@ final class HomeEditorialFlowsTest extends TestCase {
 		$post_id         = wp_insert_post( array( 'post_type' => 'labm_slide', 'post_status' => 'draft', 'post_title' => 'Protegido' ) );
 		$this->created[] = $post_id;
 
-		$subscriber = get_users( array( 'role' => 'subscriber', 'number' => 1 ) )[0];
+		$subscriber = $this->create_user_with_role( 'subscriber' );
 		wp_set_current_user( $subscriber->ID );
 		foreach (
 			array(

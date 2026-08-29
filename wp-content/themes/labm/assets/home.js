@@ -47,6 +47,9 @@
 
 	document.querySelectorAll('[data-labm-allies]').forEach((allies) => {
 		const pause = allies.querySelector('[data-labm-allies-pause]');
+		const visualCopy = allies.querySelector('.labm-allies__visual');
+		visualCopy?.setAttribute('inert', '');
+		visualCopy?.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach((element) => element.setAttribute('tabindex', '-1'));
 		const setPaused = (paused) => {
 			allies.dataset.labmPaused = String(paused || reduceMotion.matches);
 			pause?.setAttribute('aria-pressed', String(paused));

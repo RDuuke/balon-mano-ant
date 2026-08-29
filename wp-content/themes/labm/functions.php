@@ -203,13 +203,13 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 	if ( empty( $posts ) ) {
 		return '';
 	}
-	$list = static function () use ( $posts ) {
+	$list = static function ( $visual_copy = false ) use ( $posts ) {
 
 		foreach ( $posts as $post ) {
 			$url = get_post_meta( $post->ID, 'labm_destino_url', true );
 			echo '<li>';
 			if ( $url ) {
-				echo '<a href="' . esc_url( $url ) . '">';
+				echo '<a href="' . esc_url( $url ) . '"' . ( $visual_copy ? ' tabindex="-1"' : '' ) . '>';
 			}
 			echo get_the_post_thumbnail(
 				$post,
@@ -228,7 +228,7 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 	};
 	ob_start();
 	?>
-	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies><h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2><button type="button" data-labm-allies-pause aria-pressed="false"><?php esc_html_e( 'Pausar movimiento', 'labm' ); ?></button><ul class="labm-allies__list"><?php $list(); ?></ul><div class="labm-allies__visual" aria-hidden="true" inert><ul><?php $list(); ?></ul></div></section>
+	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies><h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2><button type="button" data-labm-allies-pause aria-pressed="false"><?php esc_html_e( 'Pausar movimiento', 'labm' ); ?></button><ul class="labm-allies__list"><?php $list(); ?></ul><div class="labm-allies__visual" aria-hidden="true" inert><ul><?php $list( true ); ?></ul></div></section>
 	
 	<?php
 	return (string) ob_get_clean();

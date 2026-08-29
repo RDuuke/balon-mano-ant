@@ -32,7 +32,7 @@ test('slider y aliados ofrecen controles accesibles y pausa', async ({ page }) =
   await slider.getByRole('button', { name: /siguiente/i }).click();
   await expect(slider.locator('[data-labm-slide-to][aria-current="true"]')).toHaveAttribute('data-labm-slide-to', '1');
   await expect(slider.locator('[data-labm-slide]').nth(1)).toBeVisible();
-  const pauseSlider = slider.getByRole('button', { name: /pausar/i });
+  const pauseSlider = slider.locator('[data-labm-slider-pause]');
   await pauseSlider.click();
   await expect(slider).toHaveAttribute('data-labm-paused', 'true');
   await expect(pauseSlider).toHaveAttribute('aria-pressed', 'true');

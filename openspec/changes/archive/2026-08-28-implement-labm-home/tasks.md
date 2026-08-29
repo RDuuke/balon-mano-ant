@@ -37,9 +37,9 @@
 
 ## Fase 6: Correctivos de VERIFY
 
-- [ ] 6.1 RED/GREEN — Añadir en `tests/php/HomeContentTest.php` una prueba que cambie de tema y verifique persistencia de slides, aliados, metadatos y permisos.
-- [ ] 6.2 RED/GREEN — Añadir una prueba aislada en `tests/php/HomePresentationTest.php` que cargue el tema sin `labm-core` y valide fallbacks sin fatal.
-- [ ] 6.3 RED/GREEN — Cubrir en `tests/php/HomeContentTest.php` publicación autorizada y rechazo de crear, publicar, editar y eliminar sin capacidades.
-- [ ] 6.4 RED/GREEN — Cubrir texto largo, medios ausentes, estados no públicos y entradas manipuladas en `tests/php/HomeContentTest.php` y `HomePresentationTest.php`.
-- [ ] 6.5 RED/GREEN — Rehacer `tests/e2e/home.spec.ts` con fixtures publicados para ejercer slider, indicadores, pausa, movimiento reducido y aliados sin salidas tempranas.
-- [ ] 6.6 Ejecutar `scripts/gate.ps1` y `scripts/browser-gate.ps1`, y remapear los 24 escenarios de `verify-report.md`.
+- [x] 6.1 RED/GREEN — Añadir en `tests/php/HomeContentTest.php` una prueba que cambie de tema y verifique persistencia de slides, aliados, metadatos y permisos.
+- [x] 6.2 RED/GREEN — Añadir una prueba aislada en `tests/php/HomePresentationTest.php` que cargue el tema sin `labm-core` y valide fallbacks sin fatal.
+- [x] 6.3 RED/GREEN — Cubrir en `tests/php/HomeContentTest.php` publicación autorizada y rechazo de crear, publicar, editar y eliminar sin capacidades.
+- [x] 6.4 RED/GREEN — Cubrir texto largo, medios ausentes, estados no públicos y entradas manipuladas en `tests/php/HomeContentTest.php` y `HomePresentationTest.php`.
+- [x] 6.5 RED/GREEN — Rehacer `tests/e2e/home.spec.ts` con fixtures publicados para ejercer slider, indicadores, pausa, movimiento reducido y aliados sin salidas tempranas.
+- [x] 6.6 Ejecutar `scripts/gate.ps1` y `scripts/browser-gate.ps1`, y remapear los 24 escenarios de `verify-report.md`.
