@@ -112,15 +112,30 @@ function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
 	if ( empty( $posts ) ) {
 		return '';
 	}
+	$fallback_images = array(
+		'assets/images/hero-balonmano-antioquia-v1.png',
+		'assets/images/hero-balonmano-seleccion-v1.png',
+	);
 	ob_start();
 	?>
 	<section class="labm-home-slider" data-labm-section="slider" data-labm-slider aria-label="<?php esc_attr_e( 'Destacados', 'labm' ); ?>">
 		<div class="labm-home-slider__items">
 			<?php
 			foreach ( $posts as $index => $post ) :
+				$thumbnail = get_the_post_thumbnail( $post, 'full', array( 'loading' => 0 === $index ? 'eager' : 'lazy' ) );
+				if ( '' === $thumbnail ) {
+					$fallback  = $fallback_images[ $index % count( $fallback_images ) ];
+					$thumbnail = sprintf(
+						'<img src="%1$s" alt="" loading="%2$s" width="%3$d" height="%4$d">',
+						esc_url( get_theme_file_uri( $fallback ) ),
+						0 === $index ? 'eager' : 'lazy',
+						0 === $index ? 1536 : 1366,
+						0 === $index ? 864 : 768
+					);
+				}
 				?>
 				<article data-labm-slide <?php echo 0 === $index ? '' : 'hidden'; ?>>
-					<?php echo get_the_post_thumbnail( $post, 'full', array( 'loading' => 0 === $index ? 'eager' : 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado. ?>
+					<?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera o sanea el marcado. ?>
 					<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 30 ) ); ?></p>
 					<?php $destination = get_post_meta( $post->ID, 'labm_destino_url', true ); ?>
@@ -134,7 +149,11 @@ function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
 		<?php
 		if ( count( $posts ) > 1 ) :
 			?>
-			<div class="labm-home-slider__controls"><button type="button" data-labm-slider-prev><?php esc_html_e( 'Anterior', 'labm' ); ?></button><button type="button" data-labm-slider-pause aria-pressed="false"><?php esc_html_e( 'Pausar', 'labm' ); ?></button><button type="button" data-labm-slider-next><?php esc_html_e( 'Siguiente', 'labm' ); ?></button></div>
+			<div class="labm-home-slider__controls">
+				<button type="button" data-labm-slider-prev aria-label="<?php esc_attr_e( 'Anterior', 'labm' ); ?>"></button>
+				<button type="button" data-labm-slider-pause data-label-pause="<?php esc_attr_e( 'Pausar', 'labm' ); ?>" data-label-resume="<?php esc_attr_e( 'Reanudar', 'labm' ); ?>" aria-label="<?php esc_attr_e( 'Pausar', 'labm' ); ?>" aria-pressed="false"><span class="screen-reader-text" data-labm-pause-label><?php esc_html_e( 'Pausar', 'labm' ); ?></span></button>
+				<button type="button" data-labm-slider-next aria-label="<?php esc_attr_e( 'Siguiente', 'labm' ); ?>"></button>
+			</div>
 			<div class="labm-home-slider__indicators" aria-label="<?php esc_attr_e( 'Elegir destacado', 'labm' ); ?>">
 			<?php
 			foreach ( $posts as $index => $post ) :

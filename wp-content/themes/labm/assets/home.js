@@ -7,6 +7,7 @@
 		const slides = Array.from(slider.querySelectorAll('[data-labm-slide]'));
 		const indicators = Array.from(slider.querySelectorAll('[data-labm-slide-to]'));
 		const pause = slider.querySelector('[data-labm-slider-pause]');
+		const pauseLabel = pause?.querySelector('[data-labm-pause-label]');
 		let current = Math.max(0, slides.findIndex((slide) => slide.getAttribute('aria-current') === 'true'));
 		let timer;
 
@@ -38,7 +39,9 @@
 			const paused = slider.dataset.labmPaused !== 'true';
 			slider.dataset.labmPaused = String(paused);
 			pause.setAttribute('aria-pressed', String(paused));
-			pause.textContent = paused ? (pause.dataset.labelResume || 'Reanudar') : (pause.dataset.labelPause || 'Pausar');
+			const label = paused ? (pause.dataset.labelResume || 'Reanudar') : (pause.dataset.labelPause || 'Pausar');
+			pause.setAttribute('aria-label', label);
+			if (pauseLabel) pauseLabel.textContent = label;
 			paused ? stop() : start();
 		});
 		reduceMotion.addEventListener?.('change', start);

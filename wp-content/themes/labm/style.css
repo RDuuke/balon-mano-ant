@@ -1,7 +1,7 @@
 /*
 Theme Name: LABM
 Description: Tema de bloques para la Liga Antioquena de Balonmano.
-Version: 0.2.0
+Version: 0.2.2
 Requires at least: 6.8
 Requires PHP: 8.3
 Text Domain: labm
@@ -27,16 +27,41 @@ body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
 :where(a, button, input, select):focus-visible { outline: 3px solid var(--labm-green-dark); outline-offset: 3px; }
 .labm-institutional-bar { padding-block: .35rem; background: var(--labm-black); color: #fff; font-size: .8rem; }
 .labm-institutional-bar p { margin: 0; }
-.labm-navigation-shell { display: flex; align-items: center; justify-content: space-between; gap: var(--labm-space-2); }
-.labm-header-cta .wp-block-button__link { background: var(--labm-green); color: var(--labm-black); font-weight: 800; }
+.labm-navigation-shell { display: flex; align-items: center; gap: .5rem; }
+.labm-header-logo { display: block; flex: 0 0 auto; width: clamp(11rem, 18vw, 14rem); line-height: 0; }
+.labm-header-logo img { display: block; width: 100%; height: auto; }
+.labm-navigation-shell > .wp-block-navigation { margin-left: auto; }
+.labm-header-cta .wp-block-button__link { padding: .85rem 1.15rem; border-radius: .125rem; background: var(--labm-green); color: var(--labm-black); font-weight: 800; line-height: 1; }
 .wp-block-navigation__container { flex-wrap: wrap; gap: .5rem 1rem; }
 .labm-section { padding: clamp(2.5rem, 7vw, 6rem) max(var(--labm-space-2), calc((100% - 1200px) / 2)); }
 .labm-section:nth-child(even) { background: var(--labm-neutral); }
 .labm-hero { min-height: min(620px, 75vh); padding: var(--labm-space-3); color: #fff; background: var(--labm-black); }
 .labm-hero a { color: var(--labm-black); }
 .labm-slider, .labm-home-slider { position: relative; overflow: hidden; }
+.labm-home-slider__items article { position: relative; min-height: min(620px, 75vh); padding: clamp(2rem, 8vw, 7rem) max(var(--labm-space-2), calc((100% - 1200px) / 2)); color: #fff; isolation: isolate; }
+.labm-home-slider__items article::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 78%) 0%, rgb(0 0 0 / 42%) 50%, rgb(0 0 0 / 18%) 100%); }
+.labm-home-slider__items article > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.labm-home-slider__items :where(h2, p) { max-width: 38rem; }
+.labm-home-slider__items h2 { margin-top: 0; font-size: clamp(2.25rem, 6vw, 5rem); line-height: .95; }
+.labm-home-slider__items article > a { display: inline-block; padding: .85rem 1.15rem; background: var(--labm-green); color: var(--labm-black); font-weight: 800; text-decoration: none; }
 .labm-slider__controls, .labm-home-slider__controls { display: flex; align-items: center; gap: .5rem; position: absolute; z-index: 2; right: var(--labm-space-2); bottom: var(--labm-space-2); }
 .labm-slider button, .labm-home-slider button, .labm-allies button { min-width: 2.75rem; min-height: 2.75rem; border: 2px solid var(--labm-black); background: #fff; color: var(--labm-black); }
+.labm-home-slider__controls button { display: grid; width: 2.5rem; min-width: 2.5rem; height: 2.5rem; min-height: 2.5rem; place-items: center; padding: 0; border: 1px solid rgb(255 255 255 / 55%); border-radius: 0; background: rgb(0 0 0 / 42%); color: #fff; cursor: pointer; }
+.labm-home-slider__controls button:hover { border-color: var(--labm-green); background: var(--labm-green); color: var(--labm-black); }
+.labm-home-slider__controls button::before { content: ""; display: block; width: .65rem; height: .65rem; }
+.labm-home-slider__controls [data-labm-slider-prev]::before { border-bottom: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg); }
+.labm-home-slider__controls [data-labm-slider-next]::before { border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
+.labm-home-slider__controls [data-labm-slider-pause]::before { width: .6rem; height: .85rem; background: linear-gradient(90deg, currentColor 0 2px, transparent 2px calc(100% - 2px), currentColor calc(100% - 2px)); }
+.labm-home-slider__controls [data-labm-slider-pause][aria-pressed="true"]::before { width: .75rem; height: .85rem; background: currentColor; clip-path: polygon(10% 0, 100% 50%, 10% 100%); }
+.labm-home-presentation { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(14rem, .75fr); align-items: center; gap: clamp(2rem, 7vw, 7rem); padding-block: clamp(3.5rem, 8vw, 7rem); }
+.labm-home-presentation__content { max-width: 44rem; }
+.labm-home-eyebrow { margin: 0 0 1rem; color: var(--labm-green-dark); font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.labm-home-presentation h1 { max-width: 14ch; margin: 0; font-size: clamp(2.25rem, 5vw, 4.25rem); line-height: .95; text-transform: uppercase; }
+.labm-home-presentation__content > p:not(.labm-home-eyebrow) { max-width: 42rem; margin-block: 1.5rem; }
+.labm-home-presentation .wp-block-button__link { border-radius: .125rem; background: var(--labm-green); color: var(--labm-black); font-size: .8rem; font-weight: 800; text-transform: uppercase; }
+.labm-home-presentation__stat { display: grid; min-height: 15rem; place-content: center; padding: 2rem; background: #000; color: #fff; text-align: center; }
+.labm-home-presentation__stat strong { color: var(--labm-green); font-size: clamp(4rem, 8vw, 6rem); line-height: 1; }
+.labm-home-presentation__stat span { max-width: 12rem; margin-top: 1rem; font-weight: 800; line-height: 1.1; }
 .labm-allies { overflow: hidden; background: var(--labm-black); color: #fff; }
 .labm-allies__list, .labm-allies__visual ul { display: flex; align-items: center; gap: var(--labm-space-3); padding: 0; list-style: none; }
 .labm-allies__visual { width: max-content; animation: labm-marquee 24s linear infinite; }
@@ -58,9 +83,11 @@ body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
 .labm-empty, .labm-notice { padding: var(--labm-space-2); border-left: .3rem solid #c28a00; background: #f6f8fa; }
 
 @media (max-width: 480px) {
-	.wp-block-site-title { width: 100%; }
+	.labm-header-logo { width: 10.5rem; }
 	.wp-block-navigation { font-size: .875rem; }
 	.labm-hero { min-height: 30rem; padding: var(--labm-space-2); }
+	.labm-home-presentation { grid-template-columns: 1fr; }
+	.labm-home-presentation__stat { min-height: 12rem; }
 	.labm-navigation-shell { align-items: flex-start; }
 	.labm-header-cta { display: none; }
 }
