@@ -105,6 +105,31 @@ final class HomePresentationTest extends TestCase {
 		}
 	}
 
+	/** El slider limita texto extremo y conserva una caja identificable sin imagen editorial. */
+	public function test_slider_presenta_contenido_extremo_sin_medio_editorial(): void {
+		register_post_type( 'labm_slide_test', array( 'public' => true ) );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'labm_slide_test',
+				'post_status'  => 'publish',
+				'post_title'   => 'Destacado sin medio',
+				'post_content' => str_repeat( 'contenido editorial extenso ', 80 ),
+				'menu_order'   => -10,
+			)
+		);
+
+		try {
+			$html = labm_theme_render_home_slider( 'labm_slide_test' );
+			self::assertStringContainsString( 'class="labm-home-slider__slide"', $html );
+			self::assertStringContainsString( 'tabindex="0"', $html );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $html );
+			self::assertLessThanOrEqual( 35, str_word_count( wp_strip_all_tags( $html ) ) );
+		} finally {
+			wp_delete_post( $post_id, true );
+			unregister_post_type( 'labm_slide_test' );
+		}
+	}
+
 	/** El patrón ejecuta la composición sin exponer secciones retiradas. */
 	public function test_patron_de_inicio_se_puede_renderizar(): void {
 		ob_start();

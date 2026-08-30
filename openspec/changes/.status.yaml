@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: ARCHIVE
-change: "implement-labm-home"
-awaiting_approval: false
-completed: true
+phase: QUICK
+change: "fix-home-slider-section-surfaces"
+awaiting_approval: true
+completed: false
 pending_tasks: []
 modified_artifacts: []
-notes: ""
+notes: "quick"

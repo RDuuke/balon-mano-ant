@@ -20,8 +20,8 @@ La portada MUST presentar, en este orden, navegación, slider principal, present
 - CUANDO un visitante anónimo abre Inicio
 - ENTONCES ese contenido no se revela ni altera la continuidad de la página.
 
-### Requirement: Slider principal accesible
-La portada SHALL ofrecer bajo el menú un slider administrable con controles operables, pausa y estado perceptible; con preferencia de movimiento reducido MUST permanecer sin transición automática.
+### Requirement: Slider principal accesible y estable
+La portada SHALL ofrecer bajo el menú un slider administrable con controles operables, pausa y estado perceptible. El slider SHALL mantener una altura exterior estable mientras el usuario navega entre ítems dentro del mismo viewport, aunque varíen el texto o los medios. El contenido esencial y los controles MUST permanecer visibles y operables, y con preferencia de movimiento reducido MUST permanecer sin transición automática.
 
 #### Scenario: Recorrido normal
 - DADO al menos dos slides publicados
@@ -37,6 +37,21 @@ La portada SHALL ofrecer bajo el menú un slider administrable con controles ope
 - DADO que no existe ningún slide publicable
 - CUANDO se carga Inicio
 - ENTONCES no aparece un control inoperable ni contenido privado o incompleto.
+
+#### Scenario: Navegación entre ítems diferentes
+- DADO ítems publicados con distintas cantidades de texto y proporciones de medios
+- CUANDO el visitante usa anterior, siguiente e indicadores
+- ENTONCES la altura exterior del slider no cambia y el ítem activo resulta perceptible.
+
+#### Scenario: Slider en anchos objetivo
+- DADO el slider a 320, 768, 1024, 1200 y 1440 px
+- CUANDO se recorren todos sus ítems
+- ENTONCES cada ancho mantiene una altura estable sin ocultar contenido esencial ni controles.
+
+#### Scenario: Contenido extremo o medio no disponible
+- DADO un ítem con contenido largo o un medio que no puede mostrarse
+- CUANDO el ítem se activa
+- ENTONCES el slider conserva su altura, ofrece una presentación legible y no bloquea la navegación.
 
 ### Requirement: Aliados Oficiales accesibles
 La portada SHALL mostrar Aliados Oficiales antes del pie con movimiento continuo de derecha a izquierda, opción de pausa y alternativa estática; las repeticiones visuales MUST NOT crear contenido accesible duplicado.
@@ -57,7 +72,7 @@ La portada SHALL mostrar Aliados Oficiales antes del pie con movimiento continuo
 - ENTONCES se omite el elemento inválido y no aparece un carrusel vacío o roto.
 
 ### Requirement: Identidad visual responsive
-La portada MUST usar la identidad verde, negro, blanco y neutros aprobada, conservar contraste y foco perceptible, y ser usable a 320, 768, 1024 y 1440 px sin desplazamiento horizontal funcionalmente innecesario.
+Las vistas públicas MUST usar la identidad verde, negro, blanco y neutros aprobada, conservar contraste y foco perceptible, y mantener las alineaciones aprobadas en Pen. Su contenido principal MUST tener un ancho máximo de 1200 px y permanecer centrado cuando el viewport sea mayor; fondos decorativos MAY extenderse al ancho completo. Los gutters y alineaciones MUST ser consistentes a 320, 768, 1024, 1200 y 1440 px.
 
 #### Scenario: Anchos objetivo
 - DADO contenido representativo en cada ancho objetivo
@@ -73,6 +88,21 @@ La portada MUST usar la identidad verde, negro, blanco y neutros aprobada, conse
 - DADO contenido largo o ampliación de texto
 - CUANDO un elemento excedería su contenedor
 - ENTONCES se adapta sin ocultar controles, superponer información ni crear desplazamiento global.
+
+#### Scenario: Pantalla mayor que el ancho máximo
+- DADO un viewport de 1440 px y contenido representativo
+- CUANDO se presenta una vista pública
+- ENTONCES el contenido principal no supera 1200 px y sus márgenes laterales son iguales.
+
+#### Scenario: Cambio entre anchos objetivo
+- DADO la misma vista a 320, 768, 1024 y 1200 px
+- CUANDO se mide la posición de sus secciones principales
+- ENTONCES respetan gutters coherentes, alineación común y controles visibles.
+
+#### Scenario: Contenido que intenta desbordar
+- DADO texto largo, medios amplios o ampliación de texto
+- CUANDO el contenido excedería el espacio disponible
+- ENTONCES no causa desplazamiento horizontal global, solapamientos ni pérdida de controles.
 
 ### Requirement: Navegación institucional
 El sitio completo SHALL ofrecer Inicio, Nosotros, Eventos y noticias, Selecciones de Piso y Playa, Documentos y Contacto desde una navegación global accesible.
@@ -129,7 +159,7 @@ El sitio SHALL mostrar actualidad cronológica con detalle, categorías, paginac
 - ENTONCES el sitio no revela su contenido ni metadatos restringidos.
 
 ### Requirement: Experiencia responsive y accesibilidad verificable
-Las vistas públicas MUST ser usables a 320, 768, 1024 y 1440 px, incluyendo teclado, foco, jerarquía, alternativas textuales y movimiento reducido. La garantía integral de cumplimiento WCAG 2.2 AA SHALL quedar diferida a un cambio futuro y MUST NOT declararse COMPLIANT en este cambio.
+Las vistas públicas MUST ser usables a 320, 768, 1024, 1200 y 1440 px, incluyendo teclado, foco, jerarquía, alternativas textuales y movimiento reducido. El centrado, los gutters, la ausencia de desborde y la estabilidad del slider MUST ser verificables mediante recorridos end-to-end en esos anchos. Una desviación geométrica mayor a 1 px entre márgenes que deban ser iguales, o cualquier cambio en la altura exterior del slider durante un recorrido, MUST fallar la comprobación correspondiente. La garantía integral de cumplimiento WCAG 2.2 AA SHALL quedar diferida a un cambio futuro y MUST NOT declararse COMPLIANT en este cambio.
 
 #### Scenario: Recorrido accesible
 - DADO una página representativa y navegación solo por teclado
@@ -145,3 +175,18 @@ Las vistas públicas MUST ser usables a 320, 768, 1024 y 1440 px, incluyendo tec
 - DADO una comprobación concreta que falla o un informe que afirma cumplimiento integral WCAG 2.2 AA
 - CUANDO se evalúa el criterio de aceptación de este cambio
 - ENTONCES falla el criterio concreto afectado o se retira la afirmación global, y la garantía integral permanece declarada como diferida.
+
+#### Scenario: Comprobación geométrica satisfactoria
+- DADO una vista pública cargada a 1440 px
+- CUANDO se miden contenedor, márgenes y ancho del viewport
+- ENTONCES el contenedor mide como máximo 1200 px y la diferencia entre márgenes no supera 1 px.
+
+#### Scenario: Recorrido responsive completo
+- DADO contenido representativo en cada ancho objetivo
+- CUANDO la comprobación recorre secciones y todos los ítems del slider
+- ENTONCES no detecta desborde global, desalineación ni variación de altura del slider.
+
+#### Scenario: Regresión geométrica
+- DADO una vista cuyo contenido excede 1200 px, queda descentrado o cuyo slider cambia de altura
+- CUANDO se ejecuta la comprobación end-to-end aplicable
+- ENTONCES el resultado falla e identifica el ancho y la condición incumplida.

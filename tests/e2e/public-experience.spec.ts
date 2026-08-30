@@ -2,6 +2,30 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const publicRoutes = ['/', '/nosotros/', '/actualidad/', '/selecciones/'];
+const targetWidths = [320, 768, 1024, 1200, 1440];
+
+test('contenido publico conserva ancho maximo, centrado y gutters coherentes', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto('/');
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await page.locator('[data-labm-section="presentacion"]').evaluate((section) => {
+      const style = getComputedStyle(section);
+      const left = Number.parseFloat(style.paddingLeft);
+      const right = Number.parseFloat(style.paddingRight);
+      return {
+        contentWidth: section.getBoundingClientRect().width - left - right,
+        left,
+        right,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry.contentWidth, `ancho de contenido a ${width}px`).toBeLessThanOrEqual(1200.5);
+    expect(Math.abs(geometry.left - geometry.right), `centrado a ${width}px`).toBeLessThanOrEqual(1);
+    expect(geometry.left, `gutter izquierdo a ${width}px`).toBeGreaterThanOrEqual(16);
+    expect(geometry.overflow, `desborde global a ${width}px`).toBe(false);
+  }
+});
 
 test('3.1 navegación global, páginas institucionales, foco y ruta ausente', async ({ page }) => {
   await page.goto('/');
@@ -62,7 +86,7 @@ test('3.3 no hay desborde, axe pasa y reduced motion se respeta', async ({ page 
 });
 
 test('portada y Selecciones conservan contenido en los anchos objetivo', async ({ page }) => {
-  for (const width of [320, 768, 1024, 1440]) {
+  for (const width of targetWidths) {
     await page.setViewportSize({ width, height: 900 });
     for (const route of ['/', '/selecciones/?modalidad=Piso', '/selecciones/?modalidad=Playa']) {
       await page.goto(route);

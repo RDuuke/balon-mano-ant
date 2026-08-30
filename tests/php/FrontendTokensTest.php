@@ -19,6 +19,9 @@ final class FrontendTokensTest extends TestCase {
 			JSON_THROW_ON_ERROR
 		);
 		$tokens     = $theme_json['settings']['custom']['labm'] ?? array();
+		self::assertSame( '1200px', $theme_json['settings']['layout']['wideSize'] ?? null );
+		self::assertSame( '1200px', $tokens['layout']['contentMax'] ?? null );
+		self::assertSame( 'clamp(1rem, 3vw, 2rem)', $tokens['layout']['gutter'] ?? null );
 		self::assertSame( 'clamp(.5rem, 1vw, .75rem)', $tokens['spacing']['small'] ?? null );
 		self::assertSame( 'clamp(1rem, 2vw, 1.5rem)', $tokens['spacing']['medium'] ?? null );
 		self::assertSame( 'clamp(1.5rem, 4vw, 3rem)', $tokens['spacing']['large'] ?? null );
@@ -33,6 +36,8 @@ final class FrontendTokensTest extends TestCase {
 	/** CSS conserva foco, grillas fluidas y contratos de pausa. */
 	public function test_css_contains_focus_and_reduced_motion_contracts(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/style.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- archivo local de fixture.
+		self::assertStringContainsString( '--labm-content-max: 1200px', $css );
+		self::assertStringContainsString( '--labm-gutter: clamp(1rem, 3vw, 2rem)', $css );
 		self::assertStringContainsString( ':focus-visible', $css );
 		self::assertStringContainsString( 'prefers-reduced-motion: reduce', $css );
 		self::assertStringContainsString( 'minmax(min(100%', $css );
