@@ -27,6 +27,63 @@ class LABM_Fixtures_Command {
 	public function load( $args, $assoc_args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$fixtures = array(
 			array(
+				'post_name'    => 'demo-labm-slide-bienvenida',
+				'post_title'   => self::MARKER . ' Slide editorial en borrador',
+				'post_content' => '<p>' . self::MARKER . ' Slide editorial de demostracion.</p>',
+				'post_type'    => 'labm_slide',
+				'post_status'  => 'draft',
+				'meta'         => array(
+					'labm_cta_texto'   => 'Conocer la Liga',
+					'labm_destino_url' => '/nosotros/',
+				),
+			),
+			array(
+				'post_name'    => 'demo-labm-slide-publicado-uno',
+				'post_title'   => self::MARKER . ' Destacado publicado uno',
+				'post_content' => '<p>' . self::MARKER . ' Primer slide publico para recorridos de navegador.</p>',
+				'post_type'    => 'labm_slide',
+				'post_status'  => 'publish',
+				'meta'         => array(
+					'labm_cta_texto'   => 'Conocer la Liga',
+					'labm_destino_url' => '/nosotros/',
+				),
+			),
+			array(
+				'post_name'    => 'demo-labm-slide-publicado-dos',
+				'post_title'   => self::MARKER . ' Destacado publicado dos',
+				'post_content' => '<p>' . self::MARKER . ' Segundo slide publico para controles e indicadores.</p>',
+				'post_type'    => 'labm_slide',
+				'post_status'  => 'publish',
+				'meta'         => array(
+					'labm_cta_texto'   => 'Ver actualidad',
+					'labm_destino_url' => '/actualidad/',
+				),
+			),
+			array(
+				'post_name'    => 'demo-labm-aliado-ejemplo',
+				'post_title'   => self::MARKER . ' Aliado editorial en borrador',
+				'post_content' => '<p>' . self::MARKER . ' Entidad ficticia sin vinculacion oficial.</p>',
+				'post_type'    => 'labm_aliado',
+				'post_status'  => 'draft',
+				'meta'         => array( 'labm_destino_url' => 'https://example.org/' ),
+			),
+			array(
+				'post_name'    => 'demo-labm-aliado-publicado-uno',
+				'post_title'   => self::MARKER . ' Aliado publicado uno',
+				'post_content' => '<p>' . self::MARKER . ' Primer aliado publico para recorridos de navegador.</p>',
+				'post_type'    => 'labm_aliado',
+				'post_status'  => 'publish',
+				'meta'         => array( 'labm_destino_url' => 'https://example.org/aliado-uno' ),
+			),
+			array(
+				'post_name'    => 'demo-labm-aliado-publicado-dos',
+				'post_title'   => self::MARKER . ' Aliado publicado dos',
+				'post_content' => '<p>' . self::MARKER . ' Segundo aliado publico para continuidad visual.</p>',
+				'post_type'    => 'labm_aliado',
+				'post_status'  => 'publish',
+				'meta'         => array( 'labm_destino_url' => 'https://example.org/aliado-dos' ),
+			),
+			array(
 				'post_name'    => 'demo-labm-inicio',
 				'post_title'   => self::MARKER . ' Inicio',
 				'post_content' => '<p>' . self::MARKER . ' Contenido de ejemplo sin datos reales.</p>',
@@ -155,7 +212,11 @@ class LABM_Fixtures_Command {
 
 		foreach ( $fixtures as $fixture ) {
 			$existing = get_page_by_path( $fixture['post_name'], OBJECT, $fixture['post_type'] );
-			$post     = array_intersect_key(
+			if ( $existing ) {
+				clean_post_cache( $existing->ID );
+				$existing = get_post( $existing->ID );
+			}
+			$post = array_intersect_key(
 				$fixture,
 				array_flip( array( 'post_name', 'post_title', 'post_content', 'post_type', 'post_status' ) )
 			);
