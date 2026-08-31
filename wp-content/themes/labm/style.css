@@ -39,7 +39,6 @@ body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
 .labm-header-cta .wp-block-button__link { padding: .85rem 1.15rem; border-radius: .125rem; background: var(--labm-green); color: var(--labm-black); font-weight: 800; line-height: 1; }
 .wp-block-navigation__container { flex-wrap: wrap; gap: .5rem 1rem; }
 .labm-section, [data-labm-section]:not([data-labm-section="slider"]) { padding: clamp(2.5rem, 7vw, 6rem) max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); }
-.labm-section:nth-child(even) { background: var(--labm-neutral); }
 .labm-hero { min-height: min(620px, 75vh); padding: var(--labm-space-3); color: #fff; background: var(--labm-black); }
 .labm-hero a { color: var(--labm-black); }
 .labm-slider, .labm-home-slider { position: relative; overflow: hidden; }
@@ -48,7 +47,7 @@ body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
 .labm-home-slider__items article::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 78%) 0%, rgb(0 0 0 / 42%) 50%, rgb(0 0 0 / 18%) 100%); }
 .labm-home-slider__items article > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .labm-home-slider__items :where(h2, p) { max-width: 38rem; }
-.labm-home-slider__items h2 { margin-top: 0; font-size: clamp(2.25rem, 6vw, 5rem); line-height: .95; }
+.labm-home-slider__items h2 { margin-top: 0; font-size: clamp(2.25rem, 4.5vw, 4rem); line-height: .95; }
 .labm-home-slider__items article > a { display: inline-block; padding: .85rem 1.15rem; background: var(--labm-green); color: var(--labm-black); font-weight: 800; text-decoration: none; }
 .labm-slider__controls, .labm-home-slider__controls { display: flex; align-items: center; gap: .5rem; position: absolute; z-index: 2; right: max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); bottom: var(--labm-gutter); min-height: 2.75rem; }
 .labm-slider button, .labm-home-slider button, .labm-allies button { min-width: 2.75rem; min-height: 2.75rem; border: 2px solid var(--labm-black); background: #fff; color: var(--labm-black); }
@@ -65,13 +64,13 @@ body { margin: 0; overflow-wrap: anywhere; color: var(--labm-black); }
 .labm-home-slider__indicators button[aria-current="true"]::before { background: var(--labm-green); }
 .labm-home-slider__indicators button:hover::before { background: #fff; }
 .labm-home-slider__indicators button[aria-current="true"]:hover::before { background: var(--labm-green); }
-.labm-home-presentation { background: #fff; }
-.labm-home-clubes { background: var(--labm-neutral); }
-.labm-home-event { background: #000; color: #fff; }
-.labm-home-event a { color: var(--labm-green); }
-.labm-home-actualidad { background: #fff; }
-.labm-home-join { background: #000; color: #fff; }
-.labm-home-join .wp-block-button__link { background: var(--labm-green); color: var(--labm-black); }
+[data-labm-section="presentacion"] { background: #fff; }
+[data-labm-section="clubes"] { background: var(--labm-neutral); }
+[data-labm-section="evento"] { background: #000; color: #fff; }
+[data-labm-section="evento"] a { color: var(--labm-green); }
+[data-labm-section="actualidad"] { background: #fff; }
+[data-labm-section="vinculacion"] { background: #000; color: #fff; }
+[data-labm-section="vinculacion"] .wp-block-button__link { background: var(--labm-green); color: var(--labm-black); }
 .labm-home-presentation { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: clamp(2rem, 7vw, 7rem); padding-block: clamp(3.5rem, 8vw, 7rem); }
 .labm-home-presentation__content { max-width: 44rem; }
 .labm-home-eyebrow { margin: 0 0 1rem; color: #53680d; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }

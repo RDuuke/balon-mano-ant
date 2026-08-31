@@ -27,6 +27,14 @@ test('slider muestra dots circulares alineados y sin desborde vertical normal', 
     })));
     expect(Math.abs(alignment[0] - alignment[1]), `alineacion de controles a ${width}px`).toBeLessThanOrEqual(1);
 
+    const contentBottom = await slider.locator('[data-labm-slide]:visible').locator(':scope > h2, :scope > p, :scope > a').evaluateAll((elements) =>
+      Math.max(...elements.map((element) => element.getBoundingClientRect().bottom)),
+    );
+    const controlBandTop = await Promise.all([controls, indicators].map((locator) => locator.evaluate((element) =>
+      element.getBoundingClientRect().top,
+    )));
+    expect(contentBottom, `contenido separado de controles a ${width}px`).toBeLessThanOrEqual(Math.min(...controlBandTop) - 8);
+
     const dotStyles = await dots.evaluateAll((elements) => elements.map((element) => {
       const hitArea = getComputedStyle(element);
       const visibleDot = getComputedStyle(element, '::before');

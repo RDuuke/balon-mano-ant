@@ -11,6 +11,8 @@ Entorno local reproducible para desarrollar el sitio de la Liga Antioqueña de B
 
 Use `docker compose stop` para detener sin borrar datos y `docker compose up -d --wait` para reiniciar. Consulte [desarrollo](docs/development.md) para diagnostico y ciclo de vida, y [pruebas](docs/testing.md) para validacion desde un entorno limpio.
 
+Para compartir artículos, páginas e imágenes entre entornos locales, genere el paquete canónico con `./scripts/content-sync.ps1 -Action Push`, inclúyalo en el commit y siga [sincronización de contenido](docs/content-sync.md). El paquete excluye usuarios y sesiones; los respaldos privados siguen fuera de Git.
+
 Los PDF presentes en `docs/` son fuentes restringidas: ningun script los lee, copia a uploads ni publica.
 
 ## Calidad, trazabilidad y rollback

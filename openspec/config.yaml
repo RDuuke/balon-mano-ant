@@ -27,6 +27,31 @@ rules:
     - Advertir antes de fusiones destructivas
 
 gates:
+  test_tiers:
+    quick_local:
+      required:
+        - Pruebas focales del área afectada
+        - Análisis estático y formato aplicables
+        - Verificación de finales de línea LF
+    verify_pr:
+      command: scripts/gate.ps1 -IncludeBrowser
+      includes:
+        - PHPUnit unitario e integración WordPress
+        - Cobertura PHP mínima de 80 por ciento
+        - PHPCS
+        - PHPStan
+        - Suite Playwright completa
+    lighthouse:
+      role: advisory_observability
+      scope: nightly_release
+      infrastructure_failure: non_blocking
+      blocking_when:
+        - release
+        - Cambios de alto impacto en rendimiento
+        - Cambios de alto impacto en assets
+        - Cambios de alto impacto en plantillas globales
+        - Cambios de alto impacto en scripts globales
+        - Cambios de alto impacto en SEO
   apply:
     tdd: 'strict'
     review_budget:
