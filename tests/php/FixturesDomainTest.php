@@ -2,7 +2,84 @@
 
 use PHPUnit\Framework\TestCase;
 
+if ( ! class_exists( 'WP_CLI' ) ) {
+	/** Doble minimo para ejecutar el comando de fixtures dentro de PHPUnit. */
+	class WP_CLI {
+		/** @var array<int, string> */
+		public static array $messages = array();
+
+		public static function warning( string $message ): void {
+			self::$messages[] = 'warning:' . $message;
+		}
+
+		public static function error( string $message ): void {
+			throw new RuntimeException( $message );
+		}
+
+		public static function success( string $message ): void {
+			self::$messages[] = 'success:' . $message;
+		}
+	}
+}
+
+$labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
+require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
+
 final class FixturesDomainTest extends TestCase {
+	/** Una imagen demo ausente no impide consultar la noticia ni deja una asociacion rota. */
+	public function test_home_news_fixture_without_available_media_remains_consultable_with_fallback(): void {
+		$slug           = 'demo-labm-noticia-convocatoria';
+		$unavailable    = 'assets/images/hero-balonmano-seleccion-v1.png';
+		$missing_asset  = static function ( $path, $file ) use ( $unavailable ) {
+			return $unavailable === $file ? dirname( $path ) . '/activo-demo-ausente.png' : $path;
+		};
+		$fixture_command = new LABM_Fixtures_Command();
+
+		add_filter( 'theme_file_path', $missing_asset, 10, 2 );
+		try {
+			$fixture_command->load( array(), array() );
+			$post = get_page_by_path( $slug, OBJECT, 'labm_actualidad' );
+			self::assertInstanceOf( WP_Post::class, $post );
+			self::assertSame( 'publish', $post->post_status );
+			self::assertSame( '', get_post_meta( $post->ID, 'labm_demo_image', true ) );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', labm_theme_home_news_media( $post, true ) );
+			self::assertStringNotContainsString( 'activo-demo-ausente.png', labm_theme_home_news_media( $post, true ) );
+		} finally {
+			remove_filter( 'theme_file_path', $missing_asset, 10 );
+			$fixture_command->load( array(), array() );
+		}
+	}
+
+	/** Las noticias de portada forman una coleccion demo completa y estable. */
+	public function test_home_news_fixtures_are_complete_categorized_and_deterministic(): void {
+		$slugs = array(
+			'demo-labm-noticia-resultado',
+			'demo-labm-noticia-convocatoria',
+			'demo-labm-noticia-clubes',
+			'demo-labm-noticia-calendario',
+			'demo-labm-noticia-formacion',
+			'demo-labm-noticia-seleccion',
+		);
+		$dates = array();
+		foreach ( $slugs as $slug ) {
+			$post = get_page_by_path( $slug, OBJECT, 'labm_actualidad' );
+			self::assertInstanceOf( WP_Post::class, $post, $slug );
+			self::assertSame( 'publish', $post->post_status, $slug );
+			self::assertStringContainsString( 'FICTICIO', $post->post_title, $slug );
+			self::assertSame( array( 'Noticias demo' ), wp_get_post_terms( $post->ID, 'labm_categoria', array( 'fields' => 'names' ) ), $slug );
+			self::assertContains(
+				get_post_meta( $post->ID, 'labm_demo_image', true ),
+				array( 'assets/images/hero-balonmano-antioquia-v1.png', 'assets/images/hero-balonmano-seleccion-v1.png' ),
+				$slug
+			);
+			$dates[] = $post->post_date;
+		}
+		self::assertCount( 6, array_unique( $dates ) );
+		$term = get_term_by( 'name', 'Noticias demo', 'labm_categoria' );
+		self::assertInstanceOf( WP_Term::class, $term );
+		self::assertSame( 6, (int) $term->count );
+	}
+
 	public function test_domain_fixtures_cover_public_draft_private_and_edge_states(): void {
 		$expected = array(
 			'demo-labm-actualidad-limite'   => array( 'labm_actualidad', 'publish' ),

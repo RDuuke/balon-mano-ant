@@ -185,8 +185,24 @@ function labm_theme_render_home_cards( $post_type, $limit, $section, $heading ) 
 	<section class="labm-home-section labm-home-<?php echo esc_attr( $section ); ?>" data-labm-section="<?php echo esc_attr( $section ); ?>"><h2><?php echo esc_html( $heading ); ?></h2><div class="labm-card-grid">
 	<?php
 	foreach ( $posts as $post ) :
+		$thumbnail = 'clubes' === $section ? get_the_post_thumbnail(
+			$post,
+			'medium',
+			array(
+				'class'   => 'labm-card__logo',
+				'loading' => 'lazy',
+				'alt'     => get_the_title( $post ),
+			)
+		) : '';
 		?>
-		<article class="labm-card"><h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h3><p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 24 ) ); ?></p></article><?php endforeach; ?>
+		<article class="labm-card<?php echo 'clubes' === $section ? ' labm-card--club' : ''; ?>">
+			<?php if ( '' !== $thumbnail ) : ?>
+				<a class="labm-card__logo-link" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( get_the_title( $post ) ); ?>"><?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado. ?></a>
+			<?php endif; ?>
+			<h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h3>
+			<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 24 ) ); ?></p>
+		</article>
+	<?php endforeach; ?>
 	</div></section>
 	<?php
 	return (string) ob_get_clean();
@@ -199,15 +215,230 @@ function labm_theme_render_home_clubs() {
 }
 
 /** Renderiza el evento editorial destacado. */
+function labm_theme_home_event_query() {
+
+	return new WP_Query(
+		array(
+			'post_type'      => 'labm_actualidad',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'meta_key'       => 'labm_fecha_evento', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_compare'   => 'EXISTS',
+			'orderby'        => array(
+				'meta_value' => 'ASC', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'ID'         => 'ASC',
+			),
+			'no_found_rows'  => true,
+		)
+	);
+}
+
+/** Renderiza el evento editorial destacado. */
 function labm_theme_render_home_event() {
 
-	return labm_theme_render_home_cards( 'labm_actualidad', 1, 'evento', __( 'Evento destacado', 'labm' ) );
+	$posts = post_type_exists( 'labm_actualidad' ) ? labm_theme_home_event_query()->posts : array();
+	if ( empty( $posts ) ) {
+		return '';
+	}
+	$post       = $posts[0];
+	$event_date = get_post_meta( $post->ID, 'labm_fecha_evento', true );
+	$timestamp  = $event_date ? strtotime( $event_date ) : false;
+	$thumbnail  = get_the_post_thumbnail(
+		$post,
+		'full',
+		array(
+			'class'   => 'labm-featured-event__image',
+			'loading' => 'lazy',
+			'alt'     => get_the_title( $post ),
+		)
+	);
+	ob_start();
+	?>
+	<section class="labm-featured-event" data-labm-section="evento">
+		<div class="labm-featured-event__media"><?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado. ?></div>
+		<div class="labm-featured-event__content">
+			<p class="labm-featured-event__eyebrow"><?php esc_html_e( 'Evento destacado', 'labm' ); ?></p>
+			<?php if ( $timestamp ) : ?>
+				<time class="labm-featured-event__date" datetime="<?php echo esc_attr( $event_date ); ?>"><strong><?php echo esc_html( wp_date( 'd', $timestamp ) ); ?></strong><span><?php echo esc_html( wp_date( 'M', $timestamp ) ); ?><br><?php echo esc_html( wp_date( 'Y', $timestamp ) ); ?></span></time>
+			<?php endif; ?>
+			<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
+			<p class="labm-featured-event__summary"><?php echo esc_html( $post->post_excerpt ? $post->post_excerpt : wp_trim_words( wp_strip_all_tags( $post->post_content ), 20 ) ); ?></p>
+			<a class="labm-featured-event__cta" href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php esc_html_e( 'Ver evento', 'labm' ); ?></a>
+		</div>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/** Renderiza actualidad publicada. */
+function labm_theme_home_news_query() {
+
+	return new WP_Query(
+		array(
+			'post_type'      => 'labm_actualidad',
+			'post_status'    => 'publish',
+			'posts_per_page' => 4,
+			'orderby'        => array(
+				'date' => 'DESC',
+				'ID'   => 'DESC',
+			),
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'relation' => 'OR',
+				array(
+					'key'     => 'labm_fecha_evento',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'labm_fecha_evento',
+					'value'   => '',
+					'compare' => '=',
+				),
+			),
+			'no_found_rows'  => true,
+		)
+	);
+}
+
+/**
+ * Devuelve la URL segura del archivo de noticias.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @return string
+ */
+function labm_theme_home_news_archive_url( $post_type = 'labm_actualidad' ) {
+
+	if ( ! post_type_exists( $post_type ) ) {
+		return '';
+	}
+	$url = get_post_type_archive_link( $post_type );
+	return $url ? esc_url_raw( $url ) : '';
+}
+
+/**
+ * Compone el medio seguro de una noticia de portada.
+ *
+ * @param WP_Post $post Publicacion.
+ * @param bool    $featured Indica la pieza destacada.
+ * @return string
+ */
+function labm_theme_home_news_media( $post, $featured = false ) {
+
+	$class     = $featured ? 'labm-home-news__featured-image' : 'labm-home-news__side-image';
+	$thumbnail = get_the_post_thumbnail(
+		$post,
+		$featured ? 'large' : 'medium_large',
+		array(
+			'class'   => $class,
+			'loading' => $featured ? 'eager' : 'lazy',
+		)
+	);
+	if ( '' !== $thumbnail ) {
+		return $thumbnail;
+	}
+
+	$allowed = array(
+		'assets/images/hero-balonmano-antioquia-v1.png',
+		'assets/images/hero-balonmano-seleccion-v1.png',
+	);
+	$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
+	if ( ! in_array( $path, $allowed, true ) ) {
+		$path = $allowed[ $featured ? 0 : 1 ];
+	}
+
+	return sprintf(
+		'<img class="%1$s" src="%2$s" alt="" loading="%3$s" width="%4$d" height="%5$d">',
+		esc_attr( $class ),
+		esc_url( get_theme_file_uri( $path ) ),
+		$featured ? 'eager' : 'lazy',
+		$featured ? 1536 : 1366,
+		$featured ? 864 : 768
+	);
+}
+
+/**
+ * Compone categoria y fecha de una noticia.
+ *
+ * @param WP_Post $post Publicacion.
+ * @return string
+ */
+function labm_theme_home_news_meta( $post ) {
+
+	$terms    = wp_get_post_terms( $post->ID, 'labm_categoria', array( 'fields' => 'names' ) );
+	$category = ! is_wp_error( $terms ) && ! empty( $terms ) ? $terms[0] : '';
+	$date     = get_post_datetime( $post );
+	$parts    = array();
+	if ( $category ) {
+		$parts[] = '<span>' . esc_html( $category ) . '</span>';
+	}
+	if ( $date ) {
+		$parts[] = '<time datetime="' . esc_attr( $date->format( DATE_W3C ) ) . '">' . esc_html( wp_date( 'j M Y', $date->getTimestamp() ) ) . '</time>';
+	}
+	return implode( '<span aria-hidden="true"> · </span>', $parts );
+}
+
+/**
+ * Oculta el marcador tecnico de fixtures en el titulo visible.
+ *
+ * @param WP_Post $post Publicacion.
+ * @return string
+ */
+function labm_theme_home_news_title( $post ) {
+
+	$title = get_the_title( $post );
+	$clean = preg_replace( '/^\[DEMO LABM — FICTICIO\]\s*/u', '', $title );
+	return is_string( $clean ) && '' !== $clean ? $clean : $title;
 }
 
 /** Renderiza actualidad publicada. */
 function labm_theme_render_home_news() {
 
-	return labm_theme_render_home_cards( 'labm_actualidad', 3, 'actualidad', __( 'Actualidad', 'labm' ) );
+	if ( ! post_type_exists( 'labm_actualidad' ) ) {
+		return '';
+	}
+	$posts = labm_theme_home_news_query()->posts;
+	if ( empty( $posts ) ) {
+		return '';
+	}
+	$featured    = array_shift( $posts );
+	$archive_url = labm_theme_home_news_archive_url();
+	ob_start();
+	?>
+	<section class="labm-home-section labm-home-news" data-labm-section="actualidad">
+		<header class="labm-home-news__header">
+			<h2><?php esc_html_e( 'Últimas noticias', 'labm' ); ?></h2>
+			<?php if ( $archive_url ) : ?>
+				<a class="labm-home-news__archive" href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Ver toda la actualidad', 'labm' ); ?> <span aria-hidden="true">→</span></a>
+			<?php endif; ?>
+		</header>
+		<div class="labm-home-news__layout">
+			<article class="labm-home-news__featured">
+				<a class="labm-home-news__article-link" href="<?php echo esc_url( get_permalink( $featured ) ); ?>">
+					<?php echo labm_theme_home_news_media( $featured, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+					<span class="labm-home-news__featured-overlay">
+						<span class="labm-home-news__meta"><?php echo wp_kses_post( labm_theme_home_news_meta( $featured ) ); ?></span>
+						<h3><?php echo esc_html( labm_theme_home_news_title( $featured ) ); ?></h3>
+					</span>
+				</a>
+			</article>
+			<?php if ( ! empty( $posts ) ) : ?>
+				<div class="labm-home-news__side-list">
+					<?php foreach ( $posts as $post ) : ?>
+						<article class="labm-home-news__side-card">
+							<a class="labm-home-news__article-link" href="<?php echo esc_url( get_permalink( $post ) ); ?>">
+								<span class="labm-home-news__side-media"><?php echo labm_theme_home_news_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?></span>
+								<span class="labm-home-news__side-content">
+									<span class="labm-home-news__meta"><?php echo wp_kses_post( labm_theme_home_news_meta( $post ) ); ?></span>
+									<h3><?php echo esc_html( labm_theme_home_news_title( $post ) ); ?></h3>
+								</span>
+							</a>
+						</article>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+	return (string) ob_get_clean();
 }
 
 /**

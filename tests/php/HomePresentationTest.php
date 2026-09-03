@@ -9,6 +9,200 @@ use PHPUnit\Framework\TestCase;
 
 /** Verifica consultas, fallbacks y composición de la portada. */
 final class HomePresentationTest extends TestCase {
+	/** Conserva y restaura el estado de las noticias existentes durante escenarios acotados. */
+	private function with_existing_news_unpublished( callable $callback ): void {
+		$existing = get_posts(
+			array(
+				'post_type'      => 'labm_actualidad',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			)
+		);
+		foreach ( $existing as $post_id ) {
+			wp_update_post( array( 'ID' => $post_id, 'post_status' => 'draft' ) );
+		}
+		try {
+			$callback();
+		} finally {
+			foreach ( $existing as $post_id ) {
+				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ) );
+			}
+		}
+	}
+
+	/** Una coleccion de una a tres noticias no duplica tarjetas ni deja huecos. */
+	public function test_home_news_renders_partial_collection_with_stable_hierarchy(): void {
+		$this->with_existing_news_unpublished(
+			function (): void {
+				$created = array();
+				try {
+					foreach ( array( 'Primera', 'Segunda', 'Tercera' ) as $index => $title ) {
+						$created[] = wp_insert_post(
+							array(
+								'post_type'   => 'labm_actualidad',
+								'post_status' => 'publish',
+								'post_title'  => $title,
+								'post_date'   => '2020-09-0' . ( 3 - $index ) . ' 12:00:00',
+							)
+						);
+					}
+					$html = labm_theme_render_home_news();
+					self::assertSame( 1, substr_count( $html, 'class="labm-home-news__featured"' ) );
+					self::assertSame( 2, substr_count( $html, 'class="labm-home-news__side-card"' ) );
+					self::assertSame( 3, substr_count( $html, 'class="labm-home-news__article-link"' ) );
+					self::assertMatchesRegularExpression( '/labm-home-news__featured.*>Primera<\/h3>/s', $html );
+					self::assertSame( 1, substr_count( $html, '>Primera</h3>' ) );
+					self::assertStringNotContainsString( 'labm-home-news__side-card"></article>', $html );
+				} finally {
+					foreach ( $created as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
+				}
+			}
+		);
+	}
+
+	/** Sin noticias publicadas se omite por completo la seccion. */
+	public function test_home_news_omits_section_when_collection_is_empty(): void {
+		$this->with_existing_news_unpublished(
+			function (): void {
+				self::assertSame( 0, labm_theme_home_news_query()->post_count );
+				self::assertSame( '', labm_theme_render_home_news() );
+			}
+		);
+	}
+
+	/** El render omite el CTA completo cuando el archivo no tiene URL valida. */
+	public function test_home_news_render_omits_archive_cta_when_url_is_unavailable(): void {
+		$without_archive = static fn() => '';
+		add_filter( 'post_type_archive_link', $without_archive );
+		try {
+			$html = labm_theme_render_home_news();
+			self::assertStringContainsString( 'class="labm-home-news__featured"', $html );
+			self::assertStringNotContainsString( 'class="labm-home-news__archive"', $html );
+			self::assertStringContainsString( 'class="labm-home-news__article-link"', $html );
+		} finally {
+			remove_filter( 'post_type_archive_link', $without_archive );
+		}
+	}
+
+	/** Los medios priorizan miniatura, meta permitida y fallback; la categoria puede faltar. */
+	public function test_home_news_media_priority_and_missing_category_are_safe(): void {
+		$post_id       = wp_insert_post( array( 'post_type' => 'labm_actualidad', 'post_status' => 'publish', 'post_title' => 'Prioridad visual' ) );
+		$attachment_id = wp_insert_attachment( array( 'post_title' => 'Miniatura editorial', 'post_mime_type' => 'image/png', 'post_status' => 'inherit' ) );
+		$image_source  = static fn() => array( 'https://example.test/miniatura-editorial.png', 10, 10, false );
+		try {
+			wp_update_attachment_metadata( $attachment_id, array( 'width' => 10, 'height' => 10, 'file' => '2026/09/miniatura-editorial.png' ) );
+			update_post_meta( $post_id, 'labm_demo_image', 'assets/images/hero-balonmano-antioquia-v1.png' );
+			update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
+			add_filter( 'wp_get_attachment_image_src', $image_source );
+			$thumbnail = labm_theme_home_news_media( get_post( $post_id ), true );
+			self::assertStringContainsString( 'miniatura-editorial.png', $thumbnail );
+			self::assertStringNotContainsString( 'hero-balonmano-antioquia-v1.png', $thumbnail );
+
+			delete_post_thumbnail( $post_id );
+			$meta_media = labm_theme_home_news_media( get_post( $post_id ), true );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $meta_media );
+
+			update_post_meta( $post_id, 'labm_demo_image', 'https://example.org/insegura.png' );
+			$fallback = labm_theme_home_news_media( get_post( $post_id ), false );
+			self::assertStringContainsString( 'hero-balonmano-seleccion-v1.png', $fallback );
+			self::assertStringNotContainsString( 'example.org', $fallback );
+			self::assertStringNotContainsString( '<span>', labm_theme_home_news_meta( get_post( $post_id ) ) );
+			self::assertStringContainsString( '<time ', labm_theme_home_news_meta( get_post( $post_id ) ) );
+		} finally {
+			remove_filter( 'wp_get_attachment_image_src', $image_source );
+			wp_delete_attachment( $attachment_id, true );
+			wp_delete_post( $post_id, true );
+		}
+	}
+	/** Noticias y eventos usan consultas publicas, estables y excluyentes. */
+	public function test_home_news_query_orders_limits_and_excludes_events(): void {
+		$created = array();
+		try {
+			$event_id  = wp_insert_post(
+				array(
+					'post_type'   => 'labm_actualidad',
+					'post_status' => 'publish',
+					'post_title'  => 'Evento aislado',
+					'post_date'   => '2026-09-01 12:00:00',
+				)
+			);
+			$created[] = $event_id;
+			update_post_meta( $event_id, 'labm_fecha_evento', '2026-12-12' );
+
+			foreach ( array( '27', '28', '29', '30', '31' ) as $day ) {
+				$created[] = wp_insert_post(
+					array(
+						'post_type'    => 'labm_actualidad',
+						'post_status'  => 'publish',
+						'post_title'   => 'Noticia orden ' . $day,
+						'post_content' => 'Contenido de prueba.',
+						'post_date'    => '2026-08-' . $day . ' 12:00:00',
+					)
+				);
+			}
+			$created[] = wp_insert_post(
+				array(
+					'post_type'   => 'labm_actualidad',
+					'post_status' => 'draft',
+					'post_title'  => 'Noticia privada del home',
+					'post_date'   => '2026-09-03 10:00:00',
+				)
+			);
+
+			$query = labm_theme_home_news_query();
+			self::assertSame( 4, $query->post_count );
+			self::assertSame(
+				array( 'Noticia orden 31', 'Noticia orden 30', 'Noticia orden 29', 'Noticia orden 28' ),
+				array_map( 'get_the_title', $query->posts )
+			);
+			self::assertNotContains( $event_id, wp_list_pluck( $query->posts, 'ID' ) );
+			$event_query = labm_theme_home_event_query();
+			self::assertSame( 1, $event_query->post_count );
+			self::assertNotEmpty( get_post_meta( $event_query->posts[0]->ID, 'labm_fecha_evento', true ) );
+			self::assertSame( array(), array_intersect( wp_list_pluck( $query->posts, 'ID' ), wp_list_pluck( $event_query->posts, 'ID' ) ) );
+		} finally {
+			foreach ( $created as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+		}
+	}
+
+	/** La seccion compone una noticia destacada y hasta tres laterales. */
+	public function test_home_news_renders_featured_sidebar_metadata_and_archive_cta(): void {
+		$html = labm_theme_render_home_news();
+		self::assertStringContainsString( 'class="labm-home-news__featured"', $html );
+		self::assertSame( 3, substr_count( $html, 'class="labm-home-news__side-card"' ) );
+		self::assertStringContainsString( 'class="labm-home-news__archive"', $html );
+		self::assertStringContainsString( '<time ', $html );
+		self::assertStringContainsString( 'Noticias demo', $html );
+		self::assertSame( 4, substr_count( $html, 'class="labm-home-news__article-link"' ) );
+		self::assertStringNotContainsString( '[DEMO LABM — FICTICIO]', $html );
+	}
+
+	/** CTA y medios degradan sin emitir destinos o rutas inseguras. */
+	public function test_home_news_helpers_omit_invalid_cta_and_use_safe_media_fallbacks(): void {
+		self::assertSame( '', labm_theme_home_news_archive_url( 'tipo_inexistente' ) );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_actualidad',
+				'post_status' => 'publish',
+				'post_title'  => 'Noticia sin medio seguro',
+			)
+		);
+		try {
+			update_post_meta( $post_id, 'labm_demo_image', '../fuera.png' );
+			$media = labm_theme_home_news_media( get_post( $post_id ), false );
+			self::assertStringNotContainsString( '../fuera.png', $media );
+			self::assertStringContainsString( 'hero-balonmano-seleccion-v1.png', $media );
+			self::assertStringContainsString( 'alt=""', $media );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
+	}
+
 	/** Las consultas públicas conservan estado, orden y límite. */
 	public function test_consultas_de_portada_solo_publican_en_orden_editorial_y_con_limite(): void {
 		self::assertTrue( function_exists( 'labm_theme_home_query' ) );
@@ -95,8 +289,12 @@ final class HomePresentationTest extends TestCase {
 			self::assertStringContainsString( 'aria-hidden="true"', $allies );
 			self::assertStringContainsString( 'Aliado público', $allies );
 
-			self::assertStringContainsString( 'data-labm-section="clubes"', labm_theme_render_home_clubs() );
-			self::assertStringContainsString( 'data-labm-section="evento"', labm_theme_render_home_event() );
+			$clubs = labm_theme_render_home_clubs();
+			self::assertStringContainsString( 'data-labm-section="clubes"', $clubs );
+			self::assertStringContainsString( 'labm-card--club', $clubs );
+			$event = labm_theme_render_home_event();
+			self::assertStringContainsString( 'data-labm-section="evento"', $event );
+			self::assertStringContainsString( 'labm-featured-event__cta', $event );
 			self::assertStringContainsString( 'data-labm-section="actualidad"', labm_theme_render_home_news() );
 		} finally {
 			foreach ( $created as $post_id ) {
