@@ -3,6 +3,71 @@ import AxeBuilder from '@axe-core/playwright';
 
 const targetWidths = [320, 768, 1024, 1200, 1440];
 
+test('ultimas noticias compone una destacada, tres laterales y navegacion editorial', async ({ page }) => {
+  await page.goto('/');
+  const news = page.locator('[data-labm-section="actualidad"]');
+  await expect(news.getByRole('heading', { name: /últimas noticias/i })).toBeVisible();
+  await expect(news.locator('.labm-home-news__featured')).toHaveCount(1);
+  await expect(news.locator('.labm-home-news__side-card')).toHaveCount(3);
+  await expect(news.locator('.labm-home-news__article-link')).toHaveCount(4);
+  await expect(news.getByRole('link', { name: /ver toda la actualidad/i })).toHaveAttribute('href', /actualidad/);
+  await expect(news.locator('time')).toHaveCount(4);
+  await expect(news).not.toContainText('[DEMO LABM — FICTICIO]');
+});
+
+test('ultimas noticias conserva orden y geometria responsive sin desborde', async ({ page }) => {
+  await page.goto('/');
+  const news = page.locator('[data-labm-section="actualidad"]');
+  const width = page.viewportSize()?.width ?? 0;
+  const geometry = await news.evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollWidth: element.scrollWidth,
+  }));
+  expect(geometry.scrollWidth).toBe(geometry.clientWidth);
+
+  const layoutColumns = await news.locator('.labm-home-news__layout').evaluate((element) =>
+    getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+  );
+  expect(layoutColumns).toBe(width >= 1024 ? 2 : 1);
+
+  const sideDisplay = await news.locator('.labm-home-news__side-card').first().locator('a').evaluate((element) =>
+    getComputedStyle(element).display,
+  );
+  expect(sideDisplay).toBe('grid');
+
+  await news.locator('.labm-home-news__article-link').first().focus();
+  await expect(news.locator('.labm-home-news__article-link').first()).toBeFocused();
+});
+
+test('ultimas noticias conserva orden secuencial y foco visible a 320 pixeles', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto('/');
+  const news = page.locator('[data-labm-section="actualidad"]');
+  const links = news.locator('a');
+  const expectedHrefs = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href')));
+
+  await links.first().focus();
+  for (let index = 0; index < expectedHrefs.length; index += 1) {
+    const focused = page.locator(':focus');
+    await expect(focused).toHaveAttribute('href', expectedHrefs[index] ?? '');
+    const focusStyle = await focused.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        outlineStyle: style.outlineStyle,
+        outlineWidth: Number.parseFloat(style.outlineWidth),
+      };
+    });
+    expect(focusStyle.outlineStyle).not.toBe('none');
+    expect(focusStyle.outlineWidth).toBeGreaterThanOrEqual(2);
+    if (index < expectedHrefs.length - 1) {
+      await page.keyboard.press('Tab');
+    }
+  }
+
+  const geometry = await news.evaluate((element) => ({ clientWidth: element.clientWidth, scrollWidth: element.scrollWidth }));
+  expect(geometry.scrollWidth).toBe(geometry.clientWidth);
+});
+
 test('slider muestra dots circulares alineados y sin desborde vertical normal', async ({ page }) => {
   for (const width of [320, 390, 768, 1200, 1440]) {
     await page.setViewportSize({ width, height: 900 });
