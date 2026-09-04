@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: ARCHIVE
-change: "home-ultimas-noticias"
+phase: TASKS
+change: "home-aliados-logos"
 awaiting_approval: false
-completed: true
-pending_tasks: []
+completed: false
+pending_tasks: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2", "5.3", "5.4"]
 modified_artifacts: []
-notes: "Cambio archivado tras sincronizar las especificaciones principales de fixtures y noticias de portada. Se conservan advertencias TDD historicas no bloqueantes en el expediente."
+notes: "Checklist TDD completo para administración, recursos demo, fixtures, selección, marquee accesible, pruebas y gates. Lista para APPLY."

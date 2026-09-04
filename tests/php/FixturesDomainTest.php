@@ -26,6 +26,33 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class FixturesDomainTest extends TestCase {
+	/** Los aliados demo reutilizan seis adjuntos PNG ordenados al recargar fixtures. */
+	public function test_home_allies_fixtures_are_image_only_ordered_and_idempotent(): void {
+		$command = new LABM_Fixtures_Command();
+		$slugs   = array( 'arco-comun', 'brote-activo', 'cumbre-viva', 'mosaico-unido', 'rio-dinamico', 'sol-abierto' );
+		$first   = array();
+
+		$command->load( array(), array() );
+		foreach ( $slugs as $order => $slug ) {
+			$post = get_page_by_path( 'demo-labm-aliado-' . $slug, OBJECT, 'labm_aliado' );
+			self::assertInstanceOf( WP_Post::class, $post, $slug );
+			self::assertSame( 'publish', $post->post_status );
+			self::assertSame( $order, (int) $post->menu_order );
+			self::assertSame( '', $post->post_content );
+			self::assertSame( '', get_post_meta( $post->ID, 'labm_destino_url', true ) );
+			$attachment_id = get_post_thumbnail_id( $post->ID );
+			self::assertGreaterThan( 0, $attachment_id, $slug );
+			self::assertSame( 'image/png', get_post_mime_type( $attachment_id ) );
+			$first[ $slug ] = array( $post->ID, $attachment_id );
+		}
+
+		$command->load( array(), array() );
+		foreach ( $slugs as $slug ) {
+			$post = get_page_by_path( 'demo-labm-aliado-' . $slug, OBJECT, 'labm_aliado' );
+			self::assertSame( $first[ $slug ], array( $post->ID, get_post_thumbnail_id( $post->ID ) ) );
+		}
+	}
+
 	/** Una imagen demo ausente no impide consultar la noticia ni deja una asociacion rota. */
 	public function test_home_news_fixture_without_available_media_remains_consultable_with_fallback(): void {
 		$slug           = 'demo-labm-noticia-convocatoria';

@@ -449,40 +449,90 @@ function labm_theme_render_home_news() {
  */
 function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 
-	$posts = labm_theme_home_posts( $post_type, 12 );
-	if ( empty( $posts ) ) {
+	if ( ! post_type_exists( $post_type ) ) {
 		return '';
 	}
-	$list = static function ( $visual_copy = false ) use ( $posts ) {
-
-		foreach ( $posts as $post ) {
-			$url = get_post_meta( $post->ID, 'labm_destino_url', true );
-			echo '<li>';
-			if ( $url ) {
-				echo '<a href="' . esc_url( $url ) . '"' . ( $visual_copy ? ' tabindex="-1"' : '' ) . '>';
-			}
+	$query = new WP_Query(
+		array(
+			'post_type'      => sanitize_key( $post_type ),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => array(
+				'menu_order' => 'ASC',
+				'title'      => 'ASC',
+				'ID'         => 'ASC',
+			),
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+		)
+	);
+	$logos = array();
+	foreach ( $query->posts as $post ) {
+		$title         = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+		$attachment_id = get_post_thumbnail_id( $post->ID );
+		$image         = $attachment_id ? wp_get_attachment_image_src( $attachment_id, 'medium' ) : false;
+		if ( '' === $title || ! $image ) {
+			continue;
+		}
+		$logos[] = array(
+			'post'  => $post,
+			'title' => $title,
+		);
+		if ( 12 === count( $logos ) ) {
+			break;
+		}
+	}
+	if ( empty( $logos ) ) {
+		return '';
+	}
+	$list = static function () use ( $logos ) {
+		foreach ( $logos as $logo ) {
+			$clean_title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $logo['title'] );
+			$title       = null === $clean_title || '' === $clean_title ? $logo['title'] : $clean_title;
+			echo '<li class="labm-allies__item">';
 			echo get_the_post_thumbnail(
-				$post,
+				$logo['post'],
 				'medium',
 				array(
-					'alt'     => get_the_title( $post ),
+					'alt'     => sanitize_text_field( $title ),
 					'loading' => 'lazy',
+					'class'   => 'labm-allies__logo',
 				)
 			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<span>' . esc_html( get_the_title( $post ) ) . '</span>';
-			if ( $url ) {
-				echo '</a>';
-			}
 			echo '</li>';
 		}
 	};
 	ob_start();
 	?>
-	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies><h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2><button type="button" data-labm-allies-pause aria-pressed="false"><?php esc_html_e( 'Pausar movimiento', 'labm' ); ?></button><ul class="labm-allies__list"><?php $list(); ?></ul><div class="labm-allies__visual" aria-hidden="true" inert><ul><?php $list( true ); ?></ul></div></section>
+	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies>
+		<h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2>
+		<div class="labm-allies__viewport">
+			<div class="labm-allies__track">
+				<ul class="labm-allies__list"><?php $list(); ?></ul>
+				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true" inert><?php $list(); ?></ul>
+			</div>
+		</div>
+	</section>
 	
 	<?php
 	return (string) ob_get_clean();
 }
+
+/**
+ * Permite el atributo booleano inert en la réplica no accesible del marquee.
+ *
+ * @param array  $tags Etiquetas y atributos permitidos.
+ * @param string $context Contexto de saneado.
+ * @return array
+ */
+function labm_theme_allow_inert_attribute( $tags, $context ) {
+	if ( 'post' === $context && isset( $tags['ul'] ) ) {
+		$tags['ul']['inert'] = true;
+	}
+	return $tags;
+}
+add_filter( 'wp_kses_allowed_html', 'labm_theme_allow_inert_attribute', 10, 2 );
+
 /**
  * Marca semanticamente el destino activo de la navegacion global.
  *

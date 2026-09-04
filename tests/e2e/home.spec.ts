@@ -144,6 +144,50 @@ test('secciones del inicio usan las superficies exactas del diseño', async ({ p
   }
 });
 
+test('vinculacion reproduce la composicion editorial y se adapta sin desborde', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto('/');
+  const join = page.locator('[data-labm-section="vinculacion"]');
+  const heading = join.getByRole('heading', { name: /haz parte del balonmano antioqueño/i });
+  const copy = join.locator(':scope > p');
+  const buttons = join.locator(':scope > .wp-block-buttons');
+  const cta = join.getByRole('link', { name: /quiero vincularme/i });
+
+  await expect(cta).toHaveAttribute('href', '/contacto/');
+  await expect(heading).toHaveCSS('text-transform', 'uppercase');
+  await expect(cta).toHaveCSS('text-transform', 'uppercase');
+
+  const desktop = await join.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      columns: style.gridTemplateColumns.split(' ').filter(Boolean).length,
+      accent: getComputedStyle(element, '::before').backgroundColor,
+      overflow: element.scrollWidth - element.clientWidth,
+    };
+  });
+  expect(desktop.columns).toBe(2);
+  expect(desktop.accent).toBe('rgb(174, 205, 37)');
+  expect(desktop.overflow).toBe(0);
+
+  const positions = await Promise.all([heading, copy, buttons].map((locator) => locator.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, top: rect.top };
+  })));
+  expect(Math.abs(positions[0].left - positions[1].left)).toBeLessThanOrEqual(1);
+  expect(positions[2].left).toBeGreaterThan(positions[0].right);
+
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.reload();
+  const mobile = await join.evaluate((element) => ({
+    columns: getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+    overflow: element.scrollWidth - element.clientWidth,
+  }));
+  expect(mobile.columns).toBe(1);
+  expect(mobile.overflow).toBe(0);
+  await cta.focus();
+  await expect(cta).toBeFocused();
+});
+
 test('slider mantiene altura al usar anterior, siguiente e indicadores', async ({ page }) => {
   test.setTimeout(90_000);
   for (const width of targetWidths) {
@@ -186,7 +230,7 @@ test('inicio conserva el orden aprobado y excluye secciones retiradas', async ({
   await expect(page.getByRole('heading', { name: /balonmano de piso|balonmano playa|horarios|escenarios/i })).toHaveCount(0);
 });
 
-test('slider y aliados ofrecen controles accesibles y pausa', async ({ page }) => {
+test('slider conserva controles y aliados funciona como marquee solo de logos', async ({ page }) => {
   await page.goto('/');
   const slider = page.locator('[data-labm-slider]');
   await expect(slider).toBeVisible();
@@ -206,16 +250,18 @@ test('slider y aliados ofrecen controles accesibles y pausa', async ({ page }) =
   const allies = page.locator('[data-labm-allies]');
   await expect(allies).toBeVisible();
   await expect(allies.getByRole('heading', { name: /aliados oficiales/i })).toBeVisible();
-  await expect(allies.locator('.labm-allies__list > li')).toHaveCount(2);
-  await expect(allies.getByText(/aliado editorial en borrador/i)).toHaveCount(0);
-  const visualCopy = allies.locator('.labm-allies__visual');
-  await expect(visualCopy).toHaveAttribute('aria-hidden', 'true');
-  await expect(visualCopy).toHaveAttribute('inert', '');
-  await expect(visualCopy).toHaveCSS('animation-name', 'labm-marquee');
-  await expect(visualCopy).toHaveCSS('animation-direction', 'normal');
-  await allies.getByRole('button', { name: /pausar/i }).click();
-  await expect(allies).toHaveAttribute('data-labm-paused', 'true');
-  await expect(visualCopy).toHaveCSS('animation-play-state', 'paused');
+  const groups = allies.locator('.labm-allies__list');
+  await expect(groups).toHaveCount(2);
+  await expect(groups.first().locator('img')).toHaveCount(6);
+  await expect(groups.nth(1)).toHaveAttribute('aria-hidden', 'true');
+  await expect(groups.nth(1)).toHaveAttribute('inert', '');
+  expect(await groups.first().locator('img').evaluateAll((images) => images.map((image) => image.getAttribute('src'))))
+    .toEqual(await groups.nth(1).locator('img').evaluateAll((images) => images.map((image) => image.getAttribute('src'))));
+  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-name', 'labm-marquee');
+  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-duration', '24s');
+  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-timing-function', 'linear');
+  await expect(allies.locator('a, button, input, select')).toHaveCount(0);
+  await expect(allies.locator('.labm-allies__item')).toHaveText(['', '', '', '', '', '', '', '', '', '', '', '']);
 });
 
 test('slider y aliados quedan estaticos con movimiento reducido', async ({ page }) => {
@@ -225,10 +271,28 @@ test('slider y aliados quedan estaticos con movimiento reducido', async ({ page 
   const allies = page.locator('[data-labm-allies]');
   await expect(slider).toBeVisible();
   await expect(allies).toBeVisible();
-  await expect(allies).toHaveAttribute('data-labm-paused', 'true');
-  await expect(allies.locator('.labm-allies__visual')).toHaveCSS('animation-name', 'none');
+  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-name', 'none');
+  await expect(allies.locator('.labm-allies__replica')).toHaveCSS('display', 'none');
+  await expect(allies.locator('.labm-allies__list').first()).toHaveCSS('flex-wrap', 'wrap');
   const active = slider.locator('[data-labm-slide-to][aria-current="true"]');
   await expect(active).toHaveAttribute('data-labm-slide-to', '0');
   await page.waitForTimeout(7100);
   await expect(active).toHaveAttribute('data-labm-slide-to', '0');
+});
+
+test('aliados mantiene proporción, alt y ancho sin desborde', async ({ page }) => {
+  for (const width of [320, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const allies = page.locator('[data-labm-allies]');
+    const geometry = await allies.evaluate((element) => ({ clientWidth: element.clientWidth, scrollWidth: element.scrollWidth }));
+    expect(geometry.scrollWidth, `desborde a ${width}px`).toBe(geometry.clientWidth);
+    const logos = allies.locator('.labm-allies__list').first().locator('img');
+    for (const logo of await logos.all()) {
+      await expect(logo).toHaveAttribute('alt', /\S+/);
+      await expect(logo).toHaveCSS('object-fit', 'contain');
+      const dimensions = await logo.evaluate((image: HTMLImageElement) => ({ width: Number(image.getAttribute('width')), height: Number(image.getAttribute('height')) }));
+      expect(dimensions.width / dimensions.height).toBe(2);
+    }
+  }
 });

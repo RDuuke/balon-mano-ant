@@ -34,6 +34,15 @@ final class HomeContentTest extends TestCase {
 		self::assertTrue( post_type_supports( $post_type, 'page-attributes' ) );
 	}
 
+	public function test_allies_only_expose_logo_catalog_editorial_supports(): void {
+		self::assertTrue( post_type_supports( 'labm_aliado', 'title' ) );
+		self::assertTrue( post_type_supports( 'labm_aliado', 'thumbnail' ) );
+		self::assertTrue( post_type_supports( 'labm_aliado', 'page-attributes' ) );
+		self::assertFalse( post_type_supports( 'labm_aliado', 'editor' ) );
+		self::assertFalse( post_type_supports( 'labm_aliado', 'excerpt' ) );
+		self::assertFalse( post_type_supports( 'labm_aliado', 'custom-fields' ) );
+	}
+
 	public function test_home_metadata_is_registered_sanitized_and_authorized_by_post(): void {
 		self::assertTrue( registered_meta_key_exists( 'post', 'labm_destino_url', 'labm_slide' ) );
 		self::assertTrue( registered_meta_key_exists( 'post', 'labm_cta_texto', 'labm_slide' ) );

@@ -53,6 +53,81 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Aliados ficticios compuestos exclusivamente por logos ordenados.
+	 *
+	 * @return array
+	 */
+	private static function home_allies_fixtures() {
+		$definitions = array(
+			array( 'arco-comun', 'Arco Comun' ),
+			array( 'brote-activo', 'Brote Activo' ),
+			array( 'cumbre-viva', 'Cumbre Viva' ),
+			array( 'mosaico-unido', 'Mosaico Unido' ),
+			array( 'rio-dinamico', 'Rio Dinamico' ),
+			array( 'sol-abierto', 'Sol Abierto' ),
+		);
+
+		return array_map(
+			static function ( $definition, $order ) {
+				return array(
+					'post_name'      => 'demo-labm-aliado-' . $definition[0],
+					'post_title'     => self::MARKER . ' ' . $definition[1],
+					'post_content'   => '',
+					'post_excerpt'   => '',
+					'post_type'      => 'labm_aliado',
+					'post_status'    => 'publish',
+					'menu_order'     => $order,
+					'featured_image' => 'assets/images/aliados-demo/' . $definition[0] . '.png',
+				);
+			},
+			$definitions,
+			array_keys( $definitions )
+		);
+	}
+
+	/**
+	 * Importa o reutiliza un logo demo como adjunto de WordPress.
+	 *
+	 * @param string $relative_path Ruta relativa dentro del tema.
+	 * @return int
+	 */
+	private static function ensure_demo_attachment( $relative_path ) {
+		$slug     = sanitize_title( pathinfo( $relative_path, PATHINFO_FILENAME ) );
+		$existing = get_page_by_path( 'demo-labm-logo-' . $slug, OBJECT, 'attachment' );
+		if ( $existing && 'image/png' === get_post_mime_type( $existing ) ) {
+			return (int) $existing->ID;
+		}
+
+		$source = get_theme_file_path( $relative_path );
+		if ( ! is_file( $source ) ) {
+			return 0;
+		}
+		$upload = wp_upload_bits( basename( $source ), null, file_get_contents( $source ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- activo local controlado.
+		if ( ! empty( $upload['error'] ) ) {
+			return 0;
+		}
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_name'      => 'demo-labm-logo-' . $slug,
+				'post_title'     => self::MARKER . ' Logo ' . $slug,
+				'post_status'    => 'inherit',
+				'post_mime_type' => 'image/png',
+			),
+			$upload['file'],
+			0,
+			true
+		);
+		if ( is_wp_error( $attachment_id ) ) {
+			return 0;
+		}
+		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
+		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $upload['file'] ) );
+		return (int) $attachment_id;
+	}
+
+	/**
 	 * Carga o actualiza exclusivamente paginas ficticias con slug estable.
 	 *
 	 * ## EXAMPLES
@@ -97,30 +172,6 @@ class LABM_Fixtures_Command {
 						'labm_cta_texto'   => 'Ver actualidad',
 						'labm_destino_url' => '/actualidad/',
 					),
-				),
-				array(
-					'post_name'    => 'demo-labm-aliado-ejemplo',
-					'post_title'   => self::MARKER . ' Aliado editorial en borrador',
-					'post_content' => '<p>' . self::MARKER . ' Entidad ficticia sin vinculacion oficial.</p>',
-					'post_type'    => 'labm_aliado',
-					'post_status'  => 'draft',
-					'meta'         => array( 'labm_destino_url' => 'https://example.org/' ),
-				),
-				array(
-					'post_name'    => 'demo-labm-aliado-publicado-uno',
-					'post_title'   => self::MARKER . ' Aliado publicado uno',
-					'post_content' => '<p>' . self::MARKER . ' Primer aliado publico para recorridos de navegador.</p>',
-					'post_type'    => 'labm_aliado',
-					'post_status'  => 'publish',
-					'meta'         => array( 'labm_destino_url' => 'https://example.org/aliado-uno' ),
-				),
-				array(
-					'post_name'    => 'demo-labm-aliado-publicado-dos',
-					'post_title'   => self::MARKER . ' Aliado publicado dos',
-					'post_content' => '<p>' . self::MARKER . ' Segundo aliado publico para continuidad visual.</p>',
-					'post_type'    => 'labm_aliado',
-					'post_status'  => 'publish',
-					'meta'         => array( 'labm_destino_url' => 'https://example.org/aliado-dos' ),
 				),
 				array(
 					'post_name'    => 'demo-labm-inicio',
@@ -248,7 +299,8 @@ class LABM_Fixtures_Command {
 					'meta'         => array( 'labm_inicio' => '23:59' ),
 				),
 			),
-			self::home_news_fixtures()
+			self::home_news_fixtures(),
+			self::home_allies_fixtures()
 		);
 
 		foreach ( $fixtures as $fixture ) {
@@ -259,7 +311,7 @@ class LABM_Fixtures_Command {
 			}
 			$post = array_intersect_key(
 				$fixture,
-				array_flip( array( 'post_name', 'post_title', 'post_excerpt', 'post_content', 'post_type', 'post_status', 'post_date' ) )
+				array_flip( array( 'post_name', 'post_title', 'post_excerpt', 'post_content', 'post_type', 'post_status', 'post_date', 'menu_order' ) )
 			);
 			if ( $existing && 0 === strpos( $existing->post_title, self::MARKER ) ) {
 				$post['ID'] = $existing->ID;
@@ -282,6 +334,13 @@ class LABM_Fixtures_Command {
 						continue;
 					}
 					update_post_meta( $result, $key, $value );
+				}
+			}
+
+			if ( ! empty( $fixture['featured_image'] ) ) {
+				$attachment_id = self::ensure_demo_attachment( $fixture['featured_image'] );
+				if ( $attachment_id ) {
+					update_post_meta( $result, '_thumbnail_id', $attachment_id );
 				}
 			}
 

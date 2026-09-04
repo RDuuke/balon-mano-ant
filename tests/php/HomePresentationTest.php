@@ -230,6 +230,45 @@ final class HomePresentationTest extends TestCase {
 		self::assertSame( '', labm_theme_render_home_allies( 'tipo_inexistente' ) );
 	}
 
+	/** Los aliados filtran imágenes inválidas antes del límite y generan dos grupos sin interacción. */
+	public function test_allies_render_image_only_marquee_with_stable_valid_selection(): void {
+		$created     = array();
+		$attachments = array();
+		$image_src   = static function ( $image, $attachment_id ) use ( &$attachments ) {
+			return in_array( $attachment_id, $attachments, true ) ? array( 'https://example.test/logo-' . $attachment_id . '.png', 800, 400, false ) : $image;
+		};
+
+		try {
+			for ( $index = 0; $index < 14; $index++ ) {
+				$post_id   = wp_insert_post( array( 'post_type' => 'labm_aliado', 'post_status' => 'publish', 'post_title' => sprintf( 'Aliado %02d', $index ), 'menu_order' => $index ) );
+				$created[] = $post_id;
+				if ( 0 !== $index ) {
+					$attachment_id = wp_insert_attachment( array( 'post_title' => 'Logo', 'post_mime_type' => 'image/png', 'post_status' => 'inherit' ) );
+					$attachments[] = $attachment_id;
+					update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
+				}
+			}
+			add_filter( 'wp_get_attachment_image_src', $image_src, 10, 2 );
+			$html = labm_theme_render_home_allies();
+			self::assertSame( 24, substr_count( $html, '<img ' ) );
+			self::assertSame( 2, substr_count( $html, '<ul' ) );
+			self::assertStringContainsString( 'aria-hidden="true" inert', $html );
+			self::assertStringNotContainsString( '<a ', $html );
+			self::assertStringNotContainsString( '<button', $html );
+			self::assertStringNotContainsString( 'Aliado 00', $html );
+			self::assertStringContainsString( 'alt="Aliado 01"', $html );
+			self::assertStringNotContainsString( '<span', $html );
+		} finally {
+			remove_filter( 'wp_get_attachment_image_src', $image_src, 10 );
+			foreach ( $created as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			foreach ( $attachments as $attachment_id ) {
+				wp_delete_attachment( $attachment_id, true );
+			}
+		}
+	}
+
 	/** El tema omite el contenido dependiente si labm-core no registra sus tipos. */
 	public function test_portada_degrada_sin_registros_de_labm_core(): void {
 		self::assertTrue( unregister_post_type( 'labm_slide' ) );
@@ -285,9 +324,7 @@ final class HomePresentationTest extends TestCase {
 			self::assertStringNotContainsString( 'javascript:', $slider );
 
 			$allies = labm_theme_render_home_allies();
-			self::assertStringContainsString( 'data-labm-allies-pause', $allies );
-			self::assertStringContainsString( 'aria-hidden="true"', $allies );
-			self::assertStringContainsString( 'Aliado público', $allies );
+			self::assertStringNotContainsString( 'data-labm-allies-pause', $allies );
 
 			$clubs = labm_theme_render_home_clubs();
 			self::assertStringContainsString( 'data-labm-section="clubes"', $clubs );

@@ -71,6 +71,108 @@ final class HomeEditorialFlowsTest extends TestCase {
 		return rest_do_request( $request );
 	}
 
+	/** La API publica aliados completos y rechaza los que no tienen titulo o logo. */
+	public function test_rest_valida_publicacion_de_aliados(): void {
+		$editor = $this->create_user_with_role( 'editor' );
+		wp_set_current_user( $editor->ID );
+		$media_id = $this->create_attachment();
+
+		$valid = $this->rest(
+			'POST',
+			'/wp/v2/labm_aliado',
+			array(
+				'title'          => 'Aliado valido',
+				'status'         => 'publish',
+				'featured_media' => $media_id,
+			)
+		);
+		self::assertSame( 201, $valid->get_status(), wp_json_encode( $valid->get_data() ) );
+		$this->created[] = (int) $valid->get_data()['id'];
+
+		foreach (
+			array(
+				'sin titulo' => array( 'title' => '', 'status' => 'publish', 'featured_media' => $media_id ),
+				'sin logo'   => array( 'title' => 'Aliado incompleto', 'status' => 'publish', 'featured_media' => 0 ),
+			) as $case => $body
+		) {
+			$response = $this->rest( 'POST', '/wp/v2/labm_aliado', $body );
+			self::assertSame( 400, $response->get_status(), $case . ': ' . wp_json_encode( $response->get_data() ) );
+			self::assertSame( 'labm_incomplete_home_content', $response->get_data()['code'] );
+		}
+	}
+
+	/** El guardado clasico autorizado conserva un aliado incompleto como borrador y avisa. */
+	public function test_admin_impide_publicacion_incompleta_y_muestra_aviso(): void {
+		$editor = $this->create_user_with_role( 'editor' );
+		wp_set_current_user( $editor->ID );
+		$nonce = wp_create_nonce( 'labm_save_home_content' );
+		$data  = array( 'post_type' => 'labm_aliado', 'post_status' => 'publish', 'post_title' => 'Sin logo' );
+
+		$filtered = apply_filters(
+			'wp_insert_post_data',
+			$data,
+			array(
+				'post_type'                => 'labm_aliado',
+				'post_status'              => 'publish',
+				'post_title'               => 'Sin logo',
+				'_thumbnail_id'            => 0,
+				'_labm_home_content_nonce' => $nonce,
+			)
+		);
+
+		self::assertSame( 'draft', $filtered['post_status'] );
+		$location = apply_filters( 'redirect_post_location', 'post.php?post=123&action=edit' );
+		self::assertStringContainsString( 'labm_home_error=incomplete', $location );
+
+		$_GET['labm_home_error'] = 'incomplete';
+		ob_start();
+		do_action( 'admin_notices' );
+		$notice = (string) ob_get_clean();
+		unset( $_GET['labm_home_error'] );
+		self::assertStringContainsString( 'titulo y el logo', strtolower( wp_strip_all_tags( $notice ) ) );
+	}
+
+	/** La validacion administrativa no actua sin nonce valido ni capacidad editorial. */
+	public function test_admin_validation_requires_nonce_and_capability(): void {
+		$data = array( 'post_type' => 'labm_aliado', 'post_status' => 'publish', 'post_title' => 'Sin logo' );
+
+		$editor = $this->create_user_with_role( 'editor' );
+		wp_set_current_user( $editor->ID );
+		$without_nonce = apply_filters( 'wp_insert_post_data', $data, $data );
+		self::assertSame( 'publish', $without_nonce['post_status'] );
+
+		$subscriber = $this->create_user_with_role( 'subscriber' );
+		wp_set_current_user( $subscriber->ID );
+		$without_capability = apply_filters(
+			'wp_insert_post_data',
+			$data,
+			array_merge( $data, array( '_labm_home_content_nonce' => wp_create_nonce( 'labm_save_home_content' ) ) )
+		);
+		self::assertSame( 'publish', $without_capability['post_status'] );
+	}
+
+	/** Guardar titulo y orden no elimina cuerpo, extracto ni URL preexistentes. */
+	public function test_actualizacion_de_aliado_conserva_datos_legados(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'labm_aliado',
+				'post_status'  => 'draft',
+				'post_title'   => 'Aliado legado',
+				'post_content' => 'Contenido legado',
+				'post_excerpt' => 'Extracto legado',
+			)
+		);
+		self::assertIsInt( $post_id );
+		$this->created[] = $post_id;
+		update_post_meta( $post_id, 'labm_destino_url', 'https://example.org/legado' );
+
+		wp_update_post( array( 'ID' => $post_id, 'post_title' => 'Aliado actualizado', 'menu_order' => 7 ) );
+		$post = get_post( $post_id );
+		self::assertSame( 'Contenido legado', $post->post_content );
+		self::assertSame( 'Extracto legado', $post->post_excerpt );
+		self::assertSame( 'https://example.org/legado', get_post_meta( $post_id, 'labm_destino_url', true ) );
+	}
+
 	/** Un editor puede crear, modificar, publicar y eliminar slides y aliados. */
 	public function test_editor_realiza_flujo_editorial_completo_por_rest(): void {
 		$editor = $this->create_user_with_role( 'editor' );
@@ -81,21 +183,25 @@ final class HomeEditorialFlowsTest extends TestCase {
 
 		foreach ( array( 'labm_slide', 'labm_aliado' ) as $post_type ) {
 			$rest_base = $post_type;
+			$body = array(
+				'title'          => 'Contenido autorizado',
+				'status'         => 'publish',
+				'featured_media' => $media_id,
+			);
+			if ( 'labm_slide' === $post_type ) {
+				$body['meta'] = array( 'labm_destino_url' => 'https://example.org/seguro' );
+			}
 			$response  = $this->rest(
 				'POST',
 				'/wp/v2/' . $rest_base,
-				array(
-					'title'          => 'Contenido autorizado',
-					'status'         => 'publish',
-					'featured_media' => $media_id,
-					'meta'           => array( 'labm_destino_url' => 'https://example.org/seguro' ),
-				)
+				$body
 			);
 			self::assertSame( 201, $response->get_status(), wp_json_encode( $response->get_data() ) );
 			$post_id         = (int) $response->get_data()['id'];
 			$this->created[] = $post_id;
 			self::assertSame( 'publish', get_post_status( $post_id ) );
-			self::assertSame( 'https://example.org/seguro', get_post_meta( $post_id, 'labm_destino_url', true ) );
+			$expected_url = 'labm_slide' === $post_type ? 'https://example.org/seguro' : '';
+			self::assertSame( $expected_url, get_post_meta( $post_id, 'labm_destino_url', true ) );
 
 			$response = $this->rest( 'POST', '/wp/v2/' . $rest_base . '/' . $post_id, array( 'title' => 'Contenido actualizado' ) );
 			self::assertSame( 200, $response->get_status() );
