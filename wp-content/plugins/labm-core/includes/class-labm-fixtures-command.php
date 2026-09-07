@@ -94,8 +94,11 @@ class LABM_Fixtures_Command {
 	private static function ensure_demo_attachment( $relative_path ) {
 		$slug     = sanitize_title( pathinfo( $relative_path, PATHINFO_FILENAME ) );
 		$existing = get_page_by_path( 'demo-labm-logo-' . $slug, OBJECT, 'attachment' );
-		if ( $existing && 'image/png' === get_post_mime_type( $existing ) ) {
+		if ( $existing && 'image/png' === get_post_mime_type( $existing ) && is_file( get_attached_file( $existing->ID ) ) ) {
 			return (int) $existing->ID;
+		}
+		if ( $existing ) {
+			wp_delete_attachment( $existing->ID, true );
 		}
 
 		$source = get_theme_file_path( $relative_path );
@@ -104,7 +107,7 @@ class LABM_Fixtures_Command {
 		}
 		$upload = wp_upload_bits( basename( $source ), null, file_get_contents( $source ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- activo local controlado.
 		if ( ! empty( $upload['error'] ) ) {
-			return 0;
+			WP_CLI::error( sprintf( 'No se pudo importar el logo demo %1$s: %2$s', basename( $source ), $upload['error'] ) );
 		}
 		$attachment_id = wp_insert_attachment(
 			array(
@@ -118,7 +121,7 @@ class LABM_Fixtures_Command {
 			true
 		);
 		if ( is_wp_error( $attachment_id ) ) {
-			return 0;
+			WP_CLI::error( sprintf( 'No se pudo registrar el logo demo %1$s: %2$s', basename( $source ), $attachment_id->get_error_message() ) );
 		}
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/image.php';

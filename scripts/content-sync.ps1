@@ -294,10 +294,13 @@ function Expand-ValidatedArchive {
         $manifest = Read-JsonFile -Path $manifestPath
         if ($null -eq $manifest) { throw 'El paquete no contiene manifest.json.' }
         if ([int]$manifest.schemaVersion -ne $script:ManifestSchema) { throw "Version de manifiesto incompatible: $($manifest.schemaVersion)." }
-        foreach ($required in @('contentVersion', 'sourceUrl', 'wordpressVersion', 'databaseFile', 'uploadsDirectory', 'files')) {
+        foreach ($required in @('contentVersion', 'sourceUrl', 'wordpressVersion', 'databaseFile', 'uploadsDirectory')) {
             if ($null -eq $manifest.$required -or [string]::IsNullOrWhiteSpace([string]$manifest.$required)) {
                 throw "Campo requerido ausente en manifest.json: $required"
             }
+        }
+        if ($null -eq $manifest.files -or @($manifest.files).Count -eq 0) {
+            throw 'Campo requerido ausente en manifest.json: files'
         }
         foreach ($file in @($manifest.files)) {
             $relative = ([string]$file.path).Replace('/', [IO.Path]::DirectorySeparatorChar)
@@ -331,6 +334,10 @@ function Assert-CompatibleWordPress {
     }
 }
 
+function Restore-WordPressUploadsOwnership {
+    Invoke-Docker -Arguments (Get-ComposeArguments -Tail @('exec', '-T', 'wordpress', 'sh', '-c', "chown -R 33:33 '$script:UploadsPath'")) | Out-Null
+}
+
 function Import-ValidatedPayload {
     param(
         [pscustomobject] $Validated,
@@ -359,6 +366,7 @@ function Import-ValidatedPayload {
         if (@(Get-ChildItem -LiteralPath $Validated.Uploads -Force).Count -gt 0) {
             Invoke-Docker -Arguments (Get-ComposeArguments -Tail @('cp', ((Join-Path $Validated.Uploads '.') + [IO.Path]::DirectorySeparatorChar), "wordpress:$script:UploadsPath")) | Out-Null
         }
+        Restore-WordPressUploadsOwnership
         Set-LocalVersion -Version ([string]$Validated.Manifest.contentVersion)
         Invoke-WpCli -Arguments @('cache', 'flush') -AllowFailure | Out-Null
     } catch {

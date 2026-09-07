@@ -44,19 +44,17 @@ add_action( 'init', 'labm_core_register_home_content_types', 5 );
 
 /** Registra los campos REST saneados de portada. */
 function labm_core_register_home_meta() {
-	foreach ( array( 'labm_slide', 'labm_aliado' ) as $post_type ) {
-		register_post_meta(
-			$post_type,
-			'labm_destino_url',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'show_in_rest'      => true,
-				'sanitize_callback' => 'esc_url_raw',
-				'auth_callback'     => 'labm_core_auth_post_meta',
-			)
-		);
-	}
+	register_post_meta(
+		'labm_slide',
+		'labm_destino_url',
+		array(
+			'type'              => 'string',
+			'single'            => true,
+			'show_in_rest'      => true,
+			'sanitize_callback' => 'esc_url_raw',
+			'auth_callback'     => 'labm_core_auth_post_meta',
+		)
+	);
 
 	register_post_meta(
 		'labm_slide',
@@ -84,7 +82,9 @@ function labm_core_validate_home_publishable( $post_type, $data ) {
 		return new WP_Error( 'labm_invalid_home_type', __( 'El tipo editorial no pertenece a la portada.', 'labm-core' ) );
 	}
 
-	if ( '' === trim( (string) ( $data['post_title'] ?? '' ) ) || empty( $data['thumbnail_id'] ) ) {
+	$thumbnail_id = absint( $data['thumbnail_id'] ?? 0 );
+	$is_image     = $thumbnail_id && 'attachment' === get_post_type( $thumbnail_id ) && str_starts_with( (string) get_post_mime_type( $thumbnail_id ), 'image/' );
+	if ( '' === trim( (string) ( $data['post_title'] ?? '' ) ) || ! $is_image ) {
 		return new WP_Error(
 			'labm_incomplete_home_content',
 			__( 'El titulo y la imagen destacada son obligatorios antes de publicar.', 'labm-core' ),
@@ -92,7 +92,7 @@ function labm_core_validate_home_publishable( $post_type, $data ) {
 		);
 	}
 
-	$url = (string) ( $data['labm_destino_url'] ?? '' );
+	$url = 'labm_slide' === $post_type ? (string) ( $data['labm_destino_url'] ?? '' ) : '';
 	if ( '' !== $url && '' === esc_url_raw( $url ) ) {
 		return new WP_Error( 'labm_invalid_home_url', __( 'El destino editorial no es una URL segura.', 'labm-core' ) );
 	}

@@ -17,6 +17,7 @@ docker run --rm --network labm_default --entrypoint php `
     -v "${root}:/app" `
     -v labm_composer_vendor:/app/vendor `
     -v labm_wordpress_core:/wordpress `
+    -v labm_wordpress_uploads:/wordpress/wp-content/uploads `
     -v "${root}/wp-content/themes/labm:/wordpress/wp-content/themes/labm:ro" `
     -v "${root}/wp-content/plugins/labm-core:/wordpress/wp-content/plugins/labm-core:ro" `
     -w /app labm-coverage:php8.3 `

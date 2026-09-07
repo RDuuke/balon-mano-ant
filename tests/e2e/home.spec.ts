@@ -230,8 +230,11 @@ test('inicio conserva el orden aprobado y excluye secciones retiradas', async ({
   await expect(page.getByRole('heading', { name: /balonmano de piso|balonmano playa|horarios|escenarios/i })).toHaveCount(0);
 });
 
-test('slider conserva controles y aliados funciona como marquee solo de logos', async ({ page }) => {
+test('slider conserva controles y aliados funciona como marquee solo de logos', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1840, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
+  await page.reload({ waitUntil: 'networkidle' });
   const slider = page.locator('[data-labm-slider]');
   await expect(slider).toBeVisible();
   await expect(slider.locator('[data-labm-slide]')).toHaveCount(2);
@@ -249,22 +252,82 @@ test('slider conserva controles y aliados funciona como marquee solo de logos', 
 
   const allies = page.locator('[data-labm-allies]');
   await expect(allies).toBeVisible();
+  await expect(page.getByRole('region', { name: /aliados oficiales/i })).toBeVisible();
   await expect(allies.getByRole('heading', { name: /aliados oficiales/i })).toBeVisible();
   const groups = allies.locator('.labm-allies__list');
   await expect(groups).toHaveCount(2);
   await expect(groups.first().locator('img')).toHaveCount(6);
   await expect(groups.nth(1)).toHaveAttribute('aria-hidden', 'true');
   await expect(groups.nth(1)).toHaveAttribute('inert', '');
-  expect(await groups.first().locator('img').evaluateAll((images) => images.map((image) => image.getAttribute('src'))))
-    .toEqual(await groups.nth(1).locator('img').evaluateAll((images) => images.map((image) => image.getAttribute('src'))));
-  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-name', 'labm-marquee');
-  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-duration', '24s');
-  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-timing-function', 'linear');
+  const imageAttributes = (images: HTMLImageElement[]) => images.map((image) => ({
+    src: image.currentSrc,
+    alt: image.alt,
+    width: image.width,
+    height: image.height,
+  }));
+  expect(await groups.first().locator('img').evaluateAll(imageAttributes))
+    .toEqual(await groups.nth(1).locator('img').evaluateAll(imageAttributes));
+  const track = allies.locator('.labm-allies__track');
+  const styleHref = await page.locator('link#labm-site-css').getAttribute('href');
+  expect(styleHref).toMatch(/[?&]ver=\d{10,}(?:&|$)/);
+  await expect(track).toHaveCSS('animation-name', 'labm-marquee');
+  await expect(track).toHaveCSS('animation-duration', '24s');
+  await expect(track).toHaveCSS('animation-timing-function', 'linear');
+  await expect(track).toHaveCSS('animation-iteration-count', 'infinite');
+  await allies.hover();
+  await expect(track).toHaveCSS('animation-play-state', 'running');
+  const motionBefore = await allies.evaluate((element) => {
+    const trackElement = element.querySelector<HTMLElement>('.labm-allies__track');
+    const lists = Array.from(element.querySelectorAll<HTMLElement>('.labm-allies__list'));
+    if (!trackElement || lists.length !== 2) {
+      throw new Error('La marquee requiere una pista y dos grupos');
+    }
+    return {
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      track: {
+        animationName: getComputedStyle(trackElement).animationName,
+        animationDuration: getComputedStyle(trackElement).animationDuration,
+        animationTimingFunction: getComputedStyle(trackElement).animationTimingFunction,
+        display: getComputedStyle(trackElement).display,
+        transform: getComputedStyle(trackElement).transform,
+        x: trackElement.getBoundingClientRect().x,
+      },
+      lists: lists.map((list) => ({
+        display: getComputedStyle(list).display,
+        flexWrap: getComputedStyle(list).flexWrap,
+        top: list.getBoundingClientRect().top,
+      })),
+    };
+  });
+  await page.waitForTimeout(400);
+  const motionAfter = await track.evaluate((element) => ({
+    transform: getComputedStyle(element).transform,
+    x: element.getBoundingClientRect().x,
+  }));
+  await testInfo.attach('diagnostico-marquee-no-preference.json', {
+    body: JSON.stringify({ styleHref, motionBefore, motionAfter }, null, 2),
+    contentType: 'application/json',
+  });
+  expect(motionBefore.reducedMotion).toBe(false);
+  expect(motionBefore.track).toMatchObject({
+    animationName: 'labm-marquee',
+    animationDuration: '24s',
+    animationTimingFunction: 'linear',
+    display: 'flex',
+  });
+  expect(motionBefore.lists).toEqual([
+    { display: 'flex', flexWrap: 'nowrap', top: motionBefore.lists[0].top },
+    { display: 'flex', flexWrap: 'nowrap', top: motionBefore.lists[0].top },
+  ]);
+  expect(motionAfter.transform).not.toBe(motionBefore.track.transform);
+  expect(motionAfter.x).toBeLessThan(motionBefore.track.x);
   await expect(allies.locator('a, button, input, select')).toHaveCount(0);
+  await expect(allies.locator('[data-labm-allies-pause], [data-labm-allies-speed]')).toHaveCount(0);
+  expect((await allies.locator('.labm-allies__viewport').innerText()).trim()).toBe('');
   await expect(allies.locator('.labm-allies__item')).toHaveText(['', '', '', '', '', '', '', '', '', '', '', '']);
 });
 
-test('slider y aliados quedan estaticos con movimiento reducido', async ({ page }) => {
+test('slider y aliados quedan estaticos con movimiento reducido', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const slider = page.locator('[data-labm-slider]');
@@ -273,7 +336,32 @@ test('slider y aliados quedan estaticos con movimiento reducido', async ({ page 
   await expect(allies).toBeVisible();
   await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-name', 'none');
   await expect(allies.locator('.labm-allies__replica')).toHaveCSS('display', 'none');
-  await expect(allies.locator('.labm-allies__list').first()).toHaveCSS('flex-wrap', 'wrap');
+  const primary = allies.locator('.labm-allies__primary');
+  await expect(primary).toHaveCSS('flex-wrap', 'wrap');
+  await expect(primary.locator('img')).toHaveCount(6);
+  for (const logo of await primary.locator('img').all()) {
+    await expect(logo).toBeVisible();
+  }
+  const reducedState = await allies.evaluate((element) => ({
+    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    trackAnimation: getComputedStyle(element.querySelector('.labm-allies__track') as Element).animationName,
+    primaryWrap: getComputedStyle(element.querySelector('.labm-allies__primary') as Element).flexWrap,
+    replicaDisplay: getComputedStyle(element.querySelector('.labm-allies__replica') as Element).display,
+  }));
+  expect(reducedState).toEqual({
+    reducedMotion: true,
+    trackAnimation: 'none',
+    primaryWrap: 'wrap',
+    replicaDisplay: 'none',
+  });
+  await testInfo.attach('diagnostico-marquee-reduce.json', {
+    body: JSON.stringify(reducedState, null, 2),
+    contentType: 'application/json',
+  });
+  const geometry = await allies.evaluate((element) => ({ clientWidth: element.clientWidth, scrollWidth: element.scrollWidth }));
+  expect(geometry.scrollWidth).toBe(geometry.clientWidth);
+  const results = await new AxeBuilder({ page }).include('[data-labm-allies]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+  expect(results.violations).toEqual([]);
   const active = slider.locator('[data-labm-slide-to][aria-current="true"]');
   await expect(active).toHaveAttribute('data-labm-slide-to', '0');
   await page.waitForTimeout(7100);
@@ -291,8 +379,13 @@ test('aliados mantiene proporción, alt y ancho sin desborde', async ({ page }) 
     for (const logo of await logos.all()) {
       await expect(logo).toHaveAttribute('alt', /\S+/);
       await expect(logo).toHaveCSS('object-fit', 'contain');
-      const dimensions = await logo.evaluate((image: HTMLImageElement) => ({ width: Number(image.getAttribute('width')), height: Number(image.getAttribute('height')) }));
-      expect(dimensions.width / dimensions.height).toBe(2);
+      const dimensions = await logo.evaluate((image: HTMLImageElement) => ({
+        complete: image.complete,
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+      }));
+      expect(dimensions.complete).toBe(true);
+      expect(dimensions.naturalWidth / dimensions.naturalHeight).toBe(2);
     }
   }
 });

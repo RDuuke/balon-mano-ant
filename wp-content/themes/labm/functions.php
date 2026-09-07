@@ -24,7 +24,9 @@ function labm_theme_domain_summary() {
 /** Registra los activos publicos del tema. */
 function labm_theme_enqueue_public_style() {
 
-	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	$stylesheet_path    = get_stylesheet_directory() . '/style.css';
+	$stylesheet_version = file_exists( $stylesheet_path ) ? (string) filemtime( $stylesheet_path ) : wp_get_theme()->get( 'Version' );
+	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), $stylesheet_version );
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 	}
@@ -442,16 +444,18 @@ function labm_theme_render_home_news() {
 }
 
 /**
- * Renderiza aliados con una lista semantica unica y una copia solo visual.
+ * Selecciona aliados publicados y representables antes de aplicar el limite.
  *
  * @param string $post_type Tipo de contenido.
- * @return string
+ * @param int    $limit Limite de logos validos.
+ * @return WP_Post[]
  */
-function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
+function labm_theme_home_allies_posts( $post_type = 'labm_aliado', $limit = 12 ) {
 
 	if ( ! post_type_exists( $post_type ) ) {
-		return '';
+		return array();
 	}
+	$limit = max( 1, absint( $limit ) );
 	$query = new WP_Query(
 		array(
 			'post_type'      => sanitize_key( $post_type ),
@@ -466,7 +470,7 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 			'no_found_rows'  => true,
 		)
 	);
-	$logos = array();
+	$posts = array();
 	foreach ( $query->posts as $post ) {
 		$title         = trim( wp_strip_all_tags( get_the_title( $post ) ) );
 		$attachment_id = get_post_thumbnail_id( $post->ID );
@@ -474,46 +478,59 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 		if ( '' === $title || ! $image ) {
 			continue;
 		}
-		$logos[] = array(
-			'post'  => $post,
-			'title' => $title,
-		);
-		if ( 12 === count( $logos ) ) {
+		$posts[] = $post;
+		if ( count( $posts ) === $limit ) {
 			break;
 		}
 	}
-	if ( empty( $logos ) ) {
+	return $posts;
+}
+
+/**
+ * Renderiza aliados con una lista semantica unica y una copia solo visual.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @return string
+ */
+function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
+
+	$posts = labm_theme_home_allies_posts( $post_type, 12 );
+	if ( empty( $posts ) ) {
 		return '';
 	}
-	$list = static function () use ( $logos ) {
-		foreach ( $logos as $logo ) {
-			$clean_title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $logo['title'] );
-			$title       = null === $clean_title || '' === $clean_title ? $logo['title'] : $clean_title;
+	$list      = static function () use ( $posts ) {
+		ob_start();
+		foreach ( $posts as $post ) {
+			$title       = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+			$clean_title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+			$title       = null === $clean_title || '' === $clean_title ? $title : $clean_title;
 			echo '<li class="labm-allies__item">';
 			echo get_the_post_thumbnail(
-				$logo['post'],
+				$post,
 				'medium',
 				array(
 					'alt'     => sanitize_text_field( $title ),
-					'loading' => 'lazy',
+					'loading' => 'eager',
 					'class'   => 'labm-allies__logo',
 				)
 			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</li>';
 		}
+		return (string) ob_get_clean();
 	};
+	$list_html = $list();
 	ob_start();
 	?>
-	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies>
-		<h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2>
+	<section class="labm-home-section labm-allies" aria-labelledby="labm-home-allies-title" data-labm-section="aliados" data-labm-allies>
+		<h2 id="labm-home-allies-title"><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2>
 		<div class="labm-allies__viewport">
 			<div class="labm-allies__track">
-				<ul class="labm-allies__list"><?php $list(); ?></ul>
-				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true" inert><?php $list(); ?></ul>
+				<ul class="labm-allies__list labm-allies__primary"><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado y saneado por APIs de WordPress. ?></ul>
+				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true" inert><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- réplica exacta del HTML generado. ?></ul>
 			</div>
 		</div>
 	</section>
-	
+
 	<?php
 	return (string) ob_get_clean();
 }

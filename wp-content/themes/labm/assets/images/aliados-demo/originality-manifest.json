@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "conjunto": "aliados-demo-v1",
+  "procedencia": "Seis imágenes generadas durante APPLY con ImageGen y normalizadas a PNG transparente de 800x400 píxeles.",
+  "revision": {
+    "fecha": "2026-09-07",
+    "revisor": "agente APPLY (Codex)",
+    "decision": "aprobado",
+    "criterios": [
+      "sin texto",
+      "identidades diferenciadas",
+      "sin similitud evidente con marcas reales"
+    ],
+    "limitacion": "La originalidad visual requiere juicio humano y no equivale a una búsqueda exhaustiva mundial de marcas. Este manifiesto hace auditable la revisión visual del conjunto exacto y sus hashes permiten rechazar en CI cualquier sustitución no revisada."
+  },
+  "archivos": {
+    "arco-comun.png": "a4f86d84f72c53e8818caa1021ebf5f4325ff40bf8c6486bb6d19d1ce172adfa",
+    "brote-activo.png": "b228916f7f66eb723db78fbdb20720c51710c4726c8faebe9a63ef2def9781c3",
+    "cumbre-viva.png": "9903b94b2baf1e3f34232821094e81cfb9e1cf38c1d928405b4e5b6d44dd2c07",
+    "mosaico-unido.png": "9089e05b013db0a29749c5cd625a409780a083b8b66a59e4a5cadfb03b3aaa2f",
+    "rio-dinamico.png": "4ddcb66fc0847473b901e820aeed0b6a914ad79e4d229deb7666185e923642bf",
+    "sol-abierto.png": "8dc41fc7b4afbdff4b6e0965ce317c9857c757de839b76c4b105583ea96a8c80"
+  }
+}
