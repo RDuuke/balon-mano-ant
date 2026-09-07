@@ -19,6 +19,8 @@ try {
         docker compose up -d --wait
         if ($LASTEXITCODE -ne 0) { throw 'Docker Compose no alcanzo estado saludable.' }
     }
+    docker compose exec -T --user root wordpress chown -R 33:33 /var/www/html/wp-content/uploads
+    if ($LASTEXITCODE -ne 0) { throw 'No se pudo preparar el directorio de uploads.' }
     docker compose --profile tools run --rm --no-deps wp-cli core is-installed 2>$null
     if ($LASTEXITCODE -ne 0) {
         docker compose --profile tools run --rm --no-deps wp-cli core install --url="$env:WP_URL" --title="$env:WP_TITLE" --admin_user="$env:WP_ADMIN_USER" --admin_password="$env:WP_ADMIN_PASSWORD" --admin_email="$env:WP_ADMIN_EMAIL" --skip-email
