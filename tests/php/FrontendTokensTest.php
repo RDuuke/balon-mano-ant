@@ -45,4 +45,14 @@ final class FrontendTokensTest extends TestCase {
 		self::assertStringContainsString( '.labm-allies__replica { display: none; }', $css );
 		self::assertStringNotContainsString( '[data-labm-paused="true"]', $css );
 	}
+
+	/** El pie global conserva la composicion y el contenido del diseno aprobado. */
+	public function test_footer_matches_approved_information_architecture(): void {
+		$footer = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/parts/footer.html' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- archivo local de fixture.
+
+		self::assertStringContainsString( '[labm_footer]', $footer );
+		self::assertStringNotContainsString( 'info@balonmanoantioquia.com', $footer );
+		self::assertStringNotContainsString( 'Política de tratamiento de datos', $footer );
+		self::assertStringNotContainsString( '>LABM</', $footer );
+	}
 }

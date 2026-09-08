@@ -40,6 +40,14 @@ function labm_theme_setup_public_experience() {
 }
 add_action( 'init', 'labm_theme_setup_public_experience' );
 
+/** Evita mostrar el shortcode si LABM Core no está activo. */
+function labm_theme_register_footer_fallback() {
+	if ( ! shortcode_exists( 'labm_footer' ) ) {
+		add_shortcode( 'labm_footer', '__return_empty_string' );
+	}
+}
+add_action( 'init', 'labm_theme_register_footer_fallback', 20 );
+
 /** Enlace para saltar la navegacion repetida. */
 function labm_theme_skip_link() {
 	echo '<a class="labm-skip-link" href="#contenido-principal">' . esc_html__( 'Saltar al contenido', 'labm' ) . '</a>';
