@@ -26,6 +26,56 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class FixturesDomainTest extends TestCase {
+	/** Un fallo al escribir el logo demo se comunica y no queda oculto. */
+	public function test_home_allies_fixture_reports_upload_failures(): void {
+		$attachment = get_page_by_path( 'demo-labm-logo-arco-comun', OBJECT, 'attachment' );
+		if ( $attachment ) {
+			wp_delete_attachment( $attachment->ID, true );
+		}
+		$unwritable_upload = static function ( $uploads ) {
+			$uploads['path']    = '/proc/ruta-labm-inexistente/sin-permisos';
+			$uploads['basedir'] = '/proc/ruta-labm-inexistente/sin-permisos';
+			return $uploads;
+		};
+		add_filter( 'upload_dir', $unwritable_upload );
+		try {
+			$this->expectException( RuntimeException::class );
+			$this->expectExceptionMessage( 'arco-comun.png' );
+			( new LABM_Fixtures_Command() )->load( array(), array() );
+		} finally {
+			remove_filter( 'upload_dir', $unwritable_upload );
+			( new LABM_Fixtures_Command() )->load( array(), array() );
+		}
+	}
+
+	/** Los aliados demo reutilizan seis adjuntos PNG ordenados al recargar fixtures. */
+	public function test_home_allies_fixtures_are_image_only_ordered_and_idempotent(): void {
+		$command = new LABM_Fixtures_Command();
+		$slugs   = array( 'arco-comun', 'brote-activo', 'cumbre-viva', 'mosaico-unido', 'rio-dinamico', 'sol-abierto' );
+		$first   = array();
+
+		$command->load( array(), array() );
+		foreach ( $slugs as $order => $slug ) {
+			$post = get_page_by_path( 'demo-labm-aliado-' . $slug, OBJECT, 'labm_aliado' );
+			self::assertInstanceOf( WP_Post::class, $post, $slug );
+			self::assertSame( 'publish', $post->post_status );
+			self::assertSame( $order, (int) $post->menu_order );
+			self::assertSame( '', $post->post_content );
+			self::assertSame( '', get_post_meta( $post->ID, 'labm_destino_url', true ) );
+			$attachment_id = get_post_thumbnail_id( $post->ID );
+			self::assertGreaterThan( 0, $attachment_id, $slug );
+			self::assertSame( 'image/png', get_post_mime_type( $attachment_id ) );
+			$first[ $slug ] = array( $post->ID, $attachment_id );
+		}
+
+		$command->load( array(), array() );
+		self::assertCount( 6, array_unique( array_column( $first, 1 ) ) );
+		foreach ( $slugs as $slug ) {
+			$post = get_page_by_path( 'demo-labm-aliado-' . $slug, OBJECT, 'labm_aliado' );
+			self::assertSame( $first[ $slug ], array( $post->ID, get_post_thumbnail_id( $post->ID ) ) );
+		}
+	}
+
 	/** Una imagen demo ausente no impide consultar la noticia ni deja una asociacion rota. */
 	public function test_home_news_fixture_without_available_media_remains_consultable_with_fallback(): void {
 		$slug           = 'demo-labm-noticia-convocatoria';
@@ -107,14 +157,22 @@ final class FixturesDomainTest extends TestCase {
 	}
 
 	public function test_fixtures_do_not_create_pdf_attachments(): void {
-		$query = new WP_Query(
+		$before = new WP_Query(
 			array(
 				'post_type'      => 'attachment',
 				'post_status'    => 'inherit',
 				'post_mime_type' => 'application/pdf',
 			)
 		);
-		self::assertSame( 0, $query->post_count );
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+		$after = new WP_Query(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'inherit',
+				'post_mime_type' => 'application/pdf',
+			)
+		);
+		self::assertSame( $before->post_count, $after->post_count );
 	}
 
 	public function test_each_domain_fixture_slug_is_unique(): void {

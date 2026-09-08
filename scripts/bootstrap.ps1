@@ -19,6 +19,17 @@ try {
         docker compose up -d --wait
         if ($LASTEXITCODE -ne 0) { throw 'Docker Compose no alcanzo estado saludable.' }
     }
+    docker compose exec -T --user root wordpress chown -R 33:33 /var/www/html/wp-content/uploads
+    if ($LASTEXITCODE -ne 0) { throw 'No se pudo preparar el directorio de uploads.' }
+    docker run --rm `
+        -e COMPOSER_ALLOW_SUPERUSER=1 `
+        -e GIT_CONFIG_COUNT=1 `
+        -e GIT_CONFIG_KEY_0=safe.directory `
+        -e GIT_CONFIG_VALUE_0=/app `
+        -v "${root}:/app" `
+        -v labm_composer_vendor:/app/vendor `
+        -w /app composer:2.8 install --no-interaction --prefer-dist
+    if ($LASTEXITCODE -ne 0) { throw 'No se pudieron instalar las dependencias PHP.' }
     docker compose --profile tools run --rm --no-deps wp-cli core is-installed 2>$null
     if ($LASTEXITCODE -ne 0) {
         docker compose --profile tools run --rm --no-deps wp-cli core install --url="$env:WP_URL" --title="$env:WP_TITLE" --admin_user="$env:WP_ADMIN_USER" --admin_password="$env:WP_ADMIN_PASSWORD" --admin_email="$env:WP_ADMIN_EMAIL" --skip-email

@@ -33,7 +33,7 @@ final class FrontendTokensTest extends TestCase {
 		self::assertSame( '#F3F6E8', $palette['neutro-labm'] ?? null );
 	}
 
-	/** CSS conserva foco, grillas fluidas y contratos de pausa. */
+	/** CSS conserva foco, grillas fluidas y movimiento reducido. */
 	public function test_css_contains_focus_and_reduced_motion_contracts(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/style.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- archivo local de fixture.
 		self::assertStringContainsString( '--labm-content-max: 1200px', $css );
@@ -41,7 +41,8 @@ final class FrontendTokensTest extends TestCase {
 		self::assertStringContainsString( ':focus-visible', $css );
 		self::assertStringContainsString( 'prefers-reduced-motion: reduce', $css );
 		self::assertStringContainsString( 'minmax(min(100%', $css );
-		self::assertStringContainsString( '[data-labm-paused="true"]', $css );
-		self::assertStringContainsString( '.labm-allies__visual[aria-hidden="true"]', $css );
+		self::assertStringContainsString( 'animation: labm-marquee 24s linear infinite', $css );
+		self::assertStringContainsString( '.labm-allies__replica { display: none; }', $css );
+		self::assertStringNotContainsString( '[data-labm-paused="true"]', $css );
 	}
 }

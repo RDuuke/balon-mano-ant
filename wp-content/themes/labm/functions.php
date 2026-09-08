@@ -24,7 +24,9 @@ function labm_theme_domain_summary() {
 /** Registra los activos publicos del tema. */
 function labm_theme_enqueue_public_style() {
 
-	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	$stylesheet_path    = get_stylesheet_directory() . '/style.css';
+	$stylesheet_version = file_exists( $stylesheet_path ) ? (string) filemtime( $stylesheet_path ) : wp_get_theme()->get( 'Version' );
+	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), $stylesheet_version );
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 	}
@@ -442,6 +444,49 @@ function labm_theme_render_home_news() {
 }
 
 /**
+ * Selecciona aliados publicados y representables antes de aplicar el limite.
+ *
+ * @param string $post_type Tipo de contenido.
+ * @param int    $limit Limite de logos validos.
+ * @return WP_Post[]
+ */
+function labm_theme_home_allies_posts( $post_type = 'labm_aliado', $limit = 12 ) {
+
+	if ( ! post_type_exists( $post_type ) ) {
+		return array();
+	}
+	$limit = max( 1, absint( $limit ) );
+	$query = new WP_Query(
+		array(
+			'post_type'      => sanitize_key( $post_type ),
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => array(
+				'menu_order' => 'ASC',
+				'title'      => 'ASC',
+				'ID'         => 'ASC',
+			),
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+		)
+	);
+	$posts = array();
+	foreach ( $query->posts as $post ) {
+		$title         = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+		$attachment_id = get_post_thumbnail_id( $post->ID );
+		$image         = $attachment_id ? wp_get_attachment_image_src( $attachment_id, 'medium' ) : false;
+		if ( '' === $title || ! $image ) {
+			continue;
+		}
+		$posts[] = $post;
+		if ( count( $posts ) === $limit ) {
+			break;
+		}
+	}
+	return $posts;
+}
+
+/**
  * Renderiza aliados con una lista semantica unica y una copia solo visual.
  *
  * @param string $post_type Tipo de contenido.
@@ -449,40 +494,62 @@ function labm_theme_render_home_news() {
  */
 function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 
-	$posts = labm_theme_home_posts( $post_type, 12 );
+	$posts = labm_theme_home_allies_posts( $post_type, 12 );
 	if ( empty( $posts ) ) {
 		return '';
 	}
-	$list = static function ( $visual_copy = false ) use ( $posts ) {
-
+	$list      = static function () use ( $posts ) {
+		ob_start();
 		foreach ( $posts as $post ) {
-			$url = get_post_meta( $post->ID, 'labm_destino_url', true );
-			echo '<li>';
-			if ( $url ) {
-				echo '<a href="' . esc_url( $url ) . '"' . ( $visual_copy ? ' tabindex="-1"' : '' ) . '>';
-			}
+			$title       = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+			$clean_title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+			$title       = null === $clean_title || '' === $clean_title ? $title : $clean_title;
+			echo '<li class="labm-allies__item">';
 			echo get_the_post_thumbnail(
 				$post,
 				'medium',
 				array(
-					'alt'     => get_the_title( $post ),
-					'loading' => 'lazy',
+					'alt'     => sanitize_text_field( $title ),
+					'loading' => 'eager',
+					'class'   => 'labm-allies__logo',
 				)
 			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '<span>' . esc_html( get_the_title( $post ) ) . '</span>';
-			if ( $url ) {
-				echo '</a>';
-			}
 			echo '</li>';
 		}
+		return (string) ob_get_clean();
 	};
+	$list_html = $list();
 	ob_start();
 	?>
-	<section class="labm-home-section labm-allies" data-labm-section="aliados" data-labm-allies><h2><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2><button type="button" data-labm-allies-pause aria-pressed="false"><?php esc_html_e( 'Pausar movimiento', 'labm' ); ?></button><ul class="labm-allies__list"><?php $list(); ?></ul><div class="labm-allies__visual" aria-hidden="true" inert><ul><?php $list( true ); ?></ul></div></section>
-	
+	<section class="labm-home-section labm-allies" aria-labelledby="labm-home-allies-title" data-labm-section="aliados" data-labm-allies>
+		<h2 id="labm-home-allies-title"><?php esc_html_e( 'Aliados Oficiales', 'labm' ); ?></h2>
+		<div class="labm-allies__viewport">
+			<div class="labm-allies__track">
+				<ul class="labm-allies__list labm-allies__primary"><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado y saneado por APIs de WordPress. ?></ul>
+				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true" inert><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- réplica exacta del HTML generado. ?></ul>
+			</div>
+		</div>
+	</section>
+
 	<?php
 	return (string) ob_get_clean();
 }
+
+/**
+ * Permite el atributo booleano inert en la réplica no accesible del marquee.
+ *
+ * @param array  $tags Etiquetas y atributos permitidos.
+ * @param string $context Contexto de saneado.
+ * @return array
+ */
+function labm_theme_allow_inert_attribute( $tags, $context ) {
+	if ( 'post' === $context && isset( $tags['ul'] ) ) {
+		$tags['ul']['inert'] = true;
+	}
+	return $tags;
+}
+add_filter( 'wp_kses_allowed_html', 'labm_theme_allow_inert_attribute', 10, 2 );
+
 /**
  * Marca semanticamente el destino activo de la navegacion global.
  *

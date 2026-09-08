@@ -144,6 +144,50 @@ test('secciones del inicio usan las superficies exactas del diseño', async ({ p
   }
 });
 
+test('vinculacion reproduce la composicion editorial y se adapta sin desborde', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto('/');
+  const join = page.locator('[data-labm-section="vinculacion"]');
+  const heading = join.getByRole('heading', { name: /haz parte del balonmano antioqueño/i });
+  const copy = join.locator(':scope > p');
+  const buttons = join.locator(':scope > .wp-block-buttons');
+  const cta = join.getByRole('link', { name: /quiero vincularme/i });
+
+  await expect(cta).toHaveAttribute('href', '/contacto/');
+  await expect(heading).toHaveCSS('text-transform', 'uppercase');
+  await expect(cta).toHaveCSS('text-transform', 'uppercase');
+
+  const desktop = await join.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      columns: style.gridTemplateColumns.split(' ').filter(Boolean).length,
+      accent: getComputedStyle(element, '::before').backgroundColor,
+      overflow: element.scrollWidth - element.clientWidth,
+    };
+  });
+  expect(desktop.columns).toBe(2);
+  expect(desktop.accent).toBe('rgb(174, 205, 37)');
+  expect(desktop.overflow).toBe(0);
+
+  const positions = await Promise.all([heading, copy, buttons].map((locator) => locator.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, top: rect.top };
+  })));
+  expect(Math.abs(positions[0].left - positions[1].left)).toBeLessThanOrEqual(1);
+  expect(positions[2].left).toBeGreaterThan(positions[0].right);
+
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.reload();
+  const mobile = await join.evaluate((element) => ({
+    columns: getComputedStyle(element).gridTemplateColumns.split(' ').filter(Boolean).length,
+    overflow: element.scrollWidth - element.clientWidth,
+  }));
+  expect(mobile.columns).toBe(1);
+  expect(mobile.overflow).toBe(0);
+  await cta.focus();
+  await expect(cta).toBeFocused();
+});
+
 test('slider mantiene altura al usar anterior, siguiente e indicadores', async ({ page }) => {
   test.setTimeout(90_000);
   for (const width of targetWidths) {
@@ -186,8 +230,11 @@ test('inicio conserva el orden aprobado y excluye secciones retiradas', async ({
   await expect(page.getByRole('heading', { name: /balonmano de piso|balonmano playa|horarios|escenarios/i })).toHaveCount(0);
 });
 
-test('slider y aliados ofrecen controles accesibles y pausa', async ({ page }) => {
+test('slider conserva controles y aliados funciona como marquee solo de logos', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1840, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
+  await page.reload({ waitUntil: 'networkidle' });
   const slider = page.locator('[data-labm-slider]');
   await expect(slider).toBeVisible();
   await expect(slider.locator('[data-labm-slide]')).toHaveCount(2);
@@ -205,30 +252,140 @@ test('slider y aliados ofrecen controles accesibles y pausa', async ({ page }) =
 
   const allies = page.locator('[data-labm-allies]');
   await expect(allies).toBeVisible();
+  await expect(page.getByRole('region', { name: /aliados oficiales/i })).toBeVisible();
   await expect(allies.getByRole('heading', { name: /aliados oficiales/i })).toBeVisible();
-  await expect(allies.locator('.labm-allies__list > li')).toHaveCount(2);
-  await expect(allies.getByText(/aliado editorial en borrador/i)).toHaveCount(0);
-  const visualCopy = allies.locator('.labm-allies__visual');
-  await expect(visualCopy).toHaveAttribute('aria-hidden', 'true');
-  await expect(visualCopy).toHaveAttribute('inert', '');
-  await expect(visualCopy).toHaveCSS('animation-name', 'labm-marquee');
-  await expect(visualCopy).toHaveCSS('animation-direction', 'normal');
-  await allies.getByRole('button', { name: /pausar/i }).click();
-  await expect(allies).toHaveAttribute('data-labm-paused', 'true');
-  await expect(visualCopy).toHaveCSS('animation-play-state', 'paused');
+  const groups = allies.locator('.labm-allies__list');
+  await expect(groups).toHaveCount(2);
+  await expect(groups.first().locator('img')).toHaveCount(6);
+  await expect(groups.nth(1)).toHaveAttribute('aria-hidden', 'true');
+  await expect(groups.nth(1)).toHaveAttribute('inert', '');
+  const imageAttributes = (images: HTMLImageElement[]) => images.map((image) => ({
+    src: image.currentSrc,
+    alt: image.alt,
+    width: image.width,
+    height: image.height,
+  }));
+  expect(await groups.first().locator('img').evaluateAll(imageAttributes))
+    .toEqual(await groups.nth(1).locator('img').evaluateAll(imageAttributes));
+  const track = allies.locator('.labm-allies__track');
+  const styleHref = await page.locator('link#labm-site-css').getAttribute('href');
+  expect(styleHref).toMatch(/[?&]ver=\d{10,}(?:&|$)/);
+  await expect(track).toHaveCSS('animation-name', 'labm-marquee');
+  await expect(track).toHaveCSS('animation-duration', '24s');
+  await expect(track).toHaveCSS('animation-timing-function', 'linear');
+  await expect(track).toHaveCSS('animation-iteration-count', 'infinite');
+  await allies.hover();
+  await expect(track).toHaveCSS('animation-play-state', 'running');
+  const motionBefore = await allies.evaluate((element) => {
+    const trackElement = element.querySelector<HTMLElement>('.labm-allies__track');
+    const lists = Array.from(element.querySelectorAll<HTMLElement>('.labm-allies__list'));
+    if (!trackElement || lists.length !== 2) {
+      throw new Error('La marquee requiere una pista y dos grupos');
+    }
+    return {
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      track: {
+        animationName: getComputedStyle(trackElement).animationName,
+        animationDuration: getComputedStyle(trackElement).animationDuration,
+        animationTimingFunction: getComputedStyle(trackElement).animationTimingFunction,
+        display: getComputedStyle(trackElement).display,
+        transform: getComputedStyle(trackElement).transform,
+        x: trackElement.getBoundingClientRect().x,
+      },
+      lists: lists.map((list) => ({
+        display: getComputedStyle(list).display,
+        flexWrap: getComputedStyle(list).flexWrap,
+        top: list.getBoundingClientRect().top,
+      })),
+    };
+  });
+  await page.waitForTimeout(400);
+  const motionAfter = await track.evaluate((element) => ({
+    transform: getComputedStyle(element).transform,
+    x: element.getBoundingClientRect().x,
+  }));
+  await testInfo.attach('diagnostico-marquee-no-preference.json', {
+    body: JSON.stringify({ styleHref, motionBefore, motionAfter }, null, 2),
+    contentType: 'application/json',
+  });
+  expect(motionBefore.reducedMotion).toBe(false);
+  expect(motionBefore.track).toMatchObject({
+    animationName: 'labm-marquee',
+    animationDuration: '24s',
+    animationTimingFunction: 'linear',
+    display: 'flex',
+  });
+  expect(motionBefore.lists).toEqual([
+    { display: 'flex', flexWrap: 'nowrap', top: motionBefore.lists[0].top },
+    { display: 'flex', flexWrap: 'nowrap', top: motionBefore.lists[0].top },
+  ]);
+  expect(motionAfter.transform).not.toBe(motionBefore.track.transform);
+  expect(motionAfter.x).toBeLessThan(motionBefore.track.x);
+  await expect(allies.locator('a, button, input, select')).toHaveCount(0);
+  await expect(allies.locator('[data-labm-allies-pause], [data-labm-allies-speed]')).toHaveCount(0);
+  expect((await allies.locator('.labm-allies__viewport').innerText()).trim()).toBe('');
+  await expect(allies.locator('.labm-allies__item')).toHaveText(['', '', '', '', '', '', '', '', '', '', '', '']);
 });
 
-test('slider y aliados quedan estaticos con movimiento reducido', async ({ page }) => {
+test('slider y aliados quedan estaticos con movimiento reducido', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const slider = page.locator('[data-labm-slider]');
   const allies = page.locator('[data-labm-allies]');
   await expect(slider).toBeVisible();
   await expect(allies).toBeVisible();
-  await expect(allies).toHaveAttribute('data-labm-paused', 'true');
-  await expect(allies.locator('.labm-allies__visual')).toHaveCSS('animation-name', 'none');
+  await expect(allies.locator('.labm-allies__track')).toHaveCSS('animation-name', 'none');
+  await expect(allies.locator('.labm-allies__replica')).toHaveCSS('display', 'none');
+  const primary = allies.locator('.labm-allies__primary');
+  await expect(primary).toHaveCSS('flex-wrap', 'wrap');
+  await expect(primary.locator('img')).toHaveCount(6);
+  for (const logo of await primary.locator('img').all()) {
+    await expect(logo).toBeVisible();
+  }
+  const reducedState = await allies.evaluate((element) => ({
+    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    trackAnimation: getComputedStyle(element.querySelector('.labm-allies__track') as Element).animationName,
+    primaryWrap: getComputedStyle(element.querySelector('.labm-allies__primary') as Element).flexWrap,
+    replicaDisplay: getComputedStyle(element.querySelector('.labm-allies__replica') as Element).display,
+  }));
+  expect(reducedState).toEqual({
+    reducedMotion: true,
+    trackAnimation: 'none',
+    primaryWrap: 'wrap',
+    replicaDisplay: 'none',
+  });
+  await testInfo.attach('diagnostico-marquee-reduce.json', {
+    body: JSON.stringify(reducedState, null, 2),
+    contentType: 'application/json',
+  });
+  const geometry = await allies.evaluate((element) => ({ clientWidth: element.clientWidth, scrollWidth: element.scrollWidth }));
+  expect(geometry.scrollWidth).toBe(geometry.clientWidth);
+  const results = await new AxeBuilder({ page }).include('[data-labm-allies]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+  expect(results.violations).toEqual([]);
   const active = slider.locator('[data-labm-slide-to][aria-current="true"]');
   await expect(active).toHaveAttribute('data-labm-slide-to', '0');
   await page.waitForTimeout(7100);
   await expect(active).toHaveAttribute('data-labm-slide-to', '0');
+});
+
+test('aliados mantiene proporción, alt y ancho sin desborde', async ({ page }) => {
+  for (const width of [320, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const allies = page.locator('[data-labm-allies]');
+    const geometry = await allies.evaluate((element) => ({ clientWidth: element.clientWidth, scrollWidth: element.scrollWidth }));
+    expect(geometry.scrollWidth, `desborde a ${width}px`).toBe(geometry.clientWidth);
+    const logos = allies.locator('.labm-allies__list').first().locator('img');
+    for (const logo of await logos.all()) {
+      await expect(logo).toHaveAttribute('alt', /\S+/);
+      await expect(logo).toHaveCSS('object-fit', 'contain');
+      const dimensions = await logo.evaluate((image: HTMLImageElement) => ({
+        complete: image.complete,
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+      }));
+      expect(dimensions.complete).toBe(true);
+      expect(dimensions.naturalWidth / dimensions.naturalHeight).toBe(2);
+    }
+  }
 });

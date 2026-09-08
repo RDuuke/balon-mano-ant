@@ -9,7 +9,117 @@ use PHPUnit\Framework\TestCase;
 
 /** Verifica consultas, fallbacks y composición de la portada. */
 final class HomePresentationTest extends TestCase {
-	/** Conserva y restaura el estado de las noticias existentes durante escenarios acotados. */
+	/** La coleccion de aliados filtra antes del limite y desempata por titulo e ID. */
+	public function test_allies_collection_filters_orders_and_limits_before_rendering(): void {
+		$existing = get_posts(
+			array(
+				'post_type'      => 'labm_aliado',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			)
+		);
+		$created  = array();
+		/**
+		 * IDs de adjuntos creados por el escenario.
+		 *
+		 * @var int[] $attachments
+		 */
+		$attachments = array();
+		$image_src   = static function ( $image, int $attachment_id ) use ( &$attachments ) {
+			return in_array( $attachment_id, $attachments, true ) ? array( 'https://example.test/collection-' . $attachment_id . '.png', 800, 400, false ) : $image;
+		};
+
+		foreach ( $existing as $post_id ) {
+			wp_update_post(
+				array(
+					'ID'          => $post_id,
+					'post_status' => 'draft',
+				)
+			);
+		}
+		try {
+			$invalid   = wp_insert_post(
+				array(
+					'post_type'   => 'labm_aliado',
+					'post_status' => 'publish',
+					'post_title'  => 'Antes sin imagen',
+					'menu_order'  => -1,
+				)
+			);
+			$created[] = $invalid;
+			$expected  = array();
+			for ( $index = 0; $index < 13; $index++ ) {
+				$post_id       = wp_insert_post(
+					array(
+						'post_type'   => 'labm_aliado',
+						'post_status' => 'publish',
+						'post_title'  => sprintf( 'Coleccion %02d', $index ),
+						'menu_order'  => 5,
+					)
+				);
+				$attachment_id = wp_insert_attachment(
+					array(
+						'post_title'     => 'Logo',
+						'post_mime_type' => 'image/png',
+						'post_status'    => 'inherit',
+					)
+				);
+				$created[]     = $post_id;
+				$attachments[] = $attachment_id;
+				update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
+				if ( $index < 12 ) {
+					$expected[] = $post_id;
+				}
+			}
+			$draft_id      = wp_insert_post(
+				array(
+					'post_type'   => 'labm_aliado',
+					'post_status' => 'draft',
+					'post_title'  => 'Coleccion borrador',
+					'menu_order'  => -2,
+				)
+			);
+			$draft_image   = wp_insert_attachment(
+				array(
+					'post_title'     => 'Logo borrador',
+					'post_mime_type' => 'image/png',
+					'post_status'    => 'inherit',
+				)
+			);
+			$created[]     = $draft_id;
+			$attachments[] = $draft_image;
+			update_post_meta( $draft_id, '_thumbnail_id', $draft_image );
+
+			add_filter( 'wp_get_attachment_image_src', $image_src, 10, 2 );
+			$posts = labm_theme_home_allies_posts();
+			self::assertSame( $expected, wp_list_pluck( $posts, 'ID' ) );
+			self::assertNotContains( $invalid, wp_list_pluck( $posts, 'ID' ) );
+			self::assertNotContains( $draft_id, wp_list_pluck( $posts, 'ID' ) );
+		} finally {
+			remove_filter( 'wp_get_attachment_image_src', $image_src, 10 );
+			foreach ( $created as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			foreach ( $attachments as $attachment_id ) {
+				wp_delete_attachment( $attachment_id, true );
+			}
+			foreach ( $existing as $post_id ) {
+				wp_update_post(
+					array(
+						'ID'          => $post_id,
+						'post_status' => 'publish',
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	 * Conserva y restaura el estado de las noticias existentes durante escenarios acotados.
+	 *
+	 * @param callable $callback Escenario que requiere ocultar las noticias existentes.
+	 */
 	private function with_existing_news_unpublished( callable $callback ): void {
 		$existing = get_posts(
 			array(
@@ -20,13 +130,23 @@ final class HomePresentationTest extends TestCase {
 			)
 		);
 		foreach ( $existing as $post_id ) {
-			wp_update_post( array( 'ID' => $post_id, 'post_status' => 'draft' ) );
+			wp_update_post(
+				array(
+					'ID'          => $post_id,
+					'post_status' => 'draft',
+				)
+			);
 		}
 		try {
 			$callback();
 		} finally {
 			foreach ( $existing as $post_id ) {
-				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ) );
+				wp_update_post(
+					array(
+						'ID'          => $post_id,
+						'post_status' => 'publish',
+					)
+				);
 			}
 		}
 	}
@@ -89,11 +209,30 @@ final class HomePresentationTest extends TestCase {
 
 	/** Los medios priorizan miniatura, meta permitida y fallback; la categoria puede faltar. */
 	public function test_home_news_media_priority_and_missing_category_are_safe(): void {
-		$post_id       = wp_insert_post( array( 'post_type' => 'labm_actualidad', 'post_status' => 'publish', 'post_title' => 'Prioridad visual' ) );
-		$attachment_id = wp_insert_attachment( array( 'post_title' => 'Miniatura editorial', 'post_mime_type' => 'image/png', 'post_status' => 'inherit' ) );
+		$post_id       = wp_insert_post(
+			array(
+				'post_type'   => 'labm_actualidad',
+				'post_status' => 'publish',
+				'post_title'  => 'Prioridad visual',
+			)
+		);
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_title'     => 'Miniatura editorial',
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+			)
+		);
 		$image_source  = static fn() => array( 'https://example.test/miniatura-editorial.png', 10, 10, false );
 		try {
-			wp_update_attachment_metadata( $attachment_id, array( 'width' => 10, 'height' => 10, 'file' => '2026/09/miniatura-editorial.png' ) );
+			wp_update_attachment_metadata(
+				$attachment_id,
+				array(
+					'width'  => 10,
+					'height' => 10,
+					'file'   => '2026/09/miniatura-editorial.png',
+				)
+			);
 			update_post_meta( $post_id, 'labm_demo_image', 'assets/images/hero-balonmano-antioquia-v1.png' );
 			update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
 			add_filter( 'wp_get_attachment_image_src', $image_source );
@@ -230,6 +369,84 @@ final class HomePresentationTest extends TestCase {
 		self::assertSame( '', labm_theme_render_home_allies( 'tipo_inexistente' ) );
 	}
 
+	/** Los aliados filtran imágenes inválidas antes del límite y generan dos grupos sin interacción. */
+	public function test_allies_render_image_only_marquee_with_stable_valid_selection(): void {
+		$created     = array();
+		$attachments = array();
+		$image_src   = static function ( $image, $attachment_id ) use ( &$attachments ) {
+			return in_array( $attachment_id, $attachments, true ) ? array( 'https://example.test/logo-' . $attachment_id . '.png', 800, 400, false ) : $image;
+		};
+
+		try {
+			for ( $index = 0; $index < 14; $index++ ) {
+				$title     = 1 === $index ? '[DEMO LABM — FICTICIO] Aliado & "Seguro"' : sprintf( 'Aliado %02d', $index );
+				$post_id   = wp_insert_post(
+					array(
+						'post_type'   => 'labm_aliado',
+						'post_status' => 'publish',
+						'post_title'  => $title,
+						'menu_order'  => $index,
+					)
+				);
+				$created[] = $post_id;
+				if ( 0 !== $index ) {
+					$attachment_id = wp_insert_attachment(
+						array(
+							'post_title'     => 'Logo',
+							'post_mime_type' => 'image/png',
+							'post_status'    => 'inherit',
+						)
+					);
+					$attachments[] = $attachment_id;
+					update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
+				}
+			}
+			add_filter( 'wp_get_attachment_image_src', $image_src, 10, 2 );
+			$html = labm_theme_render_home_allies();
+			self::assertSame( 24, substr_count( $html, '<img ' ) );
+			self::assertSame( 2, substr_count( $html, '<ul' ) );
+			self::assertSame( 1, substr_count( $html, 'class="labm-allies__list labm-allies__primary"' ) );
+			self::assertStringContainsString( 'aria-hidden="true" inert', $html );
+			self::assertStringNotContainsString( '<a ', $html );
+			self::assertStringNotContainsString( '<button', $html );
+			self::assertStringNotContainsString( 'Aliado 00', $html );
+			self::assertStringContainsString( 'alt="Aliado &amp; &#8220;Seguro&#8221;"', $html );
+			self::assertStringNotContainsString( '[DEMO LABM', $html );
+			self::assertStringNotContainsString( '<span', $html );
+			self::assertSame( 1, preg_match_all( '/<ul\b[^>]*>(.*?)<\/ul>/s', $html, $groups ) > 0 ? 1 : 0 );
+			self::assertCount( 2, $groups[1] );
+			self::assertSame( $groups[1][0], $groups[1][1], 'La replica debe contener exactamente los mismos logos.' );
+		} finally {
+			remove_filter( 'wp_get_attachment_image_src', $image_src, 10 );
+			foreach ( $created as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			foreach ( $attachments as $attachment_id ) {
+				wp_delete_attachment( $attachment_id, true );
+			}
+		}
+	}
+
+	/** CSS y JavaScript mantienen una marquee continua sin controles y una alternativa estatica. */
+	public function test_allies_assets_define_css_only_marquee_and_reduced_motion_fallback(): void {
+		$root = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';
+		$css  = file_get_contents( $root . 'style.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- contrato de fuente local.
+		$js   = file_get_contents( $root . 'assets/home.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- contrato de fuente local.
+
+		self::assertIsString( $css );
+		self::assertIsString( $js );
+		self::assertDoesNotMatchRegularExpression( '/(?:data-labm-allies|labm-allies|marquee)/i', $js );
+		self::assertStringNotContainsString( '.labm-allies button', $css );
+		self::assertMatchesRegularExpression( '/\.labm-allies__track\s*\{[^}]*display:\s*flex;[^}]*column-gap:\s*0;[^}]*animation:\s*labm-marquee\s+24s\s+linear\s+infinite;/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-allies__logo\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%;[^}]*object-fit:\s*contain;/s', $css );
+		self::assertMatchesRegularExpression( '/@keyframes\s+labm-marquee\s*\{.*?translate3d\(-50%,\s*0,\s*0\);\s*\}\s*\}/s', $css );
+		self::assertSame( 1, preg_match( '/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{(?<rules>.*)\}\s*$/s', $css, $reduced ) );
+		self::assertMatchesRegularExpression( '/\.labm-allies__viewport\s*\{[^}]*overflow:\s*visible;/', $reduced['rules'] );
+		self::assertMatchesRegularExpression( '/\.labm-allies__track\s*\{[^}]*animation:\s*none\s*!important;[^}]*transform:\s*none;/', $reduced['rules'] );
+		self::assertMatchesRegularExpression( '/\.labm-allies__list\s*\{[^}]*flex-wrap:\s*wrap;[^}]*width:\s*100%;/', $reduced['rules'] );
+		self::assertMatchesRegularExpression( '/\.labm-allies__replica\s*\{[^}]*display:\s*none;/', $reduced['rules'] );
+	}
+
 	/** El tema omite el contenido dependiente si labm-core no registra sus tipos. */
 	public function test_portada_degrada_sin_registros_de_labm_core(): void {
 		self::assertTrue( unregister_post_type( 'labm_slide' ) );
@@ -285,9 +502,7 @@ final class HomePresentationTest extends TestCase {
 			self::assertStringNotContainsString( 'javascript:', $slider );
 
 			$allies = labm_theme_render_home_allies();
-			self::assertStringContainsString( 'data-labm-allies-pause', $allies );
-			self::assertStringContainsString( 'aria-hidden="true"', $allies );
-			self::assertStringContainsString( 'Aliado público', $allies );
+			self::assertStringNotContainsString( 'data-labm-allies-pause', $allies );
 
 			$clubs = labm_theme_render_home_clubs();
 			self::assertStringContainsString( 'data-labm-section="clubes"', $clubs );
