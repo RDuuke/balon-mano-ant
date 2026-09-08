@@ -258,67 +258,95 @@ final class HomePresentationTest extends TestCase {
 	}
 	/** Noticias y eventos usan consultas publicas, estables y excluyentes. */
 	public function test_home_news_query_orders_limits_and_excludes_events(): void {
-		$created = array();
-		try {
-			$event_id  = wp_insert_post(
-				array(
-					'post_type'   => 'labm_actualidad',
-					'post_status' => 'publish',
-					'post_title'  => 'Evento aislado',
-					'post_date'   => '2026-09-01 12:00:00',
-				)
-			);
-			$created[] = $event_id;
-			update_post_meta( $event_id, 'labm_fecha_evento', '2026-12-12' );
+		$this->with_existing_news_unpublished(
+			function (): void {
+				$created = array();
+				try {
+					$event_id  = wp_insert_post(
+						array(
+							'post_type'   => 'labm_actualidad',
+							'post_status' => 'publish',
+							'post_title'  => 'Evento aislado',
+							'post_date'   => '2026-09-01 12:00:00',
+						)
+					);
+					$created[] = $event_id;
+					update_post_meta( $event_id, 'labm_fecha_evento', '2026-12-12' );
 
-			foreach ( array( '27', '28', '29', '30', '31' ) as $day ) {
-				$created[] = wp_insert_post(
+					foreach ( array( '27', '28', '29', '30', '31' ) as $day ) {
+						$created[] = wp_insert_post(
+							array(
+								'post_type'    => 'labm_actualidad',
+								'post_status'  => 'publish',
+								'post_title'   => 'Noticia orden ' . $day,
+								'post_content' => 'Contenido de prueba.',
+								'post_date'    => '2026-08-' . $day . ' 12:00:00',
+							)
+						);
+					}
+					$created[] = wp_insert_post(
 					array(
-						'post_type'    => 'labm_actualidad',
-						'post_status'  => 'publish',
-						'post_title'   => 'Noticia orden ' . $day,
-						'post_content' => 'Contenido de prueba.',
-						'post_date'    => '2026-08-' . $day . ' 12:00:00',
+						'post_type'   => 'labm_actualidad',
+						'post_status' => 'draft',
+						'post_title'  => 'Noticia privada del home',
+						'post_date'   => '2026-09-03 10:00:00',
 					)
-				);
-			}
-			$created[] = wp_insert_post(
-				array(
-					'post_type'   => 'labm_actualidad',
-					'post_status' => 'draft',
-					'post_title'  => 'Noticia privada del home',
-					'post_date'   => '2026-09-03 10:00:00',
-				)
-			);
+					);
 
-			$query = labm_theme_home_news_query();
-			self::assertSame( 4, $query->post_count );
-			self::assertSame(
-				array( 'Noticia orden 31', 'Noticia orden 30', 'Noticia orden 29', 'Noticia orden 28' ),
-				array_map( 'get_the_title', $query->posts )
-			);
-			self::assertNotContains( $event_id, wp_list_pluck( $query->posts, 'ID' ) );
-			$event_query = labm_theme_home_event_query();
-			self::assertSame( 1, $event_query->post_count );
-			self::assertNotEmpty( get_post_meta( $event_query->posts[0]->ID, 'labm_fecha_evento', true ) );
-			self::assertSame( array(), array_intersect( wp_list_pluck( $query->posts, 'ID' ), wp_list_pluck( $event_query->posts, 'ID' ) ) );
-		} finally {
-			foreach ( $created as $post_id ) {
-				wp_delete_post( $post_id, true );
+					$query = labm_theme_home_news_query();
+					self::assertSame( 4, $query->post_count );
+					self::assertSame(
+						array( 'Noticia orden 31', 'Noticia orden 30', 'Noticia orden 29', 'Noticia orden 28' ),
+						array_map( 'get_the_title', $query->posts )
+					);
+					self::assertNotContains( $event_id, wp_list_pluck( $query->posts, 'ID' ) );
+					$event_query = labm_theme_home_event_query();
+					self::assertSame( 1, $event_query->post_count );
+					self::assertNotEmpty( get_post_meta( $event_query->posts[0]->ID, 'labm_fecha_evento', true ) );
+					self::assertSame( array(), array_intersect( wp_list_pluck( $query->posts, 'ID' ), wp_list_pluck( $event_query->posts, 'ID' ) ) );
+				} finally {
+					foreach ( $created as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
+				}
 			}
-		}
+		);
 	}
 
 	/** La seccion compone una noticia destacada y hasta tres laterales. */
 	public function test_home_news_renders_featured_sidebar_metadata_and_archive_cta(): void {
-		$html = labm_theme_render_home_news();
-		self::assertStringContainsString( 'class="labm-home-news__featured"', $html );
-		self::assertSame( 3, substr_count( $html, 'class="labm-home-news__side-card"' ) );
-		self::assertStringContainsString( 'class="labm-home-news__archive"', $html );
-		self::assertStringContainsString( '<time ', $html );
-		self::assertStringContainsString( 'Noticias demo', $html );
-		self::assertSame( 4, substr_count( $html, 'class="labm-home-news__article-link"' ) );
-		self::assertStringNotContainsString( '[DEMO LABM — FICTICIO]', $html );
+		$this->with_existing_news_unpublished(
+			function (): void {
+				$created = array();
+				try {
+					foreach ( array( 'Portada', 'Lateral uno', 'Lateral dos', 'Lateral tres' ) as $index => $title ) {
+						$post_id   = wp_insert_post(
+							array(
+								'post_type'   => 'labm_actualidad',
+								'post_status' => 'publish',
+								'post_title'  => $title,
+								'post_date'   => '2020-09-0' . ( 4 - $index ) . ' 12:00:00',
+							)
+						);
+						$created[] = $post_id;
+						wp_set_object_terms( $post_id, array( 'Noticias demo' ), 'labm_categoria' );
+					}
+
+					$html = labm_theme_render_home_news();
+					self::assertStringContainsString( 'class="labm-home-news__featured"', $html );
+					self::assertSame( 3, substr_count( $html, 'class="labm-home-news__side-card"' ) );
+					self::assertStringContainsString( 'class="labm-home-news__archive"', $html );
+					self::assertStringContainsString( '<time ', $html );
+					self::assertStringContainsString( 'Noticias demo', $html );
+					self::assertSame( 4, substr_count( $html, 'class="labm-home-news__article-link"' ) );
+					self::assertStringNotContainsString( '[DEMO LABM — FICTICIO]', $html );
+				} finally {
+					foreach ( $created as $post_id ) {
+						wp_delete_post( $post_id, true );
+					}
+				}
+			}
+		);
 	}
 
 	/** CTA y medios degradan sin emitir destinos o rutas inseguras. */
