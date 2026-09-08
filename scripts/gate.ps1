@@ -13,7 +13,7 @@ function Invoke-Gate([string] $Name, [string] $Tool, [scriptblock] $Command, [st
     }
     $version = & $Tool --version 2>&1 | Select-Object -First 1
     if ($IsolatedScript) {
-        $powershell = Join-Path $PSHOME 'powershell.exe'
+        $powershell = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
         $startInfo.FileName = $powershell
         $startInfo.WorkingDirectory = $root
