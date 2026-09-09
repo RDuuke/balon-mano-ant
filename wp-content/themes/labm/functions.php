@@ -48,6 +48,101 @@ function labm_theme_register_footer_fallback() {
 }
 add_action( 'init', 'labm_theme_register_footer_fallback', 20 );
 
+/**
+ * Renderiza el banner editorial estático de la página Nosotros.
+ *
+ * @return string HTML seguro o cadena vacía cuando no existe contenido público.
+ */
+function labm_theme_render_about_banner() {
+	$post = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );
+	if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+		return '';
+	}
+
+	$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+	$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+	$title = is_string( $title ) ? $title : '';
+	$copy  = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+	$copy  = trim( wp_strip_all_tags( strip_shortcodes( $copy ) ) );
+	$copy  = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $copy );
+	$copy  = is_string( $copy ) ? $copy : '';
+	if ( '' === $title || '' === $copy ) {
+		return '';
+	}
+
+	$thumbnail = get_the_post_thumbnail(
+		$post,
+		'full',
+		array(
+			'alt'     => $title,
+			'loading' => 'eager',
+		)
+	);
+
+	ob_start();
+	?>
+	<section class="labm-about-banner<?php echo '' === $thumbnail ? ' labm-about-banner--without-media' : ''; ?>" data-labm-section="nosotros-banner" aria-labelledby="labm-about-banner-title">
+		<article class="labm-about-banner__content">
+			<p class="labm-about-banner__eyebrow"><?php esc_html_e( 'Institucional', 'labm' ); ?></p>
+			<h1 id="labm-about-banner-title"><?php echo esc_html( $title ); ?></h1>
+			<p class="labm-about-banner__summary"><?php echo esc_html( $copy ); ?></p>
+		</article>
+		<?php if ( '' !== $thumbnail ) : ?>
+			<div class="labm-about-banner__media"><?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado del adjunto. ?></div>
+		<?php endif; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza los artículos editoriales de Misión y Visión.
+ *
+ * @return string HTML seguro o cadena vacía sin artículos públicos completos.
+ */
+function labm_theme_render_about_purpose() {
+	$items = array();
+	foreach (
+		array(
+			'mision' => 'mision-nosotros',
+			'vision' => 'vision-nosotros',
+		) as $key => $slug
+	) {
+		$post = get_page_by_path( $slug, OBJECT, 'post' );
+		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+			continue;
+		}
+		$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
+		$copy  = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+		$copy  = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( strip_shortcodes( $copy ) ) ) );
+		if ( ! is_string( $title ) || ! is_string( $copy ) || '' === $title || '' === $copy ) {
+			continue;
+		}
+		$items[] = array(
+			'key'   => $key,
+			'title' => $title,
+			'copy'  => $copy,
+		);
+	}
+	if ( array() === $items ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="labm-about-purpose" data-labm-section="nosotros-proposito" aria-label="<?php esc_attr_e( 'Misión y Visión', 'labm' ); ?>">
+		<?php foreach ( $items as $item ) : ?>
+			<article class="labm-about-purpose__item labm-about-purpose__item--<?php echo 'mision' === $item['key'] ? 'light' : 'dark'; ?>" data-labm-purpose="<?php echo esc_attr( $item['key'] ); ?>">
+				<p class="labm-about-purpose__number" aria-hidden="true"><?php echo 'mision' === $item['key'] ? '01' : '02'; ?></p>
+				<h2><?php echo esc_html( $item['title'] ); ?></h2>
+				<p class="labm-about-purpose__copy"><?php echo esc_html( $item['copy'] ); ?></p>
+			</article>
+		<?php endforeach; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
 /** Enlace para saltar la navegacion repetida. */
 function labm_theme_skip_link() {
 	echo '<a class="labm-skip-link" href="#contenido-principal">' . esc_html__( 'Saltar al contenido', 'labm' ) . '</a>';

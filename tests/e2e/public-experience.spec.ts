@@ -4,6 +4,116 @@ import AxeBuilder from '@axe-core/playwright';
 const publicRoutes = ['/', '/nosotros/', '/actualidad/', '/selecciones/'];
 const targetWidths = [320, 768, 1024, 1200, 1440];
 
+test('Nosotros inicia con un banner editorial estático y responsive', async ({ page }) => {
+  await page.goto('/nosotros/');
+  const banner = page.locator('[data-labm-section="nosotros-banner"]');
+  await expect(banner).toHaveCount(1);
+  await expect(banner.getByRole('heading', { level: 1, name: 'Somos la Liga' })).toBeVisible();
+  await expect(banner.locator('.labm-about-banner__media img')).toBeVisible();
+  await expect(banner.locator('button, [data-labm-slider]')).toHaveCount(0);
+  await expect(page.locator('main > section').first()).toHaveAttribute('data-labm-section', 'nosotros-banner');
+
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    const geometry = await banner.evaluate((element) => {
+      const content = element.querySelector('.labm-about-banner__content');
+      const media = element.querySelector('.labm-about-banner__media');
+      if (!(content instanceof HTMLElement) || !(media instanceof HTMLElement)) throw new Error('Paneles ausentes');
+      const contentBox = content.getBoundingClientRect();
+      const mediaBox = media.getBoundingClientRect();
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        sideBySide: Math.abs(contentBox.top - mediaBox.top) <= 1,
+        stacked: mediaBox.top >= contentBox.bottom - 1,
+      };
+    });
+    expect(geometry.overflow, `desborde a ${width}px`).toBe(false);
+    expect(width === 320 ? geometry.stacked : geometry.sideBySide).toBe(true);
+
+    await banner.locator('h1').evaluate((heading) => {
+      heading.textContent = 'Somos la Liga Antioqueña de Balonmano y su comunidad deportiva';
+    });
+    await banner.locator('.labm-about-banner__summary').evaluate((summary) => {
+      summary.textContent = 'Contenido editorial deliberadamente largo para comprobar que el banner conserva la lectura, adapta su altura y no invade el panel de imagen ni produce desplazamiento horizontal global.';
+    });
+    const longContent = await banner.evaluate((element) => {
+      const content = element.querySelector('.labm-about-banner__content');
+      const media = element.querySelector('.labm-about-banner__media');
+      if (!(content instanceof HTMLElement) || !(media instanceof HTMLElement)) throw new Error('Paneles ausentes');
+      const contentBox = content.getBoundingClientRect();
+      const mediaBox = media.getBoundingClientRect();
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        separated: contentBox.right <= mediaBox.left + 1 || mediaBox.top >= contentBox.bottom - 1,
+      };
+    });
+    expect(longContent.overflow, `desborde con contenido largo a ${width}px`).toBe(false);
+    expect(longContent.separated, `paneles separados a ${width}px`).toBe(true);
+  }
+
+  const results = await new AxeBuilder({ page }).include('[data-labm-section="nosotros-banner"]').analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test('Nosotros presenta Misión y Visión administrables con composición responsive', async ({ page }, testInfo) => {
+  await page.goto('/nosotros/');
+  const section = page.locator('[data-labm-section="nosotros-proposito"]');
+  const mission = section.locator('[data-labm-purpose="mision"]');
+  const vision = section.locator('[data-labm-purpose="vision"]');
+  await expect(section).toHaveCount(1);
+  await expect(mission.getByText('01', { exact: true })).toBeVisible();
+  await expect(vision.getByText('02', { exact: true })).toBeVisible();
+  await expect(mission.getByRole('heading', { name: 'Misión' })).toBeVisible();
+  await expect(vision.getByRole('heading', { name: 'Visión' })).toBeVisible();
+  await expect(mission).toHaveClass(/labm-about-purpose__item--light/);
+  await expect(vision).toHaveClass(/labm-about-purpose__item--dark/);
+
+  for (const width of [320, 768, 1024, 1200, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await section.evaluate((element) => {
+      const items = Array.from(element.querySelectorAll<HTMLElement>('[data-labm-purpose]'));
+      const boxes = items.map((item) => item.getBoundingClientRect());
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        sideBySide: Math.abs(boxes[0].top - boxes[1].top) <= 1,
+        stacked: boxes[1].top >= boxes[0].bottom - 1,
+      };
+    });
+    expect(geometry.overflow, `desborde a ${width}px`).toBe(false);
+    expect(width < 768 ? geometry.stacked : geometry.sideBySide).toBe(true);
+  }
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const desktopVisual = await section.evaluate((element) => {
+    const items = Array.from(element.querySelectorAll<HTMLElement>('[data-labm-purpose]'));
+    const boxes = items.map((item) => item.getBoundingClientRect());
+    const numbers = items.map((item) => Number.parseFloat(getComputedStyle(item.querySelector('.labm-about-purpose__number')!).fontSize));
+    const headings = items.map((item) => item.querySelector('h2')!.getBoundingClientRect());
+    return {
+      sectionWidth: element.getBoundingClientRect().width,
+      heights: boxes.map((box) => box.height),
+      gap: boxes[1].left - boxes[0].right,
+      numbers,
+      headingsSingleLine: headings.every((box) => box.height < 90),
+    };
+  });
+  expect(desktopVisual.sectionWidth).toBeLessThanOrEqual(1200.5);
+  expect(Math.abs(desktopVisual.heights[0] - desktopVisual.heights[1])).toBeLessThanOrEqual(1);
+  expect(desktopVisual.heights[0]).toBeGreaterThanOrEqual(280);
+  expect(desktopVisual.heights[0]).toBeLessThanOrEqual(420);
+  expect(desktopVisual.gap).toBeGreaterThanOrEqual(12);
+  expect(desktopVisual.gap).toBeLessThanOrEqual(32);
+  expect(Math.min(...desktopVisual.numbers)).toBeGreaterThanOrEqual(52);
+  expect(desktopVisual.headingsSingleLine).toBe(true);
+  if (testInfo.project.name === 'wide-1440') {
+    await section.screenshot({ path: 'artifacts/visual/mision-vision-1440.png' });
+  }
+
+  const results = await new AxeBuilder({ page }).include('[data-labm-section="nosotros-proposito"]').analyze();
+  expect(results.violations).toEqual([]);
+});
+
 test('contenido publico conserva ancho maximo, centrado y gutters coherentes', async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto('/');
@@ -39,7 +149,7 @@ test('3.1 navegación global, páginas institucionales, foco y ruta ausente', as
   await expect(page.locator(':focus-visible')).toBeVisible();
 
   await page.goto('/nosotros/');
-  await expect(page.getByRole('heading', { level: 1, name: /nosotros/i })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /somos la liga/i })).toBeVisible();
 
   const missing = await page.goto('/ruta-ficticia-ausente/');
   expect(missing?.status()).toBe(404);

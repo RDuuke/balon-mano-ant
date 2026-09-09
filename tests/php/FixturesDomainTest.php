@@ -26,6 +26,105 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class FixturesDomainTest extends TestCase {
+	/** Misión y Visión son entradas administrables independientes e idempotentes. */
+	public function test_about_purpose_fixtures_are_independent_and_idempotent(): void {
+		foreach ( array( 'mision-nosotros', 'vision-nosotros' ) as $slug ) {
+			$existing = get_page_by_path( $slug, OBJECT, 'post' );
+			if ( $existing && ! str_contains( $existing->post_title, 'FICTICIO' ) ) {
+				wp_delete_post( $existing->ID, true );
+			}
+		}
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+		$first_ids = array();
+		foreach ( array( 'mision-nosotros', 'vision-nosotros' ) as $slug ) {
+			$post = get_page_by_path( $slug, OBJECT, 'post' );
+			self::assertInstanceOf( WP_Post::class, $post );
+			self::assertSame( 'publish', $post->post_status );
+			self::assertStringContainsString( 'FICTICIO', $post->post_title );
+			self::assertNotSame( '', trim( wp_strip_all_tags( $post->post_content ) ) );
+			$first_ids[ $slug ] = $post->ID;
+		}
+		self::assertNotSame( $first_ids['mision-nosotros'], $first_ids['vision-nosotros'] );
+		$command->load( array(), array() );
+		foreach ( $first_ids as $slug => $id ) {
+			self::assertSame( $id, get_page_by_path( $slug, OBJECT, 'post' )->ID );
+		}
+	}
+
+	/** Un conflicto de Misión no impide crear o actualizar Visión. */
+	public function test_about_purpose_fixture_preserves_an_independent_conflict(): void {
+		$mission = get_page_by_path( 'mision-nosotros', OBJECT, 'post' );
+		if ( $mission ) {
+			wp_delete_post( $mission->ID, true );
+		}
+		$foreign_id = wp_insert_post( array( 'post_name' => 'mision-nosotros', 'post_title' => 'Misión ajena', 'post_content' => '<p>No modificar.</p>', 'post_type' => 'post', 'post_status' => 'publish' ) );
+		WP_CLI::$messages = array();
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+		self::assertSame( 'Misión ajena', get_post( $foreign_id )->post_title );
+		self::assertInstanceOf( WP_Post::class, get_page_by_path( 'vision-nosotros', OBJECT, 'post' ) );
+		self::assertNotEmpty( array_filter( WP_CLI::$messages, static fn( $message ) => str_contains( $message, 'mision-nosotros' ) ) );
+		wp_delete_post( $foreign_id, true );
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+	}
+
+	/** El banner de Nosotros es una entrada publicada, completa e idempotente. */
+	public function test_about_banner_fixture_is_complete_and_idempotent(): void {
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+		$first = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );
+
+		self::assertInstanceOf( WP_Post::class, $first );
+		self::assertSame( 'publish', $first->post_status );
+		self::assertStringContainsString( 'FICTICIO', $first->post_title );
+		self::assertStringContainsString( 'Somos la Liga', $first->post_title );
+		self::assertNotSame( '', trim( $first->post_excerpt ) );
+		self::assertNotSame( '', trim( wp_strip_all_tags( $first->post_content ) ) );
+		self::assertGreaterThan( 0, get_post_thumbnail_id( $first->ID ) );
+		self::assertSame( 'image/png', get_post_mime_type( get_post_thumbnail_id( $first->ID ) ) );
+
+		$command->load( array(), array() );
+		$second = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );
+		self::assertSame( $first->ID, $second->ID );
+		self::assertSame( get_post_thumbnail_id( $first->ID ), get_post_thumbnail_id( $second->ID ) );
+		self::assertCount(
+			1,
+			get_posts(
+				array(
+					'name'           => 'banner-nosotros',
+					'post_type'      => 'post',
+					'post_status'    => array( 'publish', 'draft', 'private' ),
+					'posts_per_page' => -1,
+				)
+			)
+		);
+	}
+
+	/** El slug reservado nunca permite sobrescribir una entrada editorial ajena. */
+	public function test_about_banner_fixture_preserves_foreign_content_conflict(): void {
+		$existing = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );
+		if ( $existing ) {
+			wp_delete_post( $existing->ID, true );
+		}
+		$foreign_id = wp_insert_post(
+			array(
+				'post_name'    => 'banner-nosotros',
+				'post_title'   => 'Contenido editorial ajeno',
+				'post_content' => '<p>No modificar.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			)
+		);
+		WP_CLI::$messages = array();
+
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+		$preserved = get_post( $foreign_id );
+		self::assertSame( 'Contenido editorial ajeno', $preserved->post_title );
+		self::assertNotEmpty( array_filter( WP_CLI::$messages, static fn( $message ) => str_contains( $message, 'banner-nosotros' ) ) );
+
+		wp_delete_post( $foreign_id, true );
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+	}
 	/** Un fallo al escribir el logo demo se comunica y no queda oculto. */
 	public function test_home_allies_fixture_reports_upload_failures(): void {
 		$attachment = get_page_by_path( 'demo-labm-logo-arco-comun', OBJECT, 'attachment' );

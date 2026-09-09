@@ -86,6 +86,51 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Artículo ficticio para el banner estático de Nosotros.
+	 *
+	 * @return array
+	 */
+	private static function about_banner_fixture() {
+		return array(
+			array(
+				'post_name'      => 'banner-nosotros',
+				'post_title'     => self::MARKER . ' Somos la Liga',
+				'post_excerpt'   => 'Trabajamos por el desarrollo integral del balonmano antioqueño, articulando clubes, deportistas y comunidad.',
+				'post_content'   => '<p>' . self::MARKER . ' Trabajamos por el desarrollo integral del balonmano antioqueño, articulando clubes, deportistas y comunidad.</p>',
+				'post_type'      => 'post',
+				'post_status'    => 'publish',
+				'featured_image' => 'assets/images/hero-balonmano-seleccion-v1.png',
+			),
+		);
+	}
+
+	/**
+	 * Artículos ficticios independientes para Misión y Visión.
+	 *
+	 * @return array
+	 */
+	private static function about_purpose_fixtures() {
+		return array(
+			array(
+				'post_name'    => 'mision-nosotros',
+				'post_title'   => self::MARKER . ' Misión',
+				'post_excerpt' => 'Promovemos el desarrollo integral del balonmano antioqueño mediante procesos deportivos, formativos y comunitarios.',
+				'post_content' => '<p>' . self::MARKER . ' Promovemos el desarrollo integral del balonmano antioqueño mediante procesos deportivos, formativos y comunitarios.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			),
+			array(
+				'post_name'    => 'vision-nosotros',
+				'post_title'   => self::MARKER . ' Visión',
+				'post_excerpt' => 'Ser un referente nacional por la solidez de nuestros clubes, la formación deportiva y el impacto positivo en la comunidad.',
+				'post_content' => '<p>' . self::MARKER . ' Ser un referente nacional por la solidez de nuestros clubes, la formación deportiva y el impacto positivo en la comunidad.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			),
+		);
+	}
+
+	/**
 	 * Importa o reutiliza un logo demo como adjunto de WordPress.
 	 *
 	 * @param string $relative_path Ruta relativa dentro del tema.
@@ -303,7 +348,9 @@ class LABM_Fixtures_Command {
 				),
 			),
 			self::home_news_fixtures(),
-			self::home_allies_fixtures()
+			self::home_allies_fixtures(),
+			self::about_banner_fixture(),
+			self::about_purpose_fixtures()
 		);
 
 		foreach ( $fixtures as $fixture ) {
