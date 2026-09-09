@@ -16,6 +16,7 @@
       <file>tests/php/PublicExperienceTest.php</file>
       <file>tests/php/HomePresentationTest.php</file>
       <file>tests/php/FrontendTokensTest.php</file>
+	  <file>tests/php/FooterSettingsTest.php</file>
       <file>tests/php/DocumentContactTest.php</file>
       <file>tests/php/ClosingCoverageTest.php</file>
       <file>tests/php/VerifyCorrectivesTest.php</file>
