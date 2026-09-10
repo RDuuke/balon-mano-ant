@@ -26,3 +26,5 @@
 
 - [x] 5.1 Verificar `git diff --check`, finales LF y registrar evidencia RED/GREEN.
 - [x] 5.2 Ajustar y verificar fidelidad visual: tarjetas compactas iguales, gap estrecho, numerales grandes y títulos sin cortes.
+- [x] 5.3 Corregir la regresión visual reportada: compartir el fondo del footer y ajustar la escala de numerales y títulos al diseño.
+- [x] 5.4 Cubrir contenido editorial largo real en Misión/Visión y asegurar títulos adaptables sin desborde.

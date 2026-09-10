@@ -50,3 +50,16 @@
 - **GREEN:** a viewport de 1440 px la sección mide 1200 × 393 px, conserva tarjetas iguales, gap de 20 px, numerales de al menos 52 px y títulos en una línea.
 - **TRIANGULATE:** Playwright valida apilado a 320 px y disposición horizontal desde 768 px sin overflow.
 - **REFACTOR:** se anuló el padding genérico por cascada y se concentró el espaciado dentro de cada tarjeta.
+
+## Tarea 5.3 — Corregir fondo y escala tipográfica
+
+- **RED:** se añadió el contrato en `tests/e2e/public-experience.spec.ts` para comparar el fondo calculado de Visión con el footer y acotar numeral a 44–48 px y título a 24–32 px; la ejecución RED no arrancó porque Corepack no está disponible en el host.
+- **GREEN:** implementación en `wp-content/themes/labm/style.css`; el gate Playwright completo pasa (92 pruebas).
+- **REFACTOR:** un único token `--labm-footer-background` gobierna las dos superficies negras.
+
+## Tarea 5.4 — Cubrir contenido editorial largo
+
+- **RED:** `tests/e2e/public-experience.spec.ts` inyecta títulos y textos largos en ambos paneles; el escenario falló en `mobile-320` por desborde horizontal.
+- **GREEN:** `wp-content/themes/labm/style.css` permite partir títulos extensos; el escenario pasa en 320, 768, 1024 y 1440 px (4 pruebas).
+- **TRIANGULATE:** la suite Playwright completa pasa (96 pruebas) y conserva geometría, accesibilidad y comportamiento responsive.
+- **REFACTOR:** la prueba muta solo el DOM de su página aislada y comprueba desborde global, separación de paneles y ausencia de recorte.

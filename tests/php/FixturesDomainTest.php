@@ -26,6 +26,51 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class FixturesDomainTest extends TestCase {
+	/** Los integrantes demo forman una colección completa, categorizada e idempotente. */
+	public function test_about_team_fixtures_are_complete_categorized_and_idempotent(): void {
+		$expected = array(
+			'demo-labm-integrante-andres-montoya' => array( 'Andrés Montoya', 'Director técnico', 'Comité' ),
+			'demo-labm-integrante-daniel-restrepo' => array( 'Daniel Restrepo', 'Preparador físico', 'Entrenadores' ),
+			'demo-labm-integrante-valentina-rios' => array( 'Valentina Ríos', 'Entrenadora juvenil', 'Entrenadores' ),
+			'demo-labm-integrante-mateo-giraldo' => array( 'Mateo Giraldo', 'Representante comunitario', 'Representantes' ),
+		);
+		$command  = new LABM_Fixtures_Command();
+		$first    = array();
+		$command->load( array(), array() );
+		foreach ( $expected as $slug => $values ) {
+			$post = get_page_by_path( $slug, OBJECT, 'labm_integrante' );
+			self::assertInstanceOf( WP_Post::class, $post, $slug );
+			self::assertSame( 'publish', $post->post_status );
+			self::assertStringContainsString( $values[0], $post->post_title );
+			self::assertSame( $values[1], get_post_meta( $post->ID, 'labm_cargo', true ) );
+			self::assertSame( array( $values[2] ), wp_get_post_terms( $post->ID, 'labm_grupo_integrante', array( 'fields' => 'names' ) ) );
+			self::assertGreaterThan( 0, get_post_thumbnail_id( $post->ID ) );
+			$first[ $slug ] = array( $post->ID, get_post_thumbnail_id( $post->ID ) );
+		}
+		$command->load( array(), array() );
+		foreach ( $first as $slug => $ids ) {
+			$post = get_page_by_path( $slug, OBJECT, 'labm_integrante' );
+			self::assertSame( $ids, array( $post->ID, get_post_thumbnail_id( $post->ID ) ) );
+		}
+	}
+
+	/** Un slug de integrante ajeno se preserva sin impedir el resto de la colección. */
+	public function test_about_team_fixture_preserves_foreign_content_conflict(): void {
+		$slug     = 'demo-labm-integrante-andres-montoya';
+		$existing = get_page_by_path( $slug, OBJECT, 'labm_integrante' );
+		if ( $existing ) {
+			wp_delete_post( $existing->ID, true );
+		}
+		$foreign_id       = wp_insert_post( array( 'post_name' => $slug, 'post_title' => 'Integrante editorial ajeno', 'post_content' => '<p>No modificar.</p>', 'post_type' => 'labm_integrante', 'post_status' => 'publish' ) );
+		WP_CLI::$messages = array();
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+		self::assertSame( 'Integrante editorial ajeno', get_post( $foreign_id )->post_title );
+		self::assertInstanceOf( WP_Post::class, get_page_by_path( 'demo-labm-integrante-daniel-restrepo', OBJECT, 'labm_integrante' ) );
+		self::assertNotEmpty( array_filter( WP_CLI::$messages, static fn( $message ) => str_contains( $message, $slug ) ) );
+		wp_delete_post( $foreign_id, true );
+		( new LABM_Fixtures_Command() )->load( array(), array() );
+	}
+
 	/** Misión y Visión son entradas administrables independientes e idempotentes. */
 	public function test_about_purpose_fixtures_are_independent_and_idempotent(): void {
 		foreach ( array( 'mision-nosotros', 'vision-nosotros' ) as $slug ) {

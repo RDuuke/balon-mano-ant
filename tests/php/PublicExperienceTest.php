@@ -3,6 +3,55 @@
 use PHPUnit\Framework\TestCase;
 
 final class PublicExperienceTest extends TestCase {
+	/** Portada y Nosotros reutilizan una única salida semántica para vinculación. */
+	public function test_about_reuses_home_join_cta_after_team(): void {
+		$html = labm_theme_render_join_cta();
+		self::assertStringContainsString( 'data-labm-section="vinculacion"', $html );
+		self::assertStringContainsString( 'Haz parte del balonmano antioqueño', $html );
+		self::assertStringContainsString( 'href="/contacto/"', $html );
+
+		$root    = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/';
+		$home    = file_get_contents( $root . 'inicio.php' );
+		$about   = file_get_contents( $root . 'nosotros.php' );
+		$team    = strpos( $about, 'labm_theme_render_about_team()' );
+		$join    = strpos( $about, 'labm_theme_render_join_cta()' );
+		self::assertSame( 1, substr_count( $home, 'labm_theme_render_join_cta()' ) );
+		self::assertSame( 1, substr_count( $about, 'labm_theme_render_join_cta()' ) );
+		self::assertIsInt( $team );
+		self::assertIsInt( $join );
+		self::assertLessThan( $join, $team );
+	}
+
+	/** Nosotros muestra integrantes completos y permite filtrar por grupo. */
+	public function test_about_team_renders_editable_published_members_and_filters(): void {
+		$html = labm_theme_render_about_team();
+		self::assertStringContainsString( 'data-labm-section="nosotros-equipo"', $html );
+		self::assertStringContainsString( 'Quiénes hacen posible la Liga', $html );
+		self::assertSame( 4, substr_count( $html, 'data-labm-team-card' ) );
+		self::assertStringContainsString( 'Andrés Montoya', $html );
+		self::assertStringContainsString( 'Director técnico', $html );
+
+		$filtered = labm_theme_render_about_team( 'entrenadores' );
+		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-card' ) );
+		self::assertStringContainsString( 'aria-current="true"', $filtered );
+		self::assertStringNotContainsString( 'Mateo Giraldo', $filtered );
+	}
+
+	/** Integrantes incompletos o no públicos nunca se revelan. */
+	public function test_about_team_omits_incomplete_and_restricted_members(): void {
+		$draft = get_page_by_path( 'demo-labm-integrante-vacante', OBJECT, 'labm_integrante' );
+		self::assertInstanceOf( WP_Post::class, $draft );
+		$html = labm_theme_render_about_team();
+		self::assertStringNotContainsString( 'Vacante de ejemplo', $html );
+
+		$member = get_page_by_path( 'demo-labm-integrante-andres-montoya', OBJECT, 'labm_integrante' );
+		self::assertInstanceOf( WP_Post::class, $member );
+		$thumbnail = get_post_thumbnail_id( $member->ID );
+		delete_post_thumbnail( $member->ID );
+		self::assertStringNotContainsString( 'Andrés Montoya', labm_theme_render_about_team() );
+		set_post_thumbnail( $member->ID, $thumbnail );
+	}
+
 	/** Misión y Visión se renderizan como artículos independientes. */
 	public function test_about_page_renders_mission_and_vision_editorial_section(): void {
 		$html = labm_theme_render_about_purpose();

@@ -100,6 +100,20 @@ function labm_core_register_content_types() {
 			'show_in_rest' => true,
 		)
 	);
+
+	register_taxonomy(
+		'labm_grupo_integrante',
+		array( 'labm_integrante' ),
+		array(
+			'labels'       => array(
+				'name'          => __( 'Grupos de integrantes', 'labm-core' ),
+				'singular_name' => __( 'Grupo de integrante', 'labm-core' ),
+			),
+			'public'       => true,
+			'hierarchical' => true,
+			'show_in_rest' => true,
+		)
+	);
 }
 add_action( 'init', 'labm_core_register_content_types', 5 );
 

@@ -131,6 +131,38 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Integrantes ficticios para la sección editorial de Nosotros.
+	 *
+	 * @return array
+	 */
+	private static function about_team_fixtures() {
+		$definitions = array(
+			array( 'andres-montoya', 'Andrés Montoya', 'Director técnico', 'Comité', 'entrenador-principal.png' ),
+			array( 'daniel-restrepo', 'Daniel Restrepo', 'Preparador físico', 'Entrenadores', 'preparador-fisico.png' ),
+			array( 'valentina-rios', 'Valentina Ríos', 'Entrenadora juvenil', 'Entrenadores', 'entrenadora-juvenil.png' ),
+			array( 'mateo-giraldo', 'Mateo Giraldo', 'Representante comunitario', 'Representantes', 'representante-comunitario.png' ),
+		);
+
+		return array_map(
+			static function ( $definition, $order ) {
+				return array(
+					'post_name'      => 'demo-labm-integrante-' . $definition[0],
+					'post_title'     => self::MARKER . ' ' . $definition[1],
+					'post_content'   => '<p>' . self::MARKER . ' Perfil ficticio para demostración editorial.</p>',
+					'post_type'      => 'labm_integrante',
+					'post_status'    => 'publish',
+					'menu_order'     => $order,
+					'meta'           => array( 'labm_cargo' => $definition[2] ),
+					'terms'          => array( 'labm_grupo_integrante' => array( $definition[3] ) ),
+					'featured_image' => 'assets/images/quienes-demo/' . $definition[4],
+				);
+			},
+			$definitions,
+			array_keys( $definitions )
+		);
+	}
+
+	/**
 	 * Importa o reutiliza un logo demo como adjunto de WordPress.
 	 *
 	 * @param string $relative_path Ruta relativa dentro del tema.
@@ -350,7 +382,8 @@ class LABM_Fixtures_Command {
 			self::home_news_fixtures(),
 			self::home_allies_fixtures(),
 			self::about_banner_fixture(),
-			self::about_purpose_fixtures()
+			self::about_purpose_fixtures(),
+			self::about_team_fixtures()
 		);
 
 		foreach ( $fixtures as $fixture ) {

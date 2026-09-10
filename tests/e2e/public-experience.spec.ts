@@ -89,13 +89,18 @@ test('Nosotros presenta Misión y Visión administrables con composición respon
     const items = Array.from(element.querySelectorAll<HTMLElement>('[data-labm-purpose]'));
     const boxes = items.map((item) => item.getBoundingClientRect());
     const numbers = items.map((item) => Number.parseFloat(getComputedStyle(item.querySelector('.labm-about-purpose__number')!).fontSize));
+    const headingSizes = items.map((item) => Number.parseFloat(getComputedStyle(item.querySelector('h2')!).fontSize));
     const headings = items.map((item) => item.querySelector('h2')!.getBoundingClientRect());
+    const footer = document.querySelector<HTMLElement>('.labm-footer');
     return {
       sectionWidth: element.getBoundingClientRect().width,
       heights: boxes.map((box) => box.height),
       gap: boxes[1].left - boxes[0].right,
       numbers,
+      headingSizes,
       headingsSingleLine: headings.every((box) => box.height < 90),
+      visionBackground: getComputedStyle(items[1]).backgroundColor,
+      footerBackground: footer ? getComputedStyle(footer).backgroundColor : '',
     };
   });
   expect(desktopVisual.sectionWidth).toBeLessThanOrEqual(1200.5);
@@ -104,13 +109,158 @@ test('Nosotros presenta Misión y Visión administrables con composición respon
   expect(desktopVisual.heights[0]).toBeLessThanOrEqual(420);
   expect(desktopVisual.gap).toBeGreaterThanOrEqual(12);
   expect(desktopVisual.gap).toBeLessThanOrEqual(32);
-  expect(Math.min(...desktopVisual.numbers)).toBeGreaterThanOrEqual(52);
+  expect(Math.min(...desktopVisual.numbers)).toBeGreaterThanOrEqual(44);
+  expect(Math.max(...desktopVisual.numbers)).toBeLessThanOrEqual(48);
+  expect(Math.min(...desktopVisual.headingSizes)).toBeGreaterThanOrEqual(24);
+  expect(Math.max(...desktopVisual.headingSizes)).toBeLessThanOrEqual(32);
   expect(desktopVisual.headingsSingleLine).toBe(true);
+  expect(desktopVisual.visionBackground).toBe(desktopVisual.footerBackground);
   if (testInfo.project.name === 'wide-1440') {
     await section.screenshot({ path: 'artifacts/visual/mision-vision-1440.png' });
   }
 
   const results = await new AxeBuilder({ page }).include('[data-labm-section="nosotros-proposito"]').analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test('Misión y Visión adaptan contenido editorial largo sin desborde ni solapamiento', async ({ page }) => {
+  await page.goto('/nosotros/');
+  const section = page.locator('[data-labm-section="nosotros-proposito"]');
+  const items = section.locator('[data-labm-purpose]');
+  await expect(items).toHaveCount(2);
+
+  await items.evaluateAll((purposeItems) => {
+    const longTitle = 'Propósito institucional y comunitario de largo alcance';
+    const longCopy = 'Contenido editorial deliberadamente extenso para comprobar que cada panel amplía su altura, conserva la lectura completa y permanece separado del panel contiguo sin provocar desplazamiento horizontal ni solapamientos en ningún ancho objetivo. '.repeat(4);
+    purposeItems.forEach((item, index) => {
+      const heading = item.querySelector('h2');
+      const copy = item.querySelector('.labm-about-purpose__copy');
+      if (!(heading instanceof HTMLElement) || !(copy instanceof HTMLElement)) throw new Error('Contenido de propósito ausente');
+      heading.textContent = `${longTitle} ${index + 1}`;
+      copy.textContent = longCopy;
+    });
+  });
+
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await section.evaluate((element) => {
+      const purposeItems = Array.from(element.querySelectorAll<HTMLElement>('[data-labm-purpose]'));
+      const boxes = purposeItems.map((item) => item.getBoundingClientRect());
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        separated: boxes[0].right <= boxes[1].left + 1 || boxes[1].top >= boxes[0].bottom - 1,
+        contentFits: purposeItems.every((item) => item.scrollHeight <= item.clientHeight + 1),
+      };
+    });
+    expect(geometry.overflow, `desborde con contenido largo a ${width}px`).toBe(false);
+    expect(geometry.separated, `paneles solapados a ${width}px`).toBe(true);
+    expect(geometry.contentFits, `contenido recortado a ${width}px`).toBe(true);
+  }
+});
+
+test('Nosotros presenta integrantes editables, filtrables y responsive', async ({ page }) => {
+  await page.goto('/nosotros/');
+  const section = page.locator('[data-labm-section="nosotros-equipo"]');
+  await expect(section).toHaveCount(1);
+  await expect(section.getByRole('heading', { level: 2, name: 'Quiénes hacen posible la Liga' })).toBeVisible();
+  await expect(section.locator('[data-labm-team-card]')).toHaveCount(4);
+  await expect(section.getByText('Andrés Montoya')).toBeVisible();
+  await expect(section.getByText('Director técnico')).toBeVisible();
+  await expect(section.locator('.labm-about-team__media img')).toHaveCount(4);
+
+  const purpose = page.locator('[data-labm-section="nosotros-proposito"]');
+  const order = await page.locator('[data-labm-section]').evaluateAll((sections) =>
+    sections.map((item) => item.getAttribute('data-labm-section')),
+  );
+  expect(order.indexOf('nosotros-equipo')).toBe(order.indexOf('nosotros-proposito') + 1);
+  await expect(purpose).toBeVisible();
+
+  await section.getByRole('link', { name: 'Entrenadores' }).click();
+  await expect(page).toHaveURL(/grupo=entrenadores/);
+  const filtered = page.locator('[data-labm-section="nosotros-equipo"]');
+  await expect(filtered.getByRole('link', { name: 'Entrenadores' })).toHaveAttribute('aria-current', 'true');
+  await expect(filtered.locator('[data-labm-team-card]')).toHaveCount(2);
+  await expect(filtered.getByText('Mateo Giraldo')).toHaveCount(0);
+
+  await page.goto('/nosotros/');
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 1000 });
+    const geometry = await page.locator('[data-labm-section="nosotros-equipo"]').evaluate((element) => {
+      const cards = Array.from(element.querySelectorAll<HTMLElement>('[data-labm-team-card]'));
+      const boxes = cards.map((card) => card.getBoundingClientRect());
+      return {
+        cardCount: cards.length,
+        columns: new Set(boxes.map((box) => Math.round(box.left))).size,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        overlap: boxes.some((box, index) => boxes.slice(index + 1).some((other) =>
+          box.left < other.right && box.right > other.left && box.top < other.bottom && box.bottom > other.top,
+        )),
+      };
+    });
+    expect(geometry.cardCount).toBe(4);
+    expect(geometry.columns).toBe(width >= 768 ? 4 : 2);
+    expect(geometry.overflow).toBe(false);
+    expect(geometry.overlap).toBe(false);
+  }
+
+  await section.locator('[data-labm-team-card]').evaluateAll((cards) => {
+    cards.forEach((card, index) => {
+      card.querySelector('h3')!.textContent = `Nombre editorial deliberadamente largo para integrante ${index + 1}`;
+      card.querySelector('p')!.textContent = 'Cargo institucional extenso que debe adaptarse sin recorte ni superposición visual';
+    });
+  });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  const results = await new AxeBuilder({ page }).include('[data-labm-section="nosotros-equipo"]').analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test('Nosotros reutiliza el CTA de vinculación después del equipo', async ({ page }) => {
+  await page.goto('/');
+  const homeCta = page.locator('[data-labm-section="vinculacion"]');
+  await expect(homeCta).toHaveCount(1);
+  const homeSignature = await homeCta.evaluate((element) => ({
+    className: element.className,
+    heading: element.querySelector('h2')?.textContent?.trim(),
+    copy: element.querySelector('p')?.textContent?.trim(),
+    href: element.querySelector('a')?.getAttribute('href'),
+    label: element.querySelector('a')?.textContent?.trim(),
+  }));
+
+  await page.goto('/nosotros/');
+  const cta = page.locator('[data-labm-section="vinculacion"]');
+  await expect(cta).toHaveCount(1);
+  await expect(cta.getByRole('heading', { level: 2, name: 'Haz parte del balonmano antioqueño' })).toBeVisible();
+  await expect(cta.getByRole('link', { name: 'Quiero vincularme' })).toHaveAttribute('href', '/contacto/');
+  const aboutSignature = await cta.evaluate((element) => ({
+    className: element.className,
+    heading: element.querySelector('h2')?.textContent?.trim(),
+    copy: element.querySelector('p')?.textContent?.trim(),
+    href: element.querySelector('a')?.getAttribute('href'),
+    label: element.querySelector('a')?.textContent?.trim(),
+  }));
+  expect(aboutSignature).toEqual(homeSignature);
+
+  const order = await page.locator('[data-labm-section]').evaluateAll((sections) =>
+    sections.map((item) => item.getAttribute('data-labm-section')),
+  );
+  expect(order.indexOf('vinculacion')).toBe(order.indexOf('nosotros-equipo') + 1);
+
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    const geometry = await cta.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        insideViewport: box.left >= 0 && box.right <= document.documentElement.clientWidth + 1,
+        contentFits: element.scrollHeight <= element.clientHeight + 1,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry.insideViewport).toBe(true);
+    expect(geometry.contentFits).toBe(true);
+    expect(geometry.overflow).toBe(false);
+  }
+
+  const results = await new AxeBuilder({ page }).include('[data-labm-section="vinculacion"]').analyze();
   expect(results.violations).toEqual([]);
 });
 

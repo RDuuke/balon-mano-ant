@@ -27,12 +27,17 @@ final class DomainModelTest extends TestCase {
 	public function test_taxonomies_are_extensible_and_rest_enabled(): void {
 		$modalidad = get_taxonomy( 'labm_modalidad' );
 		$categoria = get_taxonomy( 'labm_categoria' );
+		$grupo      = get_taxonomy( 'labm_grupo_integrante' );
 		self::assertInstanceOf( WP_Taxonomy::class, $modalidad );
 		self::assertInstanceOf( WP_Taxonomy::class, $categoria );
 		self::assertTrue( $modalidad->show_in_rest );
 		self::assertTrue( $categoria->show_in_rest );
 		self::assertContains( 'labm_seleccion', $modalidad->object_type );
 		self::assertContains( 'labm_actualidad', $categoria->object_type );
+		self::assertInstanceOf( WP_Taxonomy::class, $grupo );
+		self::assertTrue( $grupo->show_in_rest );
+		self::assertTrue( $grupo->hierarchical );
+		self::assertContains( 'labm_integrante', $grupo->object_type );
 	}
 
 	public function test_metadata_is_registered_and_sanitized(): void {
