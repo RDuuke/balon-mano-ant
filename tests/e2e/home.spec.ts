@@ -151,7 +151,7 @@ test('vinculacion reproduce la composicion editorial y se adapta sin desborde', 
   const heading = join.getByRole('heading', { name: /haz parte del balonmano antioqueño/i });
   const copy = join.locator(':scope > p');
   const buttons = join.locator(':scope > .wp-block-buttons');
-  const cta = join.getByRole('link', { name: /quiero vincularme/i });
+  const cta = join.getByRole('link', { name: /contáctanos/i });
 
   await expect(cta).toHaveAttribute('href', '/contacto/');
   await expect(heading).toHaveCSS('text-transform', 'uppercase');

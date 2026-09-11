@@ -48,6 +48,203 @@ function labm_theme_register_footer_fallback() {
 }
 add_action( 'init', 'labm_theme_register_footer_fallback', 20 );
 
+/**
+ * Renderiza el banner editorial estático de la página Nosotros.
+ *
+ * @return string HTML seguro o cadena vacía cuando no existe contenido público.
+ */
+function labm_theme_render_about_banner() {
+	$post = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );
+	if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+		return '';
+	}
+
+	$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+	$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+	$title = is_string( $title ) ? $title : '';
+	$copy  = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+	$copy  = trim( wp_strip_all_tags( strip_shortcodes( $copy ) ) );
+	$copy  = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $copy );
+	$copy  = is_string( $copy ) ? $copy : '';
+	if ( '' === $title || '' === $copy ) {
+		return '';
+	}
+
+	$thumbnail = get_the_post_thumbnail(
+		$post,
+		'full',
+		array(
+			'alt'     => $title,
+			'loading' => 'eager',
+		)
+	);
+
+	ob_start();
+	?>
+	<section class="labm-about-banner<?php echo '' === $thumbnail ? ' labm-about-banner--without-media' : ''; ?>" data-labm-section="nosotros-banner" aria-labelledby="labm-about-banner-title">
+		<article class="labm-about-banner__content">
+			<p class="labm-about-banner__eyebrow"><?php esc_html_e( 'Institucional', 'labm' ); ?></p>
+			<h1 id="labm-about-banner-title"><?php echo esc_html( $title ); ?></h1>
+			<p class="labm-about-banner__summary"><?php echo esc_html( $copy ); ?></p>
+		</article>
+		<?php if ( '' !== $thumbnail ) : ?>
+			<div class="labm-about-banner__media"><?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado del adjunto. ?></div>
+		<?php endif; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza los artículos editoriales de Misión y Visión.
+ *
+ * @return string HTML seguro o cadena vacía sin artículos públicos completos.
+ */
+function labm_theme_render_about_purpose() {
+	$items = array();
+	foreach (
+		array(
+			'mision' => 'mision-nosotros',
+			'vision' => 'vision-nosotros',
+		) as $key => $slug
+	) {
+		$post = get_page_by_path( $slug, OBJECT, 'post' );
+		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+			continue;
+		}
+		$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
+		$copy  = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+		$copy  = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( strip_shortcodes( $copy ) ) ) );
+		if ( ! is_string( $title ) || ! is_string( $copy ) || '' === $title || '' === $copy ) {
+			continue;
+		}
+		$items[] = array(
+			'key'   => $key,
+			'title' => $title,
+			'copy'  => $copy,
+		);
+	}
+	if ( array() === $items ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="labm-about-purpose" data-labm-section="nosotros-proposito" aria-label="<?php esc_attr_e( 'Misión y Visión', 'labm' ); ?>">
+		<?php foreach ( $items as $item ) : ?>
+			<article class="labm-about-purpose__item labm-about-purpose__item--<?php echo 'mision' === $item['key'] ? 'light' : 'dark'; ?>" data-labm-purpose="<?php echo esc_attr( $item['key'] ); ?>">
+				<p class="labm-about-purpose__number" aria-hidden="true"><?php echo 'mision' === $item['key'] ? '01' : '02'; ?></p>
+				<h2><?php echo esc_html( $item['title'] ); ?></h2>
+				<p class="labm-about-purpose__copy"><?php echo esc_html( $item['copy'] ); ?></p>
+			</article>
+		<?php endforeach; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza integrantes publicados y completos de la sección Nosotros.
+ *
+ * @param string|null $requested_group Grupo solicitado o valor de la URL.
+ * @return string HTML seguro o cadena vacía sin integrantes.
+ */
+function labm_theme_render_about_team( $requested_group = null ) {
+	$groups = array(
+		'comite'         => __( 'Comité', 'labm' ),
+		'entrenadores'   => __( 'Entrenadores', 'labm' ),
+		'representantes' => __( 'Representantes', 'labm' ),
+	);
+	if ( null === $requested_group ) {
+		$requested_group = isset( $_GET['grupo'] ) ? sanitize_key( wp_unslash( $_GET['grupo'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filtro público de solo lectura.
+	}
+	$group = array_key_exists( (string) $requested_group, $groups ) ? (string) $requested_group : '';
+	$args  = array(
+		'post_type'      => 'labm_integrante',
+		'post_status'    => 'publish',
+		'posts_per_page' => 20,
+		'orderby'        => array(
+			'menu_order' => 'ASC',
+			'title'      => 'ASC',
+		),
+	);
+	if ( '' !== $group ) {
+		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			array(
+				'taxonomy' => 'labm_grupo_integrante',
+				'field'    => 'slug',
+				'terms'    => $group,
+			),
+		);
+	}
+	$items = array();
+	foreach ( ( new WP_Query( $args ) )->posts as $post ) {
+		$title     = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
+		$role      = trim( (string) get_post_meta( $post->ID, 'labm_cargo', true ) );
+		$thumbnail = get_post_thumbnail_id( $post->ID );
+		$terms     = wp_get_post_terms( $post->ID, 'labm_grupo_integrante' );
+		if ( ! is_string( $title ) || '' === $title || '' === $role || ! $thumbnail || is_wp_error( $terms ) || array() === $terms ) {
+			continue;
+		}
+		$items[] = array(
+			'title'     => $title,
+			'role'      => $role,
+			'thumbnail' => $thumbnail,
+			'group'     => $terms[0]->slug,
+		);
+		if ( 4 === count( $items ) ) {
+			break;
+		}
+	}
+	if ( array() === $items && '' === $group ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="labm-about-team" data-labm-section="nosotros-equipo" aria-labelledby="labm-about-team-title">
+		<header class="labm-about-team__header">
+			<h2 id="labm-about-team-title"><?php esc_html_e( 'Quiénes hacen posible la Liga', 'labm' ); ?></h2>
+			<nav class="labm-about-team__filters" aria-label="<?php esc_attr_e( 'Filtrar integrantes', 'labm' ); ?>">
+				<?php foreach ( $groups as $slug => $label ) : ?>
+					<a href="<?php echo esc_url( add_query_arg( 'grupo', $slug, home_url( '/nosotros/' ) ) ); ?>"<?php echo $group === $slug ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+				<?php endforeach; ?>
+			</nav>
+		</header>
+		<?php if ( array() === $items ) : ?>
+			<p class="labm-about-team__empty"><?php esc_html_e( 'No hay integrantes publicados en este grupo.', 'labm' ); ?></p>
+		<?php else : ?>
+			<div class="labm-about-team__grid">
+				<?php foreach ( $items as $item ) : ?>
+					<article class="labm-about-team__card" data-labm-team-card data-labm-team-group="<?php echo esc_attr( $item['group'] ); ?>">
+						<div class="labm-about-team__media"><?php echo wp_get_attachment_image( $item['thumbnail'], 'large', false, array( 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado seguro. ?></div>
+						<div class="labm-about-team__body"><h3><?php echo esc_html( $item['title'] ); ?></h3><p><?php echo esc_html( $item['role'] ); ?></p></div>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza el CTA compartido de vinculación.
+ *
+ * @return string HTML seguro.
+ */
+function labm_theme_render_join_cta() {
+	ob_start();
+	?>
+	<!-- wp:group {"tagName":"section","className":"labm-home-section labm-home-join","layout":{"type":"constrained"}} -->
+	<section class="wp-block-group labm-home-section labm-home-join" data-labm-section="vinculacion"><!-- wp:heading {"level":2} --><h2 class="wp-block-heading"><?php esc_html_e( 'Haz parte del balonmano antioqueño', 'labm' ); ?></h2><!-- /wp:heading -->
+	<!-- wp:paragraph --><p><?php esc_html_e( 'Conecta con la Liga, sus clubes y procesos deportivos.', 'labm' ); ?></p><!-- /wp:paragraph -->
+	<!-- wp:buttons --><div class="wp-block-buttons"><!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/contacto/"><?php esc_html_e( 'Contáctanos', 'labm' ); ?></a></div><!-- /wp:button --></div><!-- /wp:buttons --></section>
+	<!-- /wp:group -->
+	<?php
+	return (string) ob_get_clean();
+}
+
 /** Enlace para saltar la navegacion repetida. */
 function labm_theme_skip_link() {
 	echo '<a class="labm-skip-link" href="#contenido-principal">' . esc_html__( 'Saltar al contenido', 'labm' ) . '</a>';

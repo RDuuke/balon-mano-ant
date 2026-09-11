@@ -86,6 +86,83 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Artículo ficticio para el banner estático de Nosotros.
+	 *
+	 * @return array
+	 */
+	private static function about_banner_fixture() {
+		return array(
+			array(
+				'post_name'      => 'banner-nosotros',
+				'post_title'     => self::MARKER . ' Somos la Liga',
+				'post_excerpt'   => 'Trabajamos por el desarrollo integral del balonmano antioqueño, articulando clubes, deportistas y comunidad.',
+				'post_content'   => '<p>' . self::MARKER . ' Trabajamos por el desarrollo integral del balonmano antioqueño, articulando clubes, deportistas y comunidad.</p>',
+				'post_type'      => 'post',
+				'post_status'    => 'publish',
+				'featured_image' => 'assets/images/hero-balonmano-seleccion-v1.png',
+			),
+		);
+	}
+
+	/**
+	 * Artículos ficticios independientes para Misión y Visión.
+	 *
+	 * @return array
+	 */
+	private static function about_purpose_fixtures() {
+		return array(
+			array(
+				'post_name'    => 'mision-nosotros',
+				'post_title'   => self::MARKER . ' Misión',
+				'post_excerpt' => 'Promovemos el desarrollo integral del balonmano antioqueño mediante procesos deportivos, formativos y comunitarios.',
+				'post_content' => '<p>' . self::MARKER . ' Promovemos el desarrollo integral del balonmano antioqueño mediante procesos deportivos, formativos y comunitarios.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			),
+			array(
+				'post_name'    => 'vision-nosotros',
+				'post_title'   => self::MARKER . ' Visión',
+				'post_excerpt' => 'Ser un referente nacional por la solidez de nuestros clubes, la formación deportiva y el impacto positivo en la comunidad.',
+				'post_content' => '<p>' . self::MARKER . ' Ser un referente nacional por la solidez de nuestros clubes, la formación deportiva y el impacto positivo en la comunidad.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			),
+		);
+	}
+
+	/**
+	 * Integrantes ficticios para la sección editorial de Nosotros.
+	 *
+	 * @return array
+	 */
+	private static function about_team_fixtures() {
+		$definitions = array(
+			array( 'andres-montoya', 'Andrés Montoya', 'Director técnico', 'Comité', 'entrenador-principal.png' ),
+			array( 'daniel-restrepo', 'Daniel Restrepo', 'Preparador físico', 'Entrenadores', 'preparador-fisico.png' ),
+			array( 'valentina-rios', 'Valentina Ríos', 'Entrenadora juvenil', 'Entrenadores', 'entrenadora-juvenil.png' ),
+			array( 'mateo-giraldo', 'Mateo Giraldo', 'Representante comunitario', 'Representantes', 'representante-comunitario.png' ),
+		);
+
+		return array_map(
+			static function ( $definition, $order ) {
+				return array(
+					'post_name'      => 'demo-labm-integrante-' . $definition[0],
+					'post_title'     => self::MARKER . ' ' . $definition[1],
+					'post_content'   => '<p>' . self::MARKER . ' Perfil ficticio para demostración editorial.</p>',
+					'post_type'      => 'labm_integrante',
+					'post_status'    => 'publish',
+					'menu_order'     => $order,
+					'meta'           => array( 'labm_cargo' => $definition[2] ),
+					'terms'          => array( 'labm_grupo_integrante' => array( $definition[3] ) ),
+					'featured_image' => 'assets/images/quienes-demo/' . $definition[4],
+				);
+			},
+			$definitions,
+			array_keys( $definitions )
+		);
+	}
+
+	/**
 	 * Importa o reutiliza un logo demo como adjunto de WordPress.
 	 *
 	 * @param string $relative_path Ruta relativa dentro del tema.
@@ -303,7 +380,10 @@ class LABM_Fixtures_Command {
 				),
 			),
 			self::home_news_fixtures(),
-			self::home_allies_fixtures()
+			self::home_allies_fixtures(),
+			self::about_banner_fixture(),
+			self::about_purpose_fixtures(),
+			self::about_team_fixtures()
 		);
 
 		foreach ( $fixtures as $fixture ) {

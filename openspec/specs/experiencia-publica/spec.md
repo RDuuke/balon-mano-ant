@@ -190,3 +190,163 @@ Las vistas públicas MUST ser usables a 320, 768, 1024, 1200 y 1440 px, incluyen
 - DADO una vista cuyo contenido excede 1200 px, queda descentrado o cuyo slider cambia de altura
 - CUANDO se ejecuta la comprobación end-to-end aplicable
 - ENTONCES el resultado falla e identifica el ancho y la condición incumplida.
+
+### Requirement: Banner institucional estático y administrable
+
+La vista “Nosotros” MUST iniciar con un único banner estático alimentado por un artículo publicado y administrable, y MUST presentar su título, resumen e imagen destacada sin controles ni comportamiento de slider.
+
+#### Scenario: Artículo publicado completo
+
+- DADO un artículo de banner publicado con título, resumen e imagen destacada
+- CUANDO un visitante abre “Nosotros”
+- ENTONCES ve el banner como primera sección, con texto e imagen y sin controles de slider
+
+#### Scenario: Adaptación a pantalla estrecha
+
+- DADO el banner completo en un viewport de 320 px
+- CUANDO se presenta la vista “Nosotros”
+- ENTONCES texto e imagen se apilan, permanecen legibles y no generan desborde horizontal
+
+#### Scenario: Artículo ausente o no público
+
+- DADO que el artículo reservado no existe, está en borrador o es privado
+- CUANDO un visitante anónimo abre “Nosotros”
+- ENTONCES el banner se omite sin revelar contenido restringido ni mostrar controles vacíos
+
+### Requirement: Presentación editorial fiel y accesible
+
+El banner SHALL usar un panel de texto negro, acento verde, texto blanco e imagen contigua; MUST conservar jerarquía semántica, contraste perceptible y alternativa textual adecuada.
+
+#### Scenario: Presentación de escritorio
+
+- DADO un viewport amplio y contenido completo
+- CUANDO se renderiza el banner
+- ENTONCES texto e imagen ocupan paneles contiguos y equilibrados según el diseño aprobado
+
+#### Scenario: Contenido editorial largo
+
+- DADO un título o resumen mayor al contenido demo
+- CUANDO se presenta el banner
+- ENTONCES el contenido se adapta sin solaparse, recortarse ni invadir la imagen
+
+#### Scenario: Imagen destacada no disponible
+
+- DADO un artículo publicado sin imagen destacada válida
+- CUANDO se abre “Nosotros”
+- ENTONCES no aparece un medio roto y la composición restante conserva una lectura comprensible
+
+### Requirement: Sección editorial de Misión y Visión
+
+La vista “Nosotros” MUST mostrar después del banner los contenidos públicos e independientes de Misión y Visión, en ese orden, identificados como 01 y 02 y con tratamientos claro y oscuro diferenciados.
+
+#### Scenario: Ambos artículos disponibles
+
+- DADO artículos publicados y completos para Misión y Visión
+- CUANDO un visitante abre “Nosotros”
+- ENTONCES ve 01 Misión seguido de 02 Visión con sus textos independientes
+
+#### Scenario: Un artículo no está disponible
+
+- DADO que solo uno de los dos artículos está publicado y completo
+- CUANDO se presenta la sección
+- ENTONCES se muestra únicamente el contenido válido sin revelar el otro
+
+#### Scenario: Ningún artículo es publicable
+
+- DADO que ambos artículos faltan, están restringidos o vacíos
+- CUANDO un visitante abre “Nosotros”
+- ENTONCES la sección se omite sin marcadores vacíos
+
+### Requirement: Composición responsive y accesible
+
+La sección SHALL usar jerarquía semántica, contraste perceptible y paneles contiguos en escritorio; MUST apilarse sin desborde ni solapamiento en pantallas estrechas.
+
+#### Scenario: Presentación de escritorio
+
+- DADO ambos artículos y un viewport amplio
+- CUANDO se renderiza la sección
+- ENTONCES los paneles claro y oscuro aparecen contiguos y equilibrados
+
+#### Scenario: Presentación móvil
+
+- DADO ambos artículos y un viewport de 320 px
+- CUANDO se renderiza la sección
+- ENTONCES los paneles se apilan en orden y no generan desborde horizontal
+
+#### Scenario: Contenido editorial largo
+
+- DADO títulos o textos más extensos que los demo
+- CUANDO se presenta la sección
+- ENTONCES el contenido se adapta sin recorte, solapamiento ni pérdida de jerarquía
+
+### Requirement: Sección editorial de integrantes
+
+La vista “Nosotros” MUST mostrar después de Misión/Visión una sección titulada “Quiénes hacen posible la Liga”, alimentada por integrantes publicados y administrables, con imagen destacada, nombre, cargo y grupo editorial.
+
+#### Scenario: Colección publicada
+- DADO al menos cuatro integrantes publicados y completos
+- CUANDO un visitante abre “Nosotros”
+- ENTONCES ve cuatro tarjetas ordenadas con imagen, nombre y cargo
+
+#### Scenario: Integrante incompleto
+- DADO un integrante publicado sin imagen, nombre o cargo
+- CUANDO se construye la colección
+- ENTONCES su tarjeta se omite sin dejar un medio roto o hueco visual
+
+#### Scenario: Contenido restringido
+- DADO integrantes en borrador o privados
+- CUANDO un visitante anónimo abre “Nosotros”
+- ENTONCES sus datos no aparecen en la sección ni en sus filtros
+
+### Requirement: Filtros accesibles y composición responsive
+
+La sección SHALL ofrecer filtros para Comité, Entrenadores y Representantes; MUST conservar el grupo seleccionado de forma perceptible y funcionar sin JavaScript. La grilla MUST mantener jerarquía, foco, contraste y ausencia de desborde entre 320 y 1440 px.
+
+#### Scenario: Filtrado por grupo
+- DADO integrantes publicados en los tres grupos
+- CUANDO el visitante activa “Entrenadores”
+- ENTONCES ve solo integrantes de ese grupo y el filtro queda identificado
+
+#### Scenario: Grupo sin resultados
+- DADO un grupo válido sin integrantes publicables
+- CUANDO el visitante activa su filtro
+- ENTONCES ve un estado vacío comprensible y puede cambiar de grupo
+
+#### Scenario: Filtro inválido
+- DADO un valor de filtro no reconocido
+- CUANDO se abre “Nosotros” con ese valor
+- ENTONCES la vista usa la colección predeterminada sin revelar contenido restringido
+
+#### Scenario: Anchos objetivo
+- DADO cuatro tarjetas con contenido representativo
+- CUANDO se presentan a 320, 768, 1024, 1200 y 1440 px
+- ENTONCES la grilla se adapta sin solapamiento ni desplazamiento horizontal global
+
+#### Scenario: Contenido largo
+- DADO nombres y cargos mayores que los datos demo
+- CUANDO se renderizan las tarjetas
+- ENTONCES el texto crece o ajusta sin recorte, superposición ni pérdida de foco
+
+#### Scenario: Navegación asistida
+- DADO un visitante que usa teclado o tecnología asistiva
+- CUANDO recorre filtros y tarjetas
+- ENTONCES percibe el título, el filtro activo y contenido en orden lógico sin violaciones automatizadas
+
+### Requirement: CTA de vinculación compartido
+
+La vista “Nosotros” MUST mostrar inmediatamente después de la sección de integrantes el mismo CTA “Haz parte del balonmano antioqueño” usado en la portada. Ambas vistas SHALL reutilizar un único render, conservar el contenido y el destino `/contacto/`, y MUST mantener una presentación responsive y accesible sin duplicar estilos.
+
+#### Scenario: CTA presente en Nosotros
+- DADO que un visitante abre la vista “Nosotros”
+- CUANDO termina de recorrer la sección de integrantes
+- ENTONCES encuentra inmediatamente después el CTA de vinculación con su título, texto y enlace a `/contacto/`
+
+#### Scenario: Reutilización entre vistas
+- DADO que la portada y la vista “Nosotros” muestran el CTA de vinculación
+- CUANDO se compara su estructura semántica
+- ENTONCES ambas vistas conservan el mismo contenido, clases y destino mediante un único render compartido
+
+#### Scenario: Presentación responsive y accesible
+- DADO el CTA en viewports de 320, 768, 1024 y 1440 px
+- CUANDO se presenta o se recorre con tecnología asistiva
+- ENTONCES no presenta recorte, solapamiento ni desborde y mantiene título y enlace accesibles
