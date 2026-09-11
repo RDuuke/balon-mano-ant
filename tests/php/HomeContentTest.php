@@ -232,8 +232,13 @@ final class HomeContentTest extends TestCase {
 		$command->load( array(), array() );
 
 		foreach ( array(
-			'demo-labm-slide-bienvenida' => 'labm_slide',
-			'demo-labm-aliado-ejemplo'   => 'labm_aliado',
+			'demo-labm-slide-bienvenida'     => 'labm_slide',
+			'demo-labm-aliado-arco-comun'    => 'labm_aliado',
+			'demo-labm-aliado-brote-activo'  => 'labm_aliado',
+			'demo-labm-aliado-cumbre-viva'   => 'labm_aliado',
+			'demo-labm-aliado-mosaico-unido' => 'labm_aliado',
+			'demo-labm-aliado-rio-dinamico'  => 'labm_aliado',
+			'demo-labm-aliado-sol-abierto'   => 'labm_aliado',
 		) as $slug => $post_type ) {
 			$posts = get_posts(
 				array(

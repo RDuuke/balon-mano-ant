@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: ARCHIVE
-change: "ajustar-nosotros-desktop"
+phase: VERIFY
+change: "cicd-hostinger-inicial"
 awaiting_approval: false
-completed: true
-pending_tasks: []
+completed: false
+pending_tasks: ["4.3"]
 modified_artifacts: []
-notes: ""
+notes: "Excepción explícita de TDD por solicitud del usuario: se trata de configuración de repositorio. Verificación local aprobada con fixtures, contrato, higiene, YAML y LF; la tarea externa 4.3 en GitHub Actions sigue pendiente."

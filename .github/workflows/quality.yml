@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: hostinger-production
+  cancel-in-progress: false
+
 jobs:
   quality:
     name: Gates reproducibles
@@ -15,7 +19,7 @@ jobs:
     timeout-minutes: 35
     steps:
       - name: Descargar fuentes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Instalar pnpm
         uses: pnpm/action-setup@v4
@@ -49,3 +53,149 @@ jobs:
           path: artifacts/
           if-no-files-found: error
           retention-days: 14
+
+  deploy-code:
+    name: Desplegar tema y plugin
+    needs: quality
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Descargar fuentes
+        uses: actions/checkout@v6
+
+      - name: Publicar tema LABM por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          timeout: 60000
+          local-dir: ./wp-content/themes/labm/
+          server-dir: /public_html/wp-content/themes/labm/
+          dangerous-clean-slate: false
+
+      - name: Publicar plugin LABM Core por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          timeout: 60000
+          local-dir: ./wp-content/plugins/labm-core/
+          server-dir: /public_html/wp-content/plugins/labm-core/
+          dangerous-clean-slate: false
+
+  bootstrap-content:
+    name: Migrar contenido canónico inicial
+    needs: deploy-code
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      WP_USER: ${{ secrets.WP_USER }}
+      WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
+      WP_PRODUCTION_URL: http://palevioletred-salamander-919245.hostingersite.com
+    steps:
+      - name: Descargar fuentes
+        uses: actions/checkout@v6
+
+      - name: Instalar cliente MySQL
+        run: sudo apt-get update && sudo apt-get install --yes default-mysql-client
+
+      - name: Validar destino y paquete canónico
+        id: preflight
+        shell: pwsh
+        run: >-
+          ./scripts/bootstrap-hostinger-content.ps1
+          -Phase Preflight
+          -Package ./content-sync/canonical.zip
+          -Pointer ./content-sync/latest.json
+          -TargetUrl "$env:WP_PRODUCTION_URL"
+
+      - name: Importar contenido y crear respaldo
+        id: import
+        if: steps.preflight.outputs.should_migrate == 'true'
+        shell: pwsh
+        run: >-
+          ./scripts/bootstrap-hostinger-content.ps1
+          -Phase Import
+          -Package ./content-sync/canonical.zip
+          -Pointer ./content-sync/latest.json
+          -TargetUrl "$env:WP_PRODUCTION_URL"
+
+      - name: Publicar uploads canónicos
+        if: steps.preflight.outputs.should_migrate == 'true' && steps.import.outcome == 'success'
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          timeout: 60000
+          local-dir: ./artifacts/hostinger-bootstrap/payload/uploads/
+          server-dir: /public_html/wp-content/uploads/
+          dangerous-clean-slate: false
+
+      - name: Finalizar migración y marcar versión
+        if: steps.preflight.outputs.should_migrate == 'true' && steps.import.outcome == 'success'
+        shell: pwsh
+        run: >-
+          ./scripts/bootstrap-hostinger-content.ps1
+          -Phase Finalize
+          -Package ./content-sync/canonical.zip
+          -Pointer ./content-sync/latest.json
+          -TargetUrl "$env:WP_PRODUCTION_URL"
+          -UploadsTransferred
+
+      - name: Conservar recuperación privada
+        if: always() && steps.preflight.outputs.should_migrate == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hostinger-bootstrap-${{ github.run_id }}
+          path: |
+            artifacts/hostinger-bootstrap/database-before-import.sql.gz
+            artifacts/hostinger-bootstrap/report.txt
+          if-no-files-found: ignore
+          retention-days: 14
+
+  smoke:
+    name: Smoke autenticado de WordPress
+    needs: bootstrap-content
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      WP_USER: ${{ secrets.WP_USER }}
+      WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
+      WP_PRODUCTION_URL: http://palevioletred-salamander-919245.hostingersite.com
+    steps:
+      - name: Confirmar sesión administrativa sin revelar credenciales
+        shell: bash
+        run: |
+          set -euo pipefail
+          cookie_file="$(mktemp)"
+          trap 'rm -f "$cookie_file"' EXIT
+          curl --silent --show-error --fail --location --output /dev/null \
+            --cookie-jar "$cookie_file" \
+            --data-urlencode "log=$WP_USER" \
+            --data-urlencode "pwd=$WP_PASSWORD" \
+            --data-urlencode 'wp-submit=Log In' \
+            --data-urlencode 'redirect_to=/wp-admin/profile.php' \
+            "$WP_PRODUCTION_URL/wp-login.php"
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --cookie "$cookie_file" "$WP_PRODUCTION_URL/wp-admin/profile.php")"
+          test "$status" -ge 200
+          test "$status" -lt 300
