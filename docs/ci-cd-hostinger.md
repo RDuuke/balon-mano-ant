@@ -1,6 +1,6 @@
 # CI/CD de Hostinger
 
-El workflow `.github/workflows/quality.yml` conserva los gates locales para solicitudes de extracción y despliega solo desde un `push` exitoso a `main`. WordPress ya debe estar instalado de forma manual en `/public_html/`; este flujo nunca instala ni reemplaza el núcleo, `wp-config.php` ni los medios remotos fuera de la primera migración canónica.
+El workflow `.github/workflows/quality.yml` conserva los gates locales para solicitudes de extracción y despliega solo desde un `push` exitoso a `main`. WordPress ya debe estar instalado de forma manual en `domains/palevioletred-salamander-919245.hostingersite.com/public_html`; este flujo nunca instala ni reemplaza el núcleo, `wp-config.php` ni los medios remotos fuera de la primera migración canónica.
 
 ## Secretos de GitHub
 
@@ -16,7 +16,7 @@ No se debe crear `WP_PRODUCTION_URL`: la URL temporal está fijada en el workflo
 
 1. Confirme en Hostinger que WordPress vacío funciona en `http://palevioletred-salamander-919245.hostingersite.com` y que `wp-json/` es público.
 2. Autorice el acceso MySQL remoto desde GitHub Actions. El preflight aborta antes de importar si no puede conectarse, no identifica un único prefijo WordPress o la versión major.minor no coincide con `content-sync/canonical.zip`.
-3. Confirme en hPanel que los datos de Cuentas FTP permiten conectarse a la IP de `FTP_SERVER` por el puerto `21`. Haga merge a `main`. Tras `quality`, el job `deploy-code` actualiza únicamente `wp-content/themes/labm/` y `wp-content/plugins/labm-core/`, sin limpieza remota.
+3. Confirme en hPanel que los datos de Cuentas FTP permiten conectarse a la IP de `FTP_SERVER` por el puerto `21`. Haga merge a `main`. Tras `quality`, el job `deploy-code` actualiza únicamente `domains/palevioletred-salamander-919245.hostingersite.com/public_html/wp-content/themes/labm/` y `domains/palevioletred-salamander-919245.hostingersite.com/public_html/wp-content/plugins/labm-core/`, sin limpieza remota.
 4. El job `bootstrap-content` valida `canonical.zip`, crea un respaldo de la base de datos, importa el contenido sin `users` ni `usermeta`, y sube los `uploads` del paquete. Solo después adapta URLs mediante WP-CLI y guarda `labm_content_sync_version`.
 5. El job `smoke` inicia sesión con cookie temporal y exige acceso a `wp-admin/profile.php`. No muestra la respuesta, cookies ni credenciales.
 

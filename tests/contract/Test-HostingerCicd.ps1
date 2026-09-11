@@ -20,7 +20,7 @@ foreach ($secret in @('DB_HOST', 'DB_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'FTP_S
     Assert-Contains -Text $workflow -Expected ("secrets.$secret") -Description "el workflow no inyecta $secret"
     Assert-Contains -Text (Get-Content -Raw -LiteralPath $scriptPath) -Expected ("'$secret'") -Description "el script no exige $secret"
 }
-foreach ($required in @('needs: quality', 'needs: deploy-code', 'needs: bootstrap-content', 'refs/heads/main', 'SamKirkland/FTP-Deploy-Action@v4.4.0', 'protocol: ftp', 'port: 21', 'dangerous-clean-slate: false', '/public_html/wp-content/themes/labm/', '/public_html/wp-content/plugins/labm-core/', 'wp-login.php', 'wp-admin/profile.php')) {
+foreach ($required in @('needs: quality', 'needs: deploy-code', 'needs: bootstrap-content', 'refs/heads/main', 'SamKirkland/FTP-Deploy-Action@v4.4.0', 'protocol: ftp', 'port: 21', 'dangerous-clean-slate: false', 'HOSTINGER_PUBLIC_ROOT: ./domains/palevioletred-salamander-919245.hostingersite.com/public_html', 'server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/themes/labm/', 'server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/plugins/labm-core/', 'server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/uploads/', 'wp-login.php', 'wp-admin/profile.php')) {
     Assert-Contains -Text $workflow -Expected $required -Description "falta la proteccion o ruta $required"
 }
 if ($workflow.Contains('deploy-hostinger-sftp.sh') -or $workflow.Contains('sshpass')) { throw 'Contrato incumplido: el workflow conserva dependencias SFTP.' }
