@@ -13,7 +13,27 @@
         { "slug": "blanco", "name": "Blanco", "color": "#ffffff" }
       ]
     },
-    "typography": { "fluid": true },
+    "typography": {
+      "fluid": true,
+      "fontFamilies": [
+        {
+          "fontFamily": "Barlow Condensed",
+          "name": "Barlow Condensed",
+          "slug": "barlow-condensed",
+          "fontFace": [
+            {
+              "fontFamily": "Barlow Condensed",
+              "fontStyle": "normal",
+              "fontWeight": "700",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/barlow-condensed-latin-wght-normal.woff2"
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "custom": {
       "labm": {
         "layout": {

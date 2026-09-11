@@ -8,6 +8,8 @@ final class PublicExperienceTest extends TestCase {
 		$html = labm_theme_render_join_cta();
 		self::assertStringContainsString( 'data-labm-section="vinculacion"', $html );
 		self::assertStringContainsString( 'Haz parte del balonmano antioqueño', $html );
+		self::assertStringContainsString( 'Conecta con la Liga, sus clubes y procesos deportivos.', $html );
+		self::assertStringContainsString( '>Contáctanos</a>', $html );
 		self::assertStringContainsString( 'href="/contacto/"', $html );
 
 		$root    = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/';
@@ -20,6 +22,36 @@ final class PublicExperienceTest extends TestCase {
 		self::assertIsInt( $team );
 		self::assertIsInt( $join );
 		self::assertLessThan( $join, $team );
+	}
+
+	/** El CTA declara y usa Barlow Condensed como activo local con licencia. */
+	public function test_join_cta_uses_local_barlow_condensed_font(): void {
+		$theme_root = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';
+		$theme      = json_decode( (string) file_get_contents( $theme_root . 'theme.json' ), true );
+		$families   = $theme['settings']['typography']['fontFamilies'] ?? array();
+		$barlow     = null;
+		foreach ( $families as $family ) {
+			if ( 'barlow-condensed' === ( $family['slug'] ?? '' ) ) {
+				$barlow = $family;
+				break;
+			}
+		}
+
+		self::assertIsArray( $barlow );
+		self::assertSame( 'Barlow Condensed', $barlow['name'] );
+		self::assertSame( 'Barlow Condensed', $barlow['fontFamily'] );
+		self::assertSame( 'file:./assets/fonts/barlow-condensed-latin-wght-normal.woff2', $barlow['fontFace'][0]['src'][0] );
+		self::assertSame( '700', $barlow['fontFace'][0]['fontWeight'] );
+		self::assertSame( 'normal', $barlow['fontFace'][0]['fontStyle'] );
+		self::assertSame( 'swap', $barlow['fontFace'][0]['fontDisplay'] );
+
+		$font_path = $theme_root . 'assets/fonts/barlow-condensed-latin-wght-normal.woff2';
+		self::assertFileExists( $font_path );
+		self::assertGreaterThan( 10000, filesize( $font_path ) );
+		self::assertStringContainsString( 'SIL OPEN FONT LICENSE', (string) file_get_contents( $theme_root . 'assets/fonts/OFL.txt' ) );
+
+		$css = (string) file_get_contents( $theme_root . 'style.css' );
+		self::assertMatchesRegularExpression( '/\.labm-home-join h2\s*\{[^}]*font-family:\s*var\(--wp--preset--font-family--barlow-condensed\),\s*sans-serif;/s', $css );
 	}
 
 	/** Nosotros muestra integrantes completos y permite filtrar por grupo. */

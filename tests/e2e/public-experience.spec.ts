@@ -230,7 +230,8 @@ test('Nosotros reutiliza el CTA de vinculación después del equipo', async ({ p
   const cta = page.locator('[data-labm-section="vinculacion"]');
   await expect(cta).toHaveCount(1);
   await expect(cta.getByRole('heading', { level: 2, name: 'Haz parte del balonmano antioqueño' })).toBeVisible();
-  await expect(cta.getByRole('link', { name: 'Quiero vincularme' })).toHaveAttribute('href', '/contacto/');
+  await expect(cta.getByText('Conecta con la Liga, sus clubes y procesos deportivos.')).toBeVisible();
+  await expect(cta.getByRole('link', { name: 'Contáctanos' })).toHaveAttribute('href', '/contacto/');
   const aboutSignature = await cta.evaluate((element) => ({
     className: element.className,
     heading: element.querySelector('h2')?.textContent?.trim(),
@@ -244,6 +245,55 @@ test('Nosotros reutiliza el CTA de vinculación después del equipo', async ({ p
     sections.map((item) => item.getAttribute('data-labm-section')),
   );
   expect(order.indexOf('vinculacion')).toBe(order.indexOf('nosotros-equipo') + 1);
+
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.evaluate(() => document.fonts.ready);
+	const desktopGeometry = await cta.evaluate((element) => {
+		const section = element.getBoundingClientRect();
+		const heading = element.querySelector('h2')!.getBoundingClientRect();
+		const copy = element.querySelector('p')!.getBoundingClientRect();
+		const button = element.querySelector('a')!.getBoundingClientRect();
+		const headingStyle = getComputedStyle(element.querySelector('h2')!);
+		const copyStyle = getComputedStyle(element.querySelector('p')!);
+		const accentStyle = getComputedStyle(element, '::before');
+		const fontResources = performance.getEntriesByType('resource')
+			.map((entry) => entry.name)
+			.filter((url) => /\.(?:woff2?|ttf)(?:\?|$)/i.test(url));
+		return {
+			sectionHeight: section.height,
+			contentWidth: section.width - Number.parseFloat(getComputedStyle(element).paddingLeft) - Number.parseFloat(getComputedStyle(element).paddingRight),
+			accentWidth: Number.parseFloat(accentStyle.width),
+			accentHeight: Number.parseFloat(accentStyle.height),
+			textOffset: heading.left - section.left - Number.parseFloat(getComputedStyle(element).paddingLeft),
+			textWidth: heading.width,
+			copyGap: copy.top - heading.bottom,
+			buttonWidth: button.width,
+			buttonHeight: button.height,
+			buttonRight: section.right - button.right,
+			fontFamily: headingStyle.fontFamily,
+			fontSize: headingStyle.fontSize,
+			fontWeight: headingStyle.fontWeight,
+			copyFontSize: copyStyle.fontSize,
+			fontResources,
+		};
+	});
+	expect(desktopGeometry.sectionHeight).toBeCloseTo(300, 0);
+	expect(desktopGeometry.contentWidth).toBeCloseTo(1200, 0);
+	expect(desktopGeometry.accentWidth).toBeCloseTo(8, 0);
+	expect(desktopGeometry.accentHeight).toBeCloseTo(180, 0);
+	expect(desktopGeometry.textOffset).toBeCloseTo(52, 0);
+	expect(desktopGeometry.textWidth).toBeLessThanOrEqual(760.5);
+	expect(desktopGeometry.copyGap).toBeCloseTo(8, 0);
+	expect(desktopGeometry.buttonWidth).toBeCloseTo(163, 0);
+	expect(desktopGeometry.buttonHeight).toBeCloseTo(48, 0);
+	expect(desktopGeometry.buttonRight).toBeCloseTo(120, 0);
+	expect(desktopGeometry.fontFamily).toContain('Barlow Condensed');
+	expect(desktopGeometry.fontSize).toBe('46px');
+	expect(desktopGeometry.fontWeight).toBe('700');
+	expect(desktopGeometry.copyFontSize).toBe('17px');
+	expect(desktopGeometry.fontResources).toHaveLength(1);
+	expect(new URL(desktopGeometry.fontResources[0]).pathname).toMatch(/\/wp-content\/themes\/labm\/assets\/fonts\/barlow-condensed-latin-wght-normal\.woff2$/);
+	expect(new URL(desktopGeometry.fontResources[0]).origin).toBe(new URL(page.url()).origin);
 
   for (const width of targetWidths) {
     await page.setViewportSize({ width, height: 900 });
