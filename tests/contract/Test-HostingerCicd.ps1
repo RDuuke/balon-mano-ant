@@ -20,9 +20,10 @@ foreach ($secret in @('DB_HOST', 'DB_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'FTP_S
     Assert-Contains -Text $workflow -Expected ("secrets.$secret") -Description "el workflow no inyecta $secret"
     Assert-Contains -Text (Get-Content -Raw -LiteralPath $scriptPath) -Expected ("'$secret'") -Description "el script no exige $secret"
 }
-foreach ($required in @('needs: quality', 'needs: deploy-code', 'needs: bootstrap-content', 'refs/heads/main', 'dangerous-clean-slate: false', '/public_html/wp-content/themes/labm/', '/public_html/wp-content/plugins/labm-core/', 'wp-login.php', 'wp-admin/profile.php')) {
+foreach ($required in @('needs: quality', 'needs: deploy-code', 'needs: bootstrap-content', 'refs/heads/main', 'SamKirkland/FTP-Deploy-Action@v4.4.0', 'protocol: ftp', 'port: 21', 'dangerous-clean-slate: false', '/public_html/wp-content/themes/labm/', '/public_html/wp-content/plugins/labm-core/', 'wp-login.php', 'wp-admin/profile.php')) {
     Assert-Contains -Text $workflow -Expected $required -Description "falta la proteccion o ruta $required"
 }
+if ($workflow.Contains('deploy-hostinger-sftp.sh') -or $workflow.Contains('sshpass')) { throw 'Contrato incumplido: el workflow conserva dependencias SFTP.' }
 foreach ($required in @("ValidateSet('Preflight', 'Import', 'Finalize')", 'labm_content_sync_version', '--precise', '--recurse-objects', 'database-before-import.sql.gz', 'ruta ZIP insegura', 'GITHUB_OUTPUT')) {
     Assert-Contains -Text (Get-Content -Raw -LiteralPath $scriptPath) -Expected $required -Description "falta el contrato de bootstrap $required"
 }
