@@ -1,8 +1,8 @@
 schema_version: "1.3"
 phase: VERIFY
-change: "corregir-footer-diseno"
+change: "cicd-hostinger-inicial"
 awaiting_approval: false
 completed: false
-pending_tasks: []
+pending_tasks: ["4.3"]
 modified_artifacts: []
-notes: "flujo normal; footer administrable verificado; revisión visual manual recomendada"
+notes: "Excepción explícita de TDD por solicitud del usuario: se trata de configuración de repositorio. Verificación local aprobada con fixtures, contrato, higiene, YAML y LF; la tarea externa 4.3 en GitHub Actions sigue pendiente."
