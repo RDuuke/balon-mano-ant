@@ -145,6 +145,23 @@ final class FixturesDomainTest extends TestCase {
 		);
 	}
 
+	/** El encabezado inicial de Documentos es un artículo editable, publicado e idempotente. */
+	public function test_documents_banner_fixture_is_complete_and_idempotent(): void {
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+		$first = get_page_by_path( 'banner-documentos', OBJECT, 'post' );
+
+		self::assertInstanceOf( WP_Post::class, $first );
+		self::assertSame( 'publish', $first->post_status );
+		self::assertStringContainsString( 'FICTICIO', $first->post_title );
+		self::assertStringContainsString( 'Documentos', $first->post_title );
+		self::assertSame( 'Resoluciones, circulares y archivos públicos de la Liga.', $first->post_excerpt );
+		self::assertInstanceOf( WP_Post::class, get_page_by_path( 'documentos', OBJECT, 'page' ) );
+
+		$command->load( array(), array() );
+		self::assertSame( $first->ID, get_page_by_path( 'banner-documentos', OBJECT, 'post' )->ID );
+	}
+
 	/** El slug reservado nunca permite sobrescribir una entrada editorial ajena. */
 	public function test_about_banner_fixture_preserves_foreign_content_conflict(): void {
 		$existing = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );

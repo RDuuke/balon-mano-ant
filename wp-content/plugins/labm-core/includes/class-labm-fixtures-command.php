@@ -105,6 +105,24 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Artículo ficticio para el encabezado editable de Documentos.
+	 *
+	 * @return array
+	 */
+	private static function documents_banner_fixture() {
+		return array(
+			array(
+				'post_name'    => 'banner-documentos',
+				'post_title'   => self::MARKER . ' Documentos',
+				'post_excerpt' => 'Resoluciones, circulares y archivos públicos de la Liga.',
+				'post_content' => '<p>' . self::MARKER . ' Resoluciones, circulares y archivos públicos de la Liga.</p>',
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+			),
+		);
+	}
+
+	/**
 	 * Artículos ficticios independientes para Misión y Visión.
 	 *
 	 * @return array
@@ -208,6 +226,149 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
+	 * Mapa revisable de documentos legales iniciales. Los títulos provienen de sus nombres y son editables en WordPress.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function legal_document_definitions() {
+		return array(
+			'1. INFORME DE GESTION 2025.pdf'      => 'Informe de gestión 2025',
+			'2. ESTADOS FINANCIEROS 2025.pdf'     => 'Estados financieros 2025',
+			'3. Reconocimiento INDEPORTES.pdf'    => 'Reconocimiento INDEPORTES',
+			'4. Certexistencia2026.pdf'           => 'Certificado de existencia 2026',
+			'5. Estatutos integrados finales.pdf' => 'Estatutos integrados finales',
+			'6. Actas ExtraOrdinaria2026.pdf'     => 'Actas extraordinarias 2026',
+			'7. DictamenRevFiscal.pdf'            => 'Dictamen de revisoría fiscal',
+			'8. Cer Antecedentes.pdf'             => 'Certificado de antecedentes',
+			'9. Cer Requisitos.pdf'               => 'Certificado de requisitos',
+			'10. Cer Cargos.pdf'                  => 'Certificado de cargos',
+			'11. DeclaracionRenta2025.pdf'        => 'Declaración de renta 2025',
+		);
+	}
+
+	/**
+	 * Envía a papelera los documentos de esta importación que ya no tienen archivo fuente.
+	 *
+	 * No elimina adjuntos ni toca documentos creados manualmente.
+	 *
+	 * @param string[] $current_keys Claves de origen que siguen presentes y son válidas.
+	 * @param string   $source_prefix Prefijo exclusivo del importador a reconciliar.
+	 * @return int[] IDs enviados a papelera.
+	 */
+	public static function reconcile_legal_documents( $current_keys, $source_prefix = 'legal-document:' ) {
+		$documents = get_posts(
+			array(
+				'post_type'      => 'labm_documento',
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'meta_query'     => array(
+					array(
+						'key'     => 'labm_document_source_key',
+						'value'   => $source_prefix,
+						'compare' => 'LIKE',
+					),
+				),
+			)
+		);
+		$trashed   = array();
+		foreach ( $documents as $document_id ) {
+			$key = (string) get_post_meta( $document_id, 'labm_document_source_key', true );
+			if ( in_array( $key, $current_keys, true ) || 'trash' === get_post_status( $document_id ) ) {
+				continue;
+			}
+			if ( wp_trash_post( $document_id ) ) {
+				$trashed[] = (int) $document_id;
+			}
+		}
+		return $trashed;
+	}
+
+	/**
+	 * Importa los documentos legales desde una ruta explícita sin duplicar contenido propio.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp labm fixtures legal-documents --source=/app/docs/legal-documents
+	 *
+	 * @param array $args Argumentos posicionales.
+	 * @param array $assoc_args Argumentos nombrados.
+	 */
+	public function legal_documents( $args, $assoc_args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		$source = isset( $assoc_args['source'] ) ? (string) $assoc_args['source'] : getcwd() . '/docs/legal-documents';
+		if ( ! is_dir( $source ) ) {
+			WP_CLI::error( 'La ruta de documentos no existe. Indica --source=/ruta/a/legal-documents.' );
+		}
+		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
+
+		$imported     = 0;
+		$current_keys = array();
+		foreach ( self::legal_document_definitions() as $filename => $title ) {
+			$path   = trailingslashit( $source ) . $filename;
+			$valid  = labm_core_validate_pdf_file( $path, 30 * MB_IN_BYTES );
+			$key    = 'legal-document:' . hash( 'sha256', $filename );
+			$exists = get_posts(
+				array(
+					'post_type'      => 'labm_documento',
+					'post_status'    => 'any',
+					'posts_per_page' => 1,
+					'meta_key'       => 'labm_document_source_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Clave estable del importador.
+					'meta_value'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Clave estable del importador.
+				)
+			);
+			if ( is_wp_error( $valid ) ) {
+				WP_CLI::warning( sprintf( 'Se omitió %1$s: %2$s', $filename, $valid->get_error_message() ) );
+				continue;
+			}
+			$current_keys[] = $key;
+			$attachments = get_posts(
+				array(
+					'post_type'      => 'attachment',
+					'post_status'    => 'inherit',
+					'posts_per_page' => 1,
+					'meta_key'       => 'labm_document_source_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Clave estable del importador.
+					'meta_value'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Clave estable del importador.
+				)
+			);
+			$attachment  = $attachments ? (int) $attachments[0]->ID : 0;
+			if ( ! $attachment ) {
+				$upload = wp_upload_bits( $filename, null, file_get_contents( $path ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fuente local validada por operación administrativa.
+				if ( ! empty( $upload['error'] ) ) {
+					WP_CLI::warning( sprintf( 'No se pudo copiar %1$s: %2$s', $filename, $upload['error'] ) );
+					continue;
+				}
+				$attachment = wp_insert_attachment(
+					array(
+						'post_title'     => $title,
+						'post_status'    => 'inherit',
+						'post_mime_type' => 'application/pdf',
+					),
+					$upload['file']
+				);
+				wp_update_attachment_metadata( $attachment, wp_generate_attachment_metadata( $attachment, $upload['file'] ) );
+				update_post_meta( $attachment, 'labm_document_source_key', $key );
+			}
+			$document_data = array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => $title,
+			);
+			$document_id   = $exists ? wp_update_post( array_merge( array( 'ID' => (int) $exists[0]->ID ), $document_data ), true ) : wp_insert_post( $document_data, true );
+			if ( is_wp_error( $document_id ) ) {
+				WP_CLI::warning( sprintf( 'No se pudo guardar %1$s: %2$s', $filename, $document_id->get_error_message() ) );
+				continue;
+			}
+			update_post_meta( $document_id, 'labm_documento_pdf_id', $attachment );
+			update_post_meta( $document_id, 'labm_document_source_key', $key );
+			++$imported;
+		}
+		$trashed = self::reconcile_legal_documents( $current_keys );
+		WP_CLI::success( sprintf( 'Documentos legales importados o actualizados: %1$d. Enviados a papelera por fuente ausente: %2$d.', $imported, count( $trashed ) ) );
+	}
+
+	/**
 	 * Carga o actualiza exclusivamente paginas ficticias con slug estable.
 	 *
 	 * ## EXAMPLES
@@ -271,6 +432,13 @@ class LABM_Fixtures_Command {
 					'post_name'    => 'nosotros',
 					'post_title'   => self::MARKER . ' Nosotros',
 					'post_content' => '<p>' . self::MARKER . ' Pagina institucional de demostracion.</p>',
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+				),
+				array(
+					'post_name'    => 'documentos',
+					'post_title'   => self::MARKER . ' Documentos',
+					'post_content' => '<p>' . self::MARKER . ' Página pública de documentos.</p>',
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
 				),
@@ -382,6 +550,7 @@ class LABM_Fixtures_Command {
 			self::home_news_fixtures(),
 			self::home_allies_fixtures(),
 			self::about_banner_fixture(),
+			self::documents_banner_fixture(),
 			self::about_purpose_fixtures(),
 			self::about_team_fixtures()
 		);

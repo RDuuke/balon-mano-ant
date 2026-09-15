@@ -41,7 +41,7 @@ function labm_core_validate_pdf_file( $path, $max_bytes ) {
 /**
  * Construye la consulta publica combinada del catalogo documental.
  *
- * @param array $filters Filtros de texto, categoria y ano.
+ * @param array $filters Parámetro heredado, ignorado por el catálogo simple.
  * @param int   $page Pagina solicitada.
  * @param int   $per_page Elementos por pagina.
  * @return WP_Query
@@ -51,35 +51,12 @@ function labm_core_document_catalog_query( $filters = array(), $page = 1, $per_p
 		'post_type'      => 'labm_documento',
 		'post_status'    => 'publish',
 		'paged'          => max( 1, absint( $page ) ),
-		'posts_per_page' => max( 1, absint( $per_page ) ),
-		'meta_key'       => 'labm_documento_fecha', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Orden funcional del catalogo.
-		'orderby'        => 'meta_value',
+		'posts_per_page' => 10,
+		'meta_key'       => 'labm_documento_pdf_id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Solo documentos con PDF asociado.
+		'meta_compare'   => 'EXISTS',
+		'orderby'        => 'date',
 		'order'          => 'DESC',
 	);
-
-	if ( ! empty( $filters['texto'] ) ) {
-		$args['s'] = sanitize_text_field( $filters['texto'] );
-	}
-	if ( ! empty( $filters['categoria'] ) ) {
-		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Filtro solicitado del catalogo.
-			array(
-				'taxonomy' => 'labm_documento_categoria',
-				'field'    => 'term_id',
-				'terms'    => array( absint( $filters['categoria'] ) ),
-			),
-		);
-	}
-	if ( ! empty( $filters['anio'] ) ) {
-		$year               = absint( $filters['anio'] );
-		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Filtro anual solicitado.
-			array(
-				'key'     => 'labm_documento_fecha',
-				'value'   => array( sprintf( '%04d-01-01', $year ), sprintf( '%04d-12-31', $year ) ),
-				'compare' => 'BETWEEN',
-				'type'    => 'DATE',
-			),
-		);
-	}
 
 	return new WP_Query( $args );
 }
@@ -100,48 +77,102 @@ function labm_core_document_pdf_url( $post_id ) {
 }
 
 /**
+ * Construye una URL de descarga segura para un documento público.
+ *
+ * @param int $post_id ID del documento.
+ * @return string URL de descarga o cadena vacía.
+ */
+function labm_core_document_download_url( $post_id ) {
+	if ( ! labm_core_document_pdf_url( $post_id ) ) {
+		return '';
+	}
+	return add_query_arg(
+		array(
+			'action'   => 'labm_document_download',
+			'document' => absint( $post_id ),
+		),
+		admin_url( 'admin-post.php' )
+	);
+}
+
+/** Entrega un PDF público con Content-Disposition cuando el navegador lo necesita. */
+function labm_core_download_document() {
+	$post_id       = isset( $_GET['document'] ) ? absint( wp_unslash( $_GET['document'] ) ) : 0;
+	$attachment_id = absint( get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+	$post          = get_post( $post_id );
+	$path          = $attachment_id ? get_attached_file( $attachment_id ) : '';
+	if ( ! $post || 'labm_documento' !== $post->post_type || 'publish' !== $post->post_status || ! labm_core_document_pdf_url( $post_id ) || ! is_readable( $path ) ) {
+		wp_die( esc_html__( 'Documento no disponible.', 'labm-core' ), 404 );
+	}
+	header( 'Content-Type: application/pdf' );
+	header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( basename( $path ) ) . '"' );
+	header( 'X-Content-Type-Options: nosniff' );
+	readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+	exit;
+}
+add_action( 'admin_post_labm_document_download', 'labm_core_download_document' );
+add_action( 'admin_post_nopriv_labm_document_download', 'labm_core_download_document' );
+
+/**
  * Conserva filtros al construir una pagina del catalogo.
  *
  * @param int   $page Pagina.
  * @param array $filters Filtros.
  * @return string
  */
-function labm_core_document_page_url( $page, $filters ) {
-	$args = array( 'pagina' => max( 1, absint( $page ) ) );
-	foreach ( array( 'texto', 'categoria', 'anio' ) as $key ) {
-		if ( isset( $filters[ $key ] ) && '' !== (string) $filters[ $key ] ) {
-			$args[ $key ] = sanitize_text_field( (string) $filters[ $key ] );
-		}
-	}
-	return add_query_arg( $args, get_post_type_archive_link( 'labm_documento' ) );
+function labm_core_document_page_url( $page, $filters = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Compatibilidad de firma.
+	$args        = array( 'pagina' => max( 1, absint( $page ) ) );
+	$page_object = get_page_by_path( 'documentos' );
+	return add_query_arg( $args, $page_object ? get_permalink( $page_object ) : get_post_type_archive_link( 'labm_documento' ) );
+}
+
+/**
+ * Obtiene la página solicitada del catálogo desde la consulta pública actual.
+ *
+ * @return int
+ */
+function labm_core_document_catalog_current_page() {
+	return isset( $_GET['pagina'] ) ? max( 1, absint( wp_unslash( $_GET['pagina'] ) ) ) : 1;
 }
 
 /**
  * Renderiza resultados documentales o un estado vacio accionable.
  *
- * @param array $filters Filtros.
+ * @param array $filters Parámetro heredado, ignorado por el catálogo simple.
  * @param int   $page Pagina.
  * @param int   $per_page Tamano de pagina.
  * @return string
  */
 function labm_core_render_document_catalog( $filters = array(), $page = 1, $per_page = 10 ) {
-	$query = labm_core_document_catalog_query( $filters, $page, $per_page );
+	$page  = max( 1, absint( $page ) );
+	$query = labm_core_document_catalog_query( array(), $page, 10 );
 	if ( ! $query->have_posts() ) {
-		return '<div class="labm-empty"><p>' . esc_html__( 'No hay documentos para estos filtros.', 'labm-core' ) . '</p><a href="' . esc_url( get_post_type_archive_link( 'labm_documento' ) ) . '">' . esc_html__( 'Limpiar filtros', 'labm-core' ) . '</a></div>';
+		return '<section class="labm-documents-empty" aria-labelledby="labm-documents-empty-title"><span aria-hidden="true">⌕</span><h2 id="labm-documents-empty-title">' . esc_html__( 'Estado vacío de referencia', 'labm-core' ) . '</h2><p>' . esc_html__( 'No encontramos documentos disponibles por el momento.', 'labm-core' ) . '</p></section>';
 	}
-	$html = '<div class="labm-document-catalog">';
+	$html = '<section class="labm-documents-catalog" aria-label="' . esc_attr__( 'Documentos publicados', 'labm-core' ) . '"><div class="labm-documents-catalog__list">';
 	foreach ( $query->posts as $post ) {
 		$url   = labm_core_document_pdf_url( $post->ID );
-		$html .= '<article><h2>' . esc_html( get_the_title( $post ) ) . '</h2>';
+		$html .= '<article class="labm-documents-catalog__item"><h2>' . esc_html( get_the_title( $post ) ) . '</h2>';
 		if ( $url ) {
-			$html .= '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Ver PDF', 'labm-core' ) . '</a> <a href="' . esc_url( $url ) . '" download>' . esc_html__( 'Descargar', 'labm-core' ) . '</a>';
+			$html .= '<p class="labm-documents-catalog__actions"><a class="labm-documents-catalog__view" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Ver PDF', 'labm-core' ) . '</a><a class="labm-documents-catalog__download" href="' . esc_url( labm_core_document_download_url( $post->ID ) ) . '" download>' . esc_html__( 'Descargar', 'labm-core' ) . '</a></p>';
 		}
 		$html .= '</article>';
 	}
+	$html .= '</div>';
 	if ( $query->max_num_pages > 1 ) {
-		$html .= '<a href="' . esc_url( labm_core_document_page_url( $page + 1, $filters ) ) . '">' . esc_html__( 'PÃ¡gina siguiente', 'labm-core' ) . '</a>';
+		$html .= '<nav class="labm-documents-pagination" aria-label="' . esc_attr__( 'Paginación de documentos', 'labm-core' ) . '"><ul>';
+		if ( $page > 1 ) {
+			$html .= '<li><a href="' . esc_url( labm_core_document_page_url( $page - 1 ) ) . '" aria-label="' . esc_attr__( 'Página anterior', 'labm-core' ) . '">←</a></li>';
+		}
+		for ( $number = 1; $number <= (int) $query->max_num_pages; $number++ ) {
+			$html .= $number === $page ? '<li><span aria-current="page">' . esc_html( (string) $number ) . '</span></li>' : '<li><a href="' . esc_url( labm_core_document_page_url( $number ) ) . '">' . esc_html( (string) $number ) . '</a></li>';
+		}
+		if ( $page < (int) $query->max_num_pages ) {
+			$html .= '<li><a href="' . esc_url( labm_core_document_page_url( $page + 1 ) ) . '" aria-label="' . esc_attr__( 'Página siguiente', 'labm-core' ) . '">→</a></li>';
+		}
+		$html .= '</ul></nav>';
 	}
-	return $html . '</div>';
+	return $html . '</section>';
 }
 
 /**

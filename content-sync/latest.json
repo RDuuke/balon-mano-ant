@@ -1,9 +1,9 @@
 {
     "schemaVersion":  1,
-    "version":  "20260911T015301262Z-daesca",
-    "baseVersion":  "20260903T002837185Z-USUARIO-DESKTOP-JP8MFJ8",
+    "version":  "20260915T024403103Z-daesca",
+    "baseVersion":  "20260911T015301262Z-daesca",
     "package":  "canonical.zip",
-    "sha256":  "4cc7d072040ff42cdb804bd74f2ac5b5aecbaca12eb3ddf793ba65e0b53a9d53",
-    "publishedAtUtc":  "2026-09-11T01:53:30.4359310Z",
+    "sha256":  "156b9edaac3a28e558657d52e0408ba096c982047cd3740f1ca36441f5539b6f",
+    "publishedAtUtc":  "2026-09-15T02:44:32.3878918Z",
     "publishedBy":  "daesca"
 }

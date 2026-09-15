@@ -55,7 +55,7 @@ final class DocumentContactTest extends TestCase {
 		unlink( $invalid );
 	}
 
-	public function test_catalog_combines_text_category_year_and_keeps_safe_links(): void {
+	public function test_catalog_ignores_legacy_filters_and_keeps_internal_metadata_private(): void {
 		$term = term_exists( 'Circulares de prueba', 'labm_documento_categoria' );
 		if ( ! $term ) {
 			$term = wp_insert_term( 'Circulares de prueba', 'labm_documento_categoria' );
@@ -79,17 +79,148 @@ final class DocumentContactTest extends TestCase {
 		wp_set_object_terms( $one, (int) $term['term_id'], 'labm_documento_categoria' );
 		update_post_meta( $one, 'labm_documento_fecha', '2026-03-01' );
 		update_post_meta( $two, 'labm_documento_fecha', '2025-03-01' );
-		$query = labm_core_document_catalog_query(
-			array(
-				'texto'     => 'deportiva',
-				'categoria' => (int) $term['term_id'],
-				'anio'      => 2026,
-			),
-			1,
-			10
-		);
-		self::assertSame( array( $one ), wp_list_pluck( $query->posts, 'ID' ) );
+		$query = labm_core_document_catalog_query( array( 'texto' => 'deportiva', 'categoria' => (int) $term['term_id'], 'anio' => 2026 ), 1, 10 );
+		self::assertNotContains( $one, wp_list_pluck( $query->posts, 'ID' ) );
+		self::assertNotContains( $two, wp_list_pluck( $query->posts, 'ID' ) );
 		self::assertSame( '', labm_core_document_pdf_url( $one ) );
+	}
+
+	/** El catálogo público solo expone documentos completos, en páginas de diez. */
+	public function test_document_catalog_is_simple_paginated_and_omits_invalid_attachments(): void {
+		for ( $index = 1; $index <= 11; $index++ ) {
+			$attachment = wp_insert_attachment(
+				array(
+					'post_mime_type' => 'application/pdf',
+					'post_title'     => 'Adjunto ' . $index,
+					'post_status'    => 'inherit',
+				)
+			);
+			$document   = wp_insert_post(
+				array(
+					'post_type'   => 'labm_documento',
+					'post_status' => 'publish',
+					'post_title'  => 'Documento ' . $index,
+					'post_date'   => sprintf( '2026-01-%02d 12:00:00', $index ),
+					'meta_input'  => array(
+						'labm_documento_pdf_id' => $attachment,
+						'labm_test_fixture'      => 1,
+					),
+				)
+			);
+			self::assertIsInt( $document );
+		}
+
+		$query = labm_core_document_catalog_query( array( 'texto' => 'no debe filtrar' ), 0 );
+		self::assertSame( 10, $query->post_count );
+		self::assertGreaterThanOrEqual( 2, (int) $query->max_num_pages );
+		self::assertSame( 1, (int) $query->get( 'paged' ) );
+		self::assertNotEmpty( get_the_title( $query->posts[0] ) );
+		self::assertStringNotContainsString( 'labm-filter', labm_core_render_document_catalog( array(), 1 ) );
+	}
+
+	/** El paginador conserva el parámetro de página y renderiza la página solicitada. */
+	public function test_document_catalog_pagination_uses_the_current_documentos_page(): void {
+		for ( $index = 1; $index <= 11; $index++ ) {
+			$attachment = wp_insert_attachment(
+				array(
+					'post_mime_type' => 'application/pdf',
+					'post_title'     => 'Adjunto paginado ' . $index,
+					'post_status'    => 'inherit',
+				)
+			);
+			wp_insert_post(
+				array(
+					'post_type'   => 'labm_documento',
+					'post_status' => 'publish',
+					'post_title'  => 'Página de documento ' . $index,
+					'post_date'   => sprintf( '2026-02-%02d 12:00:00', $index ),
+					'meta_input'  => array(
+						'labm_documento_pdf_id' => $attachment,
+						'labm_test_fixture'      => 1,
+					),
+				)
+			);
+		}
+
+		$_GET['pagina'] = '2';
+		$html            = labm_core_render_document_catalog( array(), labm_core_document_catalog_current_page() );
+		self::assertStringContainsString( 'Página de documento 1', $html );
+		self::assertStringContainsString( 'aria-current="page">2', $html );
+		self::assertStringContainsString( 'pagina=1', labm_core_document_page_url( 1 ) );
+		unset( $_GET['pagina'] );
+	}
+
+	/** La reconciliación descarta únicamente importaciones obsoletas y preserva contenido manual. */
+	public function test_legal_document_reconciliation_trashes_only_stale_imported_documents(): void {
+		$stale = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Importación obsoleta',
+				'meta_input'  => array(
+					'labm_document_source_key' => 'test-legal-document:obsolete',
+					'labm_test_fixture'         => 1,
+				),
+			)
+		);
+		$manual = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Documento manual',
+				'meta_input'  => array( 'labm_test_fixture' => 1 ),
+			)
+		);
+
+		$trashed = LABM_Fixtures_Command::reconcile_legal_documents( array( 'test-legal-document:vigente' ), 'test-legal-document:' );
+		self::assertSame( array( $stale ), $trashed );
+		self::assertSame( 'trash', get_post_status( $stale ) );
+		self::assertSame( 'publish', get_post_status( $manual ) );
+	}
+
+	/** Los enlaces de documento conservan la previsualización nativa y descarga segura. */
+	public function test_document_actions_use_a_safe_new_tab_and_download_endpoint(): void {
+		$attachment = wp_insert_attachment(
+			array(
+				'post_mime_type' => 'application/pdf',
+				'post_title'     => 'Adjunto público',
+				'post_status'    => 'inherit',
+			)
+		);
+		$document   = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Documento público',
+				'meta_input'  => array(
+					'labm_documento_pdf_id' => $attachment,
+					'labm_test_fixture'      => 1,
+				),
+			)
+		);
+		$html       = labm_core_render_document_catalog( array(), 1 );
+
+		self::assertStringContainsString( 'target="_blank"', $html );
+		self::assertStringContainsString( 'rel="noopener"', $html );
+		self::assertStringContainsString( 'action=labm_document_download', $html );
+		self::assertStringContainsString( 'download', $html );
+		self::assertStringContainsString( 'Documento público', $html );
+		self::assertStringNotContainsString( 'labm_documento_fecha', $html );
+		self::assertStringContainsString( 'action=labm_document_download', labm_core_document_download_url( $document ) );
+	}
+
+	/** El contrato editorial exige título y PDF, sin fecha administrativa obligatoria. */
+	public function test_document_publication_requires_only_title_and_pdf(): void {
+		self::assertInstanceOf( WP_Error::class, labm_core_validate_publishable( 'labm_documento', array( 'post_title' => 'Sin PDF' ) ) );
+		self::assertTrue(
+			labm_core_validate_publishable(
+				'labm_documento',
+				array(
+					'post_title'            => 'Documento completo',
+					'labm_documento_pdf_id' => 123,
+				)
+			)
+		);
 	}
 
 	public function test_shared_attachment_is_not_deleted_and_unauthorized_user_changes_nothing(): void {
