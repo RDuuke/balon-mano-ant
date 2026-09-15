@@ -146,6 +146,100 @@ final class PublicExperienceTest extends TestCase {
 
 		set_post_thumbnail( $post->ID, $original_thumbnail );
 	}
+
+	/** Documentos obtiene su encabezado de un artículo editorial editable y publicado. */
+	public function test_documents_page_renders_editable_editorial_banner(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'post',
+				'post_status'  => 'publish',
+				'post_name'    => 'banner-documentos',
+				'post_title'   => 'Documentos',
+				'post_excerpt' => 'Resoluciones, circulares y archivos públicos de la Liga.',
+			)
+		);
+
+		try {
+			$html = labm_theme_render_documents_banner();
+
+			self::assertStringContainsString( 'data-labm-section="documentos-banner"', $html );
+			self::assertStringContainsString( '<article', $html );
+			self::assertStringContainsString( 'Transparencia y consulta', $html );
+			self::assertStringContainsString( '<h1', $html );
+			self::assertStringContainsString( '>Documentos</h1>', $html );
+			self::assertStringContainsString( 'Resoluciones, circulares y archivos públicos de la Liga.', $html );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
+	}
+
+	/** Documentos no muestra contenido editorial no público o incompleto. */
+	public function test_documents_banner_omits_unpublishable_content_and_escapes_text(): void {
+		$post = get_page_by_path( 'banner-documentos', OBJECT, 'post' );
+		self::assertInstanceOf( WP_Post::class, $post );
+		$original = array(
+			'post_status'  => $post->post_status,
+			'post_title'   => $post->post_title,
+			'post_excerpt' => $post->post_excerpt,
+			'post_content' => $post->post_content,
+		);
+
+		try {
+			wp_update_post( array( 'ID' => $post->ID, 'post_status' => 'draft' ) );
+			self::assertSame( '', labm_theme_render_documents_banner() );
+			wp_update_post(
+				array(
+					'ID'          => $post->ID,
+					'post_status' => 'publish',
+					'post_title'   => '<script>Documentos privados</script>',
+					'post_excerpt' => '',
+					'post_content' => '<strong>Resumen público</strong>',
+				)
+			);
+			$html = labm_theme_render_documents_banner();
+			self::assertStringContainsString( 'Documentos privados', $html );
+			self::assertStringContainsString( 'Resumen público', $html );
+			self::assertStringNotContainsString( '<script>', $html );
+			self::assertStringNotContainsString( '<strong>', $html );
+			wp_update_post( array( 'ID' => $post->ID, 'post_title' => '' ) );
+			self::assertSame( '', labm_theme_render_documents_banner() );
+		} finally {
+			wp_update_post( array_merge( array( 'ID' => $post->ID ), $original ) );
+		}
+	}
+
+	/** La plantilla y el patrón aíslan la composición de Documentos. */
+	public function test_documents_pattern_and_template_compose_the_editorial_banner(): void {
+		$root     = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';
+		$pattern  = (string) file_get_contents( $root . 'patterns/documentos.php' );
+		$template = (string) file_get_contents( $root . 'templates/page-documentos.html' );
+		$about    = (string) file_get_contents( $root . 'templates/page-nosotros.html' );
+		$css      = (string) file_get_contents( $root . 'style.css' );
+
+		self::assertStringContainsString( 'labm_theme_render_documents_banner()', $pattern );
+		self::assertStringContainsString( '"slug":"labm/documentos"', $template );
+		self::assertStringContainsString( '"slug":"header"', $template );
+		self::assertStringContainsString( '"slug":"footer"', $template );
+		self::assertStringNotContainsString( 'labm/documentos', $about );
+		self::assertMatchesRegularExpression( '/\.labm-documents-banner\s*\{[^}]*background:\s*#000;[^}]*color:\s*#fff;/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-documents-banner\s*\{[^}]*min-height:\s*22\.3125rem;/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-documents-banner__content\s*\{[^}]*min-width:\s*0;[^}]*padding-block:/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-documents-banner__content\s*\{[^}]*width:\s*100%;[^}]*margin:\s*0\s*!important;[^}]*padding-inline:\s*clamp\(2rem,\s*8\.5vw,\s*8rem\);/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-documents-banner h1\s*\{[^}]*font-size:\s*clamp\(/s', $css );
+	}
+
+	/** El patrón añade exclusivamente el catálogo accesible debajo del encabezado. */
+	public function test_documents_pattern_composes_the_simple_pdf_catalog_without_filters(): void {
+		$root    = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';
+		$pattern = (string) file_get_contents( $root . 'patterns/documentos.php' );
+		$css     = (string) file_get_contents( $root . 'style.css' );
+
+		self::assertStringContainsString( 'labm_core_render_document_catalog()', $pattern );
+		self::assertLessThan( strpos( $pattern, 'labm_core_render_document_catalog()' ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
+		self::assertStringNotContainsString( 'labm-filter', $pattern );
+		self::assertMatchesRegularExpression( '/\.labm-documents-catalog\s*\{[^}]*max-width:/s', $css );
+		self::assertMatchesRegularExpression( '/\.labm-documents-pagination\s*\{[^}]*display:\s*flex;/s', $css );
+	}
 	public function test_theme_declares_patterns_and_public_templates(): void {
 		foreach ( array( 'inicio', 'nosotros' ) as $pattern ) {
 			self::assertFileExists( dirname( __DIR__, 2 ) . "/wp-content/themes/labm/patterns/{$pattern}.php" );

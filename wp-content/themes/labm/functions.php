@@ -100,6 +100,46 @@ function labm_theme_render_about_banner() {
  *
  * @return string HTML seguro o cadena vacía sin artículos públicos completos.
  */
+/**
+ * Renderiza el encabezado editorial editable de la página Documentos.
+ *
+ * @return string HTML seguro o cadena vacía cuando no existe contenido público completo.
+ */
+function labm_theme_render_documents_banner() {
+	$post = get_page_by_path( 'banner-documentos', OBJECT, 'post' );
+	if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status ) {
+		return '';
+	}
+
+	$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+	$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+	$title = is_string( $title ) ? $title : '';
+	$copy  = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+	$copy  = trim( wp_strip_all_tags( strip_shortcodes( $copy ) ) );
+	$copy  = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $copy );
+	$copy  = is_string( $copy ) ? $copy : '';
+	if ( '' === $title || '' === $copy ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<section class="labm-documents-banner" data-labm-section="documentos-banner" aria-labelledby="labm-documents-banner-title">
+		<article class="labm-documents-banner__content">
+			<p class="labm-documents-banner__eyebrow"><?php esc_html_e( 'Transparencia y consulta', 'labm' ); ?></p>
+			<h1 id="labm-documents-banner-title"><?php echo esc_html( $title ); ?></h1>
+			<p class="labm-documents-banner__summary"><?php echo esc_html( $copy ); ?></p>
+		</article>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Renderiza los articulos editoriales de Mision y Vision.
+ *
+ * @return string HTML seguro o cadena vacia sin articulos publicos completos.
+ */
 function labm_theme_render_about_purpose() {
 	$items = array();
 	foreach (

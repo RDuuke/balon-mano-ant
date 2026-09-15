@@ -160,7 +160,7 @@ function labm_core_validate_identifier( $value ) {
  * @return true|WP_Error
  */
 function labm_core_validate_publishable( $post_type, $data ) {
-	$required = 'labm_documento' === $post_type ? array( 'post_title', 'labm_documento_fecha', 'labm_documento_pdf_id' ) : array( 'post_title', 'post_content' );
+	$required = 'labm_documento' === $post_type ? array( 'post_title', 'labm_documento_pdf_id' ) : array( 'post_title', 'post_content' );
 	$missing  = array();
 	foreach ( $required as $field ) {
 		if ( empty( trim( (string) ( $data[ $field ] ?? '' ) ) ) ) {
