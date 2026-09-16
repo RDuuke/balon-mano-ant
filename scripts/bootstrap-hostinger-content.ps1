@@ -63,7 +63,6 @@ host=$($endpoint.Host)
 port=$($endpoint.Port)
 user=$([Environment]::GetEnvironmentVariable('DB_USERNAME'))
 password=$([Environment]::GetEnvironmentVariable('DB_PASSWORD'))
-database=$([Environment]::GetEnvironmentVariable('DB_NAME'))
 "@
     Write-Utf8Lf -Path $path -Content $content
     if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { & chmod 600 -- $path }
@@ -74,7 +73,8 @@ function Remove-SecretFile { param([string] $Path); if ($Path -and (Test-Path -L
 
 function Invoke-MySql {
     param([string] $DefaultsFile, [string] $Query, [switch] $AllowFailure)
-    $output = @(& mysql "--defaults-extra-file=$DefaultsFile" --batch --skip-column-names --execute=$Query 2>&1)
+    $databaseName = [Environment]::GetEnvironmentVariable('DB_NAME')
+    $output = @(& mysql "--defaults-extra-file=$DefaultsFile" "--database=$databaseName" --batch --skip-column-names --execute=$Query 2>&1)
     if ($LASTEXITCODE -ne 0 -and -not $AllowFailure) { Throw-Safe 'No fue posible conectar o consultar MySQL remoto. Revise DB_HOST y el acceso remoto desde GitHub Actions.' }
     return @($output | ForEach-Object { $_.ToString().Trim() } | Where-Object { $_ })
 }
@@ -246,7 +246,8 @@ function Invoke-Import {
     try {
         $backup = Join-Path $script:WorkRoot 'database-before-import.sql.gz'
         $rawBackup = Join-Path $script:WorkRoot '.database-before-import.sql'
-        & mysqldump "--defaults-extra-file=$defaults" --single-transaction --routines --triggers --events "--result-file=$rawBackup"
+        $databaseName = [Environment]::GetEnvironmentVariable('DB_NAME')
+        & mysqldump "--defaults-extra-file=$defaults" --single-transaction --routines --triggers --events "--result-file=$rawBackup" $databaseName
         if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $rawBackup) -or (Get-Item -LiteralPath $rawBackup).Length -eq 0) { Throw-Safe 'No fue posible crear el respaldo MySQL previo a la importacion.' }
         & gzip -c -- $rawBackup > $backup
         $gzipExitCode = $LASTEXITCODE
@@ -255,7 +256,7 @@ function Invoke-Import {
         $rewritten = Join-Path $script:WorkRoot 'database-target.sql'
         $sourceToken = [string]::Concat([char] 96, [string] $state.sourcePrefix); $targetToken = [string]::Concat([char] 96, [string] $state.targetPrefix)
         Write-Utf8Lf -Path $rewritten -Content ((Get-Content -Raw -LiteralPath $payload.DatabasePath).Replace($sourceToken, $targetToken))
-        Get-Content -Raw -LiteralPath $rewritten | & mysql "--defaults-extra-file=$defaults"
+        Get-Content -Raw -LiteralPath $rewritten | & mysql "--defaults-extra-file=$defaults" "--database=$databaseName"
         if ($LASTEXITCODE -ne 0) { Throw-Safe 'La importacion MySQL no se completo; restaure el artefacto database-before-import.sql.gz antes de reintentar.' }
         $table = Get-QuotedIdentifier -Name ("{0}options" -f $state.targetPrefix)
         Invoke-MySql -DefaultsFile $defaults -Query "UPDATE $table SET option_name = '$($state.targetPrefix)user_roles' WHERE option_name = '$($state.sourcePrefix)user_roles'" | Out-Null
