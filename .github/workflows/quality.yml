@@ -107,7 +107,7 @@ jobs:
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       WP_USER: ${{ secrets.WP_USER }}
       WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
-      WP_PRODUCTION_URL: http://palevioletred-salamander-919245.hostingersite.com
+      WP_PRODUCTION_URL: https://balonmanoantioquia.com
     steps:
       - name: Descargar fuentes
         uses: actions/checkout@v6
@@ -181,7 +181,7 @@ jobs:
     env:
       WP_USER: ${{ secrets.WP_USER }}
       WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
-      WP_PRODUCTION_URL: http://palevioletred-salamander-919245.hostingersite.com
+      WP_PRODUCTION_URL: https://balonmanoantioquia.com
     steps:
       - name: Confirmar sesión administrativa sin revelar credenciales
         shell: bash
