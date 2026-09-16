@@ -147,7 +147,21 @@ function Get-SourcePrefix {
 
 function Get-RemoteWordPressVersion {
     try { $rest = Invoke-RestMethod -Uri ('{0}/wp-json/' -f $TargetUrl.TrimEnd('/')) -Method Get -TimeoutSec 30 } catch { Throw-Safe 'No fue posible consultar el indice REST de WordPress destino.' }
-    if ([string] $rest.generator -notmatch '[?&]v=(?<version>\d+\.\d+(?:\.\d+)?)') { Throw-Safe 'El indice REST no informa una version de WordPress verificable.' }
+    if ([string] $rest.generator -match '[?&]v=(?<version>\d+\.\d+(?:\.\d+)?)') { return $matches.version }
+
+    try {
+        $session = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
+        $baseUrl = $TargetUrl.TrimEnd('/')
+        Invoke-WebRequest -Uri "$baseUrl/wp-login.php" -Method Post -WebSession $session -Body @{
+            log = [Environment]::GetEnvironmentVariable('WP_USER')
+            pwd = [Environment]::GetEnvironmentVariable('WP_PASSWORD')
+            'wp-submit' = 'Log In'
+            redirect_to = "$baseUrl/wp-admin/"
+        } -MaximumRedirection 5 -ErrorAction Stop | Out-Null
+        $admin = Invoke-WebRequest -Uri "$baseUrl/wp-admin/" -WebSession $session -MaximumRedirection 5 -ErrorAction Stop
+    } catch { Throw-Safe 'No fue posible autenticar o consultar el panel de WordPress destino para verificar su version.' }
+
+    if ([string] $admin.Content -notmatch '[?&]ver=(?<version>\d+\.\d+(?:\.\d+)?)') { Throw-Safe 'No fue posible determinar una version verificable de WordPress destino.' }
     return $matches.version
 }
 
