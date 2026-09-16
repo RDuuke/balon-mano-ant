@@ -60,8 +60,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      HOSTINGER_PUBLIC_ROOT: ./domains/palevioletred-salamander-919245.hostingersite.com/public_html
     steps:
       - name: Descargar fuentes
         uses: actions/checkout@v6
@@ -69,27 +67,27 @@ jobs:
       - name: Publicar tema LABM por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
           timeout: 60000
           local-dir: ./wp-content/themes/labm/
-          server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/themes/labm/
+          server-dir: ./wp-content/themes/labm/
           dangerous-clean-slate: false
 
       - name: Publicar plugin LABM Core por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
           timeout: 60000
           local-dir: ./wp-content/plugins/labm-core/
-          server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/plugins/labm-core/
+          server-dir: ./wp-content/plugins/labm-core/
           dangerous-clean-slate: false
 
   bootstrap-content:
@@ -103,13 +101,12 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      FTP_SERVER: ${{ secrets.FTP_SERVER }}
-      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_USER: ${{ secrets.FTP_USER }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       WP_USER: ${{ secrets.WP_USER }}
       WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
       WP_PRODUCTION_URL: http://palevioletred-salamander-919245.hostingersite.com
-      HOSTINGER_PUBLIC_ROOT: ./domains/palevioletred-salamander-919245.hostingersite.com/public_html
     steps:
       - name: Descargar fuentes
         uses: actions/checkout@v6
@@ -142,14 +139,14 @@ jobs:
         if: steps.preflight.outputs.should_migrate == 'true' && steps.import.outcome == 'success'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
           timeout: 60000
           local-dir: ./artifacts/hostinger-bootstrap/payload/uploads/
-          server-dir: ${{ env.HOSTINGER_PUBLIC_ROOT }}/wp-content/uploads/
+          server-dir: ./wp-content/uploads/
           dangerous-clean-slate: false
 
       - name: Finalizar migración y marcar versión

@@ -12,7 +12,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$script:RequiredSecrets = @('DB_HOST', 'DB_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'FTP_SERVER', 'FTP_USERNAME', 'FTP_PASSWORD', 'WP_USER', 'WP_PASSWORD')
+$script:RequiredSecrets = @('DB_HOST', 'DB_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'FTP_HOST', 'FTP_USER', 'FTP_PASSWORD', 'WP_USER', 'WP_PASSWORD')
 $script:StateFileName = 'state.json'
 $script:ReportFileName = 'report.txt'
 
