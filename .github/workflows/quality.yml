@@ -69,7 +69,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
@@ -82,7 +82,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
@@ -103,7 +103,7 @@ jobs:
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
-      FTP_USER: ${{ secrets.FTP_USER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       WP_USER: ${{ secrets.WP_USER }}
       WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
@@ -141,7 +141,7 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           port: 21
