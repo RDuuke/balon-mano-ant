@@ -135,6 +135,57 @@ function labm_theme_render_documents_banner() {
 	return (string) ob_get_clean();
 }
 
+/** Renderiza la pagina publica de Contacto mediante el contrato de LABM Core. */
+function labm_theme_render_contact() {
+	if ( ! function_exists( 'labm_core_get_contact_settings' ) ) {
+		return '<section class="labm-contact" data-labm-section="contacto"><h1>' . esc_html__( 'Contacto', 'labm' ) . '</h1><p class="labm-notice">' . esc_html__( 'El formulario no está disponible en este momento.', 'labm' ) . '</p></section>';
+	}
+	$settings = labm_core_get_contact_settings();
+	$state_id = isset( $_GET['contacto_estado'] ) ? sanitize_key( wp_unslash( $_GET['contacto_estado'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Estado opaco de PRG.
+	$state    = $state_id && function_exists( 'labm_core_contact_consume_state' ) ? labm_core_contact_consume_state( $state_id ) : array();
+	$errors   = array_fill_keys( is_array( $state['errors'] ?? null ) ? $state['errors'] : array(), true );
+	$footer   = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
+	$privacy  = $footer['policy_url'] ?? '/privacidad/';
+	$fields   = array(
+		'nombre'         => __( 'Nombre', 'labm' ),
+		'apellidos'      => __( 'Apellidos', 'labm' ),
+		'correo'         => __( 'Correo electrónico', 'labm' ),
+		'telefono'       => __( 'Teléfono (opcional)', 'labm' ),
+		'asunto'         => __( 'Asunto', 'labm' ),
+		'mensaje'        => __( 'Mensaje', 'labm' ),
+		'consentimiento' => __( 'Tratamiento de datos', 'labm' ),
+	);
+	ob_start();
+	?>
+	<section class="labm-contact" data-labm-section="contacto" aria-labelledby="labm-contact-title">
+		<header class="labm-contact__hero"><p class="labm-contact__eyebrow"><?php esc_html_e( 'Hablemos', 'labm' ); ?></p><h1 id="labm-contact-title"><?php esc_html_e( 'Contacto', 'labm' ); ?></h1><p><?php esc_html_e( 'Estamos disponibles para acompañar tus procesos deportivos e institucionales.', 'labm' ); ?></p></header>
+		<div class="labm-contact__grid">
+			<section class="labm-contact__details" aria-labelledby="labm-contact-details-title"><h2 id="labm-contact-details-title"><?php esc_html_e( 'Datos de contacto', 'labm' ); ?></h2>
+				<dl><div><dt><?php esc_html_e( 'Correo', 'labm' ); ?></dt><dd><a href="mailto:<?php echo esc_attr( $settings['email'] ); ?>"><?php echo esc_html( $settings['email'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Teléfono', 'labm' ); ?></dt><dd><a href="tel:<?php echo esc_attr( $settings['phone'] ); ?>"><?php echo esc_html( $settings['phone'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Dirección', 'labm' ); ?></dt><dd><?php echo esc_html( $settings['address'] ); ?></dd></div></dl>
+				<p><a class="labm-contact__map" href="<?php echo esc_url( $settings['map_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Abrir ubicación en Google Maps', 'labm' ); ?></a></p>
+				<?php if ( $settings['socials'] ) : ?><nav aria-label="<?php esc_attr_e( 'Redes sociales', 'labm' ); ?>"><ul class="labm-contact__socials"><?php foreach ( $settings['socials'] as $social ) : ?><li><a href="<?php echo esc_url( $social['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $social['label'] ); ?></a></li><?php endforeach; ?></ul></nav><?php endif; ?>
+			</section>
+			<section class="labm-contact__form-wrap" id="formulario" aria-labelledby="labm-contact-form-title"><h2 id="labm-contact-form-title"><?php esc_html_e( 'Envía tu mensaje', 'labm' ); ?></h2>
+				<?php if ( ! empty( $state['ok'] ) ) : ?><p class="labm-contact__status labm-contact__status--success" role="status" aria-live="polite"><?php esc_html_e( 'Recibimos tu mensaje. Te responderemos pronto.', 'labm' ); ?></p><?php elseif ( $errors ) : ?><div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'Revisa los campos marcados e inténtalo de nuevo.', 'labm' ); ?></p><ul><?php foreach ( array_keys( $errors ) as $field ) : ?><?php if ( isset( $fields[ $field ] ) ) : ?><li><a href="#labm-contact-<?php echo esc_attr( $field ); ?>"><?php echo esc_html( $fields[ $field ] ); ?></a></li><?php endif; ?><?php endforeach; ?></ul></div><?php endif; ?>
+				<form class="labm-contact__form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" novalidate>
+					<input type="hidden" name="action" value="labm_contact_send"><?php wp_nonce_field( 'labm_contacto', 'nonce' ); ?><input type="hidden" name="token" value="<?php echo esc_attr( wp_generate_password( 32, false, false ) ); ?>">
+					<div class="labm-contact__honeypot" aria-hidden="true"><label for="labm-contact-sitio-web">Sitio web</label><input id="labm-contact-sitio-web" type="text" name="sitio_web" tabindex="-1" autocomplete="off"></div>
+					<div class="labm-contact__field"><label for="labm-contact-nombre"><?php esc_html_e( 'Nombre', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-nombre" name="nombre" type="text" autocomplete="given-name" required<?php echo isset( $errors['nombre'] ) ? ' aria-invalid="true" aria-describedby="labm-error-nombre"' : ''; ?>><p id="labm-error-nombre" class="labm-contact__field-error"<?php echo isset( $errors['nombre'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
+					<div class="labm-contact__field"><label for="labm-contact-apellidos"><?php esc_html_e( 'Apellidos', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-apellidos" name="apellidos" type="text" autocomplete="family-name" required<?php echo isset( $errors['apellidos'] ) ? ' aria-invalid="true" aria-describedby="labm-error-apellidos"' : ''; ?>><p id="labm-error-apellidos" class="labm-contact__field-error"<?php echo isset( $errors['apellidos'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
+					<div class="labm-contact__field"><label for="labm-contact-correo"><?php esc_html_e( 'Correo electrónico', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-correo" name="correo" type="email" autocomplete="email" required<?php echo isset( $errors['correo'] ) ? ' aria-invalid="true" aria-describedby="labm-error-correo"' : ''; ?>><p id="labm-error-correo" class="labm-contact__field-error"<?php echo isset( $errors['correo'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Escribe un correo electrónico válido.', 'labm' ); ?></p></div>
+					<div class="labm-contact__field"><label for="labm-contact-telefono"><?php esc_html_e( 'Teléfono (opcional)', 'labm' ); ?></label><input id="labm-contact-telefono" name="telefono" type="tel" autocomplete="tel"></div>
+					<div class="labm-contact__field"><label for="labm-contact-asunto"><?php esc_html_e( 'Asunto', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-asunto" name="asunto" type="text" required<?php echo isset( $errors['asunto'] ) ? ' aria-invalid="true" aria-describedby="labm-error-asunto"' : ''; ?>><p id="labm-error-asunto" class="labm-contact__field-error"<?php echo isset( $errors['asunto'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
+					<div class="labm-contact__field"><label for="labm-contact-mensaje"><?php esc_html_e( 'Mensaje', 'labm' ); ?> <span aria-hidden="true">*</span></label><textarea id="labm-contact-mensaje" name="mensaje" rows="6" required<?php echo isset( $errors['mensaje'] ) ? ' aria-invalid="true" aria-describedby="labm-error-mensaje"' : ''; ?>></textarea><p id="labm-error-mensaje" class="labm-contact__field-error"<?php echo isset( $errors['mensaje'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
+					<div class="labm-contact__consent"><input id="labm-contact-consentimiento" name="consentimiento" type="checkbox" value="1" required<?php echo isset( $errors['consentimiento'] ) ? ' aria-invalid="true" aria-describedby="labm-error-consentimiento"' : ''; ?>><label for="labm-contact-consentimiento"><?php esc_html_e( 'Acepto el tratamiento de mis datos para responder esta consulta. Consulta la ', 'labm' ); ?><a href="<?php echo esc_url( $privacy ); ?>"><?php esc_html_e( 'política de privacidad', 'labm' ); ?></a>.</label><p id="labm-error-consentimiento" class="labm-contact__field-error"<?php echo isset( $errors['consentimiento'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Debes aceptar el tratamiento de datos.', 'labm' ); ?></p></div>
+					<button type="submit"><?php esc_html_e( 'Enviar mensaje', 'labm' ); ?></button>
+				</form>
+			</section>
+		</div>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
 /**
  * Renderiza los articulos editoriales de Mision y Vision.
  *

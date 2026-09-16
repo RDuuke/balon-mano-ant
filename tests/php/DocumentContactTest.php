@@ -281,6 +281,7 @@ final class DocumentContactTest extends TestCase {
 			'mensaje'   => 'Necesito informaciÃ³n.',
 			'telefono'  => '',
 			'sitio_web' => '',
+			'consentimiento' => '1',
 			'token'     => 'contacto-prueba-unico',
 			'nonce'     => wp_create_nonce( 'labm_contacto' ),
 		);
@@ -298,5 +299,103 @@ final class DocumentContactTest extends TestCase {
 		$spam['sitio_web'] = 'https://spam.example';
 		self::assertFalse( labm_core_process_contact( $spam )['ok'] );
 		remove_filter( 'pre_wp_mail', $filter, 10 );
+	}
+
+	/** El contrato de Contacto expone solo datos institucionales aptos para la interfaz. */
+	public function test_contact_settings_reuse_public_footer_data_without_recipients(): void {
+		$settings = labm_core_get_contact_settings();
+
+		self::assertSame( 'info@balonmanoantioquia.com', $settings['email'] );
+		self::assertSame( '3233212981', $settings['phone'] );
+		self::assertStringStartsWith( 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos', $settings['address'] );
+		self::assertStringEndsWith( 'Colombia', $settings['address'] );
+		self::assertStringContainsString( 'google.com/maps/search/', $settings['map_url'] );
+		self::assertArrayHasKey( 'facebook', $settings['socials'] );
+		self::assertArrayHasKey( 'instagram', $settings['socials'] );
+		self::assertArrayNotHasKey( 'recipients', $settings );
+	}
+
+	/** El consentimiento es obligatorio y los destinatarios privados no pasan al contrato pÃºblico. */
+	public function test_contact_requires_consent_and_uses_only_the_institutional_recipient_by_default(): void {
+		$data = array(
+			'nombre'    => 'Ana',
+			'apellidos' => 'PÃ©rez',
+			'correo'    => 'ana@example.test',
+			'asunto'    => 'Consulta',
+			'mensaje'   => 'Necesito informaciÃ³n.',
+			'telefono'  => '',
+			'sitio_web' => '',
+			'token'     => 'contacto-consentimiento',
+			'nonce'     => wp_create_nonce( 'labm_contacto' ),
+		);
+
+		$result = labm_core_process_contact( $data );
+		self::assertFalse( $result['ok'] );
+		self::assertArrayHasKey( 'consentimiento', $result['errors'] );
+		self::assertSame( array( 'info@balonmanoantioquia.com' ), labm_core_contact_recipients() );
+	}
+
+	/** Un fallo de correo libera la reserva para permitir un reintento legÃ­timo. */
+	public function test_contact_mail_failure_does_not_consume_the_idempotency_token(): void {
+		$data = array(
+			'nombre'          => 'Ana',
+			'apellidos'       => 'PÃ©rez',
+			'correo'          => 'ana@example.test',
+			'asunto'          => 'Consulta',
+			'mensaje'         => 'Necesito informaciÃ³n.',
+			'telefono'        => '',
+			'sitio_web'       => '',
+			'consentimiento'  => '1',
+			'token'           => 'contacto-fallo-reintento',
+			'nonce'           => wp_create_nonce( 'labm_contacto' ),
+		);
+		$failure = static function () {
+			return false;
+		};
+		add_filter( 'pre_wp_mail', $failure );
+		self::assertFalse( labm_core_process_contact( $data )['ok'] );
+		remove_filter( 'pre_wp_mail', $failure );
+
+		$success = static function () {
+			return true;
+		};
+		add_filter( 'pre_wp_mail', $success );
+		self::assertTrue( labm_core_process_contact( $data )['ok'] );
+		remove_filter( 'pre_wp_mail', $success );
+	}
+
+	/** Las solicitudes manipuladas sin token no pueden alcanzar la entrega. */
+	public function test_contact_rejects_a_missing_idempotency_token(): void {
+		$data = array(
+			'nombre'         => 'Ana',
+			'apellidos'      => 'Pérez',
+			'correo'         => 'ana@example.test',
+			'asunto'         => 'Consulta',
+			'mensaje'        => 'Necesito información.',
+			'consentimiento' => '1',
+			'nonce'          => wp_create_nonce( 'labm_contacto' ),
+		);
+		$sent = false;
+		$filter = static function () use ( &$sent ) {
+			$sent = true;
+			return true;
+		};
+		add_filter( 'pre_wp_mail', $filter );
+
+		try {
+			$result = labm_core_process_contact( $data );
+			self::assertFalse( $result['ok'] );
+			self::assertArrayHasKey( 'token', $result['errors'] );
+			self::assertFalse( $sent );
+		} finally {
+			remove_filter( 'pre_wp_mail', $filter );
+		}
+	}
+
+	/** El consentimiento enlaza a la política de privacidad aplicable. */
+	public function test_contact_privacy_notice_renders_a_navigable_link(): void {
+		$html = labm_theme_render_contact();
+
+		self::assertMatchesRegularExpression( '/<a href="[^"]+">política de privacidad<\/a>/u', $html );
 	}
 }

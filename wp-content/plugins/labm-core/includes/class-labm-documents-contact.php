@@ -234,7 +234,7 @@ function labm_core_delete_document_attachment( $post_id, $delete_file ) {
  * @param array $data Datos enviados por el formulario.
  * @return array Resultado seguro del procesamiento.
  */
-function labm_core_process_contact( $data ) {
+function labm_core_process_contact_legacy( $data ) {
 	$errors = array();
 	$nonce  = isset( $data['nonce'] ) ? sanitize_text_field( $data['nonce'] ) : '';
 	if ( ! wp_verify_nonce( $nonce, 'labm_contacto' ) ) {
@@ -285,3 +285,146 @@ function labm_core_process_contact( $data ) {
 		'errors' => array(),
 	);
 }
+
+/** Devuelve solo los datos institucionales publicos de Contacto. */
+function labm_core_get_contact_settings() {
+	$footer  = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
+	$email   = sanitize_email( $footer['contact_email'] ?? '' );
+	$address = 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia';
+	$socials = array();
+	foreach ( array( 'facebook', 'instagram' ) as $network ) {
+		$url   = esc_url_raw( $footer[ $network . '_url' ] ?? '', array( 'http', 'https' ) );
+		$label = sanitize_text_field( $footer[ $network . '_label' ] ?? '' );
+		if ( '' !== $url && '' !== $label ) {
+			$socials[ $network ] = array( 'label' => $label, 'url' => $url );
+		}
+	}
+	return array(
+		'email'   => is_email( $email ) ? $email : 'info@balonmanoantioquia.com',
+		'phone'   => '3233212981',
+		'address' => $address,
+		'map_url' => esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ), array( 'https' ) ),
+		'socials' => $socials,
+	);
+}
+
+/** Obtiene los destinatarios privados permitidos por el entorno actual. */
+function labm_core_contact_recipients() {
+	$recipients  = array( 'info@balonmanoantioquia.com' );
+	$environment = wp_get_environment_type();
+	if ( ! in_array( $environment, array( 'local', 'development', 'staging' ), true ) ) {
+		return $recipients;
+	}
+	$raw_recipients = getenv( 'LABM_CONTACT_TEST_RECIPIENTS' );
+	if ( ! is_string( $raw_recipients ) ) {
+		return $recipients;
+	}
+	foreach ( array_filter( array_map( 'trim', explode( ',', $raw_recipients ) ) ) as $candidate ) {
+		$email = sanitize_email( $candidate );
+		if ( is_email( $email ) && ! in_array( $email, $recipients, true ) ) {
+			$recipients[] = $email;
+		}
+		if ( 3 === count( $recipients ) ) {
+			break;
+		}
+	}
+	return $recipients;
+}
+
+/** Reserva de forma atomica un token mientras se entrega un mensaje. */
+function labm_core_contact_reserve_token( $token ) {
+	if ( '' === $token ) {
+		return '';
+	}
+	$key  = 'labm_contact_' . hash( 'sha256', $token );
+	$lock = $key . '_lock';
+	if ( get_transient( $key ) ) {
+		return false;
+	}
+	if ( absint( get_option( $lock, 0 ) ) < time() ) {
+		delete_option( $lock );
+	}
+	return add_option( $lock, time() + HOUR_IN_SECONDS, '', false ) ? $lock : false;
+}
+
+/** Libera una reserva fallida o completada. */
+function labm_core_contact_release_token( $lock ) {
+	if ( is_string( $lock ) && '' !== $lock ) {
+		delete_option( $lock );
+	}
+}
+
+/** Procesa contacto sin retener datos personales fuera de la entrega. */
+function labm_core_process_contact( $data ) {
+	$errors = array();
+	$nonce  = isset( $data['nonce'] ) ? sanitize_text_field( $data['nonce'] ) : '';
+	if ( ! wp_verify_nonce( $nonce, 'labm_contacto' ) ) {
+		$errors['nonce'] = __( 'La solicitud caducó. Recarga la página.', 'labm-core' );
+	}
+	if ( ! empty( $data['sitio_web'] ) ) {
+		$errors['antispam'] = __( 'No fue posible procesar el formulario.', 'labm-core' );
+	}
+	foreach ( array( 'nombre', 'apellidos', 'asunto', 'mensaje' ) as $field ) {
+		if ( '' === trim( sanitize_textarea_field( $data[ $field ] ?? '' ) ) ) {
+			$errors[ $field ] = __( 'Este campo es obligatorio.', 'labm-core' );
+		}
+	}
+	$email = sanitize_email( $data['correo'] ?? '' );
+	if ( ! is_email( $email ) ) {
+		$errors['correo'] = __( 'Escribe un correo electrónico válido.', 'labm-core' );
+	}
+	if ( empty( $data['consentimiento'] ) ) {
+		$errors['consentimiento'] = __( 'Debes aceptar el tratamiento de datos para enviar el mensaje.', 'labm-core' );
+	}
+	if ( $errors ) {
+		return array( 'ok' => false, 'errors' => $errors );
+	}
+	$token = sanitize_key( $data['token'] ?? '' );
+	if ( '' === $token ) {
+		return array( 'ok' => false, 'errors' => array( 'token' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ) );
+	}
+	$lock  = labm_core_contact_reserve_token( $token );
+	if ( false === $lock ) {
+		return array( 'ok' => true, 'errors' => array() );
+	}
+	$phone = preg_replace( '/[^0-9+()\-\s]/', '', (string) ( $data['telefono'] ?? '' ) );
+	$body  = sprintf( "Nombre: %s %s\nCorreo: %s%s\n\n%s", sanitize_text_field( $data['nombre'] ), sanitize_text_field( $data['apellidos'] ), $email, '' !== $phone ? "\nTeléfono: " . $phone : '', sanitize_textarea_field( $data['mensaje'] ) );
+	$sent  = wp_mail( labm_core_contact_recipients(), sanitize_text_field( $data['asunto'] ), $body, array( 'Reply-To: ' . $email ) );
+	if ( ! $sent ) {
+		labm_core_contact_release_token( $lock );
+		do_action( 'labm_core_contact_delivery_failed', array( 'code' => 'mail_delivery_failed' ) );
+		return array( 'ok' => false, 'errors' => array( 'delivery' => __( 'No pudimos enviar el mensaje. Inténtalo de nuevo.', 'labm-core' ) ) );
+	}
+	if ( '' !== $token ) {
+		set_transient( 'labm_contact_' . hash( 'sha256', $token ), 1, HOUR_IN_SECONDS );
+	}
+	labm_core_contact_release_token( $lock );
+	return array( 'ok' => true, 'errors' => array() );
+}
+
+/** Recupera una sola vez el estado opaco de una redireccion POST-Redirect-GET. */
+function labm_core_contact_consume_state( $state_id ) {
+	$state_id = sanitize_key( $state_id );
+	if ( '' === $state_id ) {
+		return array();
+	}
+	$key   = 'labm_contact_state_' . hash( 'sha256', $state_id );
+	$state = get_transient( $key );
+	delete_transient( $key );
+	return is_array( $state ) ? $state : array();
+}
+
+/** Atiende exclusivamente POST y redirige a Contacto sin datos personales. */
+function labm_core_handle_contact_send() {
+	$result = array( 'ok' => false, 'errors' => array( 'request' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ) );
+	if ( 'POST' === strtoupper( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
+		$result = labm_core_process_contact( wp_unslash( $_POST ) );
+	}
+	$state_id = wp_generate_password( 32, false, false );
+	$state    = array( 'ok' => ! empty( $result['ok'] ), 'errors' => array_keys( is_array( $result['errors'] ?? null ) ? $result['errors'] : array() ) );
+	set_transient( 'labm_contact_state_' . hash( 'sha256', $state_id ), $state, 10 * MINUTE_IN_SECONDS );
+	wp_safe_redirect( add_query_arg( 'contacto_estado', rawurlencode( $state_id ), home_url( '/contacto/#formulario' ) ) );
+	exit;
+}
+add_action( 'admin_post_labm_contact_send', 'labm_core_handle_contact_send' );
+add_action( 'admin_post_nopriv_labm_contact_send', 'labm_core_handle_contact_send' );

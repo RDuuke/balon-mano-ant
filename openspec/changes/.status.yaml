@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: VERIFY
-change: "cicd-hostinger-inicial"
+phase: APPLY
+change: "seccion-contacto"
 awaiting_approval: false
 completed: false
-pending_tasks: ["4.3"]
-modified_artifacts: []
-notes: "Excepción explícita de TDD por solicitud del usuario: se trata de configuración de repositorio. Verificación local aprobada con fixtures, contrato, higiene, YAML y LF; la tarea externa 4.3 en GitHub Actions sigue pendiente."
+pending_tasks: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "2.5", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "5.1", "5.2", "6.2"]
+modified_artifacts: ["openspec/changes/seccion-contacto/tasks.md", "openspec/changes/seccion-contacto/remediation-progress.md"]
+notes: "VERIFY falló: pruebas PHP/E2E no ejecutables, tareas pendientes y brechas de privacidad e idempotencia. Header y footer no fueron modificados."
