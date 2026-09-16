@@ -68,7 +68,7 @@ jobs:
       - name: Publicar tema LABM por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
@@ -81,7 +81,7 @@ jobs:
       - name: Publicar plugin LABM Core por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
@@ -102,7 +102,7 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USER: ${{ secrets.FTP_USER }}
       FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       WP_USER: ${{ secrets.WP_USER }}
@@ -140,7 +140,7 @@ jobs:
         if: steps.preflight.outputs.should_migrate == 'true' && steps.import.outcome == 'success'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
