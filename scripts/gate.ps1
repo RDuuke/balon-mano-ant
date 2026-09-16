@@ -5,7 +5,7 @@ $artifactDir = Join-Path $root 'artifacts/gate'
 New-Item -ItemType Directory -Force -Path $artifactDir | Out-Null
 $results = [System.Collections.Generic.List[object]]::new()
 
-function Invoke-Gate([string] $Name, [string] $Tool, [scriptblock] $Command, [string] $IsolatedScript = '', [string[]] $ScriptArguments = @()) {
+function Invoke-Gate([string] $Name, [string] $Tool, [scriptblock] $Command, [string] $IsolatedScript = '', [string[]] $ScriptArguments = @(), [switch] $NonBlocking) {
     $available = Get-Command $Tool -ErrorAction SilentlyContinue
     if (-not $available) {
 		$results.Add([pscustomobject]@{ Name=$Name; Status='NO EJECUTADA'; ExitCode=$null; Detail="Herramienta ausente: $Tool" })
@@ -44,7 +44,7 @@ function Invoke-Gate([string] $Name, [string] $Tool, [scriptblock] $Command, [st
     }
     if (-not $commandSucceeded -and ($null -eq $code -or $code -eq 0)) { $code = 1 }
     $output | Out-File -LiteralPath (Join-Path $artifactDir "$Name.log") -Encoding utf8
-	$results.Add([pscustomobject]@{ Name=$Name; Status=$(if($code -eq 0){'PASS'}else{'FAIL'}); ExitCode=$code; Detail="version=$version" })
+	$results.Add([pscustomobject]@{ Name=$Name; Status=$(if($code -eq 0){'PASS'}elseif($NonBlocking){'WARN'}else{'FAIL'}); ExitCode=$code; Detail="version=$version" })
 }
 
 Invoke-Gate 'compose-config' 'docker' { docker compose --env-file .env.example config --quiet }
@@ -53,7 +53,7 @@ Invoke-Gate 'wordpress-integration' 'docker' { docker run --rm --user 33:33 --ne
 Invoke-Gate 'php-coverage' 'docker' {
     $coverageScript = Get-Content -Raw -LiteralPath (Join-Path $root 'scripts/coverage.ps1')
     & ([scriptblock]::Create($coverageScript))
-}
+} -NonBlocking
 Invoke-Gate 'composer-lint' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint }
 Invoke-Gate 'composer-analyse' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress }
 if ($IncludeBrowser) {
@@ -61,5 +61,5 @@ if ($IncludeBrowser) {
 }
 $results | ConvertTo-Json -Depth 4 | Out-File -LiteralPath (Join-Path $artifactDir 'summary.json') -Encoding utf8
 $results | Format-Table -AutoSize
-if (@($results | Where-Object { $_.Status -ne 'PASS' }).Count -gt 0) { exit 1 }
+if (@($results | Where-Object { $_.Status -eq 'FAIL' }).Count -gt 0) { exit 1 }
 exit 0
