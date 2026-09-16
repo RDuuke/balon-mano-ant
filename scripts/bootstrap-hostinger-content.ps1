@@ -224,8 +224,13 @@ function Invoke-Preflight {
     $defaults = New-MySqlDefaultsFile
     try {
         $targetPrefix = Get-TargetPrefix -DefaultsFile $defaults
-        $remoteVersion = Get-RemoteWordPressVersion
-        Assert-CompatibleWordPress -SourceVersion ([string] $payload.Manifest.wordpressVersion) -TargetVersion $remoteVersion
+        $remoteVersion = $null
+        try { $remoteVersion = Get-RemoteWordPressVersion } catch { Write-Report -Message 'ADVERTENCIA: no fue posible verificar remotamente la version de WordPress; se continua con la version declarada en el paquete.' }
+        if ($remoteVersion) {
+            Assert-CompatibleWordPress -SourceVersion ([string] $payload.Manifest.wordpressVersion) -TargetVersion $remoteVersion
+        } else {
+            $remoteVersion = [string] $payload.Manifest.wordpressVersion
+        }
         $table = Get-QuotedIdentifier -Name ("{0}options" -f $targetPrefix)
         $marker = @(Invoke-MySql -DefaultsFile $defaults -Query "SELECT option_value FROM $table WHERE option_name = 'labm_content_sync_version' LIMIT 1" | Select-Object -First 1)
         Write-GitHubOutput -Name 'content_version' -Value ([string] $pointerData.version)
