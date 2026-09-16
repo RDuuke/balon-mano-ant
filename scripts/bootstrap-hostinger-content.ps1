@@ -247,7 +247,7 @@ function Invoke-Import {
         $backup = Join-Path $script:WorkRoot 'database-before-import.sql.gz'
         $rawBackup = Join-Path $script:WorkRoot '.database-before-import.sql'
         $databaseName = [Environment]::GetEnvironmentVariable('DB_NAME')
-        & mysqldump "--defaults-extra-file=$defaults" --single-transaction --routines --triggers --events "--result-file=$rawBackup" $databaseName
+        & mysqldump "--defaults-extra-file=$defaults" --column-statistics=0 --single-transaction --routines --triggers --events "--result-file=$rawBackup" $databaseName
         if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $rawBackup) -or (Get-Item -LiteralPath $rawBackup).Length -eq 0) { Throw-Safe 'No fue posible crear el respaldo MySQL previo a la importacion.' }
         & gzip -c -- $rawBackup > $backup
         $gzipExitCode = $LASTEXITCODE
