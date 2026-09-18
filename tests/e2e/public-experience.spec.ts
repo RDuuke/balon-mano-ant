@@ -372,6 +372,29 @@ test('3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad', async
   await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
 });
 
+test('3.4 documentos ofrece filtros, estado vacío y composición responsive', async ({ page }) => {
+  test.setTimeout(30_000);
+  await page.goto('/documentos/');
+  const form = page.locator('.labm-documents-filters form');
+  await expect(form).toHaveCount(1);
+  await expect(form.getByLabel('Buscar')).toBeVisible();
+  await expect(form.getByLabel('Categoría')).toBeVisible();
+  await expect(form.getByLabel('Año')).toBeVisible();
+  await expect(form.getByLabel('Orden')).toBeVisible();
+  await expect(form.getByRole('button', { name: /aplicar filtros/i })).toBeVisible();
+
+  await page.goto('/documentos/?texto=sin-resultados-ficticios&orden=antiguos');
+  await expect(form.getByLabel('Buscar')).toHaveValue('sin-resultados-ficticios');
+  await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /estado vacío/i })).toBeVisible();
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.reload();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  await form.getByLabel('Buscar').focus();
+  await expect(page.locator(':focus-visible')).toBeVisible();
+});
+
 test('3.2 selecciones filtra Piso y Playa sin exponer privados', async ({ page }) => {
   for (const modalidad of ['Piso', 'Playa']) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);

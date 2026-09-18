@@ -590,7 +590,7 @@ final class DocumentContactTest extends TestCase {
 		unlink( $invalid );
 	}
 
-	public function test_catalog_ignores_legacy_filters_and_keeps_internal_metadata_private(): void {
+	public function test_catalog_applies_text_category_and_year_filters(): void {
 		$term = term_exists( 'Circulares de prueba', 'labm_documento_categoria' );
 		if ( ! $term ) {
 			$term = wp_insert_term( 'Circulares de prueba', 'labm_documento_categoria' );
@@ -600,7 +600,7 @@ final class DocumentContactTest extends TestCase {
 				'post_type'   => 'labm_documento',
 				'post_status' => 'publish',
 				'post_title'  => 'Circular deportiva alfa',
-				'meta_input'  => array( 'labm_test_fixture' => 1 ),
+				'meta_input'  => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => 9101 ),
 			)
 		);
 		$two = wp_insert_post(
@@ -608,16 +608,95 @@ final class DocumentContactTest extends TestCase {
 				'post_type'   => 'labm_documento',
 				'post_status' => 'publish',
 				'post_title'  => 'Circular administrativa beta',
-				'meta_input'  => array( 'labm_test_fixture' => 1 ),
+				'meta_input'  => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => 9102 ),
 			)
 		);
 		wp_set_object_terms( $one, (int) $term['term_id'], 'labm_documento_categoria' );
 		update_post_meta( $one, 'labm_documento_fecha', '2026-03-01' );
 		update_post_meta( $two, 'labm_documento_fecha', '2025-03-01' );
 		$query = labm_core_document_catalog_query( array( 'texto' => 'deportiva', 'categoria' => (int) $term['term_id'], 'anio' => 2026 ), 1, 10 );
-		self::assertNotContains( $one, wp_list_pluck( $query->posts, 'ID' ) );
-		self::assertNotContains( $two, wp_list_pluck( $query->posts, 'ID' ) );
+		self::assertSame( array( $one ), wp_list_pluck( $query->posts, 'ID' ) );
 		self::assertSame( '', labm_core_document_pdf_url( $one ) );
+	}
+
+	public function test_document_catalog_renders_public_metadata_and_preserves_filters(): void {
+		$term = term_exists( 'Actas publicas', 'labm_documento_categoria' );
+		if ( ! $term ) {
+			$term = wp_insert_term( 'Actas publicas', 'labm_documento_categoria' );
+		}
+		$attachment = $this->create_document_admin_attachment();
+		$document   = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Acta pública filtrable',
+				'meta_input'  => array(
+					'labm_test_fixture'       => 1,
+					'labm_documento_pdf_id'   => $attachment,
+					'labm_documento_fecha'    => '2026-03-01',
+				),
+			)
+		);
+		wp_set_object_terms( $document, (int) $term['term_id'], 'labm_documento_categoria' );
+		$filters = array( 'texto' => 'Acta', 'categoria' => (int) $term['term_id'], 'anio' => 2026, 'orden' => 'antiguos' );
+		$html    = labm_core_render_document_catalog( $filters, 1, 10 );
+		$url     = labm_core_document_page_url( 2, $filters );
+
+		self::assertStringContainsString( 'Actas publicas', $html );
+		self::assertStringContainsString( '2026', $html );
+		self::assertStringContainsString( 'Acta pública filtrable', $html );
+		self::assertStringContainsString( 'texto=Acta', $url );
+		self::assertStringContainsString( 'categoria=' . (int) $term['term_id'], $url );
+		self::assertStringContainsString( 'anio=2026', $url );
+		self::assertStringContainsString( 'orden=antiguos', $url );
+	}
+
+	public function test_document_catalog_empty_filter_offers_clear_action(): void {
+		$html = labm_core_render_document_catalog( array( 'texto' => 'sin-resultados-ficticios' ), 1, 10 );
+		self::assertStringContainsString( 'No encontramos documentos disponibles', $html );
+		self::assertStringContainsString( 'Limpiar filtros', $html );
+		self::assertStringContainsString( 'name="texto"', $html );
+	}
+
+	public function test_document_catalog_renders_unavailable_pdf_state(): void {
+		$document = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Documento con PDF no disponible',
+				'meta_input'  => array(
+					'labm_test_fixture'     => 1,
+					'labm_documento_pdf_id' => 99999999,
+				),
+			)
+		);
+
+		$html = labm_core_render_document_catalog( array( 'texto' => 'PDF no disponible' ), 1, 10 );
+		self::assertIsInt( $document );
+		self::assertStringContainsString( 'PDF no disponible', $html );
+		self::assertStringContainsString( 'role="status"', $html );
+		self::assertStringNotContainsString( 'labm-documents-catalog__view', $html );
+	}
+
+	public function test_document_without_editorial_date_is_visible_without_year_and_excluded_by_year(): void {
+		$attachment = $this->create_document_admin_attachment();
+		$document   = wp_insert_post(
+			array(
+				'post_type'   => 'labm_documento',
+				'post_status' => 'publish',
+				'post_title'  => 'Documento público sin fecha editorial',
+				'meta_input'  => array(
+					'labm_test_fixture'     => 1,
+					'labm_documento_pdf_id' => $attachment,
+				),
+			)
+		);
+
+		$without_year = labm_core_document_catalog_query( array(), 1, 10 );
+		$with_year    = labm_core_document_catalog_query( array( 'anio' => 2026 ), 1, 10 );
+
+		self::assertContains( $document, wp_list_pluck( $without_year->posts, 'ID' ) );
+		self::assertNotContains( $document, wp_list_pluck( $with_year->posts, 'ID' ) );
 	}
 
 	/** El catálogo público solo expone documentos completos, en páginas de diez. */
