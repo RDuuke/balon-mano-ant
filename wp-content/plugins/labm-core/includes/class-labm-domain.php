@@ -10,7 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Version del esquema de capacidades. */
-const LABM_CORE_CAPABILITIES_VERSION = '5';
+const LABM_CORE_CAPABILITIES_VERSION = '6';
+/** Version del vocabulario administrativo de documentos. */
+const LABM_CORE_DOCUMENT_TYPES_VERSION = '1';
 /** Version de las rutas publicas del dominio. */
 const LABM_CORE_REWRITE_VERSION = '1';
 
@@ -34,6 +36,7 @@ function labm_core_register_content_types() {
 	foreach ( $types as $post_type => $names ) {
 		$singular = $names[2];
 		$plural   = $names[3];
+		$supports = array( 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' );
 		register_post_type(
 			$post_type,
 			array(
@@ -52,7 +55,7 @@ function labm_core_register_content_types() {
 				'rewrite'         => array(
 					'slug' => 'labm_seleccion' === $post_type ? 'selecciones' : substr( $post_type, 5 ),
 				),
-				'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ),
+				'supports'        => $supports,
 				'capability_type' => array( $singular, $plural ),
 				'map_meta_cap'    => true,
 			)
@@ -91,13 +94,21 @@ function labm_core_register_content_types() {
 		'labm_documento_categoria',
 		array( 'labm_documento' ),
 		array(
-			'labels'       => array(
+			'labels'            => array(
 				'name'          => __( 'Categorías de documentos', 'labm-core' ),
 				'singular_name' => __( 'Categoría de documento', 'labm-core' ),
 			),
-			'public'       => true,
-			'hierarchical' => true,
-			'show_in_rest' => true,
+			'public'            => true,
+			'hierarchical'      => true,
+			'show_in_rest'      => true,
+			'show_admin_column' => true,
+			'meta_box_cb'       => false,
+			'capabilities'      => array(
+				'manage_terms' => 'manage_labm_documento_types',
+				'edit_terms'   => 'manage_labm_documento_types',
+				'delete_terms' => 'manage_labm_documento_types',
+				'assign_terms' => 'assign_labm_documento_types',
+			),
 		)
 	);
 
@@ -211,10 +222,7 @@ function labm_core_register_meta() {
 		'labm_club'       => array( 'labm_ciudad' => 'sanitize_text_field' ),
 		'labm_integrante' => array( 'labm_cargo' => 'sanitize_text_field' ),
 		'labm_horario'    => array( 'labm_inicio' => 'sanitize_text_field' ),
-		'labm_documento'  => array(
-			'labm_documento_pdf_id' => 'absint',
-			'labm_documento_fecha'  => 'labm_core_sanitize_iso_date',
-		),
+		'labm_documento'  => array(),
 	);
 
 	foreach ( $fields as $post_type => $meta_fields ) {
@@ -232,15 +240,104 @@ function labm_core_register_meta() {
 			);
 		}
 	}
+
+	register_post_meta(
+		'labm_documento',
+		'labm_documento_pdf_id',
+		array(
+			'type'              => 'integer',
+			'single'            => true,
+			'default'           => 0,
+			'show_in_rest'      => array(
+				'schema' => array(
+					'type'    => 'integer',
+					'minimum' => 0,
+				),
+			),
+			'sanitize_callback' => 'absint',
+			'auth_callback'     => 'labm_core_auth_post_meta',
+		)
+	);
+
+	register_post_meta(
+		'labm_documento',
+		'labm_documento_fecha',
+		array(
+			'type'              => 'string',
+			'single'            => true,
+			'default'           => '',
+			'show_in_rest'      => array(
+				'schema' => array(
+					'type'    => 'string',
+					'pattern' => '^(?:\\d{4}-\\d{2}-\\d{2})?$',
+				),
+			),
+			'sanitize_callback' => 'labm_core_sanitize_iso_date',
+			'auth_callback'     => 'labm_core_auth_post_meta',
+		)
+	);
 }
 add_action( 'init', 'labm_core_register_meta', 6 );
+
+/**
+ * Impide que usuarios sin gobierno alteren el vocabulario de documentos.
+ *
+ * Las operaciones internas sin usuario conservan compatibilidad con activación y CLI.
+ *
+ * @param string|WP_Error $term Nombre propuesto o error previo.
+ * @param string          $taxonomy Taxonomía objetivo.
+ * @return string|WP_Error
+ */
+function labm_core_authorize_document_type_mutation( $term, $taxonomy ) {
+	// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Capacidad registrada por labm_core_ensure_capabilities().
+	if ( 'labm_documento_categoria' === $taxonomy && get_current_user_id() && ! current_user_can( 'manage_labm_documento_types' ) ) {
+		return new WP_Error( 'labm_document_type_forbidden', __( 'No tienes permisos para administrar los tipos de documento.', 'labm-core' ) );
+	}
+	return $term;
+}
+add_filter( 'pre_insert_term', 'labm_core_authorize_document_type_mutation', 10, 2 );
+
+/** Siembra idempotentemente los tipos administrativos de documento. */
+function labm_core_document_admin_seed_types() {
+	if ( ! taxonomy_exists( 'labm_documento_categoria' ) ) {
+		return;
+	}
+
+	$types = array(
+		'documento-general' => __( 'Documento general', 'labm-core' ),
+		'acta'              => __( 'Acta', 'labm-core' ),
+		'certificado'       => __( 'Certificado', 'labm-core' ),
+		'circular'          => __( 'Circular', 'labm-core' ),
+		'resolucion'        => __( 'Resolución', 'labm-core' ),
+		'reglamento'        => __( 'Reglamento', 'labm-core' ),
+		'informe'           => __( 'Informe', 'labm-core' ),
+		'convocatoria'      => __( 'Convocatoria', 'labm-core' ),
+		'otro'              => __( 'Otro', 'labm-core' ),
+	);
+
+	foreach ( $types as $slug => $name ) {
+		if ( ! term_exists( $slug, 'labm_documento_categoria' ) ) {
+			wp_insert_term( $name, 'labm_documento_categoria', array( 'slug' => $slug ) );
+		}
+	}
+	update_option( 'labm_core_document_types_version', LABM_CORE_DOCUMENT_TYPES_VERSION, false );
+}
+
+/** Siembra el vocabulario solo cuando cambia su versión declarada. */
+function labm_core_ensure_document_types() {
+	if ( LABM_CORE_DOCUMENT_TYPES_VERSION === get_option( 'labm_core_document_types_version' ) ) {
+		return;
+	}
+	labm_core_document_admin_seed_types();
+}
+add_action( 'init', 'labm_core_ensure_document_types', 21 );
 
 /** Concede capacidades de dominio a roles editoriales autorizados. */
 function labm_core_ensure_capabilities() {
 	$capabilities_ready = true;
 	foreach ( array( 'administrator', 'editor' ) as $role_name ) {
 		$role = get_role( $role_name );
-		if ( ! $role || ! $role->has_cap( 'edit_labm_slides' ) || ! $role->has_cap( 'edit_labm_aliados' ) ) {
+		if ( ! $role || ! $role->has_cap( 'edit_labm_slides' ) || ! $role->has_cap( 'edit_labm_aliados' ) || ! $role->has_cap( 'assign_labm_documento_types' ) || ( 'administrator' === $role_name && ! $role->has_cap( 'manage_labm_documento_types' ) ) ) {
 			$capabilities_ready = false;
 			break;
 		}
@@ -261,6 +358,12 @@ function labm_core_ensure_capabilities() {
 					$role->add_cap( $capability );
 				}
 			}
+		}
+		$role->add_cap( 'assign_labm_documento_types' );
+		if ( 'administrator' === $role_name ) {
+			$role->add_cap( 'manage_labm_documento_types' );
+		} else {
+			$role->remove_cap( 'manage_labm_documento_types' );
 		}
 	}
 	update_option( 'labm_core_capabilities_version', LABM_CORE_CAPABILITIES_VERSION, false );
@@ -285,7 +388,9 @@ function labm_core_activate() {
 	labm_core_register_meta();
 	labm_core_register_home_meta();
 	delete_option( 'labm_core_capabilities_version' );
+	delete_option( 'labm_core_document_types_version' );
 	delete_option( 'labm_core_rewrite_version' );
 	labm_core_ensure_capabilities();
+	labm_core_document_admin_seed_types();
 	flush_rewrite_rules();
 }
