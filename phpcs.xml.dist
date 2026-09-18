@@ -4,7 +4,7 @@
   <file>wp-content/plugins/labm-core</file>
   <file>wp-content/themes/labm/functions.php</file>
   <exclude-pattern>vendor/*</exclude-pattern>
+  <exclude-pattern>wp-content/plugins/labm-core/assets/js/*</exclude-pattern>
   <rule ref="WordPress"/>
   <config name="testVersion" value="8.3-"/>
 </ruleset>
-

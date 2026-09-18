@@ -3,6 +3,15 @@
 use PHPUnit\Framework\TestCase;
 
 final class DocumentContactTest extends TestCase {
+	/** @var int[] */
+	private array $document_admin_users = array();
+
+	/** @var int[] */
+	private array $document_admin_attachments = array();
+
+	/** @var string[] */
+	private array $document_admin_files = array();
+
 	protected function setUp(): void {
 		parent::setUp();
 		delete_transient( 'labm_contact_' . hash( 'sha256', 'contacto-prueba-unico' ) );
@@ -19,6 +28,532 @@ final class DocumentContactTest extends TestCase {
 		foreach ( $test_documents as $test_document ) {
 			wp_delete_post( $test_document, true );
 		}
+	}
+
+	protected function tearDown(): void {
+		foreach ( $this->document_admin_attachments as $attachment_id ) {
+			wp_delete_attachment( $attachment_id, true );
+		}
+		foreach ( $this->document_admin_files as $file ) {
+			if ( file_exists( $file ) ) {
+				chmod( $file, 0644 );
+				unlink( $file );
+			}
+		}
+		foreach ( $this->document_admin_users as $user_id ) {
+			if ( ! function_exists( 'wp_delete_user' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+			}
+			wp_delete_user( $user_id );
+		}
+		wp_set_current_user( 0 );
+		parent::tearDown();
+	}
+
+	/** Crea un usuario aislado para los contratos administrativos RED. */
+	private function create_document_admin_user( string $role ): int {
+		$user_id = wp_insert_user(
+			array(
+				'user_login' => 'labm-document-admin-' . $role . '-' . wp_generate_password( 8, false ),
+				'user_pass'  => wp_generate_password( 20 ),
+				'user_email' => wp_generate_uuid4() . '@example.invalid',
+				'role'       => $role,
+			)
+		);
+		self::assertIsInt( $user_id );
+		$this->document_admin_users[] = $user_id;
+		return $user_id;
+	}
+
+	/** Crea un Documento marcado como fixture y permite estado historico. */
+	private function create_document_admin_post( array $overrides = array() ): int {
+		$post_id = wp_insert_post(
+			array_merge(
+				array(
+					'post_type'   => 'labm_documento',
+					'post_status' => 'draft',
+					'post_title'  => 'Documento administrativo de prueba',
+					'meta_input'  => array( 'labm_test_fixture' => 1 ),
+				),
+				$overrides
+			)
+		);
+		self::assertIsInt( $post_id );
+		return $post_id;
+	}
+
+	/**
+	 * Crea un adjunto temporal con combinaciones controladas de contenido y MIME.
+	 *
+	 * @param string $variant valid, false-signature, false-mime o unreadable.
+	 */
+	private function create_document_admin_attachment( string $variant = 'valid' ): int {
+		$temp = wp_tempnam( 'labm-document-admin-' . $variant );
+		self::assertIsString( $temp );
+		$file = $temp . '.pdf';
+		self::assertTrue( rename( $temp, $file ) );
+		$content = 'false-signature' === $variant ? "no es un pdf\n" : "%PDF-1.7\n%%EOF\n";
+		self::assertNotFalse( file_put_contents( $file, $content ) );
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_mime_type' => 'false-mime' === $variant ? 'text/plain' : 'application/pdf',
+				'post_title'     => 'Adjunto ' . $variant,
+				'post_status'    => 'inherit',
+			),
+			$file
+		);
+		self::assertIsInt( $attachment_id );
+		update_attached_file( $attachment_id, $file );
+		if ( 'unreadable' === $variant ) {
+			self::assertTrue( unlink( $file ) );
+		}
+		$this->document_admin_files[]       = $file;
+		$this->document_admin_attachments[] = $attachment_id;
+		return $attachment_id;
+	}
+
+	/** Exige el punto de entrada futuro sin provocar un fatal no controlado. */
+	private function require_document_admin_contract( string $function ): void {
+		self::assertTrue( function_exists( $function ), 'Falta implementar el contrato administrativo ' . $function . '().' );
+	}
+
+	/** Ejecuta la validacion futura del estado efectivo. */
+	private function validate_document_admin_state( int $post_id, array $input, int $user_id ) {
+		$this->require_document_admin_contract( 'labm_core_document_admin_validate_state' );
+		return labm_core_document_admin_validate_state( $post_id, $input, $user_id );
+	}
+
+	/** Ejecuta el guardado futuro por el canal solicitado. */
+	private function save_document_admin_state( int $post_id, array $input, int $user_id, string $channel ) {
+		$this->require_document_admin_contract( 'labm_core_document_admin_save_state' );
+		return labm_core_document_admin_save_state( $post_id, $input, $user_id, $channel );
+	}
+
+	/** 1.1: los builders representan todas las entradas especiales del contrato. */
+	public function test_document_admin_fixture_builders_cover_validation_inputs(): void {
+		$editor          = $this->create_document_admin_user( 'editor' );
+		$valid           = $this->create_document_admin_attachment();
+		$false_signature = $this->create_document_admin_attachment( 'false-signature' );
+		$false_mime      = $this->create_document_admin_attachment( 'false-mime' );
+		$unreadable      = $this->create_document_admin_attachment( 'unreadable' );
+		$post_id         = $this->create_document_admin_post();
+		update_post_meta( $post_id, 'labm_documento_pdf_id', (string) $valid );
+
+		self::assertSame( 'editor', get_userdata( $editor )->roles[0] );
+		self::assertSame( (string) $valid, get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+		self::assertSame( 'text/plain', get_post_mime_type( $false_mime ) );
+		self::assertStringNotContainsString( '%PDF-', (string) file_get_contents( get_attached_file( $false_signature ) ) );
+		self::assertFalse( is_file( get_attached_file( $unreadable ) ) );
+		$this->require_document_admin_contract( 'labm_core_document_admin_validate_state' );
+	}
+
+	/** V1.1: un estado completo se acepta por REST. */
+	public function test_document_admin_accepts_valid_rest_state(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$result        = $this->save_document_admin_state( 0, array( 'post_title' => 'Acta valida', 'labm_documento_pdf_id' => $attachment_id ), $user_id, 'rest' );
+		self::assertIsInt( $result );
+	}
+
+	/** V1.2: una actualizacion parcial usa los valores persistidos. */
+	public function test_document_admin_builds_effective_state_for_partial_update(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $attachment_id ) ) );
+		$result        = $this->validate_document_admin_state( $post_id, array( 'labm_documento_fecha' => '2026-09-15' ), $user_id );
+		self::assertTrue( $result );
+	}
+
+	/** V1.3: falta de titulo bloquea sin mutacion parcial. */
+	public function test_document_admin_rejects_missing_required_data_atomically(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$post_id = $this->create_document_admin_post( array( 'post_title' => 'Titulo anterior' ) );
+		$result  = $this->save_document_admin_state( $post_id, array( 'post_title' => '', 'labm_documento_fecha' => '2026-09-15' ), $user_id, 'classic' );
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'Titulo anterior', get_post_field( 'post_title', $post_id ) );
+		self::assertSame( '', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+	}
+
+	/** V2.1: un PDF autentico, legible y dentro del limite se acepta. */
+	public function test_document_admin_accepts_authentic_pdf(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$result        = $this->validate_document_admin_state( 0, array( 'post_title' => 'PDF autentico', 'labm_documento_pdf_id' => $attachment_id ), $user_id );
+		self::assertTrue( $result );
+	}
+
+	/** V2.2: no se revela informacion de un adjunto inaccesible. */
+	public function test_document_admin_rejects_inaccessible_attachment_without_path_leak(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$owner_id      = $this->create_document_admin_user( 'administrator' );
+		$attachment_id = $this->create_document_admin_attachment();
+		wp_update_post( array( 'ID' => $attachment_id, 'post_author' => $owner_id ) );
+		$user = get_userdata( $user_id );
+		$user->add_cap( 'edit_others_posts', false );
+		self::assertTrue( user_can( $user_id, 'edit_labm_documentos' ) );
+		self::assertFalse( user_can( $user_id, 'edit_post', $attachment_id ) );
+		$result        = $this->validate_document_admin_state( 0, array( 'post_title' => 'Sin acceso', 'labm_documento_pdf_id' => $attachment_id ), $user_id );
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'labm_document_pdf_forbidden', $result->get_error_code() );
+		self::assertStringNotContainsString( dirname( get_attached_file( $attachment_id ) ), $result->get_error_message() );
+	}
+
+	/** V2.3: ID, lectura, MIME, firma y limite invalidos se rechazan. */
+	public function test_document_admin_rejects_all_invalid_pdf_variants(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		foreach ( array( 99999999, $this->create_document_admin_attachment( 'unreadable' ), $this->create_document_admin_attachment( 'false-mime' ), $this->create_document_admin_attachment( 'false-signature' ) ) as $attachment_id ) {
+			self::assertInstanceOf( WP_Error::class, $this->validate_document_admin_state( 0, array( 'post_title' => 'PDF invalido', 'labm_documento_pdf_id' => $attachment_id ), $user_id ) );
+		}
+		$this->require_document_admin_contract( 'labm_core_document_admin_effective_max_bytes' );
+		self::assertSame( min( 30 * MB_IN_BYTES, wp_max_upload_size() ), labm_core_document_admin_effective_max_bytes() );
+	}
+
+	/** V3.1: un editor autenticado guarda exclusivamente valores saneados. */
+	public function test_document_admin_authorized_request_sanitizes_values(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->save_document_admin_state( 0, array( 'post_title' => '  Acta segura  ', 'labm_documento_pdf_id' => (string) $attachment_id ), $user_id, 'rest' );
+		self::assertSame( 'Acta segura', get_post_field( 'post_title', $post_id ) );
+		self::assertSame( $attachment_id, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+	}
+
+	/** V3.2: contenido activo o formatos inesperados no se persisten. */
+	public function test_document_admin_rejects_unexpected_active_values(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$result        = $this->save_document_admin_state( 0, array( 'post_title' => '<script>alert(1)</script>', 'labm_documento_pdf_id' => $attachment_id, 'labm_documento_fecha' => 'javascript:alert(1)' ), $user_id, 'rest' );
+		self::assertInstanceOf( WP_Error::class, $result );
+	}
+
+	/** V3.3: capacidad o nonce invalidos preservan todo el estado. */
+	public function test_document_admin_unauthorized_classic_request_is_atomic(): void {
+		$user_id       = $this->create_document_admin_user( 'subscriber' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->create_document_admin_post( array( 'post_title' => 'Original' ) );
+		$result        = $this->save_document_admin_state( $post_id, array( 'post_title' => 'Alterado', 'labm_documento_pdf_id' => $attachment_id, '_labm_document_nonce' => 'invalido' ), $user_id, 'classic' );
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'Original', get_post_field( 'post_title', $post_id ) );
+	}
+
+	/** El formulario clásico autorizado rechaza su nonce propio antes de mutar. */
+	public function test_document_admin_classic_adapter_rejects_nonce_before_real_update(): void {
+		$user_id = $this->create_document_admin_user( 'administrator' );
+		$pdf_id  = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'post_title' => 'Original nonce', 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $pdf_id ) ) );
+		$original_post   = $_POST;
+		$original_method = $_SERVER['REQUEST_METHOD'] ?? null;
+		wp_set_current_user( $user_id );
+		try {
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			$_POST = array( 'action' => 'editpost', '_labm_document_nonce' => 'invalido', 'labm_documento_pdf_id' => $pdf_id );
+			$data = array( 'ID' => $post_id, 'post_type' => 'labm_documento', 'post_title' => 'No guardar' );
+			$error = labm_core_document_admin_classic_pre_insert( $data, $data );
+			self::assertInstanceOf( WP_Error::class, $error );
+			self::assertSame( 'labm_document_nonce_invalid', $error->get_error_code() );
+			$result = wp_update_post( $data, true );
+			self::assertInstanceOf( WP_Error::class, $result );
+			self::assertSame( 'empty_content', $result->get_error_code() );
+			self::assertSame( 'Original nonce', get_post_field( 'post_title', $post_id ) );
+			self::assertSame( $pdf_id, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+		} finally {
+			$_POST = $original_post;
+			if ( null === $original_method ) { unset( $_SERVER['REQUEST_METHOD'] ); } else { $_SERVER['REQUEST_METHOD'] = $original_method; }
+			unset( $GLOBALS['labm_core_document_admin_pending_classic_state'] );
+		}
+	}
+
+	/** Un POST clásico válido persiste metadatos mediante los hooks de WordPress. */
+	public function test_document_admin_classic_adapter_persists_real_update(): void {
+		$user_id = $this->create_document_admin_user( 'administrator' );
+		$pdf_id  = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'post_title' => 'Original clásico' ) );
+		$original_post   = $_POST;
+		$original_method = $_SERVER['REQUEST_METHOD'] ?? null;
+		wp_set_current_user( $user_id );
+		try {
+			$_SERVER['REQUEST_METHOD'] = 'POST';
+			$_POST = array( 'action' => 'editpost', '_labm_document_nonce' => wp_create_nonce( 'labm_document_admin_save' ), 'labm_documento_pdf_id' => $pdf_id, 'labm_documento_fecha' => '2026-09-17' );
+			$result = wp_update_post( array( 'ID' => $post_id, 'post_title' => 'Clásico válido' ), true );
+			self::assertSame( $post_id, $result );
+			self::assertSame( 'Clásico válido', get_post_field( 'post_title', $post_id ) );
+			self::assertSame( $pdf_id, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+			self::assertSame( '2026-09-17', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+			self::assertSame( array( 'documento-general' ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'slugs' ) ) );
+			$_POST['labm_documento_fecha'] = '2026-02-30';
+			$invalid = wp_update_post( array( 'ID' => $post_id, 'post_title' => 'No persistir fecha' ), true );
+			self::assertInstanceOf( WP_Error::class, $invalid );
+			self::assertSame( 'Clásico válido', get_post_field( 'post_title', $post_id ) );
+			self::assertSame( '2026-09-17', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+			$_POST = array();
+			self::assertSame( $post_id, wp_update_post( array( 'ID' => $post_id, 'post_title' => 'API interna sin formulario' ), true ) );
+		} finally {
+			$_POST = $original_post;
+			if ( null === $original_method ) { unset( $_SERVER['REQUEST_METHOD'] ); } else { $_SERVER['REQUEST_METHOD'] = $original_method; }
+			unset( $GLOBALS['labm_core_document_admin_pending_classic_state'] );
+		}
+	}
+
+	/** V4.1: fecha calendario valida se conserva como Y-m-d. */
+	public function test_document_admin_persists_valid_document_date(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->save_document_admin_state( 0, array( 'post_title' => 'Con fecha', 'labm_documento_pdf_id' => $attachment_id, 'labm_documento_fecha' => '2024-02-29' ), $user_id, 'rest' );
+		self::assertSame( '2024-02-29', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+	}
+
+	/** V4.2: fecha vacia sigue siendo opcional. */
+	public function test_document_admin_accepts_empty_document_date(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$result        = $this->validate_document_admin_state( 0, array( 'post_title' => 'Sin fecha', 'labm_documento_pdf_id' => $attachment_id, 'labm_documento_fecha' => '' ), $user_id );
+		self::assertTrue( $result );
+	}
+
+	/** V4.3: fecha imposible bloquea REST y clasico sin mutacion. */
+	public function test_document_admin_rejects_impossible_date_atomically(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $attachment_id, 'labm_documento_fecha' => '2026-01-01' ) ) );
+		foreach ( array( 'rest', 'classic' ) as $channel ) {
+			$result = $this->save_document_admin_state( $post_id, array( 'labm_documento_fecha' => '2026-02-30' ), $user_id, $channel );
+			self::assertInstanceOf( WP_Error::class, $result );
+			self::assertSame( '2026-01-01', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		}
+	}
+
+	/** C1.1: se persiste exactamente un tipo existente. */
+	public function test_document_admin_assigns_exactly_one_existing_type(): void {
+		$this->require_document_admin_contract( 'labm_core_document_admin_seed_types' );
+		labm_core_document_admin_seed_types();
+		$term    = get_term_by( 'slug', 'acta', 'labm_documento_categoria' );
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$pdf_id  = $this->create_document_admin_attachment();
+		$post_id = $this->save_document_admin_state( 0, array( 'post_title' => 'Acta', 'labm_documento_pdf_id' => $pdf_id, 'labm_documento_categoria' => array( $term->term_id ) ), $user_id, 'rest' );
+		self::assertSame( array( $term->term_id ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'ids' ) ) );
+	}
+
+	/** C1.2: un nuevo Documento sin tipo recibe Documento general. */
+	public function test_document_admin_defaults_new_document_to_general_type(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$pdf_id  = $this->create_document_admin_attachment();
+		$post_id = $this->save_document_admin_state( 0, array( 'post_title' => 'General', 'labm_documento_pdf_id' => $pdf_id ), $user_id, 'rest' );
+		self::assertSame( array( 'documento-general' ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'slugs' ) ) );
+	}
+
+	/** C1.3: tipo multiple o desconocido no altera la asociacion previa. */
+	public function test_document_admin_rejects_multiple_or_unknown_types_atomically(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$pdf_id = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $pdf_id ) ) );
+		$general = get_term_by( 'slug', 'documento-general', 'labm_documento_categoria' );
+		$acta = get_term_by( 'slug', 'acta', 'labm_documento_categoria' );
+		wp_set_object_terms( $post_id, array( $general->term_id ), 'labm_documento_categoria', false );
+		self::assertTrue( $this->validate_document_admin_state( $post_id, array(), $user_id ) );
+		foreach ( array( 'labm_document_multiple_types' => array( $general->term_id, $acta->term_id ), 'labm_document_type_invalid' => array( 99999999 ) ) as $code => $terms ) {
+			$result = $this->save_document_admin_state( $post_id, array( 'labm_documento_categoria' => $terms ), $user_id, 'rest' );
+			self::assertInstanceOf( WP_Error::class, $result );
+			self::assertSame( $code, $result->get_error_code() );
+			self::assertSame( array( $general->term_id ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'ids' ) ) );
+		}
+	}
+
+	/** Un histórico publicado con PDF perdido conserva publicación y valores. */
+	public function test_document_admin_invalid_published_history_is_preserved_until_repaired(): void {
+		$user_id = $this->create_document_admin_user( 'administrator' );
+		$pdf_id = $this->create_document_admin_attachment( 'unreadable' );
+		$post_id = $this->create_document_admin_post( array( 'post_status' => 'publish', 'post_title' => 'Histórico publicado', 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => (string) $pdf_id, 'labm_documento_fecha' => '2024-02-29' ) ) );
+		$before = array( get_post_status( $post_id ), get_post_field( 'post_title', $post_id ), get_post_meta( $post_id, 'labm_documento_pdf_id', true ), get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		labm_core_document_admin_seed_types();
+		wp_set_current_user( $user_id );
+		$request = new WP_REST_Request( 'POST', '/wp/v2/labm_documento/' . $post_id );
+		$request->set_param( 'title', 'No persistir histórico' );
+		$result = rest_do_request( $request );
+		self::assertSame( 400, $result->get_status() );
+		self::assertSame( 'labm_document_pdf_unreadable', $result->get_data()['code'] );
+		self::assertSame( $before, array( get_post_status( $post_id ), get_post_field( 'post_title', $post_id ), get_post_meta( $post_id, 'labm_documento_pdf_id', true ), get_post_meta( $post_id, 'labm_documento_fecha', true ) ) );
+		$valid_pdf = $this->create_document_admin_attachment();
+		$repair = new WP_REST_Request( 'POST', '/wp/v2/labm_documento/' . $post_id );
+		$repair->set_param( 'meta', array( 'labm_documento_pdf_id' => $valid_pdf ) );
+		$repaired = rest_do_request( $repair );
+		self::assertSame( 200, $repaired->get_status(), wp_json_encode( $repaired->get_data() ) );
+		self::assertSame( 'publish', get_post_status( $post_id ) );
+		self::assertSame( 'Histórico publicado', get_post_field( 'post_title', $post_id ) );
+		self::assertSame( $valid_pdf, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+		self::assertSame( '2024-02-29', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		$empty_title = new WP_REST_Request( 'POST', '/wp/v2/labm_documento/' . $post_id );
+		$empty_title->set_param( 'title', '' );
+		$empty_title->set_param( 'meta', array( 'labm_documento_fecha' => '2026-09-17' ) );
+		$rejected = rest_do_request( $empty_title );
+		self::assertSame( 400, $rejected->get_status() );
+		self::assertSame( 'labm_document_title_required', $rejected->get_data()['code'] );
+		self::assertSame( 'Histórico publicado', get_post_field( 'post_title', $post_id ) );
+		self::assertSame( '2024-02-29', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+	}
+
+	/** C2.1: administradores pueden gestionar el vocabulario. */
+	public function test_document_admin_administrator_can_manage_types(): void {
+		$admin_id = $this->create_document_admin_user( 'administrator' );
+		wp_set_current_user( $admin_id );
+		self::assertTrue( current_user_can( 'manage_labm_documento_types' ) );
+	}
+
+	/** C2.2: editores pueden asignar tipos existentes. */
+	public function test_document_admin_editor_can_assign_existing_types(): void {
+		$editor_id = $this->create_document_admin_user( 'editor' );
+		wp_set_current_user( $editor_id );
+		self::assertTrue( current_user_can( 'assign_labm_documento_types' ) );
+		self::assertFalse( current_user_can( 'manage_labm_documento_types' ) );
+	}
+
+	/** C2.3: editores no pueden crear, renombrar ni retirar tipos. */
+	public function test_document_admin_editor_cannot_manage_types(): void {
+		$editor_id = $this->create_document_admin_user( 'editor' );
+		wp_set_current_user( $editor_id );
+		$before = wp_count_terms( array( 'taxonomy' => 'labm_documento_categoria', 'hide_empty' => false ) );
+		$result = wp_insert_term( 'Tipo no autorizado', 'labm_documento_categoria' );
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( $before, wp_count_terms( array( 'taxonomy' => 'labm_documento_categoria', 'hide_empty' => false ) ) );
+	}
+
+	/** C3.1: la siembra es idempotente y crea los nueve tipos definidos. */
+	public function test_document_admin_type_seed_is_idempotent(): void {
+		$this->require_document_admin_contract( 'labm_core_document_admin_seed_types' );
+		labm_core_document_admin_seed_types();
+		labm_core_document_admin_seed_types();
+		$names = get_terms( array( 'taxonomy' => 'labm_documento_categoria', 'hide_empty' => false, 'fields' => 'names' ) );
+		foreach ( array( 'Documento general', 'Acta', 'Certificado', 'Circular', 'Resolución', 'Reglamento', 'Informe', 'Convocatoria', 'Otro' ) as $expected ) {
+			self::assertContains( $expected, $names );
+		}
+	}
+
+	/** C3.2: un ID historico numerico almacenado como texto se resuelve. */
+	public function test_document_admin_accepts_historical_text_attachment_id(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->create_document_admin_post();
+		update_post_meta( $post_id, 'labm_documento_pdf_id', (string) $attachment_id );
+		$result = $this->validate_document_admin_state( $post_id, array(), $user_id );
+		self::assertTrue( $result );
+	}
+
+	/** C3.3: el fallback general administrativo no muta un historico al abrirlo. */
+	public function test_document_admin_general_fallback_does_not_mutate_historical_document(): void {
+		$post_id = $this->create_document_admin_post();
+		$this->require_document_admin_contract( 'labm_core_document_admin_type_state' );
+		$state = labm_core_document_admin_type_state( $post_id );
+		self::assertSame( 'documento-general', $state['slug'] );
+		self::assertTrue( $state['fallback'] );
+		self::assertSame( array(), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'ids' ) ) );
+	}
+
+	/** La configuracion administrativa describe el PDF sin filtrar URL ni ruta. */
+	public function test_document_admin_config_exposes_safe_attachment_state(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		$post_id       = $this->create_document_admin_post(
+			array(
+				'meta_input' => array(
+					'labm_test_fixture'       => 1,
+					'labm_documento_pdf_id'   => $attachment_id,
+					'labm_documento_fecha'    => '2026-09-15',
+				),
+			)
+		);
+		labm_core_document_admin_seed_types();
+		$term = get_term_by( 'slug', 'acta', 'labm_documento_categoria' );
+		self::assertInstanceOf( WP_Term::class, $term );
+		wp_set_object_terms( $post_id, array( $term->term_id ), 'labm_documento_categoria', false );
+		wp_set_current_user( $user_id );
+
+		$previous_post   = $GLOBALS['post'] ?? null;
+		$GLOBALS['post'] = get_post( $post_id );
+		$config          = labm_core_document_admin_config();
+		$GLOBALS['post'] = $previous_post;
+
+		self::assertSame( $post_id, $config['postId'] );
+		self::assertSame( $term->term_id, $config['generalTermId'] );
+		self::assertSame( $attachment_id, $config['attachment']['id'] );
+		self::assertSame( wp_basename( get_attached_file( $attachment_id ) ), $config['attachment']['name'] );
+		self::assertGreaterThan( 0, $config['attachment']['size'] );
+		self::assertNotSame( '', $config['attachment']['sizeLabel'] );
+		self::assertTrue( $config['attachment']['valid'] );
+		self::assertSame( 1, wp_verify_nonce( $config['restNonce'], 'wp_rest' ) );
+		self::assertContains( 'Acta', wp_list_pluck( $config['terms'], 'name' ) );
+		self::assertArrayNotHasKey( 'url', $config['attachment'] );
+		self::assertArrayNotHasKey( 'path', $config['attachment'] );
+	}
+
+	/** REST real cubre creacion stdClass, fallback y actualizacion atomica. */
+	public function test_document_admin_rest_controller_persists_effective_state(): void {
+		$user_id       = $this->create_document_admin_user( 'editor' );
+		$attachment_id = $this->create_document_admin_attachment();
+		wp_set_current_user( $user_id );
+		labm_core_document_admin_seed_types();
+
+		$create = new WP_REST_Request( 'POST', '/wp/v2/labm_documento' );
+		$create->set_body_params(
+			array(
+				'title' => 'Documento REST real',
+				'status' => 'draft',
+				'meta'   => array(
+					'labm_documento_pdf_id' => $attachment_id,
+					'labm_documento_fecha'  => '2026-09-15',
+				),
+			)
+		);
+		$created = rest_do_request( $create );
+		self::assertSame( 201, $created->get_status(), wp_json_encode( $created->get_data() ) );
+		$created_data = $created->get_data();
+		$post_id      = (int) $created_data['id'];
+		update_post_meta( $post_id, 'labm_test_fixture', 1 );
+		self::assertSame( $attachment_id, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+		self::assertSame( '2026-09-15', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		self::assertSame( array( 'documento-general' ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'slugs' ) ) );
+
+		$term = get_term_by( 'slug', 'acta', 'labm_documento_categoria' );
+		self::assertInstanceOf( WP_Term::class, $term );
+		$update = new WP_REST_Request( 'PUT', '/wp/v2/labm_documento/' . $post_id );
+		$update->set_body_params(
+			array(
+				'title'                       => 'Documento REST actualizado',
+				'meta'                        => array( 'labm_documento_fecha' => '2026-09-16' ),
+				'labm_documento_categoria'    => array( $term->term_id ),
+			)
+		);
+		$updated = rest_do_request( $update );
+		self::assertSame( 200, $updated->get_status(), wp_json_encode( $updated->get_data() ) );
+		self::assertSame( 'Documento REST actualizado', get_post_field( 'post_title', $post_id ) );
+		self::assertSame( $attachment_id, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+		self::assertSame( '2026-09-16', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		self::assertSame( array( 'acta' ), wp_get_object_terms( $post_id, 'labm_documento_categoria', array( 'fields' => 'slugs' ) ) );
+	}
+
+	/** C4.1: corregir tras un fallo actualiza el mismo Documento. */
+	public function test_document_admin_correction_reuses_existing_document(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$post_id = $this->create_document_admin_post();
+		$pdf_id  = $this->create_document_admin_attachment();
+		$result  = $this->save_document_admin_state( $post_id, array( 'labm_documento_pdf_id' => $pdf_id ), $user_id, 'classic' );
+		self::assertSame( $post_id, $result );
+	}
+
+	/** C4.2: reabrir tras un error conserva la version persistida. */
+	public function test_document_admin_retry_keeps_previously_persisted_values(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$post_id = $this->create_document_admin_post( array( 'post_title' => 'Persistido' ) );
+		$this->save_document_admin_state( $post_id, array( 'post_title' => '' ), $user_id, 'rest' );
+		self::assertSame( 'Persistido', get_post_field( 'post_title', $post_id ) );
+	}
+
+	/** C4.3: una combinacion invalida no produce ninguna mutacion parcial. */
+	public function test_document_admin_rejected_combination_preserves_all_fields(): void {
+		$user_id = $this->create_document_admin_user( 'editor' );
+		$pdf_id  = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $pdf_id, 'labm_documento_fecha' => '2026-09-01' ) ) );
+		$before  = array( get_post_field( 'post_title', $post_id ), get_post_meta( $post_id, 'labm_documento_pdf_id', true ), get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		$result  = $this->save_document_admin_state( $post_id, array( 'post_title' => 'Mutado', 'labm_documento_pdf_id' => 99999999, 'labm_documento_fecha' => '2026-02-30' ), $user_id, 'classic' );
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( $before, array( get_post_field( 'post_title', $post_id ), get_post_meta( $post_id, 'labm_documento_pdf_id', true ), get_post_meta( $post_id, 'labm_documento_fecha', true ) ) );
 	}
 
 	public function test_document_domain_has_permissions_pdf_metadata_and_private_drafts(): void {

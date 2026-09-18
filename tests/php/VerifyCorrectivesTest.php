@@ -79,31 +79,29 @@ final class VerifyCorrectivesTest extends TestCase {
 
 	public function test_documento_publicado_consulta_combinada_paginada_y_consulta_vacia(): void {
 		self::assertInstanceOf( WP_Error::class, labm_core_validate_publishable( 'labm_documento', array( 'post_title' => 'Circular' ) ) );
-		$empty = labm_core_render_document_catalog( array( 'texto' => 'sin-coincidencia-correctiva' ), 1, 2 );
-		self::assertStringContainsString( 'No hay documentos', $empty );
-		self::assertStringContainsString( 'Limpiar filtros', $empty );
-		self::assertStringContainsString(
-			'texto=',
-			labm_core_document_page_url(
-				2,
-				array(
-					'texto'     => 'circular',
-					'categoria' => 7,
-					'anio'      => 2026,
-				)
+		$published = get_posts(
+			array(
+				'post_type'      => 'labm_documento',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
 			)
 		);
-		self::assertStringContainsString(
-			'categoria=7',
-			labm_core_document_page_url(
-				2,
-				array(
-					'texto'     => 'circular',
-					'categoria' => 7,
-					'anio'      => 2026,
-				)
-			)
-		);
+		try {
+			foreach ( $published as $post_id ) {
+				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'draft' ) );
+			}
+			$empty = labm_core_render_document_catalog( array(), 1, 2 );
+			self::assertStringContainsString( 'No encontramos documentos disponibles', $empty );
+		} finally {
+			foreach ( $published as $post_id ) {
+				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ) );
+			}
+		}
+		$url = labm_core_document_page_url( 2, array( 'texto' => 'circular', 'categoria' => 7, 'anio' => 2026 ) );
+		self::assertStringContainsString( 'pagina=2', $url );
+		self::assertStringNotContainsString( 'texto=', $url );
+		self::assertStringNotContainsString( 'categoria=', $url );
 	}
 
 	public function test_archivo_exclusivo_sigue_politica_explicita(): void {

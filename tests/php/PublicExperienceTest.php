@@ -234,8 +234,9 @@ final class PublicExperienceTest extends TestCase {
 		$pattern = (string) file_get_contents( $root . 'patterns/documentos.php' );
 		$css     = (string) file_get_contents( $root . 'style.css' );
 
-		self::assertStringContainsString( 'labm_core_render_document_catalog()', $pattern );
-		self::assertLessThan( strpos( $pattern, 'labm_core_render_document_catalog()' ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
+		$catalog_call = 'labm_core_render_document_catalog( array(), labm_core_document_catalog_current_page() )';
+		self::assertStringContainsString( $catalog_call, $pattern );
+		self::assertLessThan( strpos( $pattern, $catalog_call ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
 		self::assertStringNotContainsString( 'labm-filter', $pattern );
 		self::assertMatchesRegularExpression( '/\.labm-documents-catalog\s*\{[^}]*max-width:/s', $css );
 		self::assertMatchesRegularExpression( '/\.labm-documents-pagination\s*\{[^}]*display:\s*flex;/s', $css );
