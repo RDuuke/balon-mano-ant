@@ -843,7 +843,43 @@ function labm_theme_public_query( $post_type, $filters = array(), $page = 1, $pe
 			),
 		);
 	}
+	if ( 'labm_actualidad' === $post_type && ! empty( $filters['texto'] ) ) {
+		$args['s'] = sanitize_text_field( $filters['texto'] );
+	}
 	return new WP_Query( $args );
+}
+
+/**
+ * Renderiza el medio de una noticia de actualidad y marca el fallback local.
+ *
+ * @param WP_Post $post Publicacion.
+ * @param bool    $featured Indica la pieza destacada.
+ * @return string
+ */
+function labm_theme_actualidad_media( $post, $featured = false ) {
+
+	$media = labm_theme_home_news_media( $post, $featured );
+	if ( has_post_thumbnail( $post ) ) {
+		return $media;
+	}
+
+	return '<span data-labm-actualidad-media-fallback>' . $media . '</span>';
+}
+
+/**
+ * Renderiza los campos editoriales compartidos por la destacada y las tarjetas.
+ *
+ * @param WP_Post $post Publicacion.
+ * @return string
+ */
+function labm_theme_actualidad_article_content( $post ) {
+	ob_start();
+	?>
+	<p class="labm-actualidad-meta"><?php echo wp_kses_post( labm_theme_home_news_meta( $post ) ); ?></p>
+	<h2><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( labm_theme_home_news_title( $post ) ); ?></a></h2>
+	<p><?php echo esc_html( get_the_excerpt( $post ) ); ?></p>
+	<?php
+	return (string) ob_get_clean();
 }
 
 /**
@@ -857,58 +893,121 @@ function labm_theme_render_listing( $post_type, $filters ) {
 	if ( ! post_type_exists( $post_type ) ) {
 		return '<p class="labm-notice">' . esc_html__( 'Esta sección no está disponible por el momento.', 'labm' ) . '</p>';
 	}
-	$is_news   = 'labm_actualidad' === $post_type;
-	$key       = $is_news ? 'categoria' : 'modalidad';
-	$taxonomy  = $is_news ? 'labm_categoria' : 'labm_modalidad';
-	$data_name = $is_news ? 'actualidad' : 'selecciones';
-	$page      = isset( $filters['pagina'] ) ? absint( $filters['pagina'] ) : 1;
-	$selected  = isset( $filters[ $key ] ) ? sanitize_text_field( $filters[ $key ] ) : '';
-	$query     = labm_theme_public_query( $post_type, array( $key => $selected ), $page );
-	$terms     = get_terms(
+	$is_news         = 'labm_actualidad' === $post_type;
+	$key             = $is_news ? 'categoria' : 'modalidad';
+	$taxonomy        = $is_news ? 'labm_categoria' : 'labm_modalidad';
+	$data_name       = $is_news ? 'actualidad' : 'selecciones';
+	$page            = isset( $filters['pagina'] ) ? absint( $filters['pagina'] ) : 1;
+	$selected        = isset( $filters[ $key ] ) ? sanitize_text_field( $filters[ $key ] ) : '';
+	$text            = $is_news && isset( $filters['texto'] ) ? sanitize_text_field( $filters['texto'] ) : '';
+	$query           = labm_theme_public_query(
+		$post_type,
+		array(
+			$key    => $selected,
+			'texto' => $text,
+		),
+		$page,
+		$is_news ? 4 : 3
+	);
+	$terms           = get_terms(
 		array(
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => true,
 		)
 	);
+	$pagination_base = add_query_arg(
+		array_filter(
+			array(
+				'texto'  => $text,
+				$key     => $selected,
+				'pagina' => '%#%',
+			)
+		),
+		get_post_type_archive_link( $post_type )
+	);
+	$pagination_base = str_replace( '%20', '+', $pagination_base );
 
 	ob_start();
 	?>
-	<form class="labm-filter" method="get">
-		<label for="labm-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $is_news ? __( 'Categoría', 'labm' ) : __( 'Modalidad', 'labm' ) ); ?></label>
-		<select id="labm-<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( $key ); ?>">
-			<option value=""><?php esc_html_e( 'Todas', 'labm' ); ?></option>
-			<?php foreach ( is_wp_error( $terms ) ? array() : $terms as $term ) : ?>
-				<option value="<?php echo esc_attr( $term->name ); ?>" <?php selected( $selected, $term->name ); ?>><?php echo esc_html( $term->name ); ?></option>
-			<?php endforeach; ?>
-		</select>
-		<button type="submit"><?php esc_html_e( 'Aplicar filtro', 'labm' ); ?></button>
+	<form class="labm-filter" method="get"
+	<?php
+	if ( $is_news ) :
+		?>
+		data-labm-actualidad-filtros<?php endif; ?>>
+		<?php if ( $is_news ) : ?>
+			<div class="labm-actualidad-filtro__campo">
+			<label for="labm-texto"><?php esc_html_e( 'Buscar noticias', 'labm' ); ?></label>
+			<input id="labm-texto" name="texto" type="search" value="<?php echo esc_attr( $text ); ?>">
+			</div>
+		<?php endif; ?>
+		<?php if ( $is_news ) : ?>
+			<div class="labm-actualidad-filtro__campo">
+		<?php endif; ?>
+			<label for="labm-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $is_news ? __( 'Categoría', 'labm' ) : __( 'Modalidad', 'labm' ) ); ?></label>
+			<select id="labm-<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( $key ); ?>">
+				<option value=""><?php esc_html_e( 'Todas', 'labm' ); ?></option>
+				<?php foreach ( is_wp_error( $terms ) ? array() : $terms as $term ) : ?>
+					<option value="<?php echo esc_attr( $term->name ); ?>" <?php selected( $selected, $term->name ); ?>><?php echo esc_html( $term->name ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		<?php if ( $is_news ) : ?>
+			</div>
+		<?php endif; ?>
+		<button class="labm-actualidad-filtro__submit" type="submit"><?php esc_html_e( 'Aplicar filtro', 'labm' ); ?></button>
 	</form>
-	<div class="labm-card-grid" data-labm-listado="<?php echo esc_attr( $data_name ); ?>">
-		<?php foreach ( $query->posts as $post ) : ?>
-			<article class="labm-card">
-				<p class="labm-card__eyebrow" data-labm-modalidad><?php echo esc_html( implode( ', ', wp_get_post_terms( $post->ID, $taxonomy, array( 'fields' => 'names' ) ) ) ); ?></p>
-				<h2><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h2>
-				<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_content ), 24 ) ); ?></p>
-			</article>
-		<?php endforeach; ?>
-	</div>
+	<?php if ( $is_news ) : ?>
+		<div class="labm-actualidad-listado" data-labm-listado="<?php echo esc_attr( $data_name ); ?>">
+			<?php $featured = array_shift( $query->posts ); ?>
+			<?php if ( $featured ) : ?>
+				<article class="labm-actualidad-destacada" data-labm-actualidad-destacada>
+					<div class="labm-actualidad-destacada__media">
+						<?php echo labm_theme_actualidad_media( $featured, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+					</div>
+					<div class="labm-actualidad-destacada__contenido">
+						<?php echo labm_theme_actualidad_article_content( $featured ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+					</div>
+				</article>
+			<?php endif; ?>
+			<div class="labm-actualidad-tarjetas">
+				<?php foreach ( $query->posts as $post ) : ?>
+					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta>
+						<?php echo labm_theme_actualidad_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+						<?php echo labm_theme_actualidad_article_content( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php else : ?>
+		<div class="labm-card-grid" data-labm-listado="<?php echo esc_attr( $data_name ); ?>">
+			<?php foreach ( $query->posts as $post ) : ?>
+				<article class="labm-card">
+					<p class="labm-card__eyebrow" data-labm-modalidad><?php echo esc_html( implode( ', ', wp_get_post_terms( $post->ID, $taxonomy, array( 'fields' => 'names' ) ) ) ); ?></p>
+					<h2><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h2>
+					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_content ), 24 ) ); ?></p>
+				</article>
+			<?php endforeach; ?>
+		</div>
+	<?php endif; ?>
 	<?php if ( ! $query->have_posts() ) : ?>
-		<div class="labm-empty"><p><?php esc_html_e( 'No hay publicaciones para este filtro.', 'labm' ); ?></p><a href="<?php echo esc_url( get_post_type_archive_link( $post_type ) ); ?>"><?php esc_html_e( 'Limpiar filtros', 'labm' ); ?></a></div>
+		<div class="labm-empty"
+		<?php
+		if ( $is_news ) :
+			?>
+			data-labm-actualidad-vacio<?php endif; ?>><p><?php esc_html_e( 'No hay publicaciones para este filtro.', 'labm' ); ?></p><a href="<?php echo esc_url( get_post_type_archive_link( $post_type ) ); ?>"><?php esc_html_e( 'Limpiar filtros', 'labm' ); ?></a></div>
 	<?php elseif ( $query->max_num_pages > 1 ) : ?>
 		<nav class="labm-pagination" aria-label="<?php esc_attr_e( 'Paginación', 'labm' ); ?>">
 			<?php
-			echo wp_kses_post(
-				paginate_links(
-					array(
-						'base'      => add_query_arg( 'pagina', '%#%', get_post_type_archive_link( $post_type ) ),
-						'format'    => '',
-						'current'   => $page,
-						'total'     => $query->max_num_pages,
-						'prev_text' => __( 'Página anterior', 'labm' ),
-						'next_text' => __( 'Página siguiente', 'labm' ),
-					)
+			$pagination_links = paginate_links(
+				array(
+					'base'      => $pagination_base,
+					'format'    => '',
+					'current'   => $page,
+					'total'     => $query->max_num_pages,
+					'prev_text' => __( 'Página anterior', 'labm' ),
+					'next_text' => __( 'Página siguiente', 'labm' ),
 				)
 			);
+			echo str_replace( '%20', '+', wp_kses_post( $pagination_links ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- enlaces saneados por wp_kses_post.
 			?>
 		</nav>
 	<?php endif; ?>
