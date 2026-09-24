@@ -3,6 +3,56 @@ import AxeBuilder from '@axe-core/playwright';
 
 const widths = [320, 768, 1024, 1200, 1440];
 
+test('Contacto conserva columnas legibles en tablet y desktop', async ({ page }) => {
+  await page.goto('/contacto/');
+  const section = page.locator('[data-labm-section="contacto"]');
+
+  await page.setViewportSize({ width: 768, height: 900 });
+  expect(await section.evaluate((element) => getComputedStyle(element).paddingInlineStart)).toBe('0px');
+  expect(await section.locator('.labm-contact__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+  expect(await section.locator('.labm-contact__form-wrap').evaluate((element) => element.clientWidth)).toBeGreaterThan(500);
+
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  expect(await section.evaluate((element) => element.clientWidth)).toBeGreaterThanOrEqual(1400);
+  expect(await section.locator('.labm-contact__grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(2);
+  expect(await section.locator('.labm-contact__details').evaluate((element) => element.clientWidth)).toBe(380);
+  expect(await section.locator('.labm-contact__form-wrap').evaluate((element) => element.clientWidth)).toBeGreaterThanOrEqual(525);
+});
+
+test('Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa', async ({ page }) => {
+  await page.goto('/contacto/');
+  const form = page.locator('.labm-contact__form');
+  const button = form.locator('[data-labm-contact-submit]');
+
+  await form.locator('[name="nombre"]').fill('Ada');
+  await form.locator('[name="apellidos"]').fill('Lovelace');
+  await form.locator('[name="correo"]').fill('ada@example.com');
+  await form.locator('[name="asunto"]').fill('Consulta');
+  await form.locator('[name="mensaje"]').fill('Mensaje de prueba.');
+  await form.locator('[name="consentimiento"]').check();
+
+  await form.evaluate((element) => element.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
+
+  await expect(form).toHaveAttribute('aria-busy', 'true');
+  await expect(button).toBeDisabled();
+  await expect(button).toHaveText('Enviando mensaje…');
+  await expect(button.locator('[data-labm-contact-submit-label]')).toBeHidden();
+  await expect(button.locator('[data-labm-contact-sending]')).toBeVisible();
+});
+
+test('Contacto no muestra el estado de envío cuando la validación nativa rechaza el formulario', async ({ page }) => {
+  await page.goto('/contacto/');
+  const form = page.locator('.labm-contact__form');
+  const button = form.locator('[data-labm-contact-submit]');
+
+  await button.click();
+
+  await expect(form).toHaveAttribute('aria-busy', 'false');
+  await expect(button).toBeEnabled();
+  await expect(button).toHaveText('Enviar mensaje');
+  await expect(button.locator('[data-labm-contact-sending]')).toBeHidden();
+});
+
 test('Contacto publica los datos institucionales y un formulario accesible', async ({ page }) => {
   await page.goto('/contacto/');
   const section = page.locator('[data-labm-section="contacto"]');
@@ -34,6 +84,8 @@ test('Contacto asocia errores, conserva teclado y no revela la configuración in
   await expect(page).toHaveURL(/\/contacto\/\?contacto_estado=.*#formulario/);
   await expect(page.getByRole('alert')).toBeVisible();
   await expect(form.locator('[aria-invalid="true"]')).not.toHaveCount(0);
+  await expect(form).toHaveAttribute('aria-busy', 'false');
+  await expect(form.getByRole('button', { name: 'Enviar mensaje' })).toBeEnabled();
   await page.keyboard.press('Tab');
   await expect(page.locator(':focus-visible')).toBeVisible();
   expect(await page.content()).not.toContain('LABM_CONTACT_TEST_RECIPIENTS');

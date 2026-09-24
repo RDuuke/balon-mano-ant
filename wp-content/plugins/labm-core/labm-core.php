@@ -27,6 +27,7 @@ require_once __DIR__ . '/includes/class-labm-domain.php';
 require_once __DIR__ . '/includes/class-labm-home-content.php';
 require_once __DIR__ . '/includes/class-labm-documents-contact.php';
 require_once __DIR__ . '/includes/class-labm-footer-settings.php';
+require_once __DIR__ . '/includes/class-labm-smtp-settings.php';
 register_activation_hook( __FILE__, 'labm_core_activate' );
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {

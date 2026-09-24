@@ -1,8 +1,8 @@
 schema_version: "1.3"
 phase: APPLY
-change: "seccion-contacto"
+change: "envio-correos-contacto"
 awaiting_approval: false
 completed: false
-pending_tasks: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "2.5", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "5.1", "5.2", "6.2"]
-modified_artifacts: ["openspec/changes/seccion-contacto/tasks.md", "openspec/changes/seccion-contacto/remediation-progress.md"]
-notes: "VERIFY falló: pruebas PHP/E2E no ejecutables, tareas pendientes y brechas de privacidad e idempotencia. Header y footer no fueron modificados."
+pending_tasks: ["1.1", "2.1", "2.3", "3.1", "4.2", "4.4", "5.1", "5.2"]
+modified_artifacts: ["wp-content/plugins/labm-core/includes/class-labm-smtp-settings.php", "wp-content/plugins/labm-core/labm-core.php", "wp-content/plugins/labm-core/includes/class-labm-documents-contact.php", "wp-content/plugins/labm-core/includes/class-labm-footer-settings.php", "tests/php/SmtpSettingsTest.php", "tests/php/FooterSettingsTest.php", "tests/php/DocumentContactTest.php", "phpunit.integration.xml.dist", "docs/development.md", "wp-content/themes/labm/functions.php", "wp-content/themes/labm/assets/contact.js", "wp-content/themes/labm/style.css", "tests/e2e/contact.spec.ts", "openspec/changes/envio-correos-contacto/specs/contacto/spec.md", "openspec/changes/envio-correos-contacto/design.md", "openspec/changes/envio-correos-contacto/tasks.md", "openspec/changes/envio-correos-contacto/apply-progress.md"]
+notes: "tdd_strict: se distingue el fallo de entrega del aviso de validación sin revelar SMTP; PHPCS focal conserva errores históricos fuera del alcance y PHPStan focal está bloqueado por memoria del contenedor"

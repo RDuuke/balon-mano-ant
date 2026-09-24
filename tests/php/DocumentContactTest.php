@@ -3,9 +3,21 @@
 use PHPUnit\Framework\TestCase;
 
 final class DocumentContactTest extends TestCase {
+	/** @var mixed */
+	private $smtp_settings_option;
+
+	/** @var mixed */
+	private $smtp_migration_option;
+
 	protected function setUp(): void {
 		parent::setUp();
-		delete_transient( 'labm_contact_' . hash( 'sha256', 'contacto-prueba-unico' ) );
+		$this->smtp_settings_option  = get_option( 'labm_smtp_settings', null );
+		$this->smtp_migration_option = get_option( 'labm_smtp_recipients_migrated', null );
+		update_option( 'labm_smtp_settings', labm_core_smtp_defaults(), false );
+		update_option( 'labm_smtp_recipients_migrated', 1, false );
+		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
+			delete_transient( 'labm_contact_' . hash( 'sha256', $token ) );
+		}
 		$test_documents = get_posts(
 			array(
 				'post_type'      => 'labm_documento',
@@ -19,6 +31,20 @@ final class DocumentContactTest extends TestCase {
 		foreach ( $test_documents as $test_document ) {
 			wp_delete_post( $test_document, true );
 		}
+	}
+
+	protected function tearDown(): void {
+		if ( null === $this->smtp_settings_option ) {
+			delete_option( 'labm_smtp_settings' );
+		} else {
+			update_option( 'labm_smtp_settings', $this->smtp_settings_option, false );
+		}
+		if ( null === $this->smtp_migration_option ) {
+			delete_option( 'labm_smtp_recipients_migrated' );
+		} else {
+			update_option( 'labm_smtp_recipients_migrated', $this->smtp_migration_option, false );
+		}
+		parent::tearDown();
 	}
 
 	public function test_document_domain_has_permissions_pdf_metadata_and_private_drafts(): void {
@@ -301,6 +327,88 @@ final class DocumentContactTest extends TestCase {
 		remove_filter( 'pre_wp_mail', $filter, 10 );
 	}
 
+	/** El correo de Contacto usa la plantilla institucional HTML y conserva Reply-To. */
+	public function test_contact_sends_an_escaped_institutional_html_email(): void {
+		$sent   = array();
+		$filter = static function ( $return, $attributes ) use ( &$sent ) {
+			$sent[] = $attributes;
+			return true;
+		};
+		$data   = array(
+			'nombre'        => 'Ana & Co',
+			'apellidos'     => 'Pérez',
+			'correo'        => 'ana@example.test',
+			'asunto'        => 'Consulta de plantilla',
+			'mensaje'       => "Primera línea\nSegunda línea <b>sin HTML</b>",
+			'telefono'      => '320 123 4567',
+			'sitio_web'     => '',
+			'consentimiento' => '1',
+			'token'         => 'contacto-plantilla-html',
+			'nonce'         => wp_create_nonce( 'labm_contacto' ),
+		);
+		add_filter( 'pre_wp_mail', $filter, 10, 2 );
+
+		try {
+			self::assertTrue( labm_core_process_contact( $data )['ok'] );
+			self::assertCount( 1, $sent );
+			self::assertStringContainsString( 'LABM', $sent[0]['message'] );
+			self::assertStringContainsString( '#AECD25', $sent[0]['message'] );
+			self::assertStringContainsString( 'src="cid:labm-contact-logo"', $sent[0]['message'] );
+			self::assertStringNotContainsString( 'logo-color.jpg', $sent[0]['message'] );
+			self::assertStringContainsString( 'Ana &amp; Co', $sent[0]['message'] );
+			self::assertStringNotContainsString( '<script>', $sent[0]['message'] );
+			self::assertStringContainsString( 'Primera línea<br', $sent[0]['message'] );
+			self::assertContains( 'Reply-To: ana@example.test', $sent[0]['headers'] );
+			self::assertContains( 'Content-Type: text/html; charset=UTF-8', $sent[0]['headers'] );
+		} finally {
+			remove_filter( 'pre_wp_mail', $filter, 10 );
+			delete_transient( 'labm_contact_' . hash( 'sha256', 'contacto-plantilla-html' ) );
+		}
+	}
+
+	/** El logo se adjunta por CID solo a los mensajes de Contacto. */
+	public function test_contact_email_embeds_its_logo_without_affecting_other_messages(): void {
+		// phpcs:disable -- El doble replica de forma deliberada la API pública de PHPMailer.
+		$mailer       = new class() {
+			public $Body = '';
+			private $attachments = array();
+
+			public function addEmbeddedImage( $path, $cid, $name, $encoding, $type ) {
+				$this->attachments[] = array( $path, '', $name, $encoding, $type, false, 'inline', $cid );
+			}
+
+			public function getAttachments() {
+				return $this->attachments;
+			}
+		};
+		$mailer->Body = labm_core_render_contact_email( array() );
+
+		do_action( 'phpmailer_init', $mailer );
+		do_action( 'phpmailer_init', $mailer );
+
+		$attachments = $mailer->getAttachments();
+		self::assertCount( 1, $attachments );
+		self::assertSame( 'labm-contact-logo', $attachments[0][7] );
+		self::assertSame( 'image/jpeg', $attachments[0][4] );
+
+		$other_mailer       = new class() {
+			public $Body = '';
+			private $attachments = array();
+
+			public function addEmbeddedImage( $path, $cid, $name, $encoding, $type ) {
+				$this->attachments[] = array( $path, '', $name, $encoding, $type, false, 'inline', $cid );
+			}
+
+			public function getAttachments() {
+				return $this->attachments;
+			}
+		};
+		$other_mailer->Body = 'Mensaje ajeno a Contacto.';
+		do_action( 'phpmailer_init', $other_mailer );
+		self::assertCount( 0, $other_mailer->getAttachments() );
+		// phpcs:enable
+	}
+
 	/** El contrato de Contacto expone solo datos institucionales aptos para la interfaz. */
 	public function test_contact_settings_reuse_public_footer_data_without_recipients(): void {
 		$settings = labm_core_get_contact_settings();
@@ -336,6 +444,78 @@ final class DocumentContactTest extends TestCase {
 	}
 
 	/** Un fallo de correo libera la reserva para permitir un reintento legÃ­timo. */
+	/** Las copias solo operan fuera de produccion y nunca integran la salida publica. */
+	public function test_contact_test_recipients_are_limited_to_explicit_non_production_environments(): void {
+		$previous_recipients = getenv( 'LABM_CONTACT_TEST_RECIPIENTS' );
+		putenv( 'LABM_CONTACT_TEST_RECIPIENTS=copia-uno@example.test,correo-invalido,copia-dos@example.test,copia-tres@example.test' );
+		$environment = 'production';
+		$filter      = static function () use ( &$environment ) {
+			return $environment;
+		};
+		add_filter( 'labm_core_contact_environment', $filter );
+
+		try {
+			self::assertSame( array( 'info@balonmanoantioquia.com' ), labm_core_contact_recipients() );
+
+			$environment = 'development';
+			self::assertSame(
+				array( 'info@balonmanoantioquia.com', 'copia-uno@example.test', 'copia-dos@example.test' ),
+				labm_core_contact_recipients()
+			);
+
+			$environment = 'ambiguous';
+			self::assertSame( array( 'info@balonmanoantioquia.com' ), labm_core_contact_recipients() );
+			$html = labm_theme_render_contact();
+			self::assertStringNotContainsString( 'copia-uno@example.test', $html );
+			self::assertStringNotContainsString( 'copia-dos@example.test', $html );
+		} finally {
+			remove_filter( 'labm_core_contact_environment', $filter );
+			if ( false === $previous_recipients ) {
+				putenv( 'LABM_CONTACT_TEST_RECIPIENTS' );
+			} else {
+				putenv( 'LABM_CONTACT_TEST_RECIPIENTS=' . $previous_recipients );
+			}
+		}
+	}
+
+	/** Los destinatarios configurados se sanean y se combinan con las copias no productivas. */
+	public function test_contact_uses_all_configured_recipients_and_preserves_non_production_copies(): void {
+		$previous_settings   = get_option( 'labm_smtp_settings', null );
+		$previous_recipients = getenv( 'LABM_CONTACT_TEST_RECIPIENTS' );
+		$environment         = 'development';
+		$filter              = static function () use ( &$environment ) {
+			return $environment;
+		};
+
+		update_option(
+			'labm_smtp_settings',
+			array(
+				'recipients' => "uno@example.test, correo-invalido\ndos@example.test, uno@example.test",
+			)
+		);
+		putenv( 'LABM_CONTACT_TEST_RECIPIENTS=copia@example.test' );
+		add_filter( 'labm_core_contact_environment', $filter );
+
+		try {
+			self::assertSame(
+				array( 'uno@example.test', 'dos@example.test', 'copia@example.test' ),
+				labm_core_contact_recipients()
+			);
+		} finally {
+			remove_filter( 'labm_core_contact_environment', $filter );
+			if ( null === $previous_settings ) {
+				delete_option( 'labm_smtp_settings' );
+			} else {
+				update_option( 'labm_smtp_settings', $previous_settings );
+			}
+			if ( false === $previous_recipients ) {
+				putenv( 'LABM_CONTACT_TEST_RECIPIENTS' );
+			} else {
+				putenv( 'LABM_CONTACT_TEST_RECIPIENTS=' . $previous_recipients );
+			}
+		}
+	}
+
 	public function test_contact_mail_failure_does_not_consume_the_idempotency_token(): void {
 		$data = array(
 			'nombre'          => 'Ana',
@@ -393,6 +573,43 @@ final class DocumentContactTest extends TestCase {
 	}
 
 	/** El consentimiento enlaza a la política de privacidad aplicable. */
+	/** El estado PRG conserva el identificador opaco generado con mayúsculas. */
+	public function test_contact_prg_state_consumes_a_case_sensitive_opaque_identifier(): void {
+		$state_id = 'AbCdEfGhIjKlMnOpQrStUvWxYz012345';
+		$key      = 'labm_contact_state_' . hash( 'sha256', $state_id );
+		$state    = array( 'ok' => false, 'errors' => array( 'nombre' ) );
+		set_transient( $key, $state, 10 * MINUTE_IN_SECONDS );
+
+		self::assertSame( $state, labm_core_contact_consume_state( $state_id ) );
+		self::assertFalse( (bool) get_transient( $key ) );
+	}
+
+	/** El fallo de entrega muestra un aviso seguro, sin confundirse con errores de campos. */
+	public function test_contact_renders_a_safe_delivery_error_separate_from_field_validation(): void {
+		$state_id = 'DeliveryFailureState012345678901';
+		$key      = 'labm_contact_state_' . hash( 'sha256', $state_id );
+		set_transient(
+			$key,
+			array(
+				'ok'     => false,
+				'errors' => array( 'delivery' ),
+			),
+			10 * MINUTE_IN_SECONDS
+		);
+		$_GET['contacto_estado'] = $state_id;
+
+		try {
+			$html = labm_theme_render_contact();
+			self::assertStringContainsString( 'No pudimos enviar el mensaje en este momento. Inténtalo de nuevo más tarde.', $html );
+			self::assertStringNotContainsString( 'Revisa los campos marcados e inténtalo de nuevo.', $html );
+			self::assertStringNotContainsString( 'SMTP', $html );
+			self::assertStringNotContainsString( '<ul>', $html );
+		} finally {
+			unset( $_GET['contacto_estado'] );
+			delete_transient( $key );
+		}
+	}
+
 	public function test_contact_privacy_notice_renders_a_navigable_link(): void {
 		$html = labm_theme_render_contact();
 

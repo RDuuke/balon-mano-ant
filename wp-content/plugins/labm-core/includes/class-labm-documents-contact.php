@@ -310,8 +310,8 @@ function labm_core_get_contact_settings() {
 
 /** Obtiene los destinatarios privados permitidos por el entorno actual. */
 function labm_core_contact_recipients() {
-	$recipients  = array( 'info@balonmanoantioquia.com' );
-	$environment = wp_get_environment_type();
+	$recipients  = function_exists( 'labm_core_smtp_recipients' ) ? labm_core_smtp_recipients() : array( 'info@balonmanoantioquia.com' );
+	$environment = apply_filters( 'labm_core_contact_environment', wp_get_environment_type() );
 	if ( ! in_array( $environment, array( 'local', 'development', 'staging' ), true ) ) {
 		return $recipients;
 	}
@@ -319,12 +319,14 @@ function labm_core_contact_recipients() {
 	if ( ! is_string( $raw_recipients ) ) {
 		return $recipients;
 	}
+	$test_recipient_count = 0;
 	foreach ( array_filter( array_map( 'trim', explode( ',', $raw_recipients ) ) ) as $candidate ) {
 		$email = sanitize_email( $candidate );
 		if ( is_email( $email ) && ! in_array( $email, $recipients, true ) ) {
 			$recipients[] = $email;
+			++$test_recipient_count;
 		}
-		if ( 3 === count( $recipients ) ) {
+		if ( 2 === $test_recipient_count ) {
 			break;
 		}
 	}
@@ -353,6 +355,93 @@ function labm_core_contact_release_token( $lock ) {
 		delete_option( $lock );
 	}
 }
+
+/**
+ * Construye el correo HTML institucional de Contacto sin incluir datos no saneados.
+ *
+ * @param array $contact Datos ya validados del formulario.
+ * @param bool  $use_cid_logo Si se debe usar una imagen incrustada para correo.
+ * @return string
+ */
+function labm_core_render_contact_email( $contact, $use_cid_logo = true ) {
+	$contact     = is_array( $contact ) ? $contact : array();
+	$logo_path   = labm_core_contact_logo_path();
+	$logo_source = '';
+	if ( '' !== $logo_path ) {
+		$logo_source = $use_cid_logo ? 'cid:' . labm_core_contact_logo_cid() : ( function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-color.jpg' ) : '' );
+	}
+	$logo        = '' !== $logo_source ? '<img src="' . ( $use_cid_logo ? $logo_source : esc_url( $logo_source ) ) . '" width="240" alt="LABM — Liga Antioqueña de Balonmano" style="display:block;width:240px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">' : '';
+	$name        = trim( (string) ( $contact['nombre'] ?? '' ) . ' ' . (string) ( $contact['apellidos'] ?? '' ) );
+	$email       = (string) ( $contact['correo'] ?? '' );
+	$phone       = (string) ( $contact['telefono'] ?? '' );
+	$message     = nl2br( esc_html( (string) ( $contact['mensaje'] ?? '' ) ) );
+	$details     = sprintf(
+		'<tr><td style="padding:0 0 10px;font:700 14px/20px Arial,sans-serif;color:#202020;">Nombre</td><td style="padding:0 0 10px;font:400 14px/20px Arial,sans-serif;color:#202020;">%1$s</td></tr><tr><td style="padding:0 0 10px;font:700 14px/20px Arial,sans-serif;color:#202020;">Correo</td><td style="padding:0 0 10px;font:400 14px/20px Arial,sans-serif;color:#202020;"><a href="mailto:%2$s" style="color:#202020;">%2$s</a></td></tr>',
+		esc_html( $name ),
+		esc_attr( $email )
+	);
+	if ( '' !== $phone ) {
+		$details .= sprintf( '<tr><td style="padding:0 0 10px;font:700 14px/20px Arial,sans-serif;color:#202020;">Teléfono</td><td style="padding:0 0 10px;font:400 14px/20px Arial,sans-serif;color:#202020;">%s</td></tr>', esc_html( $phone ) );
+	}
+	return sprintf(
+		'<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nuevo mensaje de Contacto</title></head><body style="margin:0;padding:0;background:#F3F6E8;color:#202020;"><table role="presentation" width="100%%" cellspacing="0" cellpadding="0" border="0" style="width:100%%;background:#F3F6E8;"><tr><td align="center" style="padding:32px 16px;"><table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:600px;max-width:100%%;background:#ffffff;"><tr><td style="padding:26px 32px 22px;background:#202020;">%1$s<p style="margin:18px 0 0;font:700 12px/16px Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;color:#AECD25;">Liga Antioqueña de Balonmano</p></td></tr><tr><td style="height:8px;background:#AECD25;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td style="padding:32px;"><h1 style="margin:0 0 12px;font:700 28px/34px Arial,sans-serif;color:#202020;">Nuevo mensaje de contacto</h1><p style="margin:0 0 26px;font:400 16px/24px Arial,sans-serif;color:#202020;">Una persona ha enviado una consulta desde el formulario de la Liga Antioqueña de Balonmano.</p><table role="presentation" width="100%%" cellspacing="0" cellpadding="0" border="0" style="width:100%%;margin:0 0 26px;border-bottom:1px solid #d9e4a8;">%2$s</table><div style="padding:20px;background:#F3F6E8;"><p style="margin:0 0 8px;font:700 14px/20px Arial,sans-serif;color:#202020;">Mensaje</p><p style="margin:0;font:400 16px/24px Arial,sans-serif;color:#202020;">%3$s</p></div></td></tr><tr><td style="padding:20px 32px;background:#202020;"><p style="margin:0;font:400 12px/18px Arial,sans-serif;color:#ffffff;">Este correo fue generado desde el formulario de contacto de LABM.</p></td></tr></table></td></tr></table></body></html>',
+		$logo,
+		$details,
+		$message
+	);
+}
+
+/** Devuelve el identificador estable de la imagen incrustada del correo. */
+function labm_core_contact_logo_cid() {
+	return 'labm-contact-logo';
+}
+
+/** Localiza el logo institucional que se puede incrustar en el correo. */
+function labm_core_contact_logo_path() {
+	$path = function_exists( 'get_theme_file_path' ) ? get_theme_file_path( 'assets/images/logo-color.jpg' ) : '';
+	return is_string( $path ) && is_readable( $path ) ? $path : '';
+}
+
+/**
+ * Determina si PHPMailer ya contiene el logo de Contacto.
+ *
+ * @param object $phpmailer Instancia de PHPMailer.
+ * @return bool
+ */
+function labm_core_contact_mailer_has_logo( $phpmailer ) {
+	if ( ! is_object( $phpmailer ) || ! method_exists( $phpmailer, 'getAttachments' ) ) {
+		return false;
+	}
+	foreach ( $phpmailer->getAttachments() as $attachment ) {
+		if ( is_array( $attachment ) && isset( $attachment[7] ) && labm_core_contact_logo_cid() === $attachment[7] ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Incrusta el logo solo en correos HTML de Contacto que usan su CID.
+ *
+ * @param object $phpmailer Instancia de PHPMailer.
+ * @return void
+ */
+function labm_core_embed_contact_logo( $phpmailer ) {
+	if ( ! is_object( $phpmailer ) || ! isset( $phpmailer->Body ) || ! method_exists( $phpmailer, 'addEmbeddedImage' ) || false === strpos( (string) $phpmailer->Body, 'cid:' . labm_core_contact_logo_cid() ) || labm_core_contact_mailer_has_logo( $phpmailer ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- API de PHPMailer.
+		return;
+	}
+	$logo_path = labm_core_contact_logo_path();
+	if ( '' === $logo_path ) {
+		return;
+	}
+	try {
+		$phpmailer->addEmbeddedImage( $logo_path, labm_core_contact_logo_cid(), 'logo-color.jpg', 'base64', 'image/jpeg' );
+	} catch ( Exception $exception ) {
+		// La marca textual de la plantilla se conserva si el archivo no se puede adjuntar.
+		return;
+	}
+}
+add_action( 'phpmailer_init', 'labm_core_embed_contact_logo', 20 );
 
 /** Procesa contacto sin retener datos personales fuera de la entrega. */
 function labm_core_process_contact( $data ) {
@@ -388,8 +477,17 @@ function labm_core_process_contact( $data ) {
 		return array( 'ok' => true, 'errors' => array() );
 	}
 	$phone = preg_replace( '/[^0-9+()\-\s]/', '', (string) ( $data['telefono'] ?? '' ) );
-	$body  = sprintf( "Nombre: %s %s\nCorreo: %s%s\n\n%s", sanitize_text_field( $data['nombre'] ), sanitize_text_field( $data['apellidos'] ), $email, '' !== $phone ? "\nTeléfono: " . $phone : '', sanitize_textarea_field( $data['mensaje'] ) );
-	$sent  = wp_mail( labm_core_contact_recipients(), sanitize_text_field( $data['asunto'] ), $body, array( 'Reply-To: ' . $email ) );
+	$body  = labm_core_render_contact_email(
+		array(
+			'nombre'    => sanitize_text_field( $data['nombre'] ),
+			'apellidos' => sanitize_text_field( $data['apellidos'] ),
+			'correo'    => $email,
+			'telefono'  => $phone,
+			'mensaje'   => sanitize_textarea_field( $data['mensaje'] ),
+		)
+	);
+	$recipients = labm_core_contact_recipients();
+	$sent = wp_mail( $recipients, sanitize_text_field( $data['asunto'] ), $body, array( 'Reply-To: ' . $email, 'Content-Type: text/html; charset=UTF-8' ) );
 	if ( ! $sent ) {
 		labm_core_contact_release_token( $lock );
 		do_action( 'labm_core_contact_delivery_failed', array( 'code' => 'mail_delivery_failed' ) );
@@ -402,9 +500,15 @@ function labm_core_process_contact( $data ) {
 	return array( 'ok' => true, 'errors' => array() );
 }
 
+/** Conserva el alfabeto del identificador opaco generado para el estado PRG. */
+function labm_core_sanitize_contact_state_id( $state_id ) {
+	$state_id = preg_replace( '/[^A-Za-z0-9]/', '', (string) $state_id );
+	return is_string( $state_id ) ? $state_id : '';
+}
+
 /** Recupera una sola vez el estado opaco de una redireccion POST-Redirect-GET. */
 function labm_core_contact_consume_state( $state_id ) {
-	$state_id = sanitize_key( $state_id );
+	$state_id = labm_core_sanitize_contact_state_id( $state_id );
 	if ( '' === $state_id ) {
 		return array();
 	}

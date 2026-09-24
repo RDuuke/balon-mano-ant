@@ -30,6 +30,11 @@ function labm_theme_enqueue_public_style() {
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 	}
+	if ( is_page( 'contacto' ) ) {
+		$contact_script_path    = get_theme_file_path( 'assets/contact.js' );
+		$contact_script_version = file_exists( $contact_script_path ) ? (string) filemtime( $contact_script_path ) : wp_get_theme()->get( 'Version' );
+		wp_enqueue_script( 'labm-contact', get_theme_file_uri( 'assets/contact.js' ), array(), $contact_script_version, true );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'labm_theme_enqueue_public_style' );
 
@@ -141,9 +146,10 @@ function labm_theme_render_contact() {
 		return '<section class="labm-contact" data-labm-section="contacto"><h1>' . esc_html__( 'Contacto', 'labm' ) . '</h1><p class="labm-notice">' . esc_html__( 'El formulario no está disponible en este momento.', 'labm' ) . '</p></section>';
 	}
 	$settings = labm_core_get_contact_settings();
-	$state_id = isset( $_GET['contacto_estado'] ) ? sanitize_key( wp_unslash( $_GET['contacto_estado'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Estado opaco de PRG.
+	$state_id = isset( $_GET['contacto_estado'] ) && function_exists( 'labm_core_sanitize_contact_state_id' ) ? labm_core_sanitize_contact_state_id( wp_unslash( $_GET['contacto_estado'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Estado opaco de PRG.
 	$state    = $state_id && function_exists( 'labm_core_contact_consume_state' ) ? labm_core_contact_consume_state( $state_id ) : array();
 	$errors   = array_fill_keys( is_array( $state['errors'] ?? null ) ? $state['errors'] : array(), true );
+	$delivery_error = isset( $errors['delivery'] );
 	$footer   = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
 	$privacy  = $footer['policy_url'] ?? '/privacidad/';
 	$fields   = array(
@@ -166,8 +172,14 @@ function labm_theme_render_contact() {
 				<?php if ( $settings['socials'] ) : ?><nav aria-label="<?php esc_attr_e( 'Redes sociales', 'labm' ); ?>"><ul class="labm-contact__socials"><?php foreach ( $settings['socials'] as $social ) : ?><li><a href="<?php echo esc_url( $social['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $social['label'] ); ?></a></li><?php endforeach; ?></ul></nav><?php endif; ?>
 			</section>
 			<section class="labm-contact__form-wrap" id="formulario" aria-labelledby="labm-contact-form-title"><h2 id="labm-contact-form-title"><?php esc_html_e( 'Envía tu mensaje', 'labm' ); ?></h2>
-				<?php if ( ! empty( $state['ok'] ) ) : ?><p class="labm-contact__status labm-contact__status--success" role="status" aria-live="polite"><?php esc_html_e( 'Recibimos tu mensaje. Te responderemos pronto.', 'labm' ); ?></p><?php elseif ( $errors ) : ?><div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'Revisa los campos marcados e inténtalo de nuevo.', 'labm' ); ?></p><ul><?php foreach ( array_keys( $errors ) as $field ) : ?><?php if ( isset( $fields[ $field ] ) ) : ?><li><a href="#labm-contact-<?php echo esc_attr( $field ); ?>"><?php echo esc_html( $fields[ $field ] ); ?></a></li><?php endif; ?><?php endforeach; ?></ul></div><?php endif; ?>
-				<form class="labm-contact__form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" novalidate>
+				<?php if ( ! empty( $state['ok'] ) ) : ?>
+					<p class="labm-contact__status labm-contact__status--success" role="status" aria-live="polite"><?php esc_html_e( 'Recibimos tu mensaje. Te responderemos pronto.', 'labm' ); ?></p>
+				<?php elseif ( $delivery_error ) : ?>
+					<div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'No pudimos enviar el mensaje en este momento. Inténtalo de nuevo más tarde.', 'labm' ); ?></p></div>
+				<?php elseif ( $errors ) : ?>
+					<div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'Revisa los campos marcados e inténtalo de nuevo.', 'labm' ); ?></p><ul><?php foreach ( array_keys( $errors ) as $field ) : ?><?php if ( isset( $fields[ $field ] ) ) : ?><li><a href="#labm-contact-<?php echo esc_attr( $field ); ?>"><?php echo esc_html( $fields[ $field ] ); ?></a></li><?php endif; ?><?php endforeach; ?></ul></div>
+				<?php endif; ?>
+				<form class="labm-contact__form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" aria-busy="false" data-labm-contact-form>
 					<input type="hidden" name="action" value="labm_contact_send"><?php wp_nonce_field( 'labm_contacto', 'nonce' ); ?><input type="hidden" name="token" value="<?php echo esc_attr( wp_generate_password( 32, false, false ) ); ?>">
 					<div class="labm-contact__honeypot" aria-hidden="true"><label for="labm-contact-sitio-web">Sitio web</label><input id="labm-contact-sitio-web" type="text" name="sitio_web" tabindex="-1" autocomplete="off"></div>
 					<div class="labm-contact__field"><label for="labm-contact-nombre"><?php esc_html_e( 'Nombre', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-nombre" name="nombre" type="text" autocomplete="given-name" required<?php echo isset( $errors['nombre'] ) ? ' aria-invalid="true" aria-describedby="labm-error-nombre"' : ''; ?>><p id="labm-error-nombre" class="labm-contact__field-error"<?php echo isset( $errors['nombre'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
@@ -177,7 +189,7 @@ function labm_theme_render_contact() {
 					<div class="labm-contact__field"><label for="labm-contact-asunto"><?php esc_html_e( 'Asunto', 'labm' ); ?> <span aria-hidden="true">*</span></label><input id="labm-contact-asunto" name="asunto" type="text" required<?php echo isset( $errors['asunto'] ) ? ' aria-invalid="true" aria-describedby="labm-error-asunto"' : ''; ?>><p id="labm-error-asunto" class="labm-contact__field-error"<?php echo isset( $errors['asunto'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
 					<div class="labm-contact__field"><label for="labm-contact-mensaje"><?php esc_html_e( 'Mensaje', 'labm' ); ?> <span aria-hidden="true">*</span></label><textarea id="labm-contact-mensaje" name="mensaje" rows="6" required<?php echo isset( $errors['mensaje'] ) ? ' aria-invalid="true" aria-describedby="labm-error-mensaje"' : ''; ?>></textarea><p id="labm-error-mensaje" class="labm-contact__field-error"<?php echo isset( $errors['mensaje'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Este campo es obligatorio.', 'labm' ); ?></p></div>
 					<div class="labm-contact__consent"><input id="labm-contact-consentimiento" name="consentimiento" type="checkbox" value="1" required<?php echo isset( $errors['consentimiento'] ) ? ' aria-invalid="true" aria-describedby="labm-error-consentimiento"' : ''; ?>><label for="labm-contact-consentimiento"><?php esc_html_e( 'Acepto el tratamiento de mis datos para responder esta consulta. Consulta la ', 'labm' ); ?><a href="<?php echo esc_url( $privacy ); ?>"><?php esc_html_e( 'política de privacidad', 'labm' ); ?></a>.</label><p id="labm-error-consentimiento" class="labm-contact__field-error"<?php echo isset( $errors['consentimiento'] ) ? '' : ' hidden'; ?>><?php esc_html_e( 'Debes aceptar el tratamiento de datos.', 'labm' ); ?></p></div>
-					<button type="submit"><?php esc_html_e( 'Enviar mensaje', 'labm' ); ?></button>
+					<button type="submit" data-labm-contact-submit aria-live="polite" aria-atomic="true"><span data-labm-contact-submit-label><?php esc_html_e( 'Enviar mensaje', 'labm' ); ?></span><span hidden data-labm-contact-sending><span class="labm-contact__spinner" aria-hidden="true"></span><?php esc_html_e( 'Enviando mensaje…', 'labm' ); ?></span></button>
 				</form>
 			</section>
 		</div>

@@ -35,7 +35,7 @@ function labm_core_footer_field_schema() {
 		),
 		'navigation_1_url'   => array(
 			'label' => 'Navegación 1: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'navigation_2_label' => array(
 			'label' => 'Navegación 2: etiqueta',
@@ -43,7 +43,7 @@ function labm_core_footer_field_schema() {
 		),
 		'navigation_2_url'   => array(
 			'label' => 'Navegación 2: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'navigation_3_label' => array(
 			'label' => 'Navegación 3: etiqueta',
@@ -51,7 +51,7 @@ function labm_core_footer_field_schema() {
 		),
 		'navigation_3_url'   => array(
 			'label' => 'Navegación 3: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'navigation_4_label' => array(
 			'label' => 'Navegación 4: etiqueta',
@@ -59,7 +59,7 @@ function labm_core_footer_field_schema() {
 		),
 		'navigation_4_url'   => array(
 			'label' => 'Navegación 4: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'resources_heading'  => array(
 			'label' => 'Encabezado de recursos',
@@ -71,7 +71,7 @@ function labm_core_footer_field_schema() {
 		),
 		'resources_1_url'    => array(
 			'label' => 'Recurso 1: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'resources_2_label'  => array(
 			'label' => 'Recurso 2: etiqueta',
@@ -79,7 +79,7 @@ function labm_core_footer_field_schema() {
 		),
 		'resources_2_url'    => array(
 			'label' => 'Recurso 2: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'resources_3_label'  => array(
 			'label' => 'Recurso 3: etiqueta',
@@ -87,7 +87,7 @@ function labm_core_footer_field_schema() {
 		),
 		'resources_3_url'    => array(
 			'label' => 'Recurso 3: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 		'contact_heading'    => array(
 			'label' => 'Encabezado de contacto',
@@ -123,7 +123,7 @@ function labm_core_footer_field_schema() {
 		),
 		'policy_url'         => array(
 			'label' => 'Política: URL',
-			'type'  => 'url',
+			'type'  => 'internal_url',
 		),
 	);
 }
@@ -176,7 +176,7 @@ function labm_core_sanitize_footer_settings( $input ) {
 			$clean[ $key ] = sanitize_textarea_field( $value );
 		} elseif ( 'email' === $field['type'] ) {
 			$clean[ $key ] = sanitize_email( $value );
-		} elseif ( 'url' === $field['type'] ) {
+		} elseif ( in_array( $field['type'], array( 'url', 'internal_url' ), true ) ) {
 			$clean[ $key ] = esc_url_raw( $value, array( 'http', 'https' ) );
 		} else {
 			$clean[ $key ] = sanitize_text_field( $value );
@@ -240,7 +240,11 @@ function labm_core_render_footer_admin() {
 		else :
 			?>
 			<input class="regular-text" type="<?php echo esc_attr( in_array( $field['type'], array( 'email', 'url' ), true ) ? $field['type'] : 'text' ); ?>" id="labm-footer-<?php echo esc_attr( $key ); ?>" name="labm_footer_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $values[ $key ] ); ?>">
-		<?php endif; ?></td></tr>
+		<?php endif; ?>
+		<?php if ( ! empty( $field['description'] ) ) : ?>
+			<p class="description"><?php echo esc_html( $field['description'] ); ?></p>
+		<?php endif; ?>
+		</td></tr>
 	<?php endforeach; ?>
 	</tbody></table><?php submit_button(); ?></form></div>
 	<?php
