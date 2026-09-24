@@ -36,6 +36,7 @@ services:
       - wordpress_uploads:/var/www/html/wp-content/uploads
       - ./wp-content/themes/labm:/var/www/html/wp-content/themes/labm:ro
       - ./wp-content/plugins/labm-core:/var/www/html/wp-content/plugins/labm-core:ro
+      - ./tests/e2e/support/classic-editor.php:/var/www/html/wp-content/mu-plugins/labm-e2e-classic-editor.php:ro
     healthcheck:
       test: ["CMD-SHELL", "php -r '$$s=@fsockopen(\"127.0.0.1\",80,$$e,$$m,2); exit($$s?0:1);'"]
       interval: 5s
@@ -64,6 +65,7 @@ services:
       - wordpress_uploads:/var/www/html/wp-content/uploads
       - ./wp-content/themes/labm:/var/www/html/wp-content/themes/labm:ro
       - ./wp-content/plugins/labm-core:/var/www/html/wp-content/plugins/labm-core:ro
+      - ./tests/e2e/support/classic-editor.php:/var/www/html/wp-content/mu-plugins/labm-e2e-classic-editor.php:ro
 
 volumes:
   db_data:

@@ -372,6 +372,29 @@ test('3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad', async
   await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
 });
 
+test('3.4 documentos ofrece filtros, estado vacío y composición responsive', async ({ page }) => {
+  test.setTimeout(30_000);
+  await page.goto('/documentos/');
+  const form = page.locator('.labm-documents-filters form');
+  await expect(form).toHaveCount(1);
+  await expect(form.getByLabel('Buscar')).toBeVisible();
+  await expect(form.getByLabel('Categoría')).toBeVisible();
+  await expect(form.getByLabel('Año')).toBeVisible();
+  await expect(form.getByLabel('Orden')).toBeVisible();
+  await expect(form.getByRole('button', { name: /aplicar filtros/i })).toBeVisible();
+
+  await page.goto('/documentos/?texto=sin-resultados-ficticios&orden=antiguos');
+  await expect(form.getByLabel('Buscar')).toHaveValue('sin-resultados-ficticios');
+  await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /estado vacío/i })).toBeVisible();
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.reload();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  await form.getByLabel('Buscar').focus();
+  await expect(page.locator(':focus-visible')).toBeVisible();
+});
+
 test('3.2 selecciones filtra Piso y Playa sin exponer privados', async ({ page }) => {
   for (const modalidad of ['Piso', 'Playa']) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);
@@ -404,5 +427,86 @@ test('portada y Selecciones conservan contenido en los anchos objetivo', async (
       expect(overflow, `desborde en ${route} a ${width}px`).toBe(false);
       await expect(page.locator('main h1')).toBeVisible();
     }
+  }
+});
+
+test('1.2 actualidad reproduce las regiones Pencil, filtros y navegación responsive', async ({ page }) => {
+  await page.goto('/actualidad/');
+  const hero = page.locator('[data-labm-section="actualidad-hero"]');
+  const listing = page.locator('[data-labm-listado="actualidad"]');
+  const filters = page.locator('[data-labm-actualidad-filtros]');
+  const pagination = page.locator('.labm-main > .labm-pagination');
+  await expect(hero.getByRole('heading', { level: 1, name: 'Actualidad' })).toBeVisible();
+  await expect(filters.getByLabel(/buscar noticias/i)).toBeVisible();
+  await expect(filters.getByLabel(/categoría/i)).toBeVisible();
+  await expect(listing.locator('[data-labm-actualidad-destacada]')).toHaveCount(1);
+  await expect(listing.locator('[data-labm-actualidad-tarjeta]')).toHaveCount(3);
+  await expect(page.getByRole('link', { name: /página siguiente/i })).toBeVisible();
+
+  const detail = listing.locator('[data-labm-actualidad-destacada]').getByRole('link').first();
+  await detail.click();
+  await expect(page.locator('main h1')).toBeVisible();
+
+  await page.goto('/actualidad/?categoria=sin-resultados-ficticios');
+  await expect(page.locator('[data-labm-actualidad-vacio]')).toBeVisible();
+  await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
+
+  await page.goto('/actualidad/');
+  await filters.getByLabel(/buscar noticias/i).focus();
+  await expect(filters.getByLabel(/buscar noticias/i)).toBeFocused();
+  await expect(filters.getByLabel(/buscar noticias/i)).toHaveCSS('outline-style', 'solid');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.reload();
+  const [heroBox, filtersBox, searchBox, categoryBox, submitBox, listingBox, featuredMediaBox] = await Promise.all([
+    hero.boundingBox(),
+    filters.boundingBox(),
+    filters.getByLabel(/buscar noticias/i).boundingBox(),
+    filters.getByLabel(/categor/i).boundingBox(),
+    filters.getByRole('button', { name: /aplicar filtro/i }).boundingBox(),
+    listing.boundingBox(),
+    listing.locator('[data-labm-actualidad-destacada] > :first-child').boundingBox(),
+  ]);
+  expect(heroBox).not.toBeNull();
+  expect(filtersBox).not.toBeNull();
+  expect(searchBox).not.toBeNull();
+  expect(categoryBox).not.toBeNull();
+  expect(submitBox).not.toBeNull();
+  expect(listingBox).not.toBeNull();
+  expect(featuredMediaBox).not.toBeNull();
+  expect(await filters.evaluate((element) => getComputedStyle(element).display)).toBe('grid');
+  expect(heroBox!.height).toBeCloseTo(340, 0);
+  expect(filtersBox!.y).toBeCloseTo(heroBox!.y + heroBox!.height, 0);
+  expect(searchBox!.x).toBeCloseTo(120, 0);
+  expect(searchBox!.width).toBeCloseTo(420, 0);
+  expect(searchBox!.height).toBeCloseTo(52, 0);
+  expect(categoryBox!.x - searchBox!.x - searchBox!.width).toBeCloseTo(16, 0);
+  expect(categoryBox!.width).toBeCloseTo(260, 0);
+  expect(categoryBox!.height).toBeCloseTo(52, 0);
+  expect(Math.abs(searchBox!.y - categoryBox!.y)).toBeLessThanOrEqual(2);
+  expect(submitBox!.height).toBeCloseTo(52, 0);
+  expect(Math.abs(searchBox!.y - submitBox!.y)).toBeLessThanOrEqual(2);
+  expect(listingBox!.width).toBeGreaterThanOrEqual(1100);
+  expect(featuredMediaBox!.width).toBeCloseTo(670, 0);
+  expect(featuredMediaBox!.height).toBeCloseTo(440, 0);
+  const [paginationBox, paginationControls] = await Promise.all([
+    pagination.boundingBox(),
+    pagination.locator('.page-numbers').all(),
+  ]);
+  expect(paginationBox).not.toBeNull();
+  expect(paginationBox!.height).toBeCloseTo(100, 0);
+  for (const control of paginationControls) {
+    await expect(control).toHaveCSS('width', '44px');
+    await expect(control).toHaveCSS('height', '44px');
+    await expect(control).toHaveCSS('border-top-width', '1px');
+    await expect(control).toHaveCSS('border-top-left-radius', '0px');
+  }
+  for (const control of await pagination.locator('.page-numbers.prev, .page-numbers.next').all()) {
+    expect(await control.evaluate((element) => getComputedStyle(element, '::after').display)).toBe('grid');
+  }
+  for (const width of [320, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await expect(page.locator('[data-labm-actualidad-destacada]')).toBeVisible();
   }
 });

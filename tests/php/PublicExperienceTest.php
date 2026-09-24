@@ -12,11 +12,11 @@ final class PublicExperienceTest extends TestCase {
 		self::assertStringContainsString( '>Contáctanos</a>', $html );
 		self::assertStringContainsString( 'href="/contacto/"', $html );
 
-		$root    = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/';
-		$home    = file_get_contents( $root . 'inicio.php' );
-		$about   = file_get_contents( $root . 'nosotros.php' );
-		$team    = strpos( $about, 'labm_theme_render_about_team()' );
-		$join    = strpos( $about, 'labm_theme_render_join_cta()' );
+		$root  = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/';
+		$home  = file_get_contents( $root . 'inicio.php' );
+		$about = file_get_contents( $root . 'nosotros.php' );
+		$team  = strpos( $about, 'labm_theme_render_about_team()' );
+		$join  = strpos( $about, 'labm_theme_render_join_cta()' );
 		self::assertSame( 1, substr_count( $home, 'labm_theme_render_join_cta()' ) );
 		self::assertSame( 1, substr_count( $about, 'labm_theme_render_join_cta()' ) );
 		self::assertIsInt( $team );
@@ -102,14 +102,34 @@ final class PublicExperienceTest extends TestCase {
 		$vision  = get_page_by_path( 'vision-nosotros', OBJECT, 'post' );
 		self::assertInstanceOf( WP_Post::class, $mission );
 		self::assertInstanceOf( WP_Post::class, $vision );
-		wp_update_post( array( 'ID' => $mission->ID, 'post_status' => 'draft' ) );
+		wp_update_post(
+			array(
+				'ID'          => $mission->ID,
+				'post_status' => 'draft',
+			)
+		);
 		$html = labm_theme_render_about_purpose();
 		self::assertStringNotContainsString( 'data-labm-purpose="mision"', $html );
 		self::assertStringContainsString( 'data-labm-purpose="vision"', $html );
-		wp_update_post( array( 'ID' => $vision->ID, 'post_status' => 'draft' ) );
+		wp_update_post(
+			array(
+				'ID'          => $vision->ID,
+				'post_status' => 'draft',
+			)
+		);
 		self::assertSame( '', labm_theme_render_about_purpose() );
-		wp_update_post( array( 'ID' => $mission->ID, 'post_status' => 'publish' ) );
-		wp_update_post( array( 'ID' => $vision->ID, 'post_status' => 'publish' ) );
+		wp_update_post(
+			array(
+				'ID'          => $mission->ID,
+				'post_status' => 'publish',
+			)
+		);
+		wp_update_post(
+			array(
+				'ID'          => $vision->ID,
+				'post_status' => 'publish',
+			)
+		);
 	}
 
 	/** Nosotros obtiene un banner estático semántico de una entrada publicada. */
@@ -135,10 +155,20 @@ final class PublicExperienceTest extends TestCase {
 		$original_status    = $post->post_status;
 		$original_thumbnail = get_post_thumbnail_id( $post->ID );
 
-		wp_update_post( array( 'ID' => $post->ID, 'post_status' => 'draft' ) );
+		wp_update_post(
+			array(
+				'ID'          => $post->ID,
+				'post_status' => 'draft',
+			)
+		);
 		self::assertSame( '', labm_theme_render_about_banner() );
 
-		wp_update_post( array( 'ID' => $post->ID, 'post_status' => $original_status ) );
+		wp_update_post(
+			array(
+				'ID'          => $post->ID,
+				'post_status' => $original_status,
+			)
+		);
 		delete_post_thumbnail( $post->ID );
 		$without_image = labm_theme_render_about_banner();
 		self::assertStringContainsString( 'Somos la Liga', $without_image );
@@ -185,12 +215,17 @@ final class PublicExperienceTest extends TestCase {
 		);
 
 		try {
-			wp_update_post( array( 'ID' => $post->ID, 'post_status' => 'draft' ) );
-			self::assertSame( '', labm_theme_render_documents_banner() );
 			wp_update_post(
 				array(
 					'ID'          => $post->ID,
-					'post_status' => 'publish',
+					'post_status' => 'draft',
+				)
+			);
+			self::assertSame( '', labm_theme_render_documents_banner() );
+			wp_update_post(
+				array(
+					'ID'           => $post->ID,
+					'post_status'  => 'publish',
 					'post_title'   => '<script>Documentos privados</script>',
 					'post_excerpt' => '',
 					'post_content' => '<strong>Resumen público</strong>',
@@ -201,7 +236,12 @@ final class PublicExperienceTest extends TestCase {
 			self::assertStringContainsString( 'Resumen público', $html );
 			self::assertStringNotContainsString( '<script>', $html );
 			self::assertStringNotContainsString( '<strong>', $html );
-			wp_update_post( array( 'ID' => $post->ID, 'post_title' => '' ) );
+			wp_update_post(
+				array(
+					'ID'         => $post->ID,
+					'post_title' => '',
+				)
+			);
 			self::assertSame( '', labm_theme_render_documents_banner() );
 		} finally {
 			wp_update_post( array_merge( array( 'ID' => $post->ID ), $original ) );
@@ -234,8 +274,9 @@ final class PublicExperienceTest extends TestCase {
 		$pattern = (string) file_get_contents( $root . 'patterns/documentos.php' );
 		$css     = (string) file_get_contents( $root . 'style.css' );
 
-		self::assertStringContainsString( 'labm_core_render_document_catalog()', $pattern );
-		self::assertLessThan( strpos( $pattern, 'labm_core_render_document_catalog()' ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
+		$catalog_call = 'labm_core_render_document_catalog( array(), labm_core_document_catalog_current_page() )';
+		self::assertStringContainsString( $catalog_call, $pattern );
+		self::assertLessThan( strpos( $pattern, $catalog_call ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
 		self::assertStringNotContainsString( 'labm-filter', $pattern );
 		self::assertMatchesRegularExpression( '/\.labm-documents-catalog\s*\{[^}]*max-width:/s', $css );
 		self::assertMatchesRegularExpression( '/\.labm-documents-pagination\s*\{[^}]*display:\s*flex;/s', $css );
@@ -268,6 +309,96 @@ final class PublicExperienceTest extends TestCase {
 		self::assertGreaterThanOrEqual( 1, $piso->post_count );
 		self::assertGreaterThanOrEqual( 1, $playa->post_count );
 		self::assertStringNotContainsString( 'privada', strtolower( wp_json_encode( $piso->posts ) ) );
+	}
+
+	/** Actualidad combina texto y categoria, pagina cuatro publicadas y separa una destacada de tres tarjetas. */
+	public function test_actualidad_query_and_listing_preserve_the_public_editorial_contract(): void {
+		$term = get_term_by( 'name', 'Noticias', 'labm_categoria' );
+		self::assertNotFalse( $term );
+		$post_ids = array();
+
+		try {
+			for ( $index = 1; $index <= 5; $index++ ) {
+				$post_ids[] = wp_insert_post(
+					array(
+						'post_type'    => 'labm_actualidad',
+						'post_status'  => 'publish',
+						'post_title'   => sprintf( 'Contrato actualidad %d', $index ),
+						'post_excerpt' => 'Resumen para comprobar la composicion editorial.',
+						'post_date'    => sprintf( '2026-09-%02d 12:00:00', $index ),
+					)
+				);
+				wp_set_object_terms( $post_ids[ $index - 1 ], (int) $term->term_id, 'labm_categoria' );
+			}
+			$draft_id = wp_insert_post(
+				array(
+					'post_type'   => 'labm_actualidad',
+					'post_status' => 'draft',
+					'post_title'  => 'Contrato actualidad privada',
+				)
+			);
+			wp_set_object_terms( $draft_id, (int) $term->term_id, 'labm_categoria' );
+
+			$query = labm_theme_public_query(
+				'labm_actualidad',
+				array(
+					'texto'     => 'Contrato actualidad',
+					'categoria' => 'Noticias',
+				),
+				1,
+				4
+			);
+			self::assertSame( 4, $query->post_count );
+			self::assertSame( 'Contrato actualidad 5', $query->posts[0]->post_title );
+			foreach ( $query->posts as $post ) {
+				self::assertSame( 'publish', $post->post_status );
+				self::assertTrue( has_term( 'Noticias', 'labm_categoria', $post ) );
+				self::assertStringContainsString( 'Contrato actualidad', $post->post_title );
+			}
+
+			$html = labm_theme_render_listing(
+				'labm_actualidad',
+				array(
+					'texto'     => 'Contrato actualidad',
+					'categoria' => 'Noticias',
+				)
+			);
+			self::assertStringContainsString( 'name="texto"', $html );
+			self::assertStringContainsString( 'value="Contrato actualidad"', $html );
+			self::assertSame( 1, substr_count( $html, 'data-labm-actualidad-destacada' ) );
+			self::assertSame( 3, substr_count( $html, 'data-labm-actualidad-tarjeta' ) );
+			self::assertStringContainsString( 'data-labm-actualidad-media-fallback', $html );
+			self::assertStringContainsString( 'texto=Contrato+actualidad', $html );
+			self::assertStringContainsString( 'categoria=Noticias', $html );
+		} finally {
+			foreach ( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			if ( isset( $draft_id ) ) {
+				wp_delete_post( $draft_id, true );
+			}
+		}
+	}
+
+	/** El bloque editorial compartido conserva los campos visibles de cada noticia. */
+	public function test_actualidad_article_content_renders_the_editorial_fields_once(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'labm_actualidad',
+				'post_status'  => 'publish',
+				'post_title'   => 'Contrato editorial compartido',
+				'post_excerpt' => 'Resumen compartido de la noticia.',
+			)
+		);
+
+		try {
+			$content = labm_theme_actualidad_article_content( get_post( $post_id ) );
+			self::assertStringContainsString( 'labm-actualidad-meta', $content );
+			self::assertStringContainsString( 'Contrato editorial compartido', $content );
+			self::assertStringContainsString( 'Resumen compartido de la noticia.', $content );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
 	}
 
 	public function test_theme_has_safe_fallback_when_domain_is_unavailable(): void {

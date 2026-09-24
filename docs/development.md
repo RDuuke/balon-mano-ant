@@ -44,3 +44,21 @@ En Hostinger se configura el mismo valor `LABM_SMTP_PASSWORD` directamente en el
 ## Rollback seguro
 
 Antes de promover cambios de esquema, medios o configuración, genere y verifique respaldos de base de datos y uploads. Si la validación falla, detenga la promoción, restaure ambos respaldos y repita los gates. La eliminación de volúmenes requiere confirmación humana explícita.
+
+## Administración de documentos PDF
+
+En `wp-admin`, cree o edite un Documento y abra el panel documental del editor de bloques; el editor clásico ofrece un metabox equivalente. Seleccione o suba un PDF mediante la biblioteca de medios. Los controles permiten reemplazarlo o quitar su asociación sin borrar el adjunto de la biblioteca, y muestran nombre, tamaño, estado y límite efectivo. Use el teclado para recorrer los controles; los errores se anuncian y permiten llevar el foco al campo que requiere corrección.
+
+Para publicar o actualizar se exige título no vacío y un PDF válido. El límite es `min(30 MB, wp_max_upload_size())`; PHP verifica acceso al adjunto, tipo MIME, extensión, legibilidad, firma PDF y tamaño. La validación del servidor es autoritativa para REST y el formulario clásico: un rechazo conserva los valores previamente persistidos sin aplicar cambios parciales. Reparar un PDF inexistente o inválido es obligatorio antes de guardar el documento.
+
+La «Fecha del documento» es opcional: puede quedar vacía o contener una fecha calendario real guardada como `Y-m-d`, sin sustituirse por la fecha de publicación o carga. Seleccione un solo tipo existente entre Documento general, Acta, Certificado, Circular, Resolución, Reglamento, Informe, Convocatoria y Otro. Si falta la selección, el guardado válido utiliza Documento general.
+
+Administradores y editores con permisos del Documento pueden editarlo y asignar tipos existentes mediante `assign_labm_documento_types`. Solo los administradores con `manage_labm_documento_types` pueden crear, renombrar o retirar tipos. La selección requiere acceso de edición al adjunto; el formulario clásico comprueba nonce y los canales administrativos requieren autenticación y capacidades válidas.
+
+Los IDs numéricos históricos almacenados como texto siguen siendo compatibles. La siembra de los nueve tipos está versionada y es idempotente; no migra masivamente publicaciones, no elimina asociaciones y no despublica documentos. Un histórico sin tipo muestra Documento general como fallback administrativo sin persistirlo hasta un guardado válido. El alcance de esta mejora es exclusivamente administrativo; catálogo, plantillas y estilos públicos conservan su comportamiento.
+
+Para revertir, respalde base de datos y uploads, restaure la versión anterior del plugin `labm-core` con su registro de metadatos, taxonomía y capacidades, y retire la carga del módulo `class-labm-document-admin.php` y del asset `admin-documento.js` con esa versión. Conserve metadatos, asociaciones, adjuntos y términos; no use una limpieza de datos ni un reset como reversión. Valide la edición con la versión restaurada antes de promoverla.
+
+La evidencia del cambio combina integración 134/134, cobertura 82.53 %, PHPStan y Compose/unit correctos, y `document-admin.spec.ts` con desktop 9/9 y móvil/tablet 18/18. Permanecen diez warnings PHPCS de archivos ajenos al cambio, documentados como deuda externa. `artifacts/gate/summary.json` corresponde al gate completo histórico fallido y no representa una ejecución completa posterior en verde.
+
+Al verificar, reutilice evidencia válida cuando no haya cambios de código que la invaliden. Defina límites de tiempo para ejecuciones nuevas; si una prueba entra en un ciclo prolongado o deja de progresar, deténgala y use una alternativa focal acotada, registrando el bloqueo. Evite repetir suites ya verdes sin una causa nueva.

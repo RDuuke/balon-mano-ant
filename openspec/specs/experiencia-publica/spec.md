@@ -350,3 +350,68 @@ La vista “Nosotros” MUST mostrar inmediatamente después de la sección de i
 - DADO el CTA en viewports de 320, 768, 1024 y 1440 px
 - CUANDO se presenta o se recorre con tecnología asistiva
 - ENTONCES no presenta recorte, solapamiento ni desborde y mantiene título y enlace accesibles
+### Requirement: Encabezado editorial editable de Documentos
+
+El sistema MUST mostrar el encabezado de la pÃ¡gina Documentos a partir de un artÃ­culo editorial publicado y editable, usando su tÃ­tulo y resumen pÃºblico.
+
+#### Scenario: ArtÃ­culo publicado completo
+
+- GIVEN un artÃ­culo editorial publicado con tÃ­tulo y resumen.
+- WHEN una persona visita la pÃ¡gina Documentos.
+- THEN el encabezado muestra el tÃ­tulo y el resumen del artÃ­culo.
+
+#### Scenario: Contenido alternativo editable
+
+- GIVEN un artÃ­culo publicado sin extracto y con contenido.
+- WHEN se muestra el encabezado.
+- THEN el contenido pÃºblico del artÃ­culo se usa como resumen.
+
+#### Scenario: ArtÃ­culo incompleto o no pÃºblico
+
+- GIVEN que el artÃ­culo no estÃ¡ publicado, no existe o carece de tÃ­tulo o resumen.
+- WHEN se solicita el encabezado.
+- THEN el sistema SHALL omitirlo sin revelar datos no pÃºblicos.
+
+### Requirement: PresentaciÃ³n semÃ¡ntica del encabezado
+
+El sistema MUST presentar el encabezado como un artÃ­culo accesible, con ceja editorial, tÃ­tulo principal Ãºnico y resumen legible.
+
+#### Scenario: DiseÃ±o aprobado
+
+- GIVEN el artÃ­culo editorial publicado con el contenido inicial.
+- WHEN se muestra la pÃ¡gina Documentos.
+- THEN se visualizan Â«TRANSPARENCIA Y CONSULTAÂ», Â«DOCUMENTOSÂ» y el resumen aprobado.
+
+#### Scenario: Pantalla reducida
+
+- GIVEN una pantalla de ancho reducido.
+- WHEN se visualiza el encabezado.
+- THEN el texto conserva contraste, orden de lectura y no produce desbordamiento horizontal.
+
+#### Scenario: Contenido con marcado o texto hostil
+
+- GIVEN tÃ­tulo o resumen con marcado, enlaces o texto no seguro.
+- WHEN se renderiza el encabezado.
+- THEN el sistema SHALL exponer solo texto saneado y escapado.
+
+### Requirement: AsociaciÃ³n de la pÃ¡gina Documentos
+
+El sistema MUST asociar la pÃ¡gina Documentos con el encabezado editorial y SHOULD conservar las partes globales de navegaciÃ³n y pie.
+
+#### Scenario: Ruta Documentos
+
+- GIVEN la pÃ¡gina Documentos usa su plantilla pÃºblica.
+- WHEN WordPress resuelve la ruta.
+- THEN el patrÃ³n de Documentos compone el encabezado editorial.
+
+#### Scenario: Tema sin artÃ­culo editorial
+
+- GIVEN la plantilla pÃºblica estÃ¡ activa pero falta el artÃ­culo editorial.
+- WHEN WordPress compone la pÃ¡gina.
+- THEN la navegaciÃ³n y el pie se mantienen disponibles.
+
+#### Scenario: PatrÃ³n no disponible
+
+- GIVEN una instalaciÃ³n donde no se carga el patrÃ³n Documentos.
+- WHEN se procesa otra pÃ¡gina pÃºblica.
+- THEN el sistema SHALL no alterar la composiciÃ³n de esa pÃ¡gina.
