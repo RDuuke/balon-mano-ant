@@ -162,6 +162,20 @@ final class FixturesDomainTest extends TestCase {
 		self::assertSame( $first->ID, get_page_by_path( 'banner-documentos', OBJECT, 'post' )->ID );
 	}
 
+	/** La ruta publica de Contacto dispone de una pagina publicada y estable. */
+	public function test_contact_page_fixture_is_published_and_idempotent(): void {
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+		$first = get_page_by_path( 'contacto', OBJECT, 'page' );
+
+		self::assertInstanceOf( WP_Post::class, $first );
+		self::assertSame( 'publish', $first->post_status );
+		self::assertStringContainsString( 'FICTICIO', $first->post_title );
+
+		$command->load( array(), array() );
+		self::assertSame( $first->ID, get_page_by_path( 'contacto', OBJECT, 'page' )->ID );
+	}
+
 	/** El slug reservado nunca permite sobrescribir una entrada editorial ajena. */
 	public function test_about_banner_fixture_preserves_foreign_content_conflict(): void {
 		$existing = get_page_by_path( 'banner-nosotros', OBJECT, 'post' );

@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: ARCHIVE
-change: "seccion-actualidad"
+phase: APPLY
+change: "envio-correos-contacto"
 awaiting_approval: false
-completed: true
-pending_tasks: []
-modified_artifacts: []
-notes: ""
+completed: false
+pending_tasks: ["1.1", "2.1", "2.3", "3.1", "4.2", "4.4", "5.1", "5.2"]
+modified_artifacts: ["wp-content/plugins/labm-core/includes/class-labm-smtp-settings.php", "wp-content/plugins/labm-core/labm-core.php", "wp-content/plugins/labm-core/includes/class-labm-documents-contact.php", "wp-content/plugins/labm-core/includes/class-labm-footer-settings.php", "tests/php/SmtpSettingsTest.php", "tests/php/FooterSettingsTest.php", "tests/php/DocumentContactTest.php", "phpunit.integration.xml.dist", "docs/development.md", "wp-content/themes/labm/functions.php", "wp-content/themes/labm/assets/contact.js", "wp-content/themes/labm/style.css", "tests/e2e/contact.spec.ts", "openspec/changes/envio-correos-contacto/specs/contacto/spec.md", "openspec/changes/envio-correos-contacto/design.md", "openspec/changes/envio-correos-contacto/tasks.md", "openspec/changes/envio-correos-contacto/apply-progress.md"]
+notes: "tdd_strict: se distingue el fallo de entrega del aviso de validación sin revelar SMTP; PHPCS focal conserva errores históricos fuera del alcance y PHPStan focal está bloqueado por memoria del contenedor"

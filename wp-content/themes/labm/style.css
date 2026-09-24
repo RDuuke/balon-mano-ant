@@ -544,3 +544,51 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 	.labm-allies__list { flex-wrap: wrap; width: 100%; justify-content: center; padding-right: 0; }
 	.labm-allies__replica { display: none; }
 }
+
+/* Contacto: contenido propio; los template parts globales se reutilizan sin cambios. */
+.labm-contact[data-labm-section="contacto"] { width: 100%; max-width: none; margin-inline: auto; padding: 0; background: #fff; color: var(--labm-black); }
+.labm-contact__hero { padding: clamp(3rem, 5vw, 4.375rem) max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); background: var(--labm-black); color: #fff; }
+.labm-contact__hero :where(h1, p) { max-width: 42rem; }
+.labm-contact__hero h1, .labm-contact :where(h2, h3) { font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-weight: 700; text-transform: uppercase; }
+.labm-contact__hero h1 { margin: 0; font-size: clamp(3rem, 5.3vw, 4.75rem); line-height: .9; }
+.labm-contact__hero > p:last-child { margin-bottom: 0; color: rgb(255 255 255 / 82%); }
+.labm-contact__eyebrow { margin-top: 0; color: var(--labm-green); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.labm-contact__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vw, 3.75rem); padding: clamp(2.5rem, 5vw, 4.375rem) max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); }
+.labm-contact :where(h2, h3) { margin-top: 0; line-height: 1; }
+.labm-contact__details { min-width: 0; }
+.labm-contact__details h2, .labm-contact__form-wrap h2 { margin-bottom: 1.625rem; font-size: clamp(2rem, 3vw, 2.5rem); }
+.labm-contact__details dl { display: grid; gap: 1.625rem; }
+.labm-contact__details dl > div { padding-bottom: 1.25rem; border-bottom: 1px solid #d6d6d6; }
+.labm-contact__details dt { margin-bottom: .25rem; color: #53680d; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.labm-contact__details dd { margin: 0; overflow-wrap: anywhere; }
+.labm-contact__details a { color: inherit; text-underline-offset: .2rem; }
+.labm-contact__map, .labm-contact__form button { display: inline-flex; align-items: center; justify-content: center; min-height: 3.625rem; padding: .8rem 1.125rem; border: 1px solid var(--labm-black); background: var(--labm-green); color: var(--labm-black) !important; font-weight: 800; text-decoration: none; }
+.labm-contact__socials { display: flex; flex-wrap: wrap; gap: .75rem 1rem; padding: 0; list-style: none; }
+.labm-contact__form-wrap { min-width: 0; padding: clamp(1.25rem, 3.5vw, 2.625rem); background: var(--labm-neutral); }
+.labm-contact__form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+.labm-contact__field { display: grid; gap: .35rem; min-width: 0; }
+.labm-contact__field label, .labm-contact__consent label { font-weight: 700; }
+.labm-contact__field :where(input, textarea) { width: 100%; min-width: 0; min-height: 2.75rem; padding: .65rem; border: 1px solid #5c6670; border-radius: 0; background: #fff; color: var(--labm-black); font: inherit; }
+.labm-contact__field textarea { min-height: 9rem; resize: vertical; }
+.labm-contact__consent { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .5rem; align-items: start; }
+.labm-contact__consent input { width: 1.2rem; height: 1.2rem; margin-top: .15rem; }
+.labm-contact__consent .labm-contact__field-error { grid-column: 2; }
+.labm-contact__field-error { margin: 0; color: #9d1c1c; font-weight: 700; }
+.labm-contact__status { margin: 0 0 1.25rem; padding: 1rem; border-left: .35rem solid var(--labm-black); background: #f2f4f5; }
+.labm-contact__status--success { border-color: #526d00; background: #f2f7df; }
+.labm-contact__status--error { border-color: #9d1c1c; background: #fff1f0; }
+.labm-contact__status :where(p, ul) { margin-block: 0; }
+.labm-contact__status ul { margin-top: .5rem; padding-left: 1.25rem; }
+.labm-contact__form button > span { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
+.labm-contact__form button > span[hidden] { display: none; }
+.labm-contact__spinner { width: 1rem; height: 1rem; border: 2px solid currentcolor; border-right-color: transparent; border-radius: 50%; animation: labm-contact-spin .75s linear infinite; }
+.labm-contact__form button:disabled { cursor: wait; opacity: .72; }
+@keyframes labm-contact-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .labm-contact__spinner { animation-duration: 1.5s; } }
+.labm-contact__honeypot { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.labm-contact :where(a, button, input, textarea):focus-visible { outline: 3px solid #d4ef00; outline-offset: 3px; }
+.labm-contact [aria-invalid="true"] { border-width: 2px; border-color: #9d1c1c; }
+
+@media (min-width: 1100px) {
+	.labm-contact__grid { grid-template-columns: 380px minmax(525px, 760px); justify-content: space-between; gap: 3.75rem; }
+}

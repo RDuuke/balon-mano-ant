@@ -24,8 +24,14 @@ final class FooterSettingsTest extends TestCase {
 		self::assertSame( '© 2026 Liga Antioqueña de Balonmano · Año dinámico', $defaults['copyright'] );
 		foreach ( labm_core_footer_field_schema() as $key => $field ) {
 			self::assertArrayHasKey( $key, $defaults );
-			self::assertContains( $field['type'], array( 'text', 'textarea', 'email', 'url' ) );
+			self::assertContains( $field['type'], array( 'text', 'textarea', 'email', 'url', 'internal_url' ) );
 		}
+	}
+
+	/** Los destinatarios son privados de SMTP y no se editan desde el footer. */
+	public function test_footer_schema_does_not_expose_contact_recipients(): void {
+		self::assertArrayNotHasKey( 'contact_recipients', labm_core_footer_field_schema() );
+		self::assertArrayNotHasKey( 'contact_recipients', labm_core_footer_defaults() );
 	}
 
 	/** El saneado elimina marcado, correos inválidos y esquemas inseguros. */
@@ -44,6 +50,14 @@ final class FooterSettingsTest extends TestCase {
 		self::assertSame( '', $clean['contact_email'] );
 		self::assertSame( '', $clean['facebook_url'] );
 		self::assertSame( '/nosotros/', $clean['navigation_1_url'] );
+	}
+
+	/** Los enlaces internos se editan como texto para aceptar rutas relativas. */
+	public function test_footer_internal_urls_accept_root_relative_paths(): void {
+		$schema = labm_core_footer_field_schema();
+		$clean  = labm_core_sanitize_footer_settings( array( 'navigation_1_url' => '/' ) );
+		self::assertSame( 'internal_url', $schema['navigation_1_url']['type'] );
+		self::assertSame( '/', $clean['navigation_1_url'] );
 	}
 
 	/** El render escapa valores, conserva la composición y omite vacíos. */

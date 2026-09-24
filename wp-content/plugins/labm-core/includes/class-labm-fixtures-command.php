@@ -443,6 +443,13 @@ class LABM_Fixtures_Command {
 					'post_status'  => 'publish',
 				),
 				array(
+					'post_name'    => 'contacto',
+					'post_title'   => self::MARKER . ' Contacto',
+					'post_content' => '<p>' . self::MARKER . ' Página pública de contacto.</p>',
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+				),
+				array(
 					'post_name'    => 'demo-labm-actualidad-limite',
 					'post_title'   => self::MARKER . ' Evento en fecha limite',
 					'post_content' => '<p>' . self::MARKER . ' Noticia de borde sin datos oficiales.</p>',

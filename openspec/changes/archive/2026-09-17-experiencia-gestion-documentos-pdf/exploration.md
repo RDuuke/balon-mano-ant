@@ -113,4 +113,3 @@ No se prevén cambios de tema ni del render público para este alcance.
 - Bloquear la actualización de un documento ya publicado e inválido puede sorprender al editor, por lo que el mensaje debe explicar cómo repararlo sin perder cambios.
 - Debe confirmarse si 30 MB es el límite editorial definitivo o si se adopta otro valor menor que el límite del servidor.
 - Debe acordarse quién puede administrar el vocabulario y si «Documento general» debe asignarse automáticamente a todos los registros históricos o solo al guardarlos.
-
