@@ -1,7 +1,7 @@
 schema: flow-nea
 
 context: |
-  Stack actual: WordPress 6.8+, PHP 8.3+, tema de bloques LABM y plugin labm-core.
+  Stack actual: WordPress 7.1 con PHP 8.3, tema de bloques LABM y plugin labm-core.
   Frontend: patrones Gutenberg y CSS del tema en wp-content/themes/labm.
   Funcionalidad persistente: plugin wp-content/plugins/labm-core.
   Pruebas: PHPUnit, PHPStan/WPCS y Playwright con pruebas de accesibilidad.
