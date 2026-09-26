@@ -3,6 +3,15 @@ import AxeBuilder from '@axe-core/playwright';
 
 const widths = [320, 768, 1024, 1200, 1440];
 
+async function completeContactForm(form) {
+  await form.locator('[name="nombre"]').fill('Ada');
+  await form.locator('[name="apellidos"]').fill('Lovelace');
+  await form.locator('[name="correo"]').fill('ada@example.com');
+  await form.locator('[name="asunto"]').fill('Consulta');
+  await form.locator('[name="mensaje"]').fill('Mensaje de prueba.');
+  await form.locator('[name="consentimiento"]').check();
+}
+
 test('Contacto conserva columnas legibles en tablet y desktop', async ({ page }) => {
   await page.goto('/contacto/');
   const section = page.locator('[data-labm-section="contacto"]');
@@ -24,12 +33,7 @@ test('Contacto anuncia el envío dentro del botón y evita solicitudes repetidas
   const form = page.locator('.labm-contact__form');
   const button = form.locator('[data-labm-contact-submit]');
 
-  await form.locator('[name="nombre"]').fill('Ada');
-  await form.locator('[name="apellidos"]').fill('Lovelace');
-  await form.locator('[name="correo"]').fill('ada@example.com');
-  await form.locator('[name="asunto"]').fill('Consulta');
-  await form.locator('[name="mensaje"]').fill('Mensaje de prueba.');
-  await form.locator('[name="consentimiento"]').check();
+  await completeContactForm(form);
 
   await form.evaluate((element) => element.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
 
@@ -80,10 +84,11 @@ test('Contacto publica los datos institucionales y un formulario accesible', asy
 test('Contacto asocia errores, conserva teclado y no revela la configuración interna', async ({ page }) => {
   await page.goto('/contacto/');
   const form = page.locator('.labm-contact__form');
+  await completeContactForm(form);
   await form.getByRole('button', { name: 'Enviar mensaje' }).click();
   await expect(page).toHaveURL(/\/contacto\/\?contacto_estado=.*#formulario/);
-  await expect(page.getByRole('alert')).toBeVisible();
-  await expect(form.locator('[aria-invalid="true"]')).not.toHaveCount(0);
+  await expect(page.getByRole('alert')).toHaveText(/No pudimos enviar el mensaje/);
+  await expect(form.locator('[aria-invalid="true"]')).toHaveCount(0);
   await expect(form).toHaveAttribute('aria-busy', 'false');
   await expect(form.getByRole('button', { name: 'Enviar mensaje' })).toBeEnabled();
   await page.keyboard.press('Tab');

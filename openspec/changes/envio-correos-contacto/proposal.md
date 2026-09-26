@@ -1,56 +1,51 @@
-# Propuesta: Envío de correos del formulario de Contacto
+# Propuesta: Envío de correos de Contacto y corrección del catálogo
 
 ## Intención
 
-Asegurar y comprobar la entrega SMTP de los mensajes de `/contacto/`, que ya dispone de validación y controlador, sin versionar credenciales.
+Cerrar la verificación de Contacto y corregir cuatro pruebas bloqueantes del catálogo de Documentos, alineándolas con el contrato filtrable ya publicado.
 
 ## Alcance
 
 ### Incluye
 
-- Configuración SMTP mediante secretos para cada entorno.
-- Conservar `wp_mail()`, destinatario institucional, `Reply-To`, errores seguros e idempotencia.
-- Prueba de entrega controlada y guía operativa sin datos personales.
+- SMTP seguro, entrega, `Reply-To` y reintento de Contacto ya implementados.
+- Actualizar las expectativas del patrón y las pruebas PHP de Documentos al catálogo filtrable actual.
+- Verificar consulta vacía, filtros, paginación y exclusión de adjuntos inválidos.
 
 ### Excluye
 
-- Cambios de campos, diseño o ruta del formulario.
-- CRM, persistencia, adjuntos, autorespuesta y marketing.
+- Cambios al diseño, campos o ruta de Contacto.
+- Cambiar el comportamiento público del catálogo, migraciones o adjuntos.
 
 ## Enfoque
 
-Configurar un transporte SMTP mantenido o de infraestructura con host, puerto, cifrado y credenciales en secretos. LABM Core seguirá enviando mediante `wp_mail()`. Desarrollo comprobará un buzón de pruebas; staging y producción, el buzón institucional autorizado. Los registros omitirán cuerpo, correos y secretos.
+Mantener el catálogo actual, que toma filtros de la solicitud y usa «No encontramos documentos». Las pruebas heredadas se ajustarán para comprobar ese contrato en vez del catálogo simple sin filtros.
 
 ## Áreas afectadas
 
 | Área | Impacto | Descripción |
 |---|---|---|
-| `.env.example` | Modificado | Documentar límites de pruebas. |
-| `compose.yaml` | Modificado | Configuración SMTP de desarrollo, si se aprueba. |
-| `wp-content/plugins/labm-core/includes/class-labm-documents-contact.php` | Modificado | Contrato de entrega y errores seguros. |
-| `tests/php/DocumentContactTest.php` | Modificado | Éxito, fallo y reintento sin secretos. |
-| `docs/development.md` | Modificado | Prueba y diagnóstico seguros. |
+| `tests/php/PublicExperienceTest.php` | Modificado | Patrón con filtros actuales. |
+| `tests/php/DocumentContactTest.php` | Modificado | Catálogo filtrable y mensaje vacío. |
+| `tests/php/VerifyCorrectivesTest.php` | Modificado | Consulta vacía vigente. |
+| `docs/development.md` | Modificado | Contrato de pruebas del catálogo, si procede. |
 
 ## Riesgos
 
 | Riesgo | Probabilidad | Mitigación |
 |---|---|---|
-| Secretos SMTP expuestos | Media | Secret manager, `.env` ignorado y revisión. |
-| Baja entregabilidad | Media | SPF/DKIM/DMARC, remitente autorizado y prueba previa. |
-| Duplicados tras fallo | Baja | Conservar idempotencia y probar reintento. |
+| Corregir una expectativa y ocultar regresión | Baja | Pruebas focales con resultados filtrados y vacíos. |
 
 ## Plan de reversión
 
-Restaurar `.env.example`, `compose.yaml`, módulo, pruebas y documentación; retirar secretos y desactivar SMTP. No hay migraciones ni banderas. El formulario conservará su error seguro mientras se restablece la configuración previa.
+Restaurar los archivos de prueba y documentación modificados. No hay cambios de datos, configuración ni comportamiento público.
 
 ## Dependencias
 
-- Credenciales SMTP y remitente autorizados.
-- DNS SPF, DKIM y DMARC del dominio institucional.
+- Suite PHPUnit y fixtures de Documentos disponibles localmente.
 
 ## Criterios de éxito
 
-- [ ] Una prueba autorizada llega al buzón previsto y conserva `Reply-To`.
-- [ ] Un fallo SMTP muestra un error seguro y permite reintento sin duplicar correos.
-- [ ] No hay credenciales, destinatarios de prueba ni datos personales en Git, HTML o logs.
-- [ ] Pasan las pruebas PHP focales y la verificación LF.
+- [ ] Las cuatro pruebas bloqueantes verifican el contrato actual y pasan.
+- [ ] La suite PHPUnit completa pasa sin alterar el catálogo público.
+- [ ] Se mantienen LF y `git diff --check` correcto.

@@ -1,5 +1,21 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-<!-- wp:group {"tagName":"main","className":"labm-main","layout":{"type":"constrained"}} -->
-<main id="contenido-principal" class="wp-block-group labm-main"><!-- wp:post-terms {"term":"labm_categoria"} /--><!-- wp:post-title {"level":1} /--><!-- wp:post-date /--><!-- wp:post-content /--><!-- wp:paragraph --><p><a href="/actualidad/">Volver a Actualidad</a></p><!-- /wp:paragraph --></main>
+<!-- wp:group {"tagName":"main","className":"labm-main labm-actualidad-detail-page","layout":{"type":"constrained"}} -->
+<main id="contenido-principal" class="wp-block-group labm-main labm-actualidad-detail-page">
+	<!-- wp:group {"tagName":"article","align":"full","className":"labm-actualidad-detail-page__article","layout":{"type":"default"}} -->
+	<article class="wp-block-group alignfull labm-actualidad-detail-page__article">
+		<!-- wp:shortcode -->[labm_actualidad_hero]<!-- /wp:shortcode -->
+		<!-- wp:shortcode -->[labm_actualidad_media]<!-- /wp:shortcode -->
+		<!-- wp:group {"className":"labm-actualidad-detail-page__reading","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group labm-actualidad-detail-page__reading">
+			<!-- wp:post-content {"className":"labm-actualidad-detail-page__content"} /-->
+			<!-- wp:shortcode -->[labm_actualidad_detalle]<!-- /wp:shortcode -->
+			<!-- wp:paragraph {"className":"labm-actualidad-detail-page__return"} -->
+			<p class="labm-actualidad-detail-page__return"><a href="/actualidad/">Volver a Actualidad</a></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+	</article>
+	<!-- /wp:group -->
+</main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

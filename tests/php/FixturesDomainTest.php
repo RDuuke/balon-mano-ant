@@ -305,6 +305,35 @@ final class FixturesDomainTest extends TestCase {
 		self::assertSame( 6, (int) $term->count );
 	}
 
+	/** Las noticias demo permiten recorrer el detalle editorial con contenido Gutenberg completo. */
+	public function test_home_news_fixtures_include_rich_detail_content_and_gallery(): void {
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+
+		$news = get_page_by_path( 'demo-labm-noticia-resultado', OBJECT, 'labm_actualidad' );
+		self::assertInstanceOf( WP_Post::class, $news );
+		self::assertNotSame( '', trim( $news->post_excerpt ) );
+		self::assertStringContainsString( '<!-- wp:heading', $news->post_content );
+		self::assertStringContainsString( '<!-- wp:gallery', $news->post_content );
+		$blocks = parse_blocks( $news->post_content );
+		self::assertContains( 'core/gallery', array_column( $blocks, 'blockName' ) );
+		$gallery = end( $blocks );
+		self::assertSame( 'core/gallery', $gallery['blockName'] ?? '' );
+		self::assertCount( 2, $gallery['innerBlocks'] ?? array() );
+		self::assertGreaterThan( 0, get_post_thumbnail_id( $news->ID ) );
+
+		$event = get_page_by_path( 'demo-labm-actualidad-limite', OBJECT, 'labm_actualidad' );
+		self::assertInstanceOf( WP_Post::class, $event );
+		self::assertSame( '2026-01-01', get_post_meta( $event->ID, 'labm_fecha_evento', true ) );
+		self::assertNotSame( '', trim( $event->post_excerpt ) );
+		self::assertGreaterThan( 0, get_post_thumbnail_id( $event->ID ) );
+
+		$first = array( $news->ID, get_post_thumbnail_id( $news->ID ), $news->post_content );
+		$command->load( array(), array() );
+		$second = get_page_by_path( 'demo-labm-noticia-resultado', OBJECT, 'labm_actualidad' );
+		self::assertSame( $first, array( $second->ID, get_post_thumbnail_id( $second->ID ), $second->post_content ) );
+	}
+
 	public function test_domain_fixtures_cover_public_draft_private_and_edge_states(): void {
 		$expected = array(
 			'demo-labm-actualidad-limite'   => array( 'labm_actualidad', 'publish' ),

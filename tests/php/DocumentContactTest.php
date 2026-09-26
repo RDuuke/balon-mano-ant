@@ -25,7 +25,9 @@ final class DocumentContactTest extends TestCase {
 		update_option( 'labm_smtp_settings', labm_core_smtp_defaults(), false );
 		update_option( 'labm_smtp_recipients_migrated', 1, false );
 		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
-			delete_transient( 'labm_contact_' . hash( 'sha256', $token ) );
+			$key = 'labm_contact_' . hash( 'sha256', $token );
+			delete_transient( $key );
+			delete_option( $key . '_lock' );
 		}
 		$test_documents = get_posts(
 			array(
@@ -52,6 +54,11 @@ final class DocumentContactTest extends TestCase {
 			delete_option( 'labm_smtp_recipients_migrated' );
 		} else {
 			update_option( 'labm_smtp_recipients_migrated', $this->smtp_migration_option, false );
+		}
+		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
+			$key = 'labm_contact_' . hash( 'sha256', $token );
+			delete_transient( $key );
+			delete_option( $key . '_lock' );
 		}
 		foreach ( $this->document_admin_attachments as $attachment_id ) {
 			wp_delete_attachment( $attachment_id, true );
@@ -675,7 +682,7 @@ final class DocumentContactTest extends TestCase {
 
 	public function test_document_catalog_empty_filter_offers_clear_action(): void {
 		$html = labm_core_render_document_catalog( array( 'texto' => 'sin-resultados-ficticios' ), 1, 10 );
-		self::assertStringContainsString( 'No encontramos documentos disponibles', $html );
+		self::assertStringContainsString( 'No encontramos documentos', $html );
 		self::assertStringContainsString( 'Limpiar filtros', $html );
 		self::assertStringContainsString( 'name="texto"', $html );
 	}
@@ -721,8 +728,8 @@ final class DocumentContactTest extends TestCase {
 		self::assertNotContains( $document, wp_list_pluck( $with_year->posts, 'ID' ) );
 	}
 
-	/** El catálogo público solo expone documentos completos, en páginas de diez. */
-	public function test_document_catalog_is_simple_paginated_and_omits_invalid_attachments(): void {
+	/** El catálogo público filtra cuando se solicita y pagina documentos completos en grupos de diez. */
+	public function test_document_catalog_is_filterable_paginated_and_omits_invalid_attachments(): void {
 		for ( $index = 1; $index <= 11; $index++ ) {
 			$attachment = wp_insert_attachment(
 				array(
@@ -746,7 +753,7 @@ final class DocumentContactTest extends TestCase {
 			self::assertIsInt( $document );
 		}
 
-		$query = labm_core_document_catalog_query( array( 'texto' => 'no debe filtrar' ), 0 );
+		$query = labm_core_document_catalog_query( array(), 0 );
 		self::assertSame( 10, $query->post_count );
 		self::assertGreaterThanOrEqual( 2, (int) $query->max_num_pages );
 		self::assertSame( 1, (int) $query->get( 'paged' ) );

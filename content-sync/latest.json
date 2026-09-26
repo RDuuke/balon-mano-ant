@@ -1,9 +1,9 @@
 {
     "schemaVersion":  1,
-    "version":  "20260915T024403103Z-daesca",
-    "baseVersion":  "20260911T015301262Z-daesca",
+    "version":  "20260926T060142740Z-daesca",
+    "baseVersion":  "20260926T054244664Z-daesca",
     "package":  "canonical.zip",
-    "sha256":  "156b9edaac3a28e558657d52e0408ba096c982047cd3740f1ca36441f5539b6f",
-    "publishedAtUtc":  "2026-09-15T02:44:32.3878918Z",
+    "sha256":  "adf04a508e0f581282e3fe983b96a9f6906b9f4d58c04301d41af47e16bcdfef",
+    "publishedAtUtc":  "2026-09-26T06:02:09.2031098Z",
     "publishedBy":  "daesca"
 }
