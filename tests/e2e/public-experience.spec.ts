@@ -510,3 +510,70 @@ test('1.2 actualidad reproduce las regiones Pencil, filtros y navegación respon
     await expect(page.locator('[data-labm-actualidad-destacada]')).toBeVisible();
   }
 });
+
+test('detalle de actualidad mantiene contenido nativo y compartir accesible', async ({ page, browser }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: async () => undefined },
+    });
+  });
+  await page.goto('/actualidad/');
+  const detailHref = await page.locator('[data-labm-actualidad-destacada] a').first().getAttribute('href');
+  expect(detailHref).not.toBeNull();
+  await page.goto(new URL(detailHref!, 'http://localhost').pathname);
+
+  const detail = page.locator('[data-labm-actualidad-detail]');
+  const hero = page.locator('[data-labm-actualidad-hero]');
+  const media = page.locator('[data-labm-actualidad-media]');
+  await expect(hero).toBeVisible();
+  await expect(hero.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(hero).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  const heroBox = await hero.boundingBox();
+  const titleBox = await hero.getByRole('heading', { level: 1 }).boundingBox();
+  const mediaBox = await media.boundingBox();
+  const mediaImageBox = await media.locator('img').boundingBox();
+  expect(heroBox).not.toBeNull();
+  expect(titleBox).not.toBeNull();
+  expect(mediaBox).not.toBeNull();
+  expect(mediaImageBox).not.toBeNull();
+  expect(heroBox!.y + heroBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
+  expect(Math.abs(heroBox!.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(mediaBox!.x)).toBeLessThanOrEqual(1);
+  expect(heroBox!.width).toBeGreaterThanOrEqual(1023);
+  expect(mediaBox!.width).toBeGreaterThanOrEqual(1023);
+  expect(titleBox!.width).toBeLessThanOrEqual(heroBox!.width - 32);
+  expect(titleBox!.height).toBeLessThan(heroBox!.height);
+  expect(mediaBox!.height).toBeGreaterThan(250);
+  expect(mediaImageBox!.y).toBeGreaterThanOrEqual(mediaBox!.y);
+  expect(mediaBox!.y + mediaBox!.height).toBeLessThan((await detail.boundingBox())!.y);
+  await expect(detail).toBeVisible();
+  await expect(page.locator('main h1')).toBeVisible();
+  await expect(detail.getByRole('link', { name: /compartir en facebook/i })).toHaveAttribute('href', /facebook\.com\/sharer/);
+  await expect(detail.getByRole('link', { name: /compartir por whatsapp/i })).toHaveAttribute('href', /api\.whatsapp\.com/);
+  await expect(detail.getByLabel('Enlace de esta publicación')).toHaveAttribute('readonly', '');
+
+  const copyButton = detail.getByRole('button', { name: /copiar enlace/i });
+  await expect(copyButton).toHaveAttribute('data-labm-actualidad-copy-ready', 'true');
+  await copyButton.click();
+  await expect(detail.locator('[data-labm-actualidad-copy-status]')).toHaveText(/enlace copiado|selecciona el enlace/i);
+  await detail.getByRole('link', { name: /compartir en facebook/i }).focus();
+  await expect(detail.getByRole('link', { name: /compartir en facebook/i })).toBeFocused();
+
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+  expect((await new AxeBuilder({ page }).include('[data-labm-actualidad-detail]').analyze()).violations).toEqual([]);
+
+  const detailPath = new URL(page.url()).pathname;
+  const noJavaScript = await browser.newContext({
+    javaScriptEnabled: false,
+    baseURL: process.env.WP_URL || 'http://localhost:8080',
+  });
+  const noJavaScriptPage = await noJavaScript.newPage();
+  await noJavaScriptPage.goto(detailPath);
+  await expect(noJavaScriptPage.getByLabel('Enlace de esta publicación')).toBeVisible();
+  await noJavaScript.close();
+});

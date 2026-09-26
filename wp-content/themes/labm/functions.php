@@ -35,6 +35,11 @@ function labm_theme_enqueue_public_style() {
 		$contact_script_version = file_exists( $contact_script_path ) ? (string) filemtime( $contact_script_path ) : wp_get_theme()->get( 'Version' );
 		wp_enqueue_script( 'labm-contact', get_theme_file_uri( 'assets/contact.js' ), array(), $contact_script_version, true );
 	}
+	if ( is_singular( 'labm_actualidad' ) ) {
+		$detail_script_path    = get_theme_file_path( 'assets/actualidad-detail.js' );
+		$detail_script_version = file_exists( $detail_script_path ) ? (string) filemtime( $detail_script_path ) : wp_get_theme()->get( 'Version' );
+		wp_enqueue_script( 'labm-actualidad-detail', get_theme_file_uri( 'assets/actualidad-detail.js' ), array(), $detail_script_version, true );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'labm_theme_enqueue_public_style' );
 
@@ -42,6 +47,10 @@ add_action( 'wp_enqueue_scripts', 'labm_theme_enqueue_public_style' );
 function labm_theme_setup_public_experience() {
 	add_shortcode( 'labm_actualidad_listado', 'labm_theme_actualidad_shortcode' );
 	add_shortcode( 'labm_selecciones_listado', 'labm_theme_selecciones_shortcode' );
+	add_shortcode( 'labm_actualidad_hero', 'labm_theme_actualidad_hero_shortcode' );
+	add_shortcode( 'labm_actualidad_media', 'labm_theme_actualidad_media_shortcode' );
+	add_shortcode( 'labm_actualidad_detalle', 'labm_theme_actualidad_detail_shortcode' );
+	add_shortcode( 'labm_actualidad_body', 'labm_theme_actualidad_body_shortcode' );
 }
 add_action( 'init', 'labm_theme_setup_public_experience' );
 
@@ -646,14 +655,7 @@ function labm_theme_home_news_media( $post, $featured = false ) {
 		return $thumbnail;
 	}
 
-	$allowed = array(
-		'assets/images/hero-balonmano-antioquia-v1.png',
-		'assets/images/hero-balonmano-seleccion-v1.png',
-	);
-	$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
-	if ( ! in_array( $path, $allowed, true ) ) {
-		$path = $allowed[ $featured ? 0 : 1 ];
-	}
+	$path = labm_theme_news_fallback_path( $post );
 
 	return sprintf(
 		'<img class="%1$s" src="%2$s" alt="" loading="%3$s" width="%4$d" height="%5$d">',
@@ -663,6 +665,20 @@ function labm_theme_home_news_media( $post, $featured = false ) {
 		$featured ? 1536 : 1366,
 		$featured ? 864 : 768
 	);
+}
+
+/** Mantiene la misma imagen de respaldo en listado, inicio y detalle. */
+function labm_theme_news_fallback_path( $post ) {
+	$allowed = array(
+		'assets/images/hero-balonmano-antioquia-v1.png',
+		'assets/images/hero-balonmano-seleccion-v1.png',
+	);
+	$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
+	if ( ! in_array( $path, $allowed, true ) ) {
+		$path = $allowed[0];
+	}
+
+	return $path;
 }
 
 /**
@@ -684,6 +700,160 @@ function labm_theme_home_news_meta( $post ) {
 		$parts[] = '<time datetime="' . esc_attr( $date->format( DATE_W3C ) ) . '">' . esc_html( wp_date( 'j M Y', $date->getTimestamp() ) ) . '</time>';
 	}
 	return implode( '<span aria-hidden="true"> · </span>', $parts );
+}
+
+/** Obtiene una URL canónica absoluta apta para compartir. */
+function labm_theme_actualidad_canonical_url( $post ) {
+
+	$url    = esc_url_raw( (string) get_permalink( $post ) );
+	$parts  = wp_parse_url( $url );
+	$scheme = is_array( $parts ) && isset( $parts['scheme'] ) ? strtolower( $parts['scheme'] ) : '';
+	$host   = is_array( $parts ) && isset( $parts['host'] ) ? $parts['host'] : '';
+
+	return in_array( $scheme, array( 'http', 'https' ), true ) && '' !== $host ? $url : '';
+}
+
+/** Comprueba que la publicación puede aparecer en su detalle público. */
+function labm_theme_is_public_actualidad( $post ) {
+
+	return $post instanceof WP_Post && 'labm_actualidad' === $post->post_type && 'publish' === $post->post_status;
+}
+
+/** Renderiza el hero editorial del detalle de Actualidad. */
+function labm_theme_render_actualidad_hero( $post ) {
+
+	if ( ! labm_theme_is_public_actualidad( $post ) ) {
+		return '';
+	}
+
+	$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+	$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
+	$title = is_string( $title ) ? $title : '';
+	if ( '' === $title ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<header class="labm-actualidad-detail__hero" data-labm-actualidad-hero>
+		<?php if ( labm_theme_home_news_meta( $post ) ) : ?>
+			<p class="labm-actualidad-detail__meta"><?php echo wp_kses_post( labm_theme_home_news_meta( $post ) ); ?></p>
+		<?php endif; ?>
+		<h1 class="labm-actualidad-detail__title"><?php echo esc_html( $title ); ?></h1>
+	</header>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/** Renderiza el medio destacado o su fallback seguro. */
+function labm_theme_render_actualidad_media( $post ) {
+
+	if ( ! labm_theme_is_public_actualidad( $post ) ) {
+		return '';
+	}
+
+	$thumbnail = get_the_post_thumbnail(
+		$post,
+		'full',
+		array(
+			'class'   => 'labm-actualidad-detail__image',
+			'loading' => 'eager',
+		)
+	);
+	if ( '' === $thumbnail ) {
+		$path = labm_theme_news_fallback_path( $post );
+		$thumbnail = sprintf(
+			'<img class="labm-actualidad-detail__image" src="%1$s" alt="" loading="eager" width="1536" height="864">',
+			esc_url( get_theme_file_uri( $path ) )
+		);
+	}
+
+	return '<div class="labm-actualidad-detail__media" data-labm-actualidad-media>' . wp_kses_post( $thumbnail ) . '</div>';
+}
+
+/** Renderiza los controles de compartir del detalle editorial. */
+function labm_theme_render_actualidad_detail( $post ) {
+
+	if ( ! labm_theme_is_public_actualidad( $post ) ) {
+		return '';
+	}
+
+	$canonical_url = labm_theme_actualidad_canonical_url( $post );
+	$facebook_url  = $canonical_url ? 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $canonical_url ) : '';
+	$whatsapp_url  = $canonical_url ? 'https://api.whatsapp.com/send?text=' . rawurlencode( $canonical_url ) : '';
+
+	ob_start();
+	?>
+	<section class="labm-actualidad-detail" data-labm-actualidad-detail>
+		<?php if ( $canonical_url ) : ?>
+			<section class="labm-actualidad-detail__share" aria-labelledby="labm-actualidad-share-title">
+				<h2 id="labm-actualidad-share-title"><?php esc_html_e( 'Compartir', 'labm' ); ?></h2>
+				<div class="labm-actualidad-detail__share-actions">
+					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir en Facebook', 'labm' ); ?>"><?php esc_html_e( 'Facebook', 'labm' ); ?></a>
+					<a href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir por WhatsApp', 'labm' ); ?>"><?php esc_html_e( 'WhatsApp', 'labm' ); ?></a>
+					<button type="button" data-labm-actualidad-copy aria-describedby="labm-actualidad-copy-status"><?php esc_html_e( 'Copiar enlace', 'labm' ); ?></button>
+				</div>
+				<label for="labm-actualidad-copy-url"><?php esc_html_e( 'Enlace de esta publicación', 'labm' ); ?></label>
+				<input id="labm-actualidad-copy-url" type="text" value="<?php echo esc_attr( $canonical_url ); ?>" readonly>
+				<p id="labm-actualidad-copy-status" class="screen-reader-text" aria-live="polite" data-labm-actualidad-copy-status></p>
+			</section>
+		<?php endif; ?>
+	</section>
+	<?php
+	// Evita que wpautop convierta los saltos del shortcode en filas vacías.
+	return preg_replace( '/>\s+</', '><', trim( (string) ob_get_clean() ) );
+}
+
+/** Resuelve el hero desde la publicación consultada por la plantilla individual. */
+function labm_theme_actualidad_hero_shortcode() {
+
+	$post = get_queried_object();
+	return $post instanceof WP_Post ? labm_theme_render_actualidad_hero( $post ) : '';
+}
+
+/** Resuelve el medio desde la publicación consultada por la plantilla individual. */
+function labm_theme_actualidad_media_shortcode() {
+
+	$post = get_queried_object();
+	return $post instanceof WP_Post ? labm_theme_render_actualidad_media( $post ) : '';
+}
+
+/** Resuelve el detalle desde la publicación consultada por la plantilla individual. */
+function labm_theme_actualidad_detail_shortcode() {
+
+	$post = get_queried_object();
+	return $post instanceof WP_Post ? labm_theme_render_actualidad_detail( $post ) : '';
+}
+
+/** Presenta el contenido editorial y sus galerías en regiones separadas. */
+function labm_theme_actualidad_body_shortcode() {
+	$post = get_queried_object();
+	if ( ! labm_theme_is_public_actualidad( $post ) ) {
+		return '';
+	}
+	if ( post_password_required( $post ) ) {
+		return get_the_password_form( $post );
+	}
+
+	$galleries = array();
+	$collect_gallery = static function ( $html ) use ( &$galleries ) {
+		$galleries[] = $html;
+		return '';
+	};
+	add_filter( 'render_block_core/gallery', $collect_gallery );
+	try {
+		$content = apply_filters( 'the_content', $post->post_content );
+	} finally {
+		remove_filter( 'render_block_core/gallery', $collect_gallery );
+	}
+
+	$return_link = '<p class="labm-actualidad-detail-page__return"><a href="' . esc_url( get_post_type_archive_link( 'labm_actualidad' ) ) . '">' . esc_html__( 'Volver a Actualidad', 'labm' ) . '</a></p>';
+	$html = '<div class="labm-actualidad-detail-page__reading"><div class="entry-content wp-block-post-content labm-actualidad-detail-page__content">' . $content . $return_link . '</div>';
+	$html .= labm_theme_render_actualidad_detail( $post ) . '</div>';
+	if ( $galleries ) {
+		$html .= '<section class="labm-actualidad-detail-page__gallery" aria-labelledby="labm-actualidad-gallery-title"><div class="labm-actualidad-detail-page__gallery-inner"><h2 id="labm-actualidad-gallery-title">' . esc_html__( 'Galería', 'labm' ) . '</h2>' . implode( '', $galleries ) . '</div></section>';
+	}
+	return $html;
 }
 
 /**
@@ -1034,7 +1204,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 			<div class="labm-actualidad-tarjetas">
 				<?php foreach ( $query->posts as $post ) : ?>
 					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta>
-						<?php echo labm_theme_actualidad_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+						<a class="labm-actualidad-tarjeta__media" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( labm_theme_home_news_title( $post ) ); ?>"><?php echo labm_theme_actualidad_media( $post ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. */ ?></a>
 						<?php echo labm_theme_actualidad_article_content( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</article>
 				<?php endforeach; ?>

@@ -101,3 +101,29 @@ No hay migración. Tras desplegar, un administrador guarda los valores no secret
 
 - [ ] Confirmar la capacidad administrativa definitiva si LABM deja de usar `edit_theme_options`.
 - [ ] Antes de producción, confirmar remitente institucional, SPF, DKIM y DMARC.
+
+## Ampliación: contrato de pruebas de Documentos
+
+### Decisión: Mantener el catálogo filtrable y corregir expectativas heredadas
+
+| Opción | Trade-off | Decisión |
+|---|---|---|
+| Restaurar el catálogo sin filtros | Revierte una capacidad pública vigente | No |
+| Ajustar pruebas a filtros, paginación y mensaje vacío actuales | No modifica la experiencia pública | Sí |
+
+**Justificación:** `labm_core_render_document_catalog()` normaliza filtros y el patrón los obtiene de la solicitud. Las cuatro pruebas bloqueantes deben comprobar esa interfaz, incluido el mensaje «No encontramos documentos».
+
+## Cambios de archivos de la ampliación
+
+| Archivo | Acción | Descripción |
+|---|---|---|
+| `tests/php/PublicExperienceTest.php` | Modificar | Afirmar la llamada del patrón con filtros actuales. |
+| `tests/php/DocumentContactTest.php` | Modificar | Cubrir estado vacío y paginación sin asumir filtros ignorados. |
+| `tests/php/VerifyCorrectivesTest.php` | Modificar | Alinear la consulta vacía con su texto público vigente. |
+
+## Estrategia de pruebas de la ampliación
+
+| Capa | Qué probar | Enfoque |
+|---|---|---|
+| PHPUnit focal | Patrón, filtros, vacío, paginación y adjuntos inválidos | Ejecutar los cuatro casos corregidos. |
+| PHPUnit completo | Regresiones del plugin y tema | Ejecutar la suite de integración. |

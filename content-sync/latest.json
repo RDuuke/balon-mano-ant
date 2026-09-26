@@ -1,9 +1,9 @@
 {
     "schemaVersion":  1,
-    "version":  "20260915T024403103Z-daesca",
-    "baseVersion":  "20260911T015301262Z-daesca",
+    "version":  "20260926T164029330Z-User-DESKTOP-UOCJQQ8",
+    "baseVersion":  "20260926T162415867Z-User-DESKTOP-UOCJQQ8",
     "package":  "canonical.zip",
-    "sha256":  "156b9edaac3a28e558657d52e0408ba096c982047cd3740f1ca36441f5539b6f",
-    "publishedAtUtc":  "2026-09-15T02:44:32.3878918Z",
-    "publishedBy":  "daesca"
+    "sha256":  "5e5276232669147ffca009c36ac07e7ea197d88fec24b457245743cfbbe421e5",
+    "publishedAtUtc":  "2026-09-26T16:40:52.5956512Z",
+    "publishedBy":  "User@DESKTOP-UOCJQQ8"
 }

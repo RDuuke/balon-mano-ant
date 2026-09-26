@@ -35,21 +35,55 @@ class LABM_Fixtures_Command {
 
 		return array_map(
 			static function ( $definition, $index ) use ( $images ) {
+				$image = $images[ $index % count( $images ) ];
 				return array(
 					'post_name'    => 'demo-labm-noticia-' . $definition[0],
 					'post_title'   => self::MARKER . ' ' . $definition[1],
 					'post_excerpt' => self::MARKER . ' ' . $definition[2],
-					'post_content' => '<p>' . self::MARKER . ' ' . $definition[2] . '</p>',
+					'post_content' => self::rich_news_content( $definition[2] ),
 					'post_type'    => 'labm_actualidad',
 					'post_status'  => 'publish',
 					'post_date'    => $definition[3],
-					'meta'         => array( 'labm_demo_image' => $images[ $index % count( $images ) ] ),
+					'meta'         => array( 'labm_demo_image' => $image ),
 					'terms'        => array( 'labm_categoria' => array( 'Noticias demo' ) ),
+					'featured_image'     => 'convocatoria' === $definition[0] ? '' : $image,
+					'featured_image_alt' => 'Imagen ficticia para la noticia demo ' . $definition[0],
+					'clear_featured_image' => 'convocatoria' === $definition[0],
+					'gallery_images'      => 'resultado' === $definition[0]
+						? array(
+							array( 'path' => $images[0], 'alt' => 'Equipo ficticio durante una jornada de balonmano' ),
+							array( 'path' => $images[1], 'alt' => 'Seleccion ficticia de balonmano en actividad' ),
+						)
+						: array(),
 				);
 			},
 			$definitions,
 			array_keys( $definitions )
 		);
+	}
+
+	/** Construye contenido Gutenberg enriquecido para las noticias ficticias de portada. */
+	private static function rich_news_content( $summary ) {
+		return "<!-- wp:heading {\"level\":2} -->\n<h2>Una experiencia editorial de demostracion</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>" . self::MARKER . ' ' . esc_html( $summary ) . "</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:quote -->\n<blockquote class=\"wp-block-quote\"><p>Este contenido es ficticio y permite revisar la lectura completa de una noticia.</p></blockquote>\n<!-- /wp:quote -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><li>Informacion editorial de ejemplo.</li><li>Contenido preparado para pruebas locales.</li></ul>\n<!-- /wp:list -->";
+	}
+
+	/** Anexa una galeria nativa de Gutenberg con adjuntos y alternativas disponibles. */
+	private static function gallery_block_content( $content, $attachments ) {
+		$images = array();
+		foreach ( $attachments as $attachment_id ) {
+			$url = wp_get_attachment_image_url( $attachment_id, 'large' );
+			if ( ! $url ) {
+				continue;
+			}
+			$images[] = '<!-- wp:image {"id":' . (int) $attachment_id . ',"sizeSlug":"large","linkDestination":"media"} -->' . "\n"
+				. '<figure class="wp-block-image size-large"><a href="' . esc_url( $url ) . '"><img src="' . esc_url( $url ) . '" alt="' . esc_attr( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) . '" class="wp-image-' . (int) $attachment_id . '"/></a></figure>' . "\n"
+				. '<!-- /wp:image -->';
+		}
+		if ( empty( $images ) ) {
+			return $content;
+		}
+
+		return $content . "\n\n<!-- wp:gallery {\"columns\":2,\"linkTo\":\"media\"} -->\n<figure class=\"wp-block-gallery has-nested-images columns-2 is-cropped\">\n" . implode( "\n", $images ) . "\n</figure>\n<!-- /wp:gallery -->";
 	}
 
 	/**
@@ -186,10 +220,13 @@ class LABM_Fixtures_Command {
 	 * @param string $relative_path Ruta relativa dentro del tema.
 	 * @return int
 	 */
-	private static function ensure_demo_attachment( $relative_path ) {
+	private static function ensure_demo_image_attachment( $relative_path, $alt = '', $prefix = 'demo-labm-image-' ) {
 		$slug     = sanitize_title( pathinfo( $relative_path, PATHINFO_FILENAME ) );
-		$existing = get_page_by_path( 'demo-labm-logo-' . $slug, OBJECT, 'attachment' );
+		$existing = get_page_by_path( $prefix . $slug, OBJECT, 'attachment' );
 		if ( $existing && 'image/png' === get_post_mime_type( $existing ) && is_file( get_attached_file( $existing->ID ) ) ) {
+			if ( '' !== $alt ) {
+				update_post_meta( $existing->ID, '_wp_attachment_image_alt', sanitize_text_field( $alt ) );
+			}
 			return (int) $existing->ID;
 		}
 		if ( $existing ) {
@@ -206,8 +243,8 @@ class LABM_Fixtures_Command {
 		}
 		$attachment_id = wp_insert_attachment(
 			array(
-				'post_name'      => 'demo-labm-logo-' . $slug,
-				'post_title'     => self::MARKER . ' Logo ' . $slug,
+				'post_name'      => $prefix . $slug,
+				'post_title'     => self::MARKER . ' Imagen ' . $slug,
 				'post_status'    => 'inherit',
 				'post_mime_type' => 'image/png',
 			),
@@ -222,7 +259,15 @@ class LABM_Fixtures_Command {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $upload['file'] ) );
+		if ( '' !== $alt ) {
+			update_post_meta( $attachment_id, '_wp_attachment_image_alt', sanitize_text_field( $alt ) );
+		}
 		return (int) $attachment_id;
+	}
+
+	/** Importa o reutiliza un logo demo como adjunto de WordPress. */
+	private static function ensure_demo_attachment( $relative_path ) {
+		return self::ensure_demo_image_attachment( $relative_path, '', 'demo-labm-logo-' );
 	}
 
 	/**
@@ -452,11 +497,14 @@ class LABM_Fixtures_Command {
 				array(
 					'post_name'    => 'demo-labm-actualidad-limite',
 					'post_title'   => self::MARKER . ' Evento en fecha limite',
-					'post_content' => '<p>' . self::MARKER . ' Noticia de borde sin datos oficiales.</p>',
+					'post_excerpt' => self::MARKER . ' Evento ficticio para revisar la fecha destacada y su lectura completa.',
+					'post_content' => self::rich_news_content( 'Evento ficticio para revisar la fecha destacada y su lectura completa.' ),
 					'post_type'    => 'labm_actualidad',
 					'post_status'  => 'publish',
 					'meta'         => array( 'labm_fecha_evento' => '2026-01-01' ),
 					'terms'        => array( 'labm_categoria' => array( 'Noticias' ) ),
+					'featured_image'     => 'assets/images/hero-balonmano-seleccion-v1.png',
+					'featured_image_alt' => 'Imagen ficticia para el evento demo',
 				),
 				array(
 					'post_name'    => 'demo-labm-actualidad-borrador',
@@ -597,9 +645,35 @@ class LABM_Fixtures_Command {
 			}
 
 			if ( ! empty( $fixture['featured_image'] ) ) {
-				$attachment_id = self::ensure_demo_attachment( $fixture['featured_image'] );
+				$attachment_id = self::ensure_demo_image_attachment( $fixture['featured_image'], $fixture['featured_image_alt'] ?? '' );
 				if ( $attachment_id ) {
 					update_post_meta( $result, '_thumbnail_id', $attachment_id );
+				}
+			}
+			if ( ! empty( $fixture['clear_featured_image'] ) ) {
+				delete_post_meta( $result, '_thumbnail_id' );
+			}
+
+			if ( ! empty( $fixture['gallery_images'] ) ) {
+				$gallery_attachments = array();
+				foreach ( $fixture['gallery_images'] as $gallery_image ) {
+					$attachment_id = self::ensure_demo_image_attachment( $gallery_image['path'], $gallery_image['alt'] ?? '' );
+					if ( $attachment_id ) {
+						$gallery_attachments[] = $attachment_id;
+					}
+				}
+				$gallery_content = self::gallery_block_content( $fixture['post_content'], $gallery_attachments );
+				$gallery_result  = wp_update_post(
+					wp_slash(
+						array(
+							'ID'           => $result,
+							'post_content' => $gallery_content,
+						)
+					),
+					true
+				);
+				if ( is_wp_error( $gallery_result ) ) {
+					WP_CLI::error( $gallery_result->get_error_message() );
 				}
 			}
 

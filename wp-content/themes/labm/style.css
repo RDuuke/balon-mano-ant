@@ -331,6 +331,7 @@ form.labm-filter[data-labm-actualidad-filtros] button { padding: .75rem 1.25rem;
 .labm-actualidad-tarjetas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 2.125rem; }
 .labm-actualidad-tarjeta { min-width: 0; overflow: hidden; background: var(--labm-neutral); }
 .labm-actualidad-tarjeta > :first-child { display: block; aspect-ratio: 1.75 / 1; overflow: hidden; background: #d8ddca; }
+.labm-actualidad-tarjeta__media > [data-labm-actualidad-media-fallback] { display: block; height: 100%; }
 .labm-actualidad-tarjeta > :is(img, picture), .labm-actualidad-tarjeta > :first-child :is(img, picture) { display: block; position: static; width: 100%; height: 100% !important; object-fit: cover; }
 .labm-actualidad-tarjeta > :not(:first-child) { margin-right: 1.25rem; margin-left: 1.25rem; }
 .labm-actualidad-tarjeta .labm-actualidad-meta { margin-top: 1.125rem; margin-bottom: .625rem; font-size: .6875rem; }
@@ -592,3 +593,42 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 @media (min-width: 1100px) {
 	.labm-contact__grid { grid-template-columns: 380px minmax(525px, 760px); justify-content: space-between; gap: 3.75rem; }
 }
+
+/* Detalle de Actualidad: contenido Gutenberg y compartir progresivo. */
+.labm-actualidad-detail-page__article { width: 100% !important; max-width: none !important; margin: 0 !important; }
+.labm-actualidad-detail-page__reading { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; align-items: start; gap: clamp(2rem, 5vw, 4rem); width: min(calc(100% - (2 * var(--labm-gutter))), 56rem); min-height: 33rem; margin: 0 auto; padding-block: 3.5rem; }
+.labm-actualidad-detail-page, .labm-actualidad-detail__hero, .labm-actualidad-detail__media { margin-block: 0 !important; }
+.labm-actualidad-detail__hero { display: grid; min-height: 21rem; align-content: center; gap: .75rem; padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 6vw, 5rem); background: #000 !important; color: #fff !important; text-align: center; }
+.labm-actualidad-detail__title { width: min(100%, 19ch); margin: 0 auto; color: #fff !important; font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700; letter-spacing: -.025em; line-height: .94; text-transform: uppercase; overflow-wrap: anywhere; }
+.labm-actualidad-detail { display: grid; gap: 1.25rem; min-width: 0; }
+.labm-actualidad-detail__media { min-height: 0; overflow: hidden; background: var(--labm-neutral); }
+.labm-actualidad-detail__media .labm-actualidad-detail__image { display: block; position: static; width: 100%; height: auto; max-height: 38rem; object-fit: cover; }
+.labm-actualidad-detail__meta { margin: 0; color: #c7ee18 !important; font-size: .75rem; font-weight: 800; letter-spacing: .04em; line-height: 1.4; text-transform: uppercase; }
+.labm-actualidad-detail__share { display: grid; align-content: start; gap: 1rem; min-height: 16.5rem; padding: 1.5rem 1.25rem; background: var(--labm-neutral); }
+.labm-actualidad-detail__share h2 { margin: 0; font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: 1.25rem; line-height: 1; text-transform: uppercase; }
+.labm-actualidad-detail__share-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.labm-actualidad-detail__share-actions :is(a, button) { display: inline-flex; align-items: center; min-height: 1.5rem; margin: 0; padding: 0; border: 0; background: transparent; color: #60780f; font: inherit; font-size: .8125rem; line-height: 1.5rem; text-align: left; text-decoration: none; cursor: pointer; }
+.labm-actualidad-detail-page__return a { display: inline-flex; align-items: center; min-height: 2.75rem; padding: .625rem .875rem; border: 1px solid var(--labm-black); color: var(--labm-black); text-decoration: none; }
+.labm-actualidad-detail__share-actions :is(a, button):hover, .labm-actualidad-detail-page__return a:hover { background: var(--labm-green); }
+.labm-actualidad-detail__share label { font-weight: 700; }
+.labm-actualidad-detail__share input { width: 100%; min-width: 0; min-height: 2.75rem; padding: .625rem; border: 1px solid var(--labm-black); border-radius: 0; background: #fff; color: var(--labm-black); font: inherit; }
+.labm-actualidad-detail-page__content { min-width: 0; margin: 0; font-size: .9375rem; line-height: 1.65; overflow-wrap: anywhere; }
+.labm-actualidad-detail-page__content > :first-child { margin-top: 0; }
+.labm-actualidad-detail-page__content :is(h2, h3) { font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: 1.5rem; line-height: 1.25; }
+.labm-actualidad-detail-page__gallery { margin: 0; padding: 2.5rem var(--labm-gutter); background: var(--labm-neutral); }
+.labm-actualidad-detail-page__gallery-inner { max-width: 61rem; margin-inline: auto; }
+.labm-actualidad-detail-page__gallery h2 { margin: 0 0 1.25rem; font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: 2.125rem; line-height: 1.1; text-transform: uppercase; }
+.labm-actualidad-detail-page__gallery .wp-block-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .875rem; margin: 0; }
+.labm-actualidad-detail-page__gallery .wp-block-gallery figure.wp-block-image { width: 100% !important; margin: 0; }
+.labm-actualidad-detail-page__gallery .wp-block-gallery figure.wp-block-image img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.labm-actualidad-detail__share[data-copy-ready] :is(label, input) { display: none; }
+.labm-actualidad-detail-page__content .wp-block-gallery { margin-block: clamp(1.5rem, 4vw, 3rem); }
+.labm-actualidad-detail-page__content .wp-block-gallery img { max-width: 100%; height: auto; }
+.labm-actualidad-detail-page__return { margin: 2rem 0 0; }
+.labm-actualidad-detail :is(a, button, input):focus-visible, .labm-actualidad-detail-page__return a:focus-visible { outline: 3px solid var(--labm-green); outline-offset: 3px; }
+@media (max-width: 48rem) {
+	.labm-actualidad-detail-page__reading { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-block: 2rem; }
+	.labm-actualidad-detail__share { min-height: 0; }
+	.labm-actualidad-detail-page__gallery .wp-block-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 30rem) { .labm-actualidad-detail-page__gallery .wp-block-gallery { grid-template-columns: minmax(0, 1fr); } }

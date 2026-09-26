@@ -268,16 +268,16 @@ final class PublicExperienceTest extends TestCase {
 		self::assertMatchesRegularExpression( '/\.labm-documents-banner h1\s*\{[^}]*font-size:\s*clamp\(/s', $css );
 	}
 
-	/** El patrón añade exclusivamente el catálogo accesible debajo del encabezado. */
-	public function test_documents_pattern_composes_the_simple_pdf_catalog_without_filters(): void {
+	/** El patrón conecta el catálogo accesible con los filtros y la página actuales. */
+	public function test_documents_pattern_composes_the_filterable_pdf_catalog(): void {
 		$root    = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';
 		$pattern = (string) file_get_contents( $root . 'patterns/documentos.php' );
 		$css     = (string) file_get_contents( $root . 'style.css' );
 
-		$catalog_call = 'labm_core_render_document_catalog( array(), labm_core_document_catalog_current_page() )';
+		$catalog_call = 'labm_core_render_document_catalog( labm_core_document_catalog_current_filters(), labm_core_document_catalog_current_page() )';
 		self::assertStringContainsString( $catalog_call, $pattern );
 		self::assertLessThan( strpos( $pattern, $catalog_call ), strpos( $pattern, 'labm_theme_render_documents_banner()' ) );
-		self::assertStringNotContainsString( 'labm-filter', $pattern );
+		self::assertStringContainsString( 'labm_core_document_catalog_current_filters()', $pattern );
 		self::assertMatchesRegularExpression( '/\.labm-documents-catalog\s*\{[^}]*max-width:/s', $css );
 		self::assertMatchesRegularExpression( '/\.labm-documents-pagination\s*\{[^}]*display:\s*flex;/s', $css );
 	}
@@ -405,5 +405,90 @@ final class PublicExperienceTest extends TestCase {
 		self::assertTrue( function_exists( 'labm_theme_render_listing' ) );
 		$fallback = labm_theme_render_listing( 'tipo_ausente', array() );
 		self::assertStringContainsString( 'no está disponible', html_entity_decode( $fallback, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+	}
+
+	/** El detalle solo comparte publicaciones de actualidad públicas y canónicas. */
+	public function test_actualidad_detail_renders_safe_public_metadata_and_share_controls(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'labm_actualidad',
+				'post_status'  => 'publish',
+				'post_title'   => 'Actualidad <script>no segura</script>',
+				'post_date'    => '2026-09-20 12:00:00',
+				'post_content' => '<!-- wp:gallery {"columns":2} --><figure class="wp-block-gallery has-nested-images columns-2"><figure class="wp-block-image size-large"><img src="https://example.test/galeria.jpg" alt="Imagen editorial"></figure></figure><!-- /wp:gallery -->',
+			)
+		);
+		$term = get_term_by( 'name', 'Noticias', 'labm_categoria' );
+
+		try {
+			self::assertNotFalse( $term );
+			wp_set_object_terms( $post_id, (int) $term->term_id, 'labm_categoria' );
+			$hero = labm_theme_render_actualidad_hero( get_post( $post_id ) );
+			$html = $hero . labm_theme_render_actualidad_detail( get_post( $post_id ) );
+
+			self::assertStringContainsString( 'data-labm-actualidad-detail', $html );
+			self::assertStringContainsString( 'Noticias', $html );
+			self::assertStringContainsString( '20 Sep 2026', $html );
+			self::assertStringContainsString( 'facebook.com/sharer/sharer.php?u=', $html );
+			self::assertStringContainsString( 'api.whatsapp.com/send?text=', $html );
+			self::assertStringContainsString( 'data-labm-actualidad-copy', $html );
+			self::assertStringContainsString( 'readonly', $html );
+			self::assertStringContainsString( 'Enlace de esta publicación', $html );
+			self::assertStringNotContainsString( '<script>', $html );
+			self::assertStringContainsString( 'wp-block-gallery', (string) get_post_field( 'post_content', $post_id ) );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
+	}
+
+	/** El hero editorial precede al medio y conserva una única jerarquía H1. */
+	public function test_actualidad_detail_renders_black_hero_before_featured_media(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_actualidad',
+				'post_status' => 'publish',
+				'post_title'  => 'Resultado editorial',
+				'post_date'   => '2026-09-20 12:00:00',
+			)
+		);
+		$term = get_term_by( 'name', 'Noticias', 'labm_categoria' );
+
+		try {
+			self::assertNotFalse( $term );
+			wp_set_object_terms( $post_id, (int) $term->term_id, 'labm_categoria' );
+			$hero = labm_theme_render_actualidad_hero( get_post( $post_id ) );
+
+			self::assertStringContainsString( 'data-labm-actualidad-hero', $hero );
+			self::assertStringContainsString( 'labm-actualidad-detail__meta', $hero );
+			self::assertStringContainsString( '<h1', $hero );
+			self::assertStringContainsString( 'Resultado editorial', $hero );
+			self::assertStringNotContainsString( 'labm-actualidad-detail__media', $hero );
+			$template = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/templates/single-labm_actualidad.html' );
+			self::assertLessThan( strpos( $template, 'labm_actualidad_detalle' ), strpos( $template, 'labm_actualidad_hero' ) );
+			self::assertLessThan( strpos( $template, 'labm_actualidad_detalle' ), strpos( $template, 'wp:post-content' ) );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
+	}
+
+	/** El panel no revela datos de actualidad restringida y la plantilla usa contenido Gutenberg nativo. */
+	public function test_actualidad_detail_omits_restricted_posts_and_uses_native_content_template(): void {
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_actualidad',
+				'post_status' => 'draft',
+				'post_title'  => 'Actualidad restringida',
+			)
+		);
+
+		try {
+			self::assertSame( '', labm_theme_render_actualidad_detail( get_post( $post_id ) ) );
+			$template = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/templates/single-labm_actualidad.html' );
+			self::assertStringContainsString( 'wp:post-content', $template );
+			self::assertStringContainsString( 'labm_actualidad_detalle', $template );
+			self::assertStringNotContainsString( 'labm_ubicacion', $template );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
 	}
 }
