@@ -27,8 +27,16 @@ function labm_theme_enqueue_public_style() {
 	$stylesheet_path    = get_stylesheet_directory() . '/style.css';
 	$stylesheet_version = file_exists( $stylesheet_path ) ? (string) filemtime( $stylesheet_path ) : wp_get_theme()->get( 'Version' );
 	wp_enqueue_style( 'labm-site', get_stylesheet_uri(), array(), $stylesheet_version );
+	$back_to_top_script_path    = get_theme_file_path( 'assets/back-to-top.js' );
+	$back_to_top_script_version = file_exists( $back_to_top_script_path ) ? (string) filemtime( $back_to_top_script_path ) : wp_get_theme()->get( 'Version' );
+	wp_enqueue_script( 'labm-back-to-top', get_theme_file_uri( 'assets/back-to-top.js' ), array(), $back_to_top_script_version, true );
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
+	}
+	if ( is_page( 'nosotros' ) ) {
+		$team_script_path    = get_theme_file_path( 'assets/about-team.js' );
+		$team_script_version = file_exists( $team_script_path ) ? (string) filemtime( $team_script_path ) : wp_get_theme()->get( 'Version' );
+		wp_enqueue_script( 'labm-about-team', get_theme_file_uri( 'assets/about-team.js' ), array(), $team_script_version, true );
 	}
 	if ( is_page( 'contacto' ) ) {
 		$contact_script_path    = get_theme_file_path( 'assets/contact.js' );
@@ -280,15 +288,6 @@ function labm_theme_render_about_team( $requested_group = null ) {
 			'title'      => 'ASC',
 		),
 	);
-	if ( '' !== $group ) {
-		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-			array(
-				'taxonomy' => 'labm_grupo_integrante',
-				'field'    => 'slug',
-				'terms'    => $group,
-			),
-		);
-	}
 	$items = array();
 	foreach ( ( new WP_Query( $args ) )->posts as $post ) {
 		$title     = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
@@ -304,9 +303,6 @@ function labm_theme_render_about_team( $requested_group = null ) {
 			'thumbnail' => $thumbnail,
 			'group'     => $terms[0]->slug,
 		);
-		if ( 4 === count( $items ) ) {
-			break;
-		}
 	}
 	if ( array() === $items && '' === $group ) {
 		return '';
@@ -314,12 +310,13 @@ function labm_theme_render_about_team( $requested_group = null ) {
 
 	ob_start();
 	?>
-	<section class="labm-about-team" data-labm-section="nosotros-equipo" aria-labelledby="labm-about-team-title">
+	<section class="labm-about-team" data-labm-section="nosotros-equipo" data-labm-team aria-labelledby="labm-about-team-title">
 		<header class="labm-about-team__header">
 			<h2 id="labm-about-team-title"><?php esc_html_e( 'Quiénes hacen posible la Liga', 'labm' ); ?></h2>
 			<nav class="labm-about-team__filters" aria-label="<?php esc_attr_e( 'Filtrar integrantes', 'labm' ); ?>">
+				<a href="<?php echo esc_url( home_url( '/nosotros/' ) ); ?>" data-labm-team-filter<?php echo '' === $group ? ' aria-current="true"' : ''; ?>><?php esc_html_e( 'Todos', 'labm' ); ?></a>
 				<?php foreach ( $groups as $slug => $label ) : ?>
-					<a href="<?php echo esc_url( add_query_arg( 'grupo', $slug, home_url( '/nosotros/' ) ) ); ?>"<?php echo $group === $slug ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+					<a href="<?php echo esc_url( add_query_arg( 'grupo', $slug, home_url( '/nosotros/' ) ) ); ?>" data-labm-team-filter data-labm-team-filter-group="<?php echo esc_attr( $slug ); ?>"<?php echo $group === $slug ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $label ); ?></a>
 				<?php endforeach; ?>
 			</nav>
 		</header>
@@ -328,7 +325,7 @@ function labm_theme_render_about_team( $requested_group = null ) {
 		<?php else : ?>
 			<div class="labm-about-team__grid">
 				<?php foreach ( $items as $item ) : ?>
-					<article class="labm-about-team__card" data-labm-team-card data-labm-team-group="<?php echo esc_attr( $item['group'] ); ?>">
+					<article class="labm-about-team__card" data-labm-team-card data-labm-team-group="<?php echo esc_attr( $item['group'] ); ?>"<?php echo '' !== $group && $group !== $item['group'] ? ' hidden' : ''; ?>>
 						<div class="labm-about-team__media"><?php echo wp_get_attachment_image( $item['thumbnail'], 'large', false, array( 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado seguro. ?></div>
 						<div class="labm-about-team__body"><h3><?php echo esc_html( $item['title'] ); ?></h3><p><?php echo esc_html( $item['role'] ); ?></p></div>
 					</article>
@@ -789,9 +786,9 @@ function labm_theme_render_actualidad_detail( $post ) {
 			<section class="labm-actualidad-detail__share" aria-labelledby="labm-actualidad-share-title">
 				<h2 id="labm-actualidad-share-title"><?php esc_html_e( 'Compartir', 'labm' ); ?></h2>
 				<div class="labm-actualidad-detail__share-actions">
-					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir en Facebook', 'labm' ); ?>"><?php esc_html_e( 'Facebook', 'labm' ); ?></a>
-					<a href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir por WhatsApp', 'labm' ); ?>"><?php esc_html_e( 'WhatsApp', 'labm' ); ?></a>
-					<button type="button" data-labm-actualidad-copy aria-describedby="labm-actualidad-copy-status"><?php esc_html_e( 'Copiar enlace', 'labm' ); ?></button>
+					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir en Facebook', 'labm' ); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M14 8h3V2.14A15.3 15.3 0 0 0 14.34 2C11.57 2 10 3.66 10 6.7V8H7v6h3v8h6v-8h3.64L20 8h-4V6.94c0-.88.29-1.48 1.7-1.48H20V.14C19.44.06 18.23 0 16.82 0 13.67 0 14 8 14 8Z"/></svg><span class="screen-reader-text"><?php esc_html_e( 'Facebook', 'labm' ); ?></span></a>
+					<a href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir por WhatsApp', 'labm' ); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M12 2a9.8 9.8 0 0 0-8.37 14.9L2.5 21.5l4.76-1.08A10 10 0 1 0 12 2Zm0 17.98a8 8 0 0 1-4.07-1.11l-.29-.17-2.82.64.69-2.74-.19-.3A8 8 0 1 1 12 19.98Zm4.39-5.99c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06a6.55 6.55 0 0 1-1.93-1.19 7.22 7.22 0 0 1-1.34-1.67c-.14-.24 0-.37.1-.49.1-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.4h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.51.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg><span class="screen-reader-text"><?php esc_html_e( 'WhatsApp', 'labm' ); ?></span></a>
+					<button type="button" data-labm-actualidad-copy aria-describedby="labm-actualidad-copy-status" aria-label="<?php esc_attr_e( 'Copiar enlace', 'labm' ); ?>"><svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M9.5 14.5 14.5 9.5M8.17 17.83l-1.5 1.5a3.54 3.54 0 0 1-5-5l3-3a3.54 3.54 0 0 1 5 0M15.83 6.17l1.5-1.5a3.54 3.54 0 1 1 5 5l-3 3a3.54 3.54 0 0 1-5 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></svg><span class="screen-reader-text"><?php esc_html_e( 'Copiar enlace', 'labm' ); ?></span></button>
 				</div>
 				<label for="labm-actualidad-copy-url"><?php esc_html_e( 'Enlace de esta publicación', 'labm' ); ?></label>
 				<input id="labm-actualidad-copy-url" type="text" value="<?php echo esc_attr( $canonical_url ); ?>" readonly>
