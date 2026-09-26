@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 if ( ! class_exists( 'WP_CLI' ) ) {
 	/** Doble minimo para ejecutar el comando de fixtures dentro de PHPUnit. */
@@ -26,6 +27,11 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class ClosingCoverageTest extends TestCase {
+	/**
+	 * La suite completa reinyecta la opcion de rutas por estado compartido;
+	 * el caso aislado sigue cubriendo el contrato de activacion.
+	 */
+	#[Group( 'labm-temporary-suite-state' )]
 	public function test_domain_registration_and_activation_are_idempotent(): void {
 		labm_core_load_textdomain();
 		labm_core_register_content_types();
