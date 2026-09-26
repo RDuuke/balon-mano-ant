@@ -25,7 +25,9 @@ final class DocumentContactTest extends TestCase {
 		update_option( 'labm_smtp_settings', labm_core_smtp_defaults(), false );
 		update_option( 'labm_smtp_recipients_migrated', 1, false );
 		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
-			delete_transient( 'labm_contact_' . hash( 'sha256', $token ) );
+			$key = 'labm_contact_' . hash( 'sha256', $token );
+			delete_transient( $key );
+			delete_option( $key . '_lock' );
 		}
 		$test_documents = get_posts(
 			array(
@@ -52,6 +54,11 @@ final class DocumentContactTest extends TestCase {
 			delete_option( 'labm_smtp_recipients_migrated' );
 		} else {
 			update_option( 'labm_smtp_recipients_migrated', $this->smtp_migration_option, false );
+		}
+		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
+			$key = 'labm_contact_' . hash( 'sha256', $token );
+			delete_transient( $key );
+			delete_option( $key . '_lock' );
 		}
 		foreach ( $this->document_admin_attachments as $attachment_id ) {
 			wp_delete_attachment( $attachment_id, true );

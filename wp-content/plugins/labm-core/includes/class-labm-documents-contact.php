@@ -503,7 +503,7 @@ function labm_core_contact_release_token( $lock ) {
 /**
  * Construye el correo HTML institucional de Contacto sin incluir datos no saneados.
  *
- * @param array $contact Datos ya validados del formulario.
+ * @param mixed $contact Datos ya validados del formulario.
  * @param bool  $use_cid_logo Si se debe usar una imagen incrustada para correo.
  * @return string
  */
