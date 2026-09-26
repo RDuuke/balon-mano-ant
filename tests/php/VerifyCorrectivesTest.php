@@ -157,6 +157,7 @@ final class VerifyCorrectivesTest extends TestCase {
 				'asunto'    => 'Consulta',
 				'mensaje'   => 'Dato personal',
 				'sitio_web' => '',
+				'consentimiento' => '1',
 				'token'     => 'fallo-correctivo',
 				'nonce'     => wp_create_nonce( 'labm_contacto' ),
 			)

@@ -10,11 +10,23 @@
       return;
     }
 
+    const defaultLabel = label.textContent;
+    const sendingLabel = sending.dataset.labmContactSendingLabel || '';
+
     const reset = () => {
       form.setAttribute('aria-busy', 'false');
       submit.disabled = false;
+      label.textContent = defaultLabel;
       label.hidden = false;
+      sending.replaceChildren();
       sending.hidden = true;
+    };
+
+    const renderSending = () => {
+      const spinner = document.createElement('span');
+      spinner.className = 'labm-contact__spinner';
+      spinner.setAttribute('aria-hidden', 'true');
+      sending.replaceChildren(spinner, document.createTextNode(sendingLabel));
     };
 
     form.addEventListener('submit', (event) => {
@@ -30,7 +42,9 @@
 
       form.setAttribute('aria-busy', 'true');
       submit.disabled = true;
+      label.textContent = '';
       label.hidden = true;
+      renderSending();
       sending.hidden = false;
     });
 
