@@ -8,8 +8,11 @@
   }
 
   button.dataset.labmActualidadCopyReady = 'true';
+  const share = button.closest('.labm-actualidad-detail__share');
+  if (share) share.dataset.copyReady = 'true';
 
   const selectFallback = () => {
+    if (share) delete share.dataset.copyReady;
     field.focus();
     field.select();
     status.textContent = 'Selecciona el enlace para copiarlo manualmente.';

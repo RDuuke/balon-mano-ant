@@ -50,6 +50,7 @@ function labm_theme_setup_public_experience() {
 	add_shortcode( 'labm_actualidad_hero', 'labm_theme_actualidad_hero_shortcode' );
 	add_shortcode( 'labm_actualidad_media', 'labm_theme_actualidad_media_shortcode' );
 	add_shortcode( 'labm_actualidad_detalle', 'labm_theme_actualidad_detail_shortcode' );
+	add_shortcode( 'labm_actualidad_body', 'labm_theme_actualidad_body_shortcode' );
 }
 add_action( 'init', 'labm_theme_setup_public_experience' );
 
@@ -654,14 +655,7 @@ function labm_theme_home_news_media( $post, $featured = false ) {
 		return $thumbnail;
 	}
 
-	$allowed = array(
-		'assets/images/hero-balonmano-antioquia-v1.png',
-		'assets/images/hero-balonmano-seleccion-v1.png',
-	);
-	$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
-	if ( ! in_array( $path, $allowed, true ) ) {
-		$path = $allowed[ $featured ? 0 : 1 ];
-	}
+	$path = labm_theme_news_fallback_path( $post );
 
 	return sprintf(
 		'<img class="%1$s" src="%2$s" alt="" loading="%3$s" width="%4$d" height="%5$d">',
@@ -671,6 +665,20 @@ function labm_theme_home_news_media( $post, $featured = false ) {
 		$featured ? 1536 : 1366,
 		$featured ? 864 : 768
 	);
+}
+
+/** Mantiene la misma imagen de respaldo en listado, inicio y detalle. */
+function labm_theme_news_fallback_path( $post ) {
+	$allowed = array(
+		'assets/images/hero-balonmano-antioquia-v1.png',
+		'assets/images/hero-balonmano-seleccion-v1.png',
+	);
+	$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
+	if ( ! in_array( $path, $allowed, true ) ) {
+		$path = $allowed[0];
+	}
+
+	return $path;
 }
 
 /**
@@ -753,14 +761,7 @@ function labm_theme_render_actualidad_media( $post ) {
 		)
 	);
 	if ( '' === $thumbnail ) {
-		$allowed = array(
-			'assets/images/hero-balonmano-antioquia-v1.png',
-			'assets/images/hero-balonmano-seleccion-v1.png',
-		);
-		$path    = get_post_meta( $post->ID, 'labm_demo_image', true );
-		if ( ! in_array( $path, $allowed, true ) ) {
-			$path = $allowed[0];
-		}
+		$path = labm_theme_news_fallback_path( $post );
 		$thumbnail = sprintf(
 			'<img class="labm-actualidad-detail__image" src="%1$s" alt="" loading="eager" width="1536" height="864">',
 			esc_url( get_theme_file_uri( $path ) )
@@ -788,8 +789,8 @@ function labm_theme_render_actualidad_detail( $post ) {
 			<section class="labm-actualidad-detail__share" aria-labelledby="labm-actualidad-share-title">
 				<h2 id="labm-actualidad-share-title"><?php esc_html_e( 'Compartir', 'labm' ); ?></h2>
 				<div class="labm-actualidad-detail__share-actions">
-					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Compartir en Facebook', 'labm' ); ?></a>
-					<a href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Compartir por WhatsApp', 'labm' ); ?></a>
+					<a href="<?php echo esc_url( $facebook_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir en Facebook', 'labm' ); ?>"><?php esc_html_e( 'Facebook', 'labm' ); ?></a>
+					<a href="<?php echo esc_url( $whatsapp_url ); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php esc_attr_e( 'Compartir por WhatsApp', 'labm' ); ?>"><?php esc_html_e( 'WhatsApp', 'labm' ); ?></a>
 					<button type="button" data-labm-actualidad-copy aria-describedby="labm-actualidad-copy-status"><?php esc_html_e( 'Copiar enlace', 'labm' ); ?></button>
 				</div>
 				<label for="labm-actualidad-copy-url"><?php esc_html_e( 'Enlace de esta publicación', 'labm' ); ?></label>
@@ -799,7 +800,8 @@ function labm_theme_render_actualidad_detail( $post ) {
 		<?php endif; ?>
 	</section>
 	<?php
-	return (string) ob_get_clean();
+	// Evita que wpautop convierta los saltos del shortcode en filas vacías.
+	return preg_replace( '/>\s+</', '><', trim( (string) ob_get_clean() ) );
 }
 
 /** Resuelve el hero desde la publicación consultada por la plantilla individual. */
@@ -821,6 +823,37 @@ function labm_theme_actualidad_detail_shortcode() {
 
 	$post = get_queried_object();
 	return $post instanceof WP_Post ? labm_theme_render_actualidad_detail( $post ) : '';
+}
+
+/** Presenta el contenido editorial y sus galerías en regiones separadas. */
+function labm_theme_actualidad_body_shortcode() {
+	$post = get_queried_object();
+	if ( ! labm_theme_is_public_actualidad( $post ) ) {
+		return '';
+	}
+	if ( post_password_required( $post ) ) {
+		return get_the_password_form( $post );
+	}
+
+	$galleries = array();
+	$collect_gallery = static function ( $html ) use ( &$galleries ) {
+		$galleries[] = $html;
+		return '';
+	};
+	add_filter( 'render_block_core/gallery', $collect_gallery );
+	try {
+		$content = apply_filters( 'the_content', $post->post_content );
+	} finally {
+		remove_filter( 'render_block_core/gallery', $collect_gallery );
+	}
+
+	$return_link = '<p class="labm-actualidad-detail-page__return"><a href="' . esc_url( get_post_type_archive_link( 'labm_actualidad' ) ) . '">' . esc_html__( 'Volver a Actualidad', 'labm' ) . '</a></p>';
+	$html = '<div class="labm-actualidad-detail-page__reading"><div class="entry-content wp-block-post-content labm-actualidad-detail-page__content">' . $content . $return_link . '</div>';
+	$html .= labm_theme_render_actualidad_detail( $post ) . '</div>';
+	if ( $galleries ) {
+		$html .= '<section class="labm-actualidad-detail-page__gallery" aria-labelledby="labm-actualidad-gallery-title"><div class="labm-actualidad-detail-page__gallery-inner"><h2 id="labm-actualidad-gallery-title">' . esc_html__( 'Galería', 'labm' ) . '</h2>' . implode( '', $galleries ) . '</div></section>';
+	}
+	return $html;
 }
 
 /**
@@ -1171,7 +1204,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 			<div class="labm-actualidad-tarjetas">
 				<?php foreach ( $query->posts as $post ) : ?>
 					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta>
-						<?php echo labm_theme_actualidad_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
+						<a class="labm-actualidad-tarjeta__media" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( labm_theme_home_news_title( $post ) ); ?>"><?php echo labm_theme_actualidad_media( $post ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. */ ?></a>
 						<?php echo labm_theme_actualidad_article_content( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</article>
 				<?php endforeach; ?>
