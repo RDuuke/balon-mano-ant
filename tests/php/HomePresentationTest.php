@@ -246,7 +246,7 @@ final class HomePresentationTest extends TestCase {
 
 			update_post_meta( $post_id, 'labm_demo_image', 'https://example.org/insegura.png' );
 			$fallback = labm_theme_home_news_media( get_post( $post_id ), false );
-			self::assertStringContainsString( 'hero-balonmano-seleccion-v1.png', $fallback );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $fallback );
 			self::assertStringNotContainsString( 'example.org', $fallback );
 			self::assertStringNotContainsString( '<span>', labm_theme_home_news_meta( get_post( $post_id ) ) );
 			self::assertStringContainsString( '<time ', labm_theme_home_news_meta( get_post( $post_id ) ) );
@@ -256,6 +256,67 @@ final class HomePresentationTest extends TestCase {
 			wp_delete_post( $post_id, true );
 		}
 	}
+	/** La portada rechaza miniaturas heredadas de contenido restringido. */
+	public function test_home_news_rejects_restricted_thumbnail_references(): void {
+		$post_id       = wp_insert_post(
+			array(
+				'post_type'   => 'labm_actualidad',
+				'post_status' => 'publish',
+				'post_title'  => 'Medio publico seguro',
+			)
+		);
+		$parent_id     = wp_insert_post(
+			array(
+				'post_type'   => 'post',
+				'post_status' => 'private',
+				'post_title'  => 'Origen restringido',
+			)
+		);
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_title'     => 'Imagen restringida',
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+				'post_parent'    => $parent_id,
+			)
+		);
+		$image_source  = static fn() => array( 'https://example.test/imagen-restringida.png', 10, 10, false );
+		try {
+			wp_update_attachment_metadata(
+				$attachment_id,
+				array(
+					'width'  => 10,
+					'height' => 10,
+					'file'   => '2026/10/imagen-restringida.png',
+				)
+			);
+			update_post_meta( $post_id, '_thumbnail_id', $attachment_id );
+			add_filter( 'wp_get_attachment_image_src', $image_source );
+			foreach ( array( 'private', 'draft', 'publish' ) as $status ) {
+				wp_update_post(
+					array(
+						'ID'            => $parent_id,
+						'post_status'   => $status,
+						'post_password' => 'publish' === $status ? 'protegida' : '',
+					)
+				);
+				foreach ( array( true, false ) as $featured ) {
+					$media = labm_theme_home_news_media( get_post( $post_id ), $featured );
+					self::assertStringNotContainsString( 'imagen-restringida.png', $media, 'No exponer adjuntos de origen ' . $status );
+					self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $media );
+					self::assertStringContainsString( 'alt=""', $media );
+				}
+			}
+			update_post_meta( $post_id, '_thumbnail_id', PHP_INT_MAX );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', labm_theme_home_news_media( get_post( $post_id ) ) );
+		} finally {
+			remove_filter( 'wp_get_attachment_image_src', $image_source );
+			wp_delete_attachment( $attachment_id, true );
+			wp_delete_post( $parent_id, true );
+			wp_delete_post( $post_id, true );
+		}
+	}
+
 	/** Noticias y eventos usan consultas publicas, estables y excluyentes. */
 	public function test_home_news_query_orders_limits_and_excludes_events(): void {
 		$this->with_existing_news_unpublished(
@@ -360,11 +421,23 @@ final class HomePresentationTest extends TestCase {
 			)
 		);
 		try {
-			update_post_meta( $post_id, 'labm_demo_image', '../fuera.png' );
-			$media = labm_theme_home_news_media( get_post( $post_id ), false );
-			self::assertStringNotContainsString( '../fuera.png', $media );
-			self::assertStringContainsString( 'hero-balonmano-seleccion-v1.png', $media );
-			self::assertStringContainsString( 'alt=""', $media );
+			foreach ( array( '', '../fuera.png', 'javascript:alert(1)', 'https://example.test/privada.png', 'assets/images/inexistente.png', 'assets/images/hero-balonmano-antioquia-v1.png?privada=1' ) as $reference ) {
+				update_post_meta( $post_id, 'labm_demo_image', $reference );
+				foreach ( array( true, false ) as $featured ) {
+					$media = labm_theme_home_news_media( get_post( $post_id ), $featured );
+					self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $media );
+					self::assertStringContainsString( 'alt=""', $media );
+					if ( '' !== $reference ) {
+						self::assertStringNotContainsString( $reference, $media );
+					}
+				}
+			}
+			foreach ( array( 'antioquia', 'seleccion' ) as $editorial ) {
+				$path = 'assets/images/hero-balonmano-' . $editorial . '-v1.png';
+				update_post_meta( $post_id, 'labm_demo_image', $path );
+				self::assertStringContainsString( $path, labm_theme_home_news_media( get_post( $post_id ) ) );
+				self::assertFileExists( get_theme_file_path( $path ) );
+			}
 		} finally {
 			wp_delete_post( $post_id, true );
 		}

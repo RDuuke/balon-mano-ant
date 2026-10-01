@@ -1,0 +1,25 @@
+{
+  "canonical_version": "20261001T194755441Z-rduuqe-RDUUQE",
+  "backup": "backup-manual-20261001T200324517Z-rduuqe-RDUUQE.zip",
+  "backup_sha256": "6ee08f40a5dff9edfca1792bb51281db27c93a8eb88a3b82a325a4e4afb9721b",
+  "tables": {
+    "wp_options": {
+      "added": 0,
+      "removed": 0,
+      "changed": {
+        "709": [
+          "option_value"
+        ],
+        "4350": [
+          "option_value"
+        ]
+      },
+      "changed_options": [
+        "labm_content_sync_version",
+        "_transient_doing_cron"
+      ],
+      "added_options": [],
+      "removed_options": []
+    }
+  }
+}

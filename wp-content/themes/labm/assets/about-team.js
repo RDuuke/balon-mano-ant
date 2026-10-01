@@ -6,6 +6,7 @@
   document.querySelectorAll('[data-labm-team]').forEach((section) => {
     const filters = Array.from(section.querySelectorAll('[data-labm-team-filter]'));
     const cards = Array.from(section.querySelectorAll('[data-labm-team-card]'));
+    const empty = section.querySelector('[data-labm-team-empty]');
     if (!filters.length || !cards.length) return;
 
     const applyFilter = (group, updateUrl) => {
@@ -24,6 +25,7 @@
           window.requestAnimationFrame(() => card.classList.add('is-entering'));
         }
       });
+      if (empty) empty.hidden = cards.some((card) => !card.hidden);
 
       if (updateUrl) {
         const url = new URL(window.location.href);
@@ -38,7 +40,8 @@
     }));
 
     window.addEventListener('popstate', () => {
-      const group = new URLSearchParams(window.location.search).get('grupo') || '';
+      const requested = new URLSearchParams(window.location.search).get('grupo') || '';
+      const group = filters.some((filter) => filter.dataset.labmTeamFilterGroup === requested) ? requested : '';
       applyFilter(group, false);
     });
   });

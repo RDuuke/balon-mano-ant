@@ -334,6 +334,21 @@ add_action( 'init', 'labm_core_ensure_document_types', 21 );
 
 /** Concede capacidades de dominio a roles editoriales autorizados. */
 function labm_core_ensure_capabilities() {
+	$selection = get_post_type_object( 'labm_seleccion' );
+	if ( $selection ) {
+		foreach ( array( 'administrator', 'editor' ) as $role_name ) {
+			$role = get_role( $role_name );
+			if ( ! $role ) {
+				continue;
+			}
+			foreach ( array_unique( (array) $selection->cap ) as $capability ) {
+				if ( ! $role->has_cap( $capability ) ) {
+					$role->add_cap( $capability );
+				}
+			}
+		}
+	}
+
 	$capabilities_ready = true;
 	foreach ( array( 'administrator', 'editor' ) as $role_name ) {
 		$role = get_role( $role_name );

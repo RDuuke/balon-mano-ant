@@ -1,8 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const publicRoutes = ['/', '/nosotros/', '/actualidad/', '/selecciones/'];
 const targetWidths = [320, 768, 1024, 1200, 1440];
+
+async function activateLinkByKeyboard(page: Page, link: Locator) {
+  await expect(link).toBeVisible();
+  await link.focus();
+  await expect(link).toBeFocused();
+  await page.keyboard.press('Enter');
+}
 
 test('Nosotros inicia con un banner editorial estático y responsive', async ({ page }) => {
   await page.goto('/nosotros/');
@@ -179,8 +186,9 @@ test('Nosotros presenta integrantes editables, filtrables y responsive', async (
   await expect(page).toHaveURL(/grupo=entrenadores/);
   const filtered = page.locator('[data-labm-section="nosotros-equipo"]');
   await expect(filtered.getByRole('link', { name: 'Entrenadores' })).toHaveAttribute('aria-current', 'true');
-  await expect(filtered.locator('[data-labm-team-card]')).toHaveCount(2);
-  await expect(filtered.getByText('Mateo Giraldo')).toHaveCount(0);
+  await expect(filtered.locator('[data-labm-team-card]:visible')).toHaveCount(2);
+  expect(await filtered.locator('[data-labm-team-card]:visible').evaluateAll((cards) => cards.map((card) => card.getAttribute('data-labm-team-group')))).toEqual(['entrenadores', 'entrenadores']);
+  await expect(filtered.getByText('Mateo Giraldo')).toBeHidden();
 
   await page.goto('/nosotros/');
   for (const width of targetWidths) {
@@ -385,8 +393,8 @@ test('3.4 documentos ofrece filtros, estado vacío y composición responsive', a
 
   await page.goto('/documentos/?texto=sin-resultados-ficticios&orden=antiguos');
   await expect(form.getByLabel('Buscar')).toHaveValue('sin-resultados-ficticios');
-  await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /estado vacío/i })).toBeVisible();
+  await expect(form.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'No encontramos documentos' })).toBeVisible();
 
   await page.setViewportSize({ width: 320, height: 900 });
   await page.reload();
@@ -576,4 +584,61 @@ test('detalle de actualidad mantiene contenido nativo y compartir accesible', as
   await noJavaScriptPage.goto(detailPath);
   await expect(noJavaScriptPage.getByLabel('Enlace de esta publicación')).toBeVisible();
   await noJavaScript.close();
+});
+
+for (const javaScriptEnabled of [true, false]) {
+  test(`Nosotros filtros por teclado y privacidad con JS ${javaScriptEnabled}`, async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled });
+    const page = await context.newPage();
+    try {
+      await page.goto(`${process.env.WP_URL || 'http://localhost:8080'}/nosotros/`);
+      const section = page.locator('[data-labm-team]');
+      const trainers = section.getByRole('link', { name: 'Entrenadores', exact: true });
+      await activateLinkByKeyboard(page, trainers);
+      await expect(page).toHaveURL(/grupo=entrenadores/);
+      await expect(trainers).toHaveAttribute('aria-current', 'true');
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(2);
+      await expect(section.getByText('Mateo Giraldo')).toBeHidden();
+      await expect(section.getByText('Vacante de ejemplo')).toHaveCount(0);
+      await activateLinkByKeyboard(page, section.getByRole('link', { name: 'Todos', exact: true }));
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+      await expect(page).not.toHaveURL(/grupo=/);
+      await page.goto(`${process.env.WP_URL || 'http://localhost:8080'}/nosotros/?grupo=desconocido`);
+      await expect(section.getByRole('link', { name: 'Todos', exact: true })).toHaveAttribute('aria-current', 'true');
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+    } finally {
+      await context.close();
+    }
+  });
+}
+
+test('Nosotros anuncia y restablece un grupo vacío al filtrar localmente', async ({ page }) => {
+  await page.goto('/nosotros/');
+  const section = page.locator('[data-labm-team]');
+  // Variante editorial local: los integrantes públicos pertenecen a otros grupos.
+  await section.locator('[data-labm-team-card]').evaluateAll((cards) => cards.forEach((card) => card.setAttribute('data-labm-team-group', 'comite')));
+  await section.getByRole('link', { name: 'Entrenadores', exact: true }).click();
+  await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(0);
+  await expect(section.getByRole('status')).toHaveText('No hay integrantes publicados en este grupo.');
+  await section.getByRole('link', { name: 'Todos', exact: true }).click();
+  await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+  await expect(section.getByRole('status')).toBeHidden();
+});
+
+test('Documentos limpia ambas regiones por teclado y restablece todos los controles', async ({ page }) => {
+  for (const region of ['formulario', 'vacio']) {
+    await page.goto('/documentos/?texto=sin-resultados-ficticios&categoria=desconocida&anio=1900&orden=antiguos&pagina=999');
+    const form = page.locator('.labm-documents-filters form');
+    const empty = page.getByRole('region', { name: 'No encontramos documentos' });
+    const clear = (region === 'formulario' ? form : empty).getByRole('link', { name: 'Limpiar filtros', exact: true });
+    await expect(clear).toHaveAttribute('href', /\/documentos\/$/);
+    await activateLinkByKeyboard(page, clear);
+    await expect(page).toHaveURL(/\/documentos\/$/);
+    await expect(form.getByLabel('Buscar', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Categoría', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Año', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Orden', { exact: true })).toHaveValue('recientes');
+    await expect(page.getByRole('region', { name: 'Documentos publicados' })).toBeVisible();
+    await expect(page.getByText(/documento privado/i)).toHaveCount(0);
+  }
 });

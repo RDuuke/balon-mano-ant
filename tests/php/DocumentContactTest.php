@@ -1232,4 +1232,84 @@ final class DocumentContactTest extends TestCase {
 
 		self::assertMatchesRegularExpression( '/<a href="[^"]+">política de privacidad<\/a>/u', $html );
 	}
+
+	/** Las entradas no escalares no producen avisos ni consumen un estado ajeno. */
+	public function test_contact_prg_rejects_array_query_without_consuming_state(): void {
+		$previous_get = $_GET;
+		$state_id     = 'Array';
+		$key          = 'labm_contact_state_' . hash( 'sha256', $state_id );
+		$state        = array( 'ok' => true, 'errors' => array() );
+		set_transient( $key, $state, 10 * MINUTE_IN_SECONDS );
+		$_GET['contacto_estado'] = array( 'no-es-un-identificador' );
+		set_error_handler(
+			static function ( $severity, $message, $file, $line ) {
+				throw new ErrorException( $message, 0, $severity, $file, $line );
+			}
+		);
+
+		try {
+			$html = labm_theme_render_contact();
+			self::assertStringNotContainsString( 'Recibimos tu mensaje.', $html );
+			self::assertSame( $state, get_transient( $key ) );
+			unset( $_GET['contacto_estado'] );
+			self::assertStringContainsString( 'data-labm-contact-form', labm_theme_render_contact() );
+		} finally {
+			restore_error_handler();
+			$_GET = $previous_get;
+			delete_transient( $key );
+		}
+	}
+
+	/** Un método no escalar se rechaza antes de procesar el formulario. */
+	public function test_contact_handler_rejects_array_method_without_delivery(): void {
+		$previous_server = $_SERVER;
+		$previous_post   = $_POST;
+		$state_ids       = array();
+		$sent            = false;
+		$mail_filter     = static function () use ( &$sent ) {
+			$sent = true;
+			return true;
+		};
+		$redirect_filter = static function ( $location ) use ( &$state_ids ) {
+			parse_str( (string) wp_parse_url( $location, PHP_URL_QUERY ), $query );
+			$state_ids[] = $query['contacto_estado'];
+			throw new RuntimeException( 'Redirección interceptada por la prueba.' );
+		};
+		$_POST = array( 'nonce' => 'invalido' );
+		add_filter( 'pre_wp_mail', $mail_filter );
+		add_filter( 'wp_redirect', $redirect_filter );
+
+		try {
+			foreach ( array( array( 'POST' ), null, 'GET', 'post' ) as $method ) {
+				if ( null === $method ) {
+					unset( $_SERVER['REQUEST_METHOD'] );
+				} else {
+					$_SERVER['REQUEST_METHOD'] = $method;
+				}
+				try {
+					labm_core_handle_contact_send();
+					self::fail( 'El handler debe redirigir.' );
+				} catch ( RuntimeException $exception ) {
+					self::assertSame( 'Redirección interceptada por la prueba.', $exception->getMessage() );
+				}
+				$state = labm_core_contact_consume_state( end( $state_ids ) );
+				self::assertFalse( $state['ok'] );
+				if ( 'post' === $method ) {
+					self::assertContains( 'nonce', $state['errors'] );
+				} else {
+					self::assertSame( array( 'request' ), $state['errors'] );
+				}
+			}
+			self::assertCount( 4, $state_ids );
+			self::assertFalse( $sent );
+		} finally {
+			$_SERVER = $previous_server;
+			$_POST   = $previous_post;
+			remove_filter( 'pre_wp_mail', $mail_filter );
+			remove_filter( 'wp_redirect', $redirect_filter );
+			foreach ( $state_ids as $state_id ) {
+				delete_transient( 'labm_contact_state_' . hash( 'sha256', $state_id ) );
+			}
+		}
+	}
 }

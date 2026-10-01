@@ -37,22 +37,28 @@ class LABM_Fixtures_Command {
 			static function ( $definition, $index ) use ( $images ) {
 				$image = $images[ $index % count( $images ) ];
 				return array(
-					'post_name'    => 'demo-labm-noticia-' . $definition[0],
-					'post_title'   => self::MARKER . ' ' . $definition[1],
-					'post_excerpt' => self::MARKER . ' ' . $definition[2],
-					'post_content' => self::rich_news_content( $definition[2] ),
-					'post_type'    => 'labm_actualidad',
-					'post_status'  => 'publish',
-					'post_date'    => $definition[3],
-					'meta'         => array( 'labm_demo_image' => $image ),
-					'terms'        => array( 'labm_categoria' => array( 'Noticias demo' ) ),
-					'featured_image'     => 'convocatoria' === $definition[0] ? '' : $image,
-					'featured_image_alt' => 'Imagen ficticia para la noticia demo ' . $definition[0],
+					'post_name'            => 'demo-labm-noticia-' . $definition[0],
+					'post_title'           => self::MARKER . ' ' . $definition[1],
+					'post_excerpt'         => self::MARKER . ' ' . $definition[2],
+					'post_content'         => self::rich_news_content( $definition[2] ),
+					'post_type'            => 'labm_actualidad',
+					'post_status'          => 'publish',
+					'post_date'            => $definition[3],
+					'meta'                 => array( 'labm_demo_image' => $image ),
+					'terms'                => array( 'labm_categoria' => array( 'Noticias demo' ) ),
+					'featured_image'       => 'convocatoria' === $definition[0] ? '' : $image,
+					'featured_image_alt'   => 'Imagen ficticia para la noticia demo ' . $definition[0],
 					'clear_featured_image' => 'convocatoria' === $definition[0],
-					'gallery_images'      => 'resultado' === $definition[0]
+					'gallery_images'       => 'resultado' === $definition[0]
 						? array(
-							array( 'path' => $images[0], 'alt' => 'Equipo ficticio durante una jornada de balonmano' ),
-							array( 'path' => $images[1], 'alt' => 'Seleccion ficticia de balonmano en actividad' ),
+							array(
+								'path' => $images[0],
+								'alt'  => 'Equipo ficticio durante una jornada de balonmano',
+							),
+							array(
+								'path' => $images[1],
+								'alt'  => 'Seleccion ficticia de balonmano en actividad',
+							),
 						)
 						: array(),
 				);
@@ -62,12 +68,23 @@ class LABM_Fixtures_Command {
 		);
 	}
 
-	/** Construye contenido Gutenberg enriquecido para las noticias ficticias de portada. */
+	/**
+	 * Construye contenido Gutenberg enriquecido para las noticias ficticias de portada.
+	 *
+	 * @param string $summary Resumen editorial de la noticia ficticia.
+	 * @return string
+	 */
 	private static function rich_news_content( $summary ) {
 		return "<!-- wp:heading {\"level\":2} -->\n<h2>Una experiencia editorial de demostracion</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>" . self::MARKER . ' ' . esc_html( $summary ) . "</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:quote -->\n<blockquote class=\"wp-block-quote\"><p>Este contenido es ficticio y permite revisar la lectura completa de una noticia.</p></blockquote>\n<!-- /wp:quote -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\"><li>Informacion editorial de ejemplo.</li><li>Contenido preparado para pruebas locales.</li></ul>\n<!-- /wp:list -->";
 	}
 
-	/** Anexa una galeria nativa de Gutenberg con adjuntos y alternativas disponibles. */
+	/**
+	 * Anexa una galeria nativa de Gutenberg con adjuntos y alternativas disponibles.
+	 *
+	 * @param string $content Contenido editorial previo.
+	 * @param int[]  $attachments IDs de los adjuntos de la galeria.
+	 * @return string
+	 */
 	private static function gallery_block_content( $content, $attachments ) {
 		$images = array();
 		foreach ( $attachments as $attachment_id ) {
@@ -218,6 +235,8 @@ class LABM_Fixtures_Command {
 	 * Importa o reutiliza un logo demo como adjunto de WordPress.
 	 *
 	 * @param string $relative_path Ruta relativa dentro del tema.
+	 * @param string $alt Texto alternativo de la imagen.
+	 * @param string $prefix Prefijo del slug del adjunto demo.
 	 * @return int
 	 */
 	private static function ensure_demo_image_attachment( $relative_path, $alt = '', $prefix = 'demo-labm-image-' ) {
@@ -265,11 +284,6 @@ class LABM_Fixtures_Command {
 		return (int) $attachment_id;
 	}
 
-	/** Importa o reutiliza un logo demo como adjunto de WordPress. */
-	private static function ensure_demo_attachment( $relative_path ) {
-		return self::ensure_demo_image_attachment( $relative_path, '', 'demo-labm-logo-' );
-	}
-
 	/**
 	 * Mapa revisable de documentos legales iniciales. Los títulos provienen de sus nombres y son editables en WordPress.
 	 *
@@ -307,7 +321,7 @@ class LABM_Fixtures_Command {
 				'post_status'    => 'any',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
-				'meta_query'     => array(
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Reconciliacion explicita de WP-CLI por prefijo de origen; fuera de solicitudes publicas.
 					array(
 						'key'     => 'labm_document_source_key',
 						'value'   => $source_prefix,
@@ -368,7 +382,7 @@ class LABM_Fixtures_Command {
 				continue;
 			}
 			$current_keys[] = $key;
-			$attachments = get_posts(
+			$attachments    = get_posts(
 				array(
 					'post_type'      => 'attachment',
 					'post_status'    => 'inherit',
@@ -377,7 +391,7 @@ class LABM_Fixtures_Command {
 					'meta_value'     => $key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Clave estable del importador.
 				)
 			);
-			$attachment  = $attachments ? (int) $attachments[0]->ID : 0;
+			$attachment     = $attachments ? (int) $attachments[0]->ID : 0;
 			if ( ! $attachment ) {
 				$upload = wp_upload_bits( $filename, null, file_get_contents( $path ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fuente local validada por operación administrativa.
 				if ( ! empty( $upload['error'] ) ) {
@@ -495,14 +509,14 @@ class LABM_Fixtures_Command {
 					'post_status'  => 'publish',
 				),
 				array(
-					'post_name'    => 'demo-labm-actualidad-limite',
-					'post_title'   => self::MARKER . ' Evento en fecha limite',
-					'post_excerpt' => self::MARKER . ' Evento ficticio para revisar la fecha destacada y su lectura completa.',
-					'post_content' => self::rich_news_content( 'Evento ficticio para revisar la fecha destacada y su lectura completa.' ),
-					'post_type'    => 'labm_actualidad',
-					'post_status'  => 'publish',
-					'meta'         => array( 'labm_fecha_evento' => '2026-01-01' ),
-					'terms'        => array( 'labm_categoria' => array( 'Noticias' ) ),
+					'post_name'          => 'demo-labm-actualidad-limite',
+					'post_title'         => self::MARKER . ' Evento en fecha limite',
+					'post_excerpt'       => self::MARKER . ' Evento ficticio para revisar la fecha destacada y su lectura completa.',
+					'post_content'       => self::rich_news_content( 'Evento ficticio para revisar la fecha destacada y su lectura completa.' ),
+					'post_type'          => 'labm_actualidad',
+					'post_status'        => 'publish',
+					'meta'               => array( 'labm_fecha_evento' => '2026-01-01' ),
+					'terms'              => array( 'labm_categoria' => array( 'Noticias' ) ),
 					'featured_image'     => 'assets/images/hero-balonmano-seleccion-v1.png',
 					'featured_image_alt' => 'Imagen ficticia para el evento demo',
 				),

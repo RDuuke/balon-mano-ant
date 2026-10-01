@@ -54,7 +54,7 @@ Invoke-Gate 'compose-config' 'docker' { docker compose --env-file .env.example c
 Invoke-Gate 'composer-test' 'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 test }
 if ($SkipCoverage) {
     # Sin cobertura, la capa de integracion conserva su ejecucion normal.
-    Invoke-Gate 'wordpress-integration' 'docker' { docker compose run --rm -T -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v "${root}:/work:ro" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist }
+    Invoke-Gate 'wordpress-integration' 'docker' { docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v "${root}:/work:ro" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist }
 } else {
     # Coverage ejecuta la misma suite de integracion y aporta tambien su evidencia.
     Invoke-Gate 'php-coverage' 'docker' {} -IsolatedScript (Join-Path $root 'scripts/coverage.ps1')

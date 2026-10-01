@@ -64,9 +64,34 @@ final class PublicExperienceTest extends TestCase {
 		self::assertStringContainsString( 'Director técnico', $html );
 
 		$filtered = labm_theme_render_about_team( 'entrenadores' );
-		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-card' ) );
+		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-group="entrenadores">' ) );
 		self::assertStringContainsString( 'aria-current="true"', $filtered );
-		self::assertStringNotContainsString( 'Mateo Giraldo', $filtered );
+		self::assertSame( 2, preg_match_all( '/<article\b[^>]*data-labm-team-card[^>]* hidden>/', $filtered ) );
+		self::assertStringContainsString( 'Mateo Giraldo', $filtered );
+	}
+
+	/** Un grupo seleccionado sin miembros mantiene filtros y anuncia el vacío. */
+	public function test_about_team_selected_empty_group_keeps_filters(): void {
+		$members = get_posts( array( 'post_type' => 'labm_integrante', 'posts_per_page' => -1, 'tax_query' => array( array( 'taxonomy' => 'labm_grupo_integrante', 'field' => 'slug', 'terms' => 'entrenadores' ) ) ) );
+		self::assertNotEmpty( $members );
+		try {
+			foreach ( $members as $member ) {
+				wp_update_post( array( 'ID' => $member->ID, 'post_status' => 'private' ) );
+			}
+			$html = labm_theme_render_about_team( 'entrenadores' );
+			self::assertStringContainsString( 'No hay integrantes publicados en este grupo.', $html );
+			self::assertStringContainsString( 'data-labm-team-empty role="status"', $html );
+			self::assertStringContainsString( 'data-labm-team-filter-group="entrenadores" aria-current="true"', $html );
+			self::assertSame( 4, substr_count( $html, 'data-labm-team-filter' ) - substr_count( $html, 'data-labm-team-filter-group' ) );
+			foreach ( $members as $member ) {
+				self::assertStringNotContainsString( preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $member->post_title ), $html );
+			}
+		} finally {
+			foreach ( $members as $member ) {
+				wp_update_post( array( 'ID' => $member->ID, 'post_status' => $member->post_status ) );
+			}
+		}
+		self::assertSame( labm_theme_render_about_team( '' ), labm_theme_render_about_team( 'desconocido' ) );
 	}
 
 	/** Integrantes incompletos o no públicos nunca se revelan. */

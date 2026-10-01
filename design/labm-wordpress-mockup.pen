@@ -2579,7 +2579,7 @@
               "fill": {
                 "type": "image",
                 "enabled": true,
-                "url": "./images/generated-1787888852031.png",
+                "url": "images/generated-1787888852031.png",
                 "mode": "fill"
               }
             },

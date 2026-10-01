@@ -1,0 +1,843 @@
+{
+  "canonical_version": "20261001T194755441Z-rduuqe-RDUUQE",
+  "backup": "backup-manual-20261001T202151584Z-rduuqe-RDUUQE.zip",
+  "backup_sha256": "d9bb870b0c5a47e0ab68da0838dffb25bc4c3b67b5553a9dda423bb5ce08ca30",
+  "tables": {
+    "wp_options": {
+      "added": 29,
+      "removed": 25,
+      "changed": {
+        "1": [
+          "option_value"
+        ],
+        "129": [
+          "option_value"
+        ],
+        "709": [
+          "option_value"
+        ],
+        "1723": [
+          "option_value"
+        ],
+        "252": [
+          "option_value"
+        ],
+        "131": [
+          "option_value"
+        ]
+      },
+      "changed_options": [
+        "cron",
+        "theme_mods_twentytwentyfive",
+        "labm_content_sync_version",
+        "_site_transient_update_core",
+        "_transient_health-check-site-status-result",
+        "theme_mods_labm"
+      ],
+      "added_options": [
+        "labm_modalidad_children",
+        "labm_categoria_children",
+        "_site_transient_timeout_theme_roots",
+        "_site_transient_theme_roots",
+        "_transient_timeout_labm_document_admin_failed_753",
+        "_transient_labm_document_admin_failed_753",
+        "_transient_timeout_labm_document_admin_failed_754",
+        "_transient_labm_document_admin_failed_754",
+        "labm_smtp_recipients_migrated",
+        "_site_transient_update_themes",
+        "_site_transient_update_plugins",
+        "_site_transient_timeout_wp_theme_files_patterns-07bc9037580cc9cff5ebbfc10d5d54a6",
+        "_site_transient_wp_theme_files_patterns-07bc9037580cc9cff5ebbfc10d5d54a6",
+        "_site_transient_timeout_community-events-6718ef04d3f46d7f6ff6aabe77f33591",
+        "_site_transient_community-events-6718ef04d3f46d7f6ff6aabe77f33591",
+        "_site_transient_timeout_feed_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_feed_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_timeout_feed_mod_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_feed_mod_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_timeout_feed_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_feed_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_timeout_feed_mod_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_feed_mod_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_transient_timeout_dash_v2_88ae138922fe95674369b1cb3d215a2b",
+        "_transient_dash_v2_88ae138922fe95674369b1cb3d215a2b",
+        "_site_transient_timeout_wp_remote_block_patterns_5a4555f456799b004bc3bcc0c84b3a33",
+        "_site_transient_wp_remote_block_patterns_5a4555f456799b004bc3bcc0c84b3a33",
+        "_site_transient_timeout_wp_remote_block_patterns_41be82a058d8709dc0898dbabe5f20b7",
+        "_site_transient_wp_remote_block_patterns_41be82a058d8709dc0898dbabe5f20b7"
+      ],
+      "removed_options": [
+        "_site_transient_timeout_browser_bb9f4980ea5e34b8cf674a323d86c584",
+        "_site_transient_browser_bb9f4980ea5e34b8cf674a323d86c584",
+        "_site_transient_update_plugins",
+        "labm_smtp_recipients_migrated",
+        "_site_transient_timeout_community-events-6718ef04d3f46d7f6ff6aabe77f33591",
+        "_site_transient_community-events-6718ef04d3f46d7f6ff6aabe77f33591",
+        "_site_transient_timeout_feed_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_feed_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_timeout_feed_mod_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_feed_mod_9bbd59226dc36b9b26cd43f15694c5c3",
+        "_site_transient_timeout_feed_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_feed_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_timeout_feed_mod_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_feed_mod_d117b5738fbd35bd8c0391cda1f2b5d9",
+        "_site_transient_timeout_theme_roots",
+        "_site_transient_theme_roots",
+        "_site_transient_wp_theme_files_patterns-07bc9037580cc9cff5ebbfc10d5d54a6",
+        "_site_transient_update_themes",
+        "_site_transient_timeout_wp_remote_block_patterns_5a4555f456799b004bc3bcc0c84b3a33",
+        "_site_transient_wp_remote_block_patterns_5a4555f456799b004bc3bcc0c84b3a33",
+        "_site_transient_timeout_wp_remote_block_patterns_41be82a058d8709dc0898dbabe5f20b7",
+        "_site_transient_wp_remote_block_patterns_41be82a058d8709dc0898dbabe5f20b7",
+        "_transient_doing_cron",
+        "labm_modalidad_children",
+        "labm_categoria_children"
+      ]
+    },
+    "wp_postmeta": {
+      "added": 47,
+      "removed": 14,
+      "changed": {}
+    },
+    "wp_posts": {
+      "added": 65,
+      "removed": 8,
+      "changed": {
+        "429": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4883": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "3393": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "13": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "3391": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "428": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "868": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4888": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "5": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4886": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "18": [
+          "post_date",
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "430": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "867": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "14": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "6": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "16": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "188": [
+          "post_date",
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1542": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1559": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "3944": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4882": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4884": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4880": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "3943": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "865": [
+          "post_content",
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "10": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1558": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "9": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "17": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1560": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "2817": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "11": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4889": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "20": [
+          "post_date",
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "3389": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "7": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "19": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4881": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4885": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1557": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "12": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "5285": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "8": [
+          "post_date",
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "866": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1561": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "869": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "1556": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4890": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "870": [
+          "post_modified",
+          "post_modified_gmt"
+        ],
+        "4887": [
+          "post_modified",
+          "post_modified_gmt"
+        ]
+      },
+      "added_posts": [
+        {
+          "ID": "9661",
+          "post_name": "demo-labm-integrante-andres-montoya",
+          "post_type": "labm_integrante",
+          "post_title": "[DEMO LABM — FICTICIO] Andrés Montoya",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9663",
+          "post_name": "mision-nosotros",
+          "post_type": "post",
+          "post_title": "[DEMO LABM — FICTICIO] Misión",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9664",
+          "post_name": "9663-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Misión",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9666",
+          "post_name": "banner-nosotros",
+          "post_type": "post",
+          "post_title": "[DEMO LABM — FICTICIO] Somos la Liga",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9667",
+          "post_name": "demo-labm-image-hero-balonmano-seleccion-v1",
+          "post_type": "attachment",
+          "post_title": "[DEMO LABM — FICTICIO] Imagen hero-balonmano-seleccion-v1",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9668",
+          "post_name": "9666-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Somos la Liga",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9670",
+          "post_name": "3944-revision-v1",
+          "post_type": "revision",
+          "post_title": "Documentos privados",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9671",
+          "post_name": "3944-revision-v1",
+          "post_type": "revision",
+          "post_title": "",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9672",
+          "post_name": "3944-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Documentos",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9766",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Acta valida",
+          "post_status": "draft"
+        },
+        {
+          "ID": "9776",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Acta segura",
+          "post_status": "draft"
+        },
+        {
+          "ID": "9785",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Con fecha",
+          "post_status": "draft"
+        },
+        {
+          "ID": "9790",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Acta",
+          "post_status": "draft"
+        },
+        {
+          "ID": "9792",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "General",
+          "post_status": "draft"
+        },
+        {
+          "ID": "9818",
+          "post_name": "adjunto-1-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 1",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9820",
+          "post_name": "adjunto-2-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 2",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9822",
+          "post_name": "adjunto-3-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 3",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9824",
+          "post_name": "adjunto-4-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 4",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9826",
+          "post_name": "adjunto-5-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 5",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9828",
+          "post_name": "adjunto-6-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 6",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9830",
+          "post_name": "adjunto-7-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 7",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9832",
+          "post_name": "adjunto-8-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 8",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9834",
+          "post_name": "adjunto-9-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 9",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9836",
+          "post_name": "adjunto-10-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 10",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9838",
+          "post_name": "adjunto-11-43",
+          "post_type": "attachment",
+          "post_title": "Adjunto 11",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9840",
+          "post_name": "adjunto-paginado-1-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 1",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9842",
+          "post_name": "adjunto-paginado-2-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 2",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9844",
+          "post_name": "adjunto-paginado-3-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 3",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9846",
+          "post_name": "adjunto-paginado-4-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 4",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9848",
+          "post_name": "adjunto-paginado-5-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 5",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9850",
+          "post_name": "adjunto-paginado-6-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 6",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9852",
+          "post_name": "adjunto-paginado-7-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 7",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9854",
+          "post_name": "adjunto-paginado-8-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 8",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9856",
+          "post_name": "adjunto-paginado-9-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 9",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9858",
+          "post_name": "adjunto-paginado-10-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 10",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9860",
+          "post_name": "adjunto-paginado-11-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto paginado 11",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9862",
+          "post_name": "importacion-obsoleta__trashed-34",
+          "post_type": "labm_documento",
+          "post_title": "Importación obsoleta",
+          "post_status": "trash"
+        },
+        {
+          "ID": "9864",
+          "post_name": "adjunto-publico-39",
+          "post_type": "attachment",
+          "post_title": "Adjunto público",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9870",
+          "post_name": "4-revision-v1",
+          "post_type": "revision",
+          "post_title": "Contenido editorial ajeno",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9871",
+          "post_name": "4-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Inicio",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9876",
+          "post_name": "",
+          "post_type": "post",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9877",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9880",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9881",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9884",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9885",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9886",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9887",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9888",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9889",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9890",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9891",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9892",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9895",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9898",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9899",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9900",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9901",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9902",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9904",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9907",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9908",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9909",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9910",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9911",
+          "post_name": "",
+          "post_type": "labm_documento",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        }
+      ],
+      "removed_posts": [
+        {
+          "ID": "5656",
+          "post_name": "",
+          "post_type": "post",
+          "post_title": "Auto Draft",
+          "post_status": "auto-draft"
+        },
+        {
+          "ID": "9310",
+          "post_name": "demo-labm-integrante-andres-montoya",
+          "post_type": "labm_integrante",
+          "post_title": "[DEMO LABM — FICTICIO] Andrés Montoya",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9312",
+          "post_name": "mision-nosotros",
+          "post_type": "post",
+          "post_title": "[DEMO LABM — FICTICIO] Misión",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9313",
+          "post_name": "9312-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Misión",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9315",
+          "post_name": "banner-nosotros",
+          "post_type": "post",
+          "post_title": "[DEMO LABM — FICTICIO] Somos la Liga",
+          "post_status": "publish"
+        },
+        {
+          "ID": "9316",
+          "post_name": "demo-labm-logo-arco-comun",
+          "post_type": "attachment",
+          "post_title": "[DEMO LABM — FICTICIO] Logo arco-comun",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9317",
+          "post_name": "9315-revision-v1",
+          "post_type": "revision",
+          "post_title": "[DEMO LABM — FICTICIO] Somos la Liga",
+          "post_status": "inherit"
+        },
+        {
+          "ID": "9562",
+          "post_name": "demo-labm-image-hero-balonmano-seleccion-v1",
+          "post_type": "attachment",
+          "post_title": "[DEMO LABM — FICTICIO] Imagen hero-balonmano-seleccion-v1",
+          "post_status": "inherit"
+        }
+      ],
+      "content_changes": {
+        "865": {
+          "slug": "demo-labm-noticia-resultado",
+          "same_without_media_ids": false
+        }
+      }
+    },
+    "wp_term_relationships": {
+      "added": 8,
+      "removed": 3,
+      "changed": {}
+    }
+  }
+}
