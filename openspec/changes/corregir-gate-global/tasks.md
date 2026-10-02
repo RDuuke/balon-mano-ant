@@ -35,8 +35,8 @@ Cada lote sigue RED→GREEN→REFACTOR genuino, registrando comandos/resultados 
 ## Fase 6: condiciones visuales y handoff
 - [ ] 6.1 Extraer referencias/medidas existentes Documentos y frame Actualidad `Nrclx` en `apply-progress.md`; registrar aprobación vigente a320/768/1024/1200/1440px.
 - [ ] 6.2 Tras6.1, RED→GREEN→REFACTOR en `tests/e2e/public-experience.spec.ts`/`wp-content/themes/labm/style.css`: composición y texto largo sin desborde.
-- [ ] 6.3 Registrar handoff reconciliado de Detalle en `apply-progress.md`; hasta recibirlo bloquear plantilla/aserciones asociadas; preservar pendientes.
-- [ ] 6.4 Tras6.3, RED→GREEN→REFACTOR: ajustar exclusivamente contratos globales reconciliados de `wp-content/themes/labm/templates/single-labm_actualidad.html` y pruebas asociadas.
+- [x] 6.3 Registrar handoff reconciliado de Detalle en `apply-progress.md`; hasta recibirlo bloquear plantilla/aserciones asociadas; preservar pendientes.
+- [x] 6.4 Tras6.3, RED→GREEN→REFACTOR: ajustar exclusivamente contratos globales reconciliados de `wp-content/themes/labm/templates/single-labm_actualidad.html` y pruebas asociadas.
 
 ## Fase 7: cierre
 - [ ] 7.1 Limpiar/restaurar recursos propios; si persistencia cambió, ejecutar `scripts/content-sync.ps1` oficial y verificar versión/hash/exclusiones; comprobar LF modificados.

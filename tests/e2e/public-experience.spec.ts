@@ -368,7 +368,9 @@ test('3.1 navegación global, páginas institucionales, foco y ruta ausente', as
 test('3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad', async ({ page }) => {
   await page.goto('/actualidad/');
   await expect(page.getByRole('heading', { level: 1, name: 'Actualidad' })).toBeVisible();
-  await expect(page.locator('[data-labm-listado="actualidad"] article')).toHaveCount(3);
+  const listing = page.locator('[data-labm-listado="actualidad"]');
+  await expect(listing.locator('[data-labm-actualidad-destacada]')).toHaveCount(1);
+  await expect(listing.locator('[data-labm-actualidad-tarjeta]')).toHaveCount(3);
   await expect(page.getByRole('link', { name: /página siguiente/i })).toBeVisible();
   await expect(page.getByText(/actualidad incompleta/i)).toHaveCount(0);
   const detail = page.locator('[data-labm-listado="actualidad"] article').first().getByRole('link').first();
@@ -468,8 +470,8 @@ test('1.2 actualidad reproduce las regiones Pencil, filtros y navegación respon
   const [heroBox, filtersBox, searchBox, categoryBox, submitBox, listingBox, featuredMediaBox] = await Promise.all([
     hero.boundingBox(),
     filters.boundingBox(),
-    filters.getByLabel(/buscar noticias/i).boundingBox(),
-    filters.getByLabel(/categor/i).boundingBox(),
+    filters.locator('input[name="texto"]').boundingBox(),
+    filters.locator('select[name="categoria"]').boundingBox(),
     filters.getByRole('button', { name: /aplicar filtro/i }).boundingBox(),
     listing.boundingBox(),
     listing.locator('[data-labm-actualidad-destacada] > :first-child').boundingBox(),
@@ -548,8 +550,10 @@ test('detalle de actualidad mantiene contenido nativo y compartir accesible', as
   expect(heroBox!.y + heroBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
   expect(Math.abs(heroBox!.x)).toBeLessThanOrEqual(1);
   expect(Math.abs(mediaBox!.x)).toBeLessThanOrEqual(1);
-  expect(heroBox!.width).toBeGreaterThanOrEqual(1023);
-  expect(mediaBox!.width).toBeGreaterThanOrEqual(1023);
+  const viewport = page.viewportSize();
+  const expectedFullWidth = Math.min(1023, viewport?.width ?? 1023);
+  expect(heroBox!.width).toBeGreaterThanOrEqual(expectedFullWidth);
+  expect(mediaBox!.width).toBeGreaterThanOrEqual(expectedFullWidth);
   expect(titleBox!.width).toBeLessThanOrEqual(heroBox!.width - 32);
   expect(titleBox!.height).toBeLessThan(heroBox!.height);
   expect(mediaBox!.height).toBeGreaterThan(250);

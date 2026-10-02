@@ -1,5 +1,11 @@
 # Progreso APPLY: corregir-gate-global
 
+## Reconciliación de Detalle y recursos visuales disponibles — 2026-10-02
+
+- **Handoff reconciliado (6.3):** el estado pausado de `detalle-actualidad` estaba desfasado: enumera pendientes 1.2 y 3.1–3.4, pero su `tasks.md` los marca completos y `apply-progress.md` registra GREEN focal en Playwright para escritorio, 320 y 768 px, incluidos copia, modo sin JavaScript, axe y ausencia de desborde. El contrato vigente es: hero negro, medio destacado a ancho completo, `post-content` nativo, galería `core/gallery`, compartir seguro y retorno; no se admite ubicación ni una fuente de galería alternativa.
+- **Contrato aplicado (6.4):** `single-labm_actualidad.html` ya respeta el orden reconciliado `hero -> media -> post-content -> detalle`. Las aserciones de `public-experience.spec.ts` ya verifican hero/medio de borde a borde y contenido nativo. No se modifica otra plantilla ni se introduce ningún contrato nuevo.
+- **Recursos visuales:** `design/exports/documentos-desktop.png`, `design/exports/actualidad-desktop.png` y `design/exports/detalle-actualidad-desktop.png` están presentes después del pull. El brief fija 1440 px para los frames de escritorio, ancho editorial aproximado de 1200 px y compatibilidad mínima con 320 px. No hay evidencia de aprobación de las medidas 768/1024/1200 ni del identificador `Nrclx`; por ello 6.1–6.2 continúan pendientes y no se inventan medidas.
+
 ## Lote 3: calidad del importador de fixtures
 
 STATUS previo read-only: APPLY,5/26 completas,21 pendientes, sin aprobacion ni dependencias bloqueantes; skill_resolution injected. Usuario aprobo el siguiente lote con ok. Se ejecutan4.1 y4.3, manteniendo4.2, navegador, dimensiones y Detalle pendientes.
@@ -178,3 +184,20 @@ STATUS previo read-only: APPLY8/26 completas18pendientes, awaiting_approval fals
 Runner focal reproducible sin instalación: imagen oficial `labm-browser-gate:node-22.13.1`, volumen `labm_playwright_browsers`, CLI existente `node node_modules/.pnpm/@playwright+test@1.54.1/node_modules/@playwright/test/cli.js test tests/e2e/public-experience.spec.ts tests/e2e/home.spec.ts --grep 'Nosotros anuncia|Nosotros filtros|Documentos limpia|medios cargados' --project desktop-1024 --workers 1`, WP_URL http://host.docker.internal:8080. Home/siteurl temporalmente ajustados con WP-CLI; restaurados mediante proceso oficial. No cambios en scripts/configuración ni uso de runner global como prueba focal.
 
 Restore oficial backup215138547Z exit0 salida3c4bff, safetybackup-pre-restore220646608Z. Status oficial posterior salida1a6b79 confirma local/canónico20261001T194755441Z coinciden. SHA256 canónicoffe9c63b752090ec7d53c8b3822ea70041c9e3e6eb3dfffd7f0a3188cf6e045e coincide latest.json. Sin cambio persistido final: no procede Push/actualizar paquete. Fixtures temporales no se exportan al canónico; no se modifican cuentas. Artefactos Selecciones y Detalle preservados sin edición. LF de los ocho archivos propios y git diff--check comprobados. Total12/26completas14pendientes; siguiente lote requiere continuación del usuario.
+
+## Continuación APPLY bloqueada por infraestructura — 2026-10-01 21:19
+
+STATUS read-only: APPLY, 12/26 completas y 14 pendientes; TDD estricto activo y review budget deshabilitado. Antes de ejecutar los contratos mutables 2.6–2.9, 3.1–3.2 y 5.1–5.2 se intentó preparar el runtime oficial.
+
+- `docker compose ps`: no puede conectar al daemon (`//./pipe/docker_engine` inexistente); Docker Desktop no está disponible.
+- `scripts/content-sync.ps1 -Action Backup`: bloqueado por la política de ejecución local al no estar firmado. La copia oficial previa es requisito para pruebas que crean medios/documentos.
+- Se solicitó iniciar Docker Desktop en `C:\Program Files\Docker\Docker\Docker Desktop.exe`; la ruta no existe. La instalación local solo contiene `cli-plugins`.
+- No se modificó código ni estado WordPress, ni se ejecutaron tests como sustituto del ciclo RED→GREEN. Se mantienen sin marcar las tareas dependientes.
+- Las tareas 6.1–6.2 requieren además referencias y medidas visuales aprobadas; 6.3–6.4 siguen condicionadas al handoff reconciliado de Detalle. No se deben inferir ni tocar plantilla/aserciones asociadas.
+
+## Continuación APPLY — 2026-10-01 21:42
+
+- Docker ya está disponible: daemon 29.7.2; `labm-db-1` y `labm-wordpress-1` están saludables.
+- Se inició el backup oficial con `scripts/content-sync.ps1 -Action Backup`, pero no quedó confirmado ni produjo un archivo nuevo en `.content-sync/backups` porque el proceso de Codex se ejecuta como `DESKTOP-JP8MFJ8\CodexSandboxOffline`.
+- En esa identidad, tanto `content-sync.ps1` como `validate-env.ps1` devuelven `UnknownError`: la cadena termina en una raíz no compatible con el proveedor de confianza. La firma que el usuario comprobó como válida está confiada en su perfil interactivo, no en el almacén que usa el ejecutor.
+- No se iniciaron pruebas mutables ni se marcaron tareas: 2.6–2.9, 3.1–3.2, 5.1–5.2 y 7.1–7.2 conservan el requisito de backup oficial. Las condiciones de referencia y handoff de 6.1–6.4 permanecen pendientes de evidencia reconciliada; las exportaciones presentes no sustituyen esa aprobación.

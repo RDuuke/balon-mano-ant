@@ -3,6 +3,6 @@ phase: APPLY
 change: "corregir-gate-global"
 awaiting_approval: false
 completed: false
-pending_tasks: ["2.6", "2.7", "2.8", "2.9", "3.1", "3.2", "5.1", "5.2", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2"]
-modified_artifacts: ["design.md"]
-notes: "Lote5 completa2.1,2.2,2.3,2.11; total12/26,14pendientes. PHP5tests52assertions; browserfocal5/5PASS conservado trasrefactor; PHPCSfunctions0 yPHPStanNoerrors. Restoreoficial215138547Z exit0; canonicohash/version intactos. Gateintegral, contraste y visual/handoff pendientes. DESIGN-FIX registra ruta about-team.js para contrato vacio ya aprobado; fase y tareas preservadas. Siguiente lote requiere continuacion del usuario."
+pending_tasks: ["2.6", "2.7", "2.8", "2.9", "3.1", "3.2", "5.1", "5.2", "6.1", "6.2", "7.1", "7.2"]
+modified_artifacts: ["design.md", "tasks.md", "apply-progress.md"]
+notes: "Handoff de Detalle reconciliado con tareas y evidencia existentes; 6.3 y 6.4 completas. El flujo permanece en APPLY por los doce pendientes restantes, incluidos contraste, cobertura, referencias visuales y gate integral. El Pull oficial confirma contenido canónico 20261001T194755441Z-rduuqe-RDUUQE con hash coincidente."

@@ -16,7 +16,7 @@ Text Domain: labm
 	--labm-space-3: clamp(1.5rem, 4vw, 3rem);
 	--labm-radius: .75rem;
 	--labm-green: #AECD25;
-	--labm-green-dark: #789614;
+	--labm-green-dark: #526d00;
 	--labm-black: #202020;
 	--labm-footer-background: #000;
 	--labm-neutral: #F3F6E8;
@@ -38,8 +38,8 @@ body { margin: 0; overflow-x: clip; overflow-wrap: anywhere; color: var(--labm-b
 .labm-about-banner__media { position: relative; min-width: 0; min-height: 24rem; overflow: hidden; line-height: 0; }
 .labm-about-banner__media img { display: block; position: absolute; inset: 0; width: 100%; height: 100% !important; object-fit: cover; object-position: center; }
 .labm-about-banner--without-media .labm-about-banner__content { width: min(100%, var(--labm-content-max)); margin-inline: auto; }
-.labm-documents-banner { display: grid; width: 100vw; max-width: none !important; min-height: 0; height: 21.25rem; margin-right: calc(50% - 50vw) !important; margin-left: calc(50% - 50vw) !important; padding: 4.5rem max(var(--labm-gutter), calc((100vw - var(--labm-content-max)) / 2)) !important; background: #000; color: #fff; }
-.labm-documents-banner__content { display: grid; align-content: center; justify-items: start; width: min(100%, var(--labm-content-max)); min-height: 0; min-width: 0; margin: 0 auto !important; }
+.labm-documents-banner { display: grid; width: 100vw; max-width: none !important; min-height: 22.3125rem; margin-right: calc(50% - 50vw) !important; margin-left: calc(50% - 50vw) !important; background: #000; color: #fff; }
+.labm-documents-banner__content { display: grid; align-content: center; justify-items: start; width: 100%; min-width: 0; margin: 0 !important; padding-block: 4.5rem; padding-inline: clamp(2rem, 8.5vw, 8rem); }
 .labm-documents-banner__eyebrow { margin: 0 0 1.75rem; color: var(--labm-green); font-size: .72rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
 .labm-documents-banner h1 { margin: 0; font-size: clamp(2.75rem, 5vw, 4.25rem); font-weight: 900; letter-spacing: -.035em; line-height: .92; text-transform: uppercase; }
 .labm-documents-banner__summary { max-width: 34rem; margin: 1.75rem 0 0; color: rgb(255 255 255 / 76%); font-size: clamp(.95rem, 1.35vw, 1.15rem); line-height: 1.55; }

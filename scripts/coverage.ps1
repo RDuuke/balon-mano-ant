@@ -43,3 +43,44 @@ Write-Output "Cobertura PHP: $percentage% ($covered/$statements lineas)."
 if ($suiteExit -ne 0) { throw 'La suite de cobertura fallo; Clover actual conservado para diagnostico.' }
 if ($percentage -lt $minimum) { throw "Cobertura PHP $percentage% inferior al minimo $minimum%." }
 Write-Output "PASS cobertura PHP >= $minimum%."
+
+# SIG # Begin signature block
+# MIIHDgYJKoZIhvcNAQcCoIIG/zCCBvsCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxrCEy2EGWK8+n3g29/eZQwR2
+# QF+gggQeMIIEGjCCAoKgAwIBAgIQJVDX8cHCHYNPXcDGpBMWKTANBgkqhkiG9w0B
+# AQsFADAlMSMwIQYDVQQDDBpDb250ZW50IFN5bmMgTG9jYWwgU2lnbmluZzAeFw0y
+# NjEwMDIwMjI2MThaFw0yODEwMDIwMjM2MTdaMCUxIzAhBgNVBAMMGkNvbnRlbnQg
+# U3luYyBMb2NhbCBTaWduaW5nMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKC
+# AYEAsVL4jZOImZAW8MIHJPouSFGZvj3ptOebnnqyr2NFjhOHqrpmH/cR16xOZXg6
+# 16+9Z4CmZO02oIlWiNO5Sl3rAWXU+MBytzZe1ljWVEyj3+8bzs+LwklQHB6vLr4K
+# 9PDyokCiiW6k+U3rk3V8SA+bJX2woTqlBqeWdZulHnpYCwz32rCBQiOLA4KI/hK9
+# voKvsJnAp0n/9ZjRFz2bCEnLvC3lCOMQY7sGPKZkHfPF6z/8mCdywKYfaIDW+Z7C
+# wFEvdWbCxfMy4Y22htrOteMgT9hyQ7jWvTvasQziT5QR3WRi77bRnYgvAAQbgmYX
+# +xG3oa/KkLplnAfkcAMH4MfdhbhuIyqujQWksRSlXKM/63FbJuyq7O6FGLFlQ0SY
+# AFG+vXKrekMalDkKTAAxp6uLrbnerHEUngujpDc2SR7r3xetZ8Zjanjduw4QGaaS
+# ahcYG8jeafUXWprcsel3/jtaoKg5FIkUykxWzP11saR/UQbz1prJ8V1Gr/icoVcp
+# s5gtAgMBAAGjRjBEMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcD
+# AzAdBgNVHQ4EFgQUh085m4j0du0f0mDh+LrKaJVsaUwwDQYJKoZIhvcNAQELBQAD
+# ggGBAB1tEDBmgLPZ/hBApclHgxezqLDhl8scUG+xLjEsXpKUuLn6An8tNBkKzw0g
+# dgp5w3akVlXetMJjc2HBe1HVyE5rXAca92G1FHuSredSjLjtC+XgU3ireh+lNBle
+# p3Zzfpoi1VmBiXy541Z559ZKNoXswFkEB98hmJb28B+/3rhK2IEZzT+EBXAT7OTN
+# jT51bZCL7lsgJVrGzOg2GXBe/DO4eINp6DZDWcxTtOcWy9w44rOHe9d4dfS2SbLS
+# ix0MsKOTE1UkJPrKk+wlFNGC3dJpZ3YBwHR/vPaUc03vBqV/3T4SML2hnjGn+FfG
+# d2xjaYR66QU2EgfXgdYbQdorf9kLEWGGEPBd+EqE8yHWmqmqtofuPyBDNkEfPHqa
+# tRgLPA58og7zzpcAOCQPYIBSNou1ug8QwmlZBMuHeUqySZLgZRLruyxvd1U4PGSS
+# gBNwa5vHxwpLbcNJbDpUacKSdjKlg7jJkgru1cQeuTbPBdJo920Qc+90j1P9rKbw
+# hWMOzDGCAlowggJWAgEBMDkwJTEjMCEGA1UEAwwaQ29udGVudCBTeW5jIExvY2Fs
+# IFNpZ25pbmcCECVQ1/HBwh2DT13AxqQTFikwCQYFKw4DAhoFAKB4MBgGCisGAQQB
+# gjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQwHAYK
+# KwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFDIUig+0
+# 2e2JVIu8djZFLQMIuFKaMA0GCSqGSIb3DQEBAQUABIIBgDpmLDzgR32QabPKCrjI
+# yompP/Dlzd14pdJ/PziibCa0gb7fs7pIpNbpUvYGWEZZTa1nyxO1IOBGJxxyhuN4
+# nteemAo4dKoQ0I8JMvB7R9+aPOSt7/fcxyd4gE4IodgzHn0v+Qx3pNCYHl2mJIHD
+# U/KmCx9tqsaBLhY8rvPhtVqSoXvyuSx52yQEDV1V9sDgUSUDjJlh9E67gnTrFcQy
+# NTwV8F0xJOLczJsqI7vGEXxtTMTqOx9Tv4i/AdrqGCD6u//X+m4BK32/7JUWirc6
+# Tsn8+BM5vf0ZXtBsC2346BWfVUs3O+dbiCWniH/GUYLhdNSzZRLazy3wn7FDAdUc
+# 6+ZV/iNiyh7nIeXi5geqMg8992eyH0yqSZQiJ8Mu3RdKRUG/tmo5SvpCp5gMr1Al
+# TASkOHAFc+r8YHgoNTzHrHNzsLOzCd489rbzvGXMrwGrLd8tke2UoVKxhEF9DekG
+# 7X+Z1AwTig1cQ++51hPwsRGRBvsvjccLpTjOYb4xEumk1g==
+# SIG # End signature block
