@@ -1,4 +1,59 @@
-# VERIFY final tras FIX2: selecciones-backend
+# VERIFY: selecciones-backend — revisión 2026-10-02
+
+status: failed
+
+## Resultado vigente
+
+Las diez tareas de implementación están completas. Los doce escenarios de Selecciones vuelven a ser COMPLIANT mediante `DomainModelTest`: 14 pruebas y 431 aserciones aprobadas. La integración completa también pasa: 171 pruebas y 1763 aserciones, tanto sin cobertura como con PCOV. PHPCS y PHPStan pasan. No se detectó un defecto nuevo de Selecciones que requiriera modificar código.
+
+El cierre sigue bloqueado por el gate global: cobertura fresca 74.10 % (2091/2822 líneas), inferior al 80 %, y suite de navegador sin ejecutar hasta completar. No se archiva el cambio ni se considera aprobado el gate. Los fallos PHP, PHPCS y PHPStan del informe anterior ya no se reproducen en estas ejecuciones; los resultados históricos de navegador no se presentan como resultados actuales.
+
+## Ejecución vigente
+
+| Comprobación | Resultado |
+|---|---|
+| PHPUnit focal `--filter DomainModelTest`, PHP 8.3.33, uid 33 | PASS: 14 pruebas / 431 aserciones |
+| Integración completa `phpunit -c phpunit.integration.xml.dist`, PHP 8.3.33 | PASS: 171 pruebas / 1763 aserciones |
+| `scripts/gate.ps1 -IncludeBrowser` | FAIL, salida 1; Compose, unitarias, PHPCS y PHPStan PASS |
+| Primer intento de cobertura dentro del gate | Fallo de descarga temporal de índices Alpine; sin métrica válida |
+| Reintento de imagen fijada y `scripts/coverage.ps1`, PHP 8.3.20 / PCOV 1.0.12 | Suite PASS: 171 / 1763; umbral FAIL: 74.10 % |
+| Navegador del gate oficial | Preparación prolongada; cancelado antes de obtener resultados de Playwright, salida -1 |
+
+La imagen de navegador sí terminó de construirse; el proceso posterior no produjo resultados de pruebas y Docker respondió con lentitud. Se detuvo exclusivamente el cliente del navegador y después su contenedor `56fc5d4a5604`, con salida 0, antes de restaurar el contenido. No se ejecutó una alternativa local concurrente ni se contabilizaron pruebas inexistentes. Logs: `artifacts/gate/summary.json`, `composer-test.log`, `composer-lint.log`, `composer-analyse.log`, `php-coverage.log` y `browser-portable.log`. El log de cobertura del gate conserva el primer fallo; la métrica posterior procede de la ejecución independiente de `scripts/coverage.ps1` y `artifacts/coverage/clover.xml`, generado `1790986070`.
+
+## Cobertura vigente y trabajo mínimo pendiente
+
+Faltan al menos 167 líneas ejecutadas adicionales para alcanzar 80 % sobre las 2822 líneas actuales. Las líneas sin cubrir se distribuyen entre dominio CMS, SMTP, administración de documentos, fixtures, tema y contacto. No corresponde atribuirlas en conjunto al backend de Selecciones. Continúan siendo necesarias las tareas de cobertura 5.1/5.2 de `corregir-gate-global` y la ejecución completa de navegador; no se alteraron umbrales, exclusiones ni aserciones para aprobar.
+
+La exclusión preexistente `labm-temporary-suite-state` permanece intacta: 171 pruebas representa la suite configurada, no todas las pruebas sin exclusiones. La matriz de doce escenarios y la coherencia del diseño del anexo siguen respaldadas por el resultado focal actual. La advertencia documental TDD preexistente permanece; no se inventó evidencia RED para tareas operativas.
+
+## Persistencia de esta revisión
+
+Respaldo oficial previo: `.content-sync/backups/backup-manual-20261002T235436092Z-User-DESKTOP-UOCJQQ8.zip`. Restauración oficial terminada con salida 0 después de detener el contenedor de pruebas. Respaldo de seguridad del estado reemplazado: `.content-sync/backups/backup-pre-restore-20261003T002004394Z-User-DESKTOP-UOCJQQ8.zip`. El proceso oficial validó el paquete antes de importar y restauró base de datos, uploads y versión. No se realizó una comparación SQL fila por fila posterior; no se afirma igualdad binaria del dump (cron y otros valores volátiles pueden variar). No hay cambio persistente de producto que publicar: se conservó el paquete canónico y se retiraron las modificaciones de pruebas mediante Restore, sin Push de fixtures.
+
+El paquete canónico original se verificó: versión `20261001T194755441Z-rduuqe-RDUUQE`, SHA-256 `ffe9c63b752090ec7d53c8b3822ea70041c9e3e6eb3dfffd7f0a3188cf6e045e`, 152 archivos con tamaño y hash correctos, manifiesto/puntero concordantes y exclusión de usuarios. No se publica contenido temporal de pruebas. No se modifica `openspec/changes/.status.yaml`, que pertenece a `corregir-gate-global`, ni sus tareas.
+
+## Fallos Detectados vigentes
+
+### Tests fallidos
+- Ninguno de PHP en la suite configurada; Playwright no produjo resultados completos y queda pendiente.
+
+### Errores de build
+- `artifacts/coverage/clover.xml`: cobertura 74.10 % inferior a 80 % (CRITICAL).
+- `artifacts/gate/browser-portable.log`: ejecución de navegador incompleta, cancelada durante preparación (CRITICAL).
+
+### Tareas incompletas
+- Ninguna de Selecciones: 10/10 completas. Falta aprobación real del gate global para archivar.
+
+## Siguiente paso
+
+Continuar la cobertura y validación de navegador en `corregir-gate-global`, ejecutar nuevamente el gate íntegro y emitir handoff antes de archivar Selecciones. No se requiere rehacer la implementación de Selecciones por los fallos históricos ya resueltos.
+
+---
+
+## Anexo histórico: VERIFY final tras FIX2 (2026-10-01)
+
+Lo siguiente conserva la auditoría anterior y sus condiciones históricas; no sustituye los resultados vigentes de esta revisión.
 
 status: failed
 

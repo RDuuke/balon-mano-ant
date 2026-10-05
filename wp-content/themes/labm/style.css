@@ -16,7 +16,7 @@ Text Domain: labm
 	--labm-space-3: clamp(1.5rem, 4vw, 3rem);
 	--labm-radius: .75rem;
 	--labm-green: #AECD25;
-	--labm-green-dark: #526d00;
+	--labm-green-dark: #3f5200;
 	--labm-black: #202020;
 	--labm-footer-background: #000;
 	--labm-neutral: #F3F6E8;
@@ -41,8 +41,8 @@ body { margin: 0; overflow-x: clip; overflow-wrap: anywhere; color: var(--labm-b
 .labm-documents-banner { display: grid; width: 100vw; max-width: none !important; min-height: 22.3125rem; margin-right: calc(50% - 50vw) !important; margin-left: calc(50% - 50vw) !important; background: #000; color: #fff; }
 .labm-documents-banner__content { display: grid; align-content: center; justify-items: start; width: 100%; min-width: 0; margin: 0 !important; padding-block: 4.5rem; padding-inline: clamp(2rem, 8.5vw, 8rem); }
 .labm-documents-banner__eyebrow { margin: 0 0 1.75rem; color: var(--labm-green); font-size: .72rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
-.labm-documents-banner h1 { margin: 0; font-size: clamp(2.75rem, 5vw, 4.25rem); font-weight: 900; letter-spacing: -.035em; line-height: .92; text-transform: uppercase; }
-.labm-documents-banner__summary { max-width: 34rem; margin: 1.75rem 0 0; color: rgb(255 255 255 / 76%); font-size: clamp(.95rem, 1.35vw, 1.15rem); line-height: 1.55; }
+.labm-documents-banner h1 { margin: 0; overflow-wrap: anywhere; font-size: clamp(2.75rem, 5vw, 4.25rem); font-weight: 900; letter-spacing: -.035em; line-height: .92; text-transform: uppercase; }
+.labm-documents-banner__summary { max-width: 34rem; margin: 1.75rem 0 0; overflow-wrap: anywhere; color: rgb(255 255 255 / 76%); font-size: clamp(.95rem, 1.35vw, 1.15rem); line-height: 1.55; }
 .labm-documents-filters { width: 100vw; margin: 0 0 0 calc(50% - 50vw); padding: clamp(1.25rem, 3vw, 2rem) max(var(--labm-gutter), calc((100vw - var(--labm-content-max)) / 2)); background: #f3f6e8; }
 .labm-documents-filters form { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) minmax(10rem, max-content); align-items: end; gap: .75rem; width: 100%; max-width: var(--labm-content-max); margin: 0 auto; }
 .labm-documents-filters__field, .labm-documents-filters__submit { min-width: 0; }
@@ -151,7 +151,7 @@ body { margin: 0; overflow-x: clip; overflow-wrap: anywhere; color: var(--labm-b
 .labm-institutional-bar { padding-block: .35rem; background: var(--labm-black); color: #fff; font-size: .8rem; }
 .labm-institutional-bar.is-layout-constrained > p { width: min(calc(100% - (2 * var(--labm-gutter))), var(--labm-content-max)) !important; max-width: var(--labm-content-max) !important; margin: 0 auto !important; text-align: left !important; }
 .labm-navigation-shell { display: flex; align-items: center; gap: .5rem; width: min(calc(100% - (2 * var(--labm-gutter))), var(--labm-content-max)); max-width: var(--labm-content-max); margin-right: auto !important; margin-left: auto !important; }
-.labm-navigation-shell > .labm-header-logo { margin-right: 0 !important; margin-left: 0 !important; }
+.labm-navigation-shell > .labm-header-logo { width: clamp(8.5rem, 12vw, 10rem) !important; max-width: 100% !important; margin-right: 0 !important; margin-left: 0 !important; }
 .labm-header-logo { display: block; flex: 0 0 auto; width: clamp(8.5rem, 12vw, 10rem); line-height: 0; }
 .labm-header-logo img { display: block; width: 100%; height: auto; }
 .labm-back-to-top { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 30; display: grid; width: 3rem; height: 3rem; place-items: center; border: 1px solid var(--labm-black); background: var(--labm-green); color: var(--labm-black); font-size: 1.5rem; font-weight: 800; line-height: 1; opacity: 0; pointer-events: none; text-decoration: none; transform: translateY(1rem); transition: background-color .18s ease, box-shadow .18s ease, opacity .18s ease, transform .18s ease; }
@@ -454,8 +454,8 @@ form.labm-filter[data-labm-actualidad-filtros] > p {
 	min-width: 0;
 	margin: 0 !important;
 }
-form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-child { grid-column: 1; grid-row: 1; }
-form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-child(2) { grid-column: 2; grid-row: 1; }
+form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-of-type { grid-column: 1; grid-row: 1; }
+form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-of-type(2) { grid-column: 2; grid-row: 1; }
 form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit { grid-column: 3; grid-row: 1; align-self: center; height: 3.25rem; min-height: 3.25rem; }
 .labm-actualidad-listado[data-labm-listado="actualidad"] { margin-top: 3.375rem !important; }
 .labm-actualidad-destacada {
@@ -475,8 +475,8 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 @media (max-width: 48rem) {
 	.labm-actualidad-hero { height: auto; min-height: 18rem; padding-block: 3.5rem !important; }
 	form.labm-filter[data-labm-actualidad-filtros] { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) max-content !important; }
-	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-child,
-	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-child(2),
+	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-of-type,
+	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-of-type(2),
 	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit { grid-column: auto; grid-row: auto; }
 	.labm-actualidad-destacada { grid-template-columns: minmax(0, 1fr); min-height: 0; }
 	.labm-actualidad-destacada > :first-child, .labm-actualidad-destacada__contenido { height: auto; min-height: 0; }
@@ -484,8 +484,8 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 }
 @media (max-width: 30rem) {
 	form.labm-filter[data-labm-actualidad-filtros] { grid-template-columns: minmax(0, 1fr) !important; }
-	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-child,
-	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-child(2),
+	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:first-of-type,
+	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__campo:nth-of-type(2),
 	form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit { grid-column: 1; grid-row: auto; }
 	.labm-actualidad-tarjeta { height: auto; }
 }

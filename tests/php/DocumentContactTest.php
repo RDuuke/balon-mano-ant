@@ -3,6 +3,73 @@
 use PHPUnit\Framework\TestCase;
 
 final class DocumentContactTest extends TestCase {
+	/** El adaptador legado valida, permite reintentar fallos y deduplica entregas. */
+	public function test_legacy_contact_validation_retry_and_duplicate_delivery(): void {
+		$token = 'coverage-' . wp_generate_uuid4();
+		$key = 'labm_contact_' . hash( 'sha256', $token );
+		$calls = array();
+		$deliver = false;
+		$filter = static function ( $result, $attributes ) use ( &$calls, &$deliver ) {
+			$calls[] = $attributes;
+			return $deliver;
+		};
+		add_filter( 'pre_wp_mail', $filter, 10, 2 );
+		try {
+			$invalid = labm_core_process_contact_legacy( array( 'sitio_web' => 'spam' ) );
+			self::assertFalse( $invalid['ok'] );
+			foreach ( array( 'nonce', 'antispam', 'nombre', 'apellidos', 'asunto', 'mensaje', 'correo' ) as $field ) {
+				self::assertArrayHasKey( $field, $invalid['errors'] );
+			}
+			self::assertCount( 0, $calls );
+			$data = array( 'nonce' => wp_create_nonce( 'labm_contacto' ), 'nombre' => 'Ana', 'apellidos' => 'Prueba', 'asunto' => '<b>Consulta</b>', 'mensaje' => '<b>Mensaje</b>', 'correo' => 'coverage@example.invalid', 'token' => $token );
+			self::assertArrayHasKey( 'delivery', labm_core_process_contact_legacy( $data )['errors'] );
+			self::assertFalse( get_transient( $key ) );
+			$deliver = true;
+			self::assertTrue( labm_core_process_contact_legacy( $data )['ok'] );
+			self::assertTrue( labm_core_process_contact_legacy( $data )['ok'] );
+			self::assertCount( 2, $calls );
+			self::assertSame( 'Consulta', $calls[1]['subject'] );
+			self::assertSame( 'Mensaje', $calls[1]['message'] );
+			self::assertSame( array( 'Reply-To: coverage@example.invalid' ), $calls[1]['headers'] );
+		} finally {
+			remove_filter( 'pre_wp_mail', $filter, 10 );
+			delete_transient( $key );
+		}
+	}
+
+	/** El metabox recupera el intento fallido una sola vez sin modificar el PDF guardado. */
+	public function test_classic_metabox_renders_saved_pdf_and_consumes_escaped_failed_input(): void {
+		$pdf = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $pdf, 'labm_documento_fecha' => '2026-01-01' ) ) );
+		$key = labm_core_document_admin_failed_state_key();
+		$previous = get_transient( $key );
+		try {
+			delete_transient( $key );
+			ob_start();
+			labm_core_document_admin_render_meta_box( get_post( $post_id ) );
+			$html = (string) ob_get_clean();
+			self::assertStringContainsString( 'value="' . $pdf . '" data-labm-pdf-id', $html );
+			self::assertStringContainsString( 'value="2026-01-01"', $html );
+			self::assertStringContainsString( '_labm_document_nonce', $html );
+			set_transient( $key, array( 'message' => '<script>error</script>', 'input' => array( 'labm_documento_pdf_id' => 0, 'labm_documento_fecha' => '" onfocus="alert(1)', 'labm_documento_categoria' => array( 0 ) ) ), MINUTE_IN_SECONDS );
+			ob_start();
+			labm_core_document_admin_render_meta_box( get_post( $post_id ) );
+			$html = (string) ob_get_clean();
+			self::assertStringContainsString( '&lt;script&gt;error&lt;/script&gt;', $html );
+			self::assertStringNotContainsString( 'value="" onfocus=', $html );
+			self::assertStringContainsString( 'value="0" data-labm-pdf-id', $html );
+			self::assertFalse( get_transient( $key ) );
+			self::assertSame( $pdf, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+			self::assertSame( '2026-01-01', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		} finally {
+			delete_transient( $key );
+			if ( false !== $previous ) {
+				set_transient( $key, $previous, MINUTE_IN_SECONDS );
+			}
+			wp_delete_post( $post_id, true );
+		}
+	}
+
 	/** @var mixed */
 	private $smtp_settings_option;
 

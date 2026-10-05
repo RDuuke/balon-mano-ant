@@ -13,7 +13,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 try {
     docker run --rm --add-host host.docker.internal:host-gateway `
         -e CI=true -e WP_URL=http://host.docker.internal:8080 -e LABM_BROWSER_TASK=$Task `
-        -v "${root}:/app" -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright `
+        -v "${root}:/app" -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright `
         -w /app $image sh /app/scripts/browser-gate.sh
     $browserExit = $LASTEXITCODE
 } finally {

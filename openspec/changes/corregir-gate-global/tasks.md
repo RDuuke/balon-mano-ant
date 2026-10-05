@@ -12,16 +12,16 @@ Cada lote sigue RED→GREEN→REFACTOR genuino, registrando comandos/resultados 
 - [x] 2.3 REFACTOR: consolidar comprobaciones focales en `tests/e2e/public-experience.spec.ts` y demostrar GREEN conservado.
 - [x] 2.4 RED: `tests/php/FixturesDomainTest.php`: recurso aislado fallido, recuperación idempotente y preservación ajena.
 - [x] 2.5 GREEN/REFACTOR: precargar disponibles, retirar solo objetivo, restaurar filtro en `finally` en `tests/php/FixturesDomainTest.php`; verificar diagnóstico/recuperación.
-- [ ] 2.6 RED: `tests/e2e/document-admin.spec.ts`: reemplazo, colisión, inválido/fallo conservando asociación; usar identidad/nombre/tamaño reales.
-- [ ] 2.7 GREEN/REFACTOR: corregir selección/aserciones y limpieza idempotente en `tests/e2e/document-admin.spec.ts`; restaurar asociación previa.
-- [ ] 2.8 RED: `tests/php/PublicExperienceTest.php`: destacada+tarjetas únicas, orden, privacidad, filtros, última página y fuera de rango.
-- [ ] 2.9 GREEN/REFACTOR: ajustar roles editoriales en `tests/e2e/public-experience.spec.ts` y prueba PHP sin cambiar paginación vigente.
+- [x] 2.6 RED: `tests/e2e/document-admin.spec.ts`: reemplazo, colisión, inválido/fallo conservando asociación; usar identidad/nombre/tamaño reales.
+- [x] 2.7 GREEN/REFACTOR: corregir selección/aserciones y limpieza idempotente en `tests/e2e/document-admin.spec.ts`; restaurar asociación previa. Focal administrativo 14/14 PASS.
+- [x] 2.8 RED: `tests/php/PublicExperienceTest.php`: destacada+tarjetas únicas, orden, privacidad, filtros, última página y fuera de rango.
+- [x] 2.9 GREEN/REFACTOR: ajustar roles editoriales en `tests/e2e/public-experience.spec.ts` y prueba PHP sin cambiar paginación vigente.
 - [x] 2.10 RED: `tests/php/HomePresentationTest.php` y `tests/e2e/home.spec.ts`: prioridad de medios, metadatos, referencias inválidas/restringidas.
 - [x] 2.11 GREEN/REFACTOR: verificar/corregir `labm_theme_news_fallback_path` en `wp-content/themes/labm/functions.php`; conservar respaldo institucional seguro.
 
 ## Fase 3: contraste autónomo
-- [ ] 3.1 RED: `tests/e2e/public-experience.spec.ts`: registrar contraste insuficiente, estado/fondo/componente y foco en cinco viewports.
-- [ ] 3.2 GREEN/REFACTOR: ajustar `--labm-green-dark` en `wp-content/themes/labm/style.css`; validar usos/estados, axe y umbrales 4.5:1/3:1.
+- [x] 3.1 RED: `tests/e2e/public-experience.spec.ts`: registrar contraste insuficiente, estado/fondo/componente y foco en cinco viewports.
+- [x] 3.2 GREEN/REFACTOR: ajustar `--labm-green-dark` en `wp-content/themes/labm/style.css`; validar usos/estados, axe y umbrales 4.5:1/3:1.
 
 ## Fase 4: calidad autónoma
 - [x] 4.1 Registrar fallos PHPCS/PHPStan actuales en `apply-progress.md`; RED conductual antes de cambios lógicos.
@@ -29,15 +29,15 @@ Cada lote sigue RED→GREEN→REFACTOR genuino, registrando comandos/resultados 
 - [x] 4.3 Corregir `wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php`; retirar wrapper únicamente sin referencias; demostrar análisis/GREEN y refactor seguro.
 
 ## Fase 5: cobertura autónoma
-- [ ] 5.1 RED→GREEN→REFACTOR: cubrir ramas reales documentadas en `tests/php/DocumentContactTest.php`, éxito/borde/error.
-- [ ] 5.2 RED→GREEN→REFACTOR: cubrir ramas restantes en `tests/php/ClosingCoverageTest.php`; medir Clover fresco≥80% sin alterar fuentes/suites.
+- [x] 5.1 RED→GREEN→REFACTOR: cubrir ramas reales documentadas en `tests/php/DocumentContactTest.php`, éxito/borde/error. Cobertura previa fallida y pruebas conductuales nuevas inicialmente verdes; sin cambios de producción (evidencia en `apply-progress.md`).
+- [x] 5.2 RED→GREEN→REFACTOR: cubrir ramas restantes en `tests/php/ClosingCoverageTest.php`; medir Clover fresco≥80% sin alterar fuentes/suites. Resultado fresco: 82,74 %; no se atribuye un RED conductual inexistente.
 
 ## Fase 6: condiciones visuales y handoff
-- [ ] 6.1 Extraer referencias/medidas existentes Documentos y frame Actualidad `Nrclx` en `apply-progress.md`; registrar aprobación vigente a320/768/1024/1200/1440px.
-- [ ] 6.2 Tras6.1, RED→GREEN→REFACTOR en `tests/e2e/public-experience.spec.ts`/`wp-content/themes/labm/style.css`: composición y texto largo sin desborde.
+- [x] 6.1 Extraer referencias/medidas existentes Documentos y frame Actualidad `Nrclx` en `apply-progress.md`; registrar aprobación vigente a320/768/1024/1200/1440px.
+- [x] 6.2 Tras6.1, RED→GREEN→REFACTOR en `tests/e2e/public-experience.spec.ts`/`wp-content/themes/labm/style.css`: composición y texto largo sin desborde.
 - [x] 6.3 Registrar handoff reconciliado de Detalle en `apply-progress.md`; hasta recibirlo bloquear plantilla/aserciones asociadas; preservar pendientes.
 - [x] 6.4 Tras6.3, RED→GREEN→REFACTOR: ajustar exclusivamente contratos globales reconciliados de `wp-content/themes/labm/templates/single-labm_actualidad.html` y pruebas asociadas.
 
 ## Fase 7: cierre
-- [ ] 7.1 Limpiar/restaurar recursos propios; si persistencia cambió, ejecutar `scripts/content-sync.ps1` oficial y verificar versión/hash/exclusiones; comprobar LF modificados.
-- [ ] 7.2 Ejecutar `scripts/gate.ps1 -IncludeBrowser` íntegro; registrar cobertura fresca y todas las etapas en `verify-report.md`; emitir handoff sin archivar cambios ajenos.
+- [x] 7.1 Limpiar/restaurar recursos propios; si persistencia cambió, ejecutar `scripts/content-sync.ps1` oficial y verificar versión/hash/exclusiones; comprobar LF modificados.
+- [x] 7.2 Ejecutar `scripts/gate.ps1 -IncludeBrowser` íntegro; registrar cobertura fresca y todas las etapas en `verify-report.md`; emitir handoff sin archivar cambios ajenos.

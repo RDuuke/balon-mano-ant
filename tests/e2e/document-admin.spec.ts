@@ -14,8 +14,12 @@ let fixture: Fixture;
 
 async function login(page: Page) {
   await page.goto(`${baseURL}/wp-login.php`);
+  // WordPress enfoca el usuario con un temporizador antes de escribir.
+  await expect(page.locator('#user_login')).toBeFocused();
   await page.getByLabel(/nombre de usuario|username/i).fill(adminUser);
   await page.locator('#user_pass').fill(adminPassword);
+  expect(await page.locator('#user_login').inputValue() === adminUser).toBe(true);
+  expect(await page.locator('#user_pass').inputValue() === adminPassword).toBe(true);
   await page.locator('#wp-submit').click();
   await expect(page).toHaveURL(/wp-admin/);
 }
@@ -28,6 +32,10 @@ async function openDocument(page: Page, documentId?: number, classic = false) {
   await expect(page.locator('body')).toHaveClass(/post-type-labm_documento/);
   if (!classic) {
     await page.waitForFunction(() => Boolean((window as typeof window & { labmDocumentAdmin?: unknown }).labmDocumentAdmin));
+    const welcome = page.getByRole('dialog', { name: /welcome to the editor|bienvenid[oa].*editor/i });
+    if (await welcome.isVisible()) {
+      await welcome.getByRole('button', { name: /^(close|cerrar)$/i }).click();
+    }
     await page.evaluate(() => {
       const wpRuntime = (window as typeof window & {
         wp?: { data?: { dispatch: (store: string) => Record<string, (...args: string[]) => void>; select: (store: string) => Record<string, (...args: string[]) => boolean> } };
@@ -104,6 +112,7 @@ test.describe('experiencia administrativa de documentos PDF', () => {
     await openDocument(page);
     await page.getByRole('button', { name: /seleccionar o subir pdf/i }).click();
     await expect(page.getByRole('dialog')).toBeVisible();
+    await page.getByRole('tab', { name: /media library|biblioteca de medios/i }).click();
     await page.locator(`.attachment[data-id="${fixture.attachmentId}"]`).click();
     await page.getByRole('button', { name: /usar este pdf|use this pdf/i }).click();
     await expect(page.locator('[data-labm-document-admin]')).toContainText(pdfName);
@@ -184,20 +193,36 @@ test.describe('experiencia administrativa de documentos PDF', () => {
     expect(results.violations).toEqual([]);
   });
 
-  test('E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección', async ({ page, context }) => {
+  test('E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección', async ({ page, context }, testInfo) => {
     await openDocument(page, fixture.documentId, true);
     const headers = { 'X-WP-Nonce': fixture.restNonce };
-    const upload = await context.request.post(`${baseURL}/wp-json/wp/v2/media`, {
-      headers: { ...headers, 'Content-Disposition': 'attachment; filename="labm-e2e-replacement.pdf"', 'Content-Type': 'application/pdf' },
-      data: Buffer.from('%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\n%%EOF\n'),
-    });
-    expect(upload.ok()).toBeTruthy();
-    const replacement = await upload.json() as { id: number };
+    const originalResponse = await context.request.get(`${baseURL}/wp-json/wp/v2/labm_documento/${fixture.documentId}?context=edit`, { headers });
+    expect(originalResponse.ok()).toBeTruthy();
+    const original = await originalResponse.json();
+    const requestedName = `labm-e2e-replacement-${testInfo.project.name}-${Date.now()}.pdf`;
+    type UploadedPdf = { id: number; source_url: string; media_details: { filesize: number } };
+    const attachments: UploadedPdf[] = [];
     try {
+      for (const padding of [128, 4096]) {
+        const upload = await context.request.post(`${baseURL}/wp-json/wp/v2/media`, {
+          headers: { ...headers, 'Content-Disposition': `attachment; filename="${requestedName}"`, 'Content-Type': 'application/pdf' },
+          data: Buffer.from(`%PDF-1.7\n1 0 obj<</Type/Catalog>>endobj\n%${' '.repeat(padding)}\n%%EOF\n`),
+        });
+        expect(upload.ok(), await upload.text()).toBeTruthy();
+        attachments.push(await upload.json() as UploadedPdf);
+      }
+      const [first, replacement] = attachments;
+      const replacementName = decodeURIComponent(new URL(replacement.source_url).pathname.split('/').pop()!);
+      expect(replacement.id).not.toBe(first.id);
+      expect(replacement.source_url).not.toBe(first.source_url);
+      expect(replacement.media_details.filesize).toBeGreaterThan(first.media_details.filesize);
       await page.getByRole('button', { name: /reemplazar pdf/i }).click();
+      await page.getByRole('tab', { name: /media library|biblioteca de medios/i }).click();
       await page.locator(`.attachment[data-id="${replacement.id}"]`).click();
       await page.getByRole('button', { name: /usar este pdf/i }).click();
-      await expect(page.locator('[data-labm-pdf-summary]')).toContainText('labm-e2e-replacement.pdf');
+      await expect(page.locator('[data-labm-pdf-summary]')).toContainText(replacementName);
+      await expect(page.locator('[data-labm-pdf-summary]')).toContainText(`${Math.round(replacement.media_details.filesize / 1024)} KB`);
+      await expect(page.locator('[data-labm-pdf-id]')).toHaveValue(String(replacement.id));
       await page.locator('#title').fill('Documento E2E sustitución HTTP');
       const [saved] = await Promise.all([
         page.waitForResponse(response => response.request().method() === 'POST' && new URL(response.url()).pathname === '/wp-admin/post.php'),
@@ -218,7 +243,7 @@ test.describe('experiencia administrativa de documentos PDF', () => {
       await page.locator('#title').fill('');
       await page.locator('#save-post').click();
       await expect(page.locator('[data-labm-admin-alert]')).toContainText(/título/i);
-      await expect(page.locator('[data-labm-pdf-summary]')).toContainText('labm-e2e-replacement.pdf');
+      await expect(page.locator('[data-labm-pdf-summary]')).toContainText(replacementName);
       await page.locator('#title').fill('Documento E2E reintento HTTP');
       const [retried] = await Promise.all([
         page.waitForResponse(response => response.request().method() === 'POST' && new URL(response.url()).pathname === '/wp-admin/post.php'),
@@ -239,11 +264,20 @@ test.describe('experiencia administrativa de documentos PDF', () => {
       await expect(page.locator('[data-labm-pdf-summary]')).toContainText(/ningún pdf/i);
       expect((await context.request.get(`${baseURL}/wp-json/wp/v2/media/${replacement.id}`, { headers })).ok()).toBeTruthy();
       expect((await context.request.get(`${baseURL}/wp-json/wp/v2/media/${fixture.attachmentId}`, { headers })).ok()).toBeTruthy();
+      const preserved = await context.request.get(`${baseURL}/wp-json/wp/v2/media/${first.id}`, { headers });
+      expect(preserved.ok()).toBeTruthy();
+      const preservedPdf = await preserved.json() as UploadedPdf;
+      expect(preservedPdf.source_url).toBe(first.source_url);
+      expect(preservedPdf.media_details.filesize).toBe(first.media_details.filesize);
     } finally {
-      await context.request.post(`${baseURL}/wp-json/wp/v2/labm_documento/${fixture.documentId}`, {
-        headers, data: { title: 'Documento E2E con PDF', meta: { labm_documento_pdf_id: fixture.attachmentId } },
+      const restored = await context.request.post(`${baseURL}/wp-json/wp/v2/labm_documento/${fixture.documentId}`, {
+        headers, data: { title: original.title.raw, meta: { labm_documento_pdf_id: original.meta.labm_documento_pdf_id } },
       });
-      await context.request.delete(`${baseURL}/wp-json/wp/v2/media/${replacement.id}?force=true`, { headers });
+      expect(restored.ok(), await restored.text()).toBeTruthy();
+      for (const attachment of attachments) {
+        const removed = await context.request.delete(`${baseURL}/wp-json/wp/v2/media/${attachment.id}?force=true`, { headers });
+        expect(removed.ok() || removed.status() === 404).toBeTruthy();
+      }
     }
   });
 
@@ -315,6 +349,7 @@ test.describe('experiencia administrativa de documentos PDF', () => {
     await page.keyboard.press('Enter');
     await expect(page.getByRole('dialog')).toBeVisible();
     const activeDialog = page.getByRole('dialog');
+    await activeDialog.getByRole('tab', { name: /media library|biblioteca de medios/i }).click();
     const attachment = activeDialog.locator(`.attachment[data-id="${fixture.attachmentId}"]`);
     await expect(attachment).toBeVisible();
     await attachment.focus();

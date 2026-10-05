@@ -201,3 +201,87 @@ STATUS read-only: APPLY, 12/26 completas y 14 pendientes; TDD estricto activo y 
 - Se inició el backup oficial con `scripts/content-sync.ps1 -Action Backup`, pero no quedó confirmado ni produjo un archivo nuevo en `.content-sync/backups` porque el proceso de Codex se ejecuta como `DESKTOP-JP8MFJ8\CodexSandboxOffline`.
 - En esa identidad, tanto `content-sync.ps1` como `validate-env.ps1` devuelven `UnknownError`: la cadena termina en una raíz no compatible con el proveedor de confianza. La firma que el usuario comprobó como válida está confiada en su perfil interactivo, no en el almacén que usa el ejecutor.
 - No se iniciaron pruebas mutables ni se marcaron tareas: 2.6–2.9, 3.1–3.2, 5.1–5.2 y 7.1–7.2 conservan el requisito de backup oficial. Las condiciones de referencia y handoff de 6.1–6.4 permanecen pendientes de evidencia reconciliada; las exportaciones presentes no sustituyen esa aprobación.
+
+## Continuacion autorizada - 2026-10-02 19:40
+
+Backup oficial previo: `.content-sync/backups/backup-manual-20261003T003355040Z-User-DESKTOP-UOCJQQ8.zip` (95928706 bytes). Suites mutables secuenciales; sin cambio persistente intencionado.
+
+## Tarea 5.1 - Contacto y metabox con estados reales
+
+- **RED:** deficit previo de cobertura: 74,10 % (2091/2822), menor que 80 %. Las pruebas nuevas pasaron inicialmente; no hubo RED conductual ni cambios de produccion.
+- **GREEN:** DocumentContactTest prueba validacion, entrega fallida reintentable, saneamiento y deduplicacion sin correo real; metabox prueba escape, consumo unico y conservacion de asociacion guardada.
+- **REFACTOR:** filtros retirados y estado previo restaurado en finally; conserva teardown de adjuntos existente.
+
+## Tarea 5.2 - Registro publico y reparacion de capacidades
+
+- **RED:** mismo deficit previo; no se inventa un fallo conductual nuevo ni se alteran produccion, fuentes, suites, exclusiones o umbral.
+- **GREEN:** ClosingCoverageTest verifica registro repetido de tipos/REST/taxonomias/metadatos y recuperacion de permisos sin conceder gobierno editorial, restaurando roles anteriores.
+- **GREEN:** focal conjunto 4 pruebas/114 aserciones. `./scripts/coverage.ps1` salida0: 175 pruebas/1877 aserciones; Clover fresco2335/2822=82,74 %, 244 lineas adicionales (`artifacts/coverage/clover.xml`).
+- **REFACTOR:** LF y diff--check aprobados. Advertencia TDD: pruebas inicialmente verdes; deficit previo de cobertura no equivale a un RED conductual nuevo.
+
+## Reparacion del runner de navegador
+
+- **RED:** instalacion sobre montaje Windows fallo `ERR_PNPM_EACCES`, rename de @sentry/core tras294/297 paquetes.
+- **GREEN:** volumen Linux `labm_browser_node_modules` montado en `/app/node_modules`:297/297 instalados en1m24; Chromium/Headless/FFMPEG completos. Host node_modules preservado.
+- **REFACTOR:** montaje incorporado a `scripts/browser-gate.ps1`, documentado en `docs/testing.md`; mismo runner, lockfile y suite completa.
+
+## Reparacion focal Actualidad - 2026-10-02 19:54
+
+- **RED:** baseline navegador escritorio: 38 PASS, 2 FAIL y 13 omitidas por serie administrativa; no se cuentan como aprobadas. Actualidad esperaba busqueda x120 a1440px, obtenia x556.
+- **Diagnostico:** wpautop inserta un parrafo vacio antes del primer campo. Los selectores :first-child/:nth-child(2) invertian las columnas. Frame local `design/labm-wordpress-mockup.pen`, `Nrclx`/`z0mNWi`/`ZDpoE`, confirma margen120, busqueda420, categoria260 y gap16 existentes.
+- **GREEN:** cambiar solo selectores a :first-of-type/:nth-of-type(2), tambien en reglas responsive. Prueba `1.2 actualidad` PASS1/1 en desktop1024 (incluye medicion1440 y reflow320/768/1440). No se cambiaron dimensiones, expectativas ni contrato visual. No acredita todas las condiciones pendientes6.1/6.2.
+
+## Tareas 2.6 y 2.7 - PDF real y colision
+
+- **RED:** A1.1 baseline agotaba30s; bienvenida del editor ocultaba controles y modal de medios abria Upload Files. Preparacion cierra bienvenida y elige explicitamente biblioteca para buscar adjuntos.
+- **RED:** doble carga propia con mismo nombre solicitado y distinto tamano produce segundo nombre con sufijo-1. Focal E1 falla esperando nombre solicitado sin sufijo; salida0466a1 confirma nombre real y4KB. Un intento previo quedo en Upload Files y no se cuenta como RED de colision.
+- **GREEN en validacion:** expectativas usan source_url, filesize e ID reales. Se comprueba primer adjunto conservado y restauracion de titulo/asociacion originales antes de borrar exclusivamente los dos adjuntos propios; limpieza acepta404.
+- **GREEN:** suite administrativa escritorio completa14/14 PASS en1,3min (salida a7f79c). Se conservan teclado, fallos de carga, limites efectivos, ambos editores y axe. Gate integral iniciado con restauracion oficial en finally.
+
+## Gate integral y aislamiento - 2026-10-02 20:12
+
+- Primer gate integral posterior a reparaciones: Compose, unitaria1/2, integracion175/1877, cobertura82,74 %, PHPCS y PHPStan PASS; navegador195PASS/5FAIL/12omitidos. Evidencia conservada en `artifacts/browser-gate-parallel-failed.log` y `artifacts/gate-parallel-failed-summary.json`.
+- Cuatro workers simultaneos comparten WordPress y usuario administrativo. `labm_core_document_admin_failed_state_key()` solo incluye usuario; los proyectos pueden consumir el estado de recuperacion de otro. E1 falla por timeout en tres proyectos y axe escritorio por timeout. El runner pasa a un trabajador, sin ampliar tiempos ni retirar casos/proyectos.
+- Detalle movil: altura136,42px de una imagen proporcional es valida; >250px era una comprobacion fija introducida para detectar el antiguo contenedor de altura0 con imagen absoluta (evidencia en apply-progress de detalle-actualidad, Correccion visual - Medio destacado dentro del flujo). Diseno vigente exige medio cargado y flujo nativo sin minimo250. La prueba ahora comprueba carga, dimensiones intrinsecas positivas, posicion estatica, proporcion limitada por max-height y contenedor que abraza la imagen. No se modifica CSS ni dimensiones de Detalle.
+- Restore automatico con PowerShell -File fallo antes de importar por parametro PSScriptRoot vacio. Reintento oficial directo completo salida0; respaldo de seguridad011228858Z. El wrapper final usara invocacion directa probada.
+
+## Continuacion autorizada: tareas 2.8, 2.9, 3.1, 3.2, 6.1, 6.2, 7.1 y 7.2 - 2026-10-05
+
+STATUS inicial read-only: APPLY; pendientes exactas 2.8, 2.9, 3.1, 3.2, 6.1, 6.2, 7.1 y 7.2; awaiting_approval false. El usuario autorizo explicitamente superar review_budget. No se tocaron las tareas ya completas ni se delego trabajo.
+
+Backup oficial previo a pruebas mutables: `./scripts/content-sync.ps1 -Action Backup`, salida0; `.content-sync/backups/backup-manual-20261005T045626532Z-User-DESKTOP-UOCJQQ8.zip`. Se conserva sin exponer credenciales ni `wp_users`/`wp_usermeta`.
+
+## Tarea 2.8 - listado editorial completo
+
+- **RED:** se agrego primero `tests/php/PublicExperienceTest.php::test_actualidad_listing_keeps_editorial_roles_unique_across_pages_and_filters`. Comando exacto: `docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v "${PWD}:/work:ro" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist --filter test_actualidad_listing_keeps_editorial_roles_unique_across_pages_and_filters`; exit1, 1 failure, IDs esperados `[9730,9729,9728,9727]`, IDs recibidos `[]`, linea 444.
+- **GREEN:** `wp-content/themes/labm/functions.php` expone `data-labm-actualidad-post-id` en la destacada y en cada tarjeta, sin cambiar consulta, tamano de pagina ni paginacion. El mismo comando focal termino exit0: `OK (1 test, 18 assertions)`.
+- **REFACTOR:** la prueba cubre 9 publicados, 1 privado, categoria, orden descendente, pagina 1 con 1+3, pagina 3 con el ultimo resultado y pagina 4 vacia; limpia todos los posts propios en `finally`. Regresion PHP de contrato y nueva prueba: exit0, `2 tests, 40 assertions`.
+
+## Tarea 2.9 - roles editoriales en navegador
+
+- **RED:** la identidad editorial faltante de 2.8 fue la causa observada antes del hook productivo; no se inventa un RED E2E independiente que no se ejecuto antes de esa correccion.
+- **GREEN:** `tests/e2e/public-experience.spec.ts` valida exactamente una destacada, tres tarjetas, cuatro IDs unicos, tres headings de tarjeta y filtros/privacidad. Comando focal: `docker run --rm --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -v "${PWD}:/app" -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 node node_modules/.pnpm/@playwright+test@1.54.1/node_modules/@playwright/test/cli.js test tests/e2e/public-experience.spec.ts --grep "3.2 actualidad ofrece" --project wide-1440 --workers 1 --reporter=line`; exit0, `1 passed (33.3s)`.
+- **REFACTOR:** no se modifico la paginacion vigente; las aserciones nuevas son de roles perceptibles e identidad, no de dimensiones nuevas.
+
+## Tareas 3.1 y 3.2 - contraste y foco
+
+- **RED:** con el token anterior `--labm-green-dark: #526d00`, el comando focal de contraste termino exit1 por `Test timeout of 30000ms exceeded` en `page.evaluate`; se registra como RED de infraestructura/timeout y no como medicion de ratio inventada.
+- **GREEN:** `tests/e2e/public-experience.spec.ts` calcula contraste de kicker, metadatos, botones y foco en 320/768/1024/1200/1440, y ejecuta axe en el listado. Se restauro `--labm-green-dark: #3f5200` en `style.css`. Comando exacto con timeout de runner explicito: `docker run --rm --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -v "${PWD}:/app" -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 node node_modules/.pnpm/@playwright+test@1.54.1/node_modules/@playwright/test/cli.js test tests/e2e/public-experience.spec.ts --grep "3.1 contraste" --project desktop-1024 --workers 1 --timeout 120000 --reporter=line`; exit0, `1 passed (52.9s)`.
+- **REFACTOR:** solo cambio el token compartido; no se eliminaron estados, axe, viewports ni umbrales 4.5:1/3:1.
+
+## Tarea 6.1 - referencias visuales y aprobacion de alcance
+
+- Frame local `design/labm-wordpress-mockup.pen`: Actualidad `Nrclx` 1440x2168, hero 340, filtros 110 con margen interior120, busqueda420, categoria260 y gap16; destacada440 con imagen670/contenido490; tarjetas368x400; paginacion100 con controles44.
+- Frame Documentos `g0s58` 1440x2308: encabezado negro340; filtros130 con busqueda410 y tres controles210x54; catalogo con items185, icono76x92, acciones310; vacio220; paginacion100 y controles44. Recursos declarados: `design/exports/documentos-desktop.png`, `actualidad-desktop.png`, `detalle-actualidad-desktop.png`.
+- Aceptacion vigente: el usuario autorizo el alcance y la verificacion en 320/768/1024/1200/1440 el 2026-10-05. No se inventa una aprobacion externa adicional; los cinco anchos quedan comprobados por la prueba E2E de 6.2 y la prueba de contraste.
+
+## Tarea 6.2 - composicion Documentos y texto largo
+
+- **RED:** el nuevo E2E fallo de forma conductual a 320px: `desborde de Documentos a 320px`, `scrollWidth=1275`, causado por `.labm-header-logo` que heredaba `max-width:720px` del layout global; `contentFits`, titulo, resumen y ancho del banner ya eran correctos.
+- **GREEN:** `style.css` fija en el hijo directo del shell `width: clamp(8.5rem, 12vw, 10rem) !important; max-width: 100% !important`. Comando exacto: `docker run --rm --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -v "${PWD}:/app" -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 node node_modules/.pnpm/@playwright+test@1.54.1/node_modules/@playwright/test/cli.js test tests/e2e/public-experience.spec.ts --grep "6.2 Documentos" --project desktop-1024 --workers 1 --reporter=line`; exit0, `1 passed (41.1s)`.
+- **REFACTOR:** el test vuelve a cargar Documentos en cada ancho, inyecta titulo/resumen largos, comprueba overflow global, ajuste del contenido, visibilidad y ancho del banner; no altera estado persistido.
+
+## Tareas 7.1 y 7.2 - restauracion y gate
+
+- **Limpieza/restauracion:** tras fixtures y pruebas browser se ejecuto `./scripts/content-sync.ps1 -Action Restore -Backup .content-sync/backups/backup-manual-20261005T045626532Z-User-DESKTOP-UOCJQQ8.zip -ConfirmReplace`; salida final exit0. Emitio advertencias SQL del import (`wp_comments` no existe y `wp_links`/`wp_options` ya existen), pero el script completo reporto `Respaldo restaurado` y creo safety backup `backup-pre-restore-20261005T060137546Z-User-DESKTOP-UOCJQQ8.zip`. Se verifico `content-sync/latest.json`: version `20261001T194755441Z-rduuqe-RDUUQE`; SHA256 de `canonical.zip` `ffe9c63b752090ec7d53c8b3822ea70041c9e3e6eb3dfffd7f0a3188cf6e045e`, coincidente con latest; no hay cambio persistido intencionado ni exclusiones de usuarios.
+- **Gate:** se ejecuto `./scripts/gate.ps1 -IncludeBrowser`. `artifacts/gate/summary.json` registra compose-config, composer-test, php-coverage, composer-lint y composer-analyse PASS; `browser-portable` FAIL exit137. El envolvente quedo esperando tras el proceso browser sin contenedor visible y se interrumpio con Ctrl+C; no se marca VERIFY ok ni se archiva. Los focales nuevos anteriores si tienen los resultados indicados.

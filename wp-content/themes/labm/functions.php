@@ -1237,7 +1237,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 		<div class="labm-actualidad-listado" data-labm-listado="<?php echo esc_attr( $data_name ); ?>">
 			<?php $featured = array_shift( $query->posts ); ?>
 			<?php if ( $featured ) : ?>
-				<article class="labm-actualidad-destacada" data-labm-actualidad-destacada>
+				<article class="labm-actualidad-destacada" data-labm-actualidad-destacada data-labm-actualidad-post-id="<?php echo esc_attr( (string) $featured->ID ); ?>">
 					<div class="labm-actualidad-destacada__media">
 						<?php echo labm_theme_actualidad_media( $featured, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</div>
@@ -1248,7 +1248,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 			<?php endif; ?>
 			<div class="labm-actualidad-tarjetas">
 				<?php foreach ( $query->posts as $post ) : ?>
-					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta>
+					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta data-labm-actualidad-post-id="<?php echo esc_attr( (string) $post->ID ); ?>">
 						<a class="labm-actualidad-tarjeta__media" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( labm_theme_home_news_title( $post ) ); ?>"><?php echo labm_theme_actualidad_media( $post ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. */ ?></a>
 						<?php echo labm_theme_actualidad_article_content( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</article>

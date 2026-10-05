@@ -35,6 +35,7 @@ test('Nosotros inicia con un banner editorial estático y responsive', async ({ 
         stacked: mediaBox.top >= contentBox.bottom - 1,
       };
     });
+    console.log(`6.2 geometry ${width}: ${JSON.stringify(geometry)}`);
     expect(geometry.overflow, `desborde a ${width}px`).toBe(false);
     expect(width === 320 ? geometry.stacked : geometry.sideBySide).toBe(true);
 
@@ -369,8 +370,15 @@ test('3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad', async
   await page.goto('/actualidad/');
   await expect(page.getByRole('heading', { level: 1, name: 'Actualidad' })).toBeVisible();
   const listing = page.locator('[data-labm-listado="actualidad"]');
-  await expect(listing.locator('[data-labm-actualidad-destacada]')).toHaveCount(1);
-  await expect(listing.locator('[data-labm-actualidad-tarjeta]')).toHaveCount(3);
+  const featured = listing.locator('[data-labm-actualidad-destacada]');
+  const cards = listing.locator('[data-labm-actualidad-tarjeta]');
+  await expect(featured).toHaveCount(1);
+  await expect(cards).toHaveCount(3);
+  const editorialIds = await listing.locator('[data-labm-actualidad-post-id]').evaluateAll((articles) => articles.map((article) => article.getAttribute('data-labm-actualidad-post-id')));
+  expect(editorialIds).toHaveLength(4);
+  expect(new Set(editorialIds).size).toBe(editorialIds.length);
+  await expect(featured.getByRole('heading', { level: 2 })).toHaveCount(1);
+  await expect(cards.getByRole('heading', { level: 2 })).toHaveCount(3);
   await expect(page.getByRole('link', { name: /página siguiente/i })).toBeVisible();
   await expect(page.getByText(/actualidad incompleta/i)).toHaveCount(0);
   const detail = page.locator('[data-labm-listado="actualidad"] article').first().getByRole('link').first();
@@ -426,6 +434,99 @@ test('3.3 no hay desborde, axe pasa y reduced motion se respeta', async ({ page 
   }
   const motion = await page.locator('main').evaluate((element) => getComputedStyle(element).scrollBehavior);
   expect(motion).toBe('auto');
+});
+
+test('3.1 contraste, estados y foco cumplen AA en Actualidad a cinco viewports', async ({ page }) => {
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/actualidad/');
+    const filterButton = page.locator('[data-labm-actualidad-filtros] button');
+    await filterButton.focus();
+    const contrast = await page.evaluate(() => {
+      const toRgb = (color: string) => {
+        const values = color.match(/[\d.]+/g)?.map(Number) ?? [];
+        return values.slice(0, 3);
+      };
+      const luminance = (color: string) => toRgb(color).reduce((total, channel, index) => {
+        const normalized = channel / 255;
+        const linear = normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        return total + linear * [0.2126, 0.7152, 0.0722][index];
+      }, 0);
+      const ratio = (foreground: string, background: string) => {
+        const foregroundLuminance = luminance(foreground);
+        const backgroundLuminance = luminance(background);
+        return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
+      };
+      const background = (element: HTMLElement | null) => {
+        let current = element;
+        while (current) {
+          const color = getComputedStyle(current).backgroundColor;
+          if (color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') return color;
+          current = current.parentElement;
+        }
+        return 'rgb(255, 255, 255)';
+      };
+      const textRatio = (selector: string) => {
+        const element = document.querySelector<HTMLElement>(selector);
+        if (!element) throw new Error(`Elemento ausente: ${selector}`);
+        const style = getComputedStyle(element);
+        return ratio(style.color, background(element));
+      };
+      const focused = document.querySelector<HTMLElement>('[data-labm-actualidad-filtros] button');
+      if (!focused) throw new Error('Botón de filtros ausente');
+      const focusedStyle = getComputedStyle(focused);
+      return {
+        heroKicker: textRatio('[data-labm-section="actualidad-hero"] .labm-actualidad-hero__kicker'),
+        featuredMeta: textRatio('[data-labm-actualidad-destacada] .labm-actualidad-meta'),
+        cardMeta: textRatio('[data-labm-actualidad-tarjeta] .labm-actualidad-meta'),
+        buttonText: ratio(focusedStyle.color, focusedStyle.backgroundColor),
+        focusIndicator: ratio(focusedStyle.outlineColor, focusedStyle.backgroundColor),
+      };
+    });
+    expect(contrast.heroKicker, `kicker a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.featuredMeta, `meta destacada a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.cardMeta, `meta tarjeta a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.buttonText, `texto del botón a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.focusIndicator, `foco del botón a ${width}px`).toBeGreaterThanOrEqual(3);
+    expect((await new AxeBuilder({ page }).include('[data-labm-listado="actualidad"]').analyze()).violations).toEqual([]);
+  }
+});
+
+test('6.2 Documentos conserva composición y texto largo sin desborde', async ({ page }) => {
+  await page.goto('/documentos/');
+  const banner = page.locator('[data-labm-section="documentos-banner"]');
+  const heading = banner.getByRole('heading', { level: 1 });
+  const summary = banner.locator('.labm-documents-banner__summary');
+  await expect(banner).toHaveCount(1);
+
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    await heading.evaluate((element) => {
+      element.textContent = 'DOCUMENTOS INSTITUCIONALES Y TRANSPARENCIA EDITORIAL DE LA LIGA ANTIOQUEÑA DE BALONMANO';
+    });
+    await summary.evaluate((element) => {
+      element.textContent = 'Texto editorial largo para comprobar que el encabezado mantiene la jerarquía, adapta su altura y conserva todas las acciones visibles sin recortar contenido ni provocar desplazamiento horizontal.';
+    });
+    const geometry = await banner.evaluate((element) => {
+      const content = element.querySelector<HTMLElement>('.labm-documents-banner__content');
+      const title = element.querySelector<HTMLElement>('h1');
+      const copy = element.querySelector<HTMLElement>('.labm-documents-banner__summary');
+      if (!content || !title || !copy) throw new Error('Composición de Documentos incompleta');
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        contentFits: content.scrollHeight <= content.clientHeight + 1,
+        titleVisible: title.getBoundingClientRect().bottom <= content.getBoundingClientRect().bottom + 1,
+        copyVisible: copy.getBoundingClientRect().bottom <= content.getBoundingClientRect().bottom + 1,
+        bannerWidth: element.getBoundingClientRect().width,
+      };
+    });
+    expect(geometry.overflow, `desborde de Documentos a ${width}px`).toBe(false);
+    expect(geometry.contentFits, `recorte del contenido a ${width}px`).toBe(true);
+    expect(geometry.titleVisible, `título fuera del banner a ${width}px`).toBe(true);
+    expect(geometry.copyVisible, `resumen fuera del banner a ${width}px`).toBe(true);
+    expect(geometry.bannerWidth).toBeLessThanOrEqual(width + 1);
+  }
 });
 
 test('portada y Selecciones conservan contenido en los anchos objetivo', async ({ page }) => {
@@ -556,7 +657,21 @@ test('detalle de actualidad mantiene contenido nativo y compartir accesible', as
   expect(mediaBox!.width).toBeGreaterThanOrEqual(expectedFullWidth);
   expect(titleBox!.width).toBeLessThanOrEqual(heroBox!.width - 32);
   expect(titleBox!.height).toBeLessThan(heroBox!.height);
-  expect(mediaBox!.height).toBeGreaterThan(250);
+  const imageGeometry = await media.locator('img').evaluate((element: HTMLImageElement) => ({
+    complete: element.complete,
+    naturalWidth: element.naturalWidth,
+    naturalHeight: element.naturalHeight,
+    maxHeight: parseFloat(getComputedStyle(element).maxHeight),
+    position: getComputedStyle(element).position,
+  }));
+  expect(imageGeometry.complete).toBe(true);
+  expect(imageGeometry.naturalWidth).toBeGreaterThan(0);
+  expect(imageGeometry.naturalHeight).toBeGreaterThan(0);
+  expect(imageGeometry.position).toBe('static');
+  const proportionalHeight = mediaImageBox!.width * imageGeometry.naturalHeight / imageGeometry.naturalWidth;
+  const expectedImageHeight = Math.min(proportionalHeight, imageGeometry.maxHeight || Infinity);
+  expect(Math.abs(mediaImageBox!.height - expectedImageHeight)).toBeLessThanOrEqual(1);
+  expect(Math.abs(mediaBox!.height - mediaImageBox!.height)).toBeLessThanOrEqual(1);
   expect(mediaImageBox!.y).toBeGreaterThanOrEqual(mediaBox!.y);
   expect(mediaBox!.y + mediaBox!.height).toBeLessThan((await detail.boundingBox())!.y);
   await expect(detail).toBeVisible();
