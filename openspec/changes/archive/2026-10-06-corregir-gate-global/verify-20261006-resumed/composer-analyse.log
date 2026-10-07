@@ -1,0 +1,10 @@
+docker.exe : Note: Using configuration file /app/phpstan.neon.dist.
+En línea: 2 Carácter: 509
++ ... ','--no-progress') }; $outputStage = & docker @argsStage 2>&1; $exitS ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Note: Using con...stan.neon.dist.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ [OK] No errors                                                                 
+

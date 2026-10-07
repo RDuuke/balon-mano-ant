@@ -1,0 +1,7 @@
+{
+    "start":  "2026-10-06T20:13:48.2130386-05:00",
+    "end":  "2026-10-06T20:14:49.9517292-05:00",
+    "status":  "PASS",
+    "command":  "scripts/content-sync.ps1 -Action Restore -Backup .content-sync/backups/backup-manual-20261007T004758902Z-rduuqe-RDUUQE.zip -ConfirmReplace",
+    "backup":  "backup-manual-20261007T004758902Z-rduuqe-RDUUQE.zip"
+}

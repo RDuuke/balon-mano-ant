@@ -1,0 +1,34 @@
+[
+    {
+        "id":  "desktop",
+        "timeout":  360000,
+        "files":  [
+                      "tests/e2e/public-experience.spec.ts",
+                      "tests/e2e/home.spec.ts"
+                  ],
+        "count":  14,
+        "filter":  "Nosotros presenta integrantes|Nosotros filtros|Nosotros anuncia|Documentos limpia|3\\.2 actualidad ofrece|3\\.4 documentos ofrece|1\\.2 actualidad reproduce|3\\.1 contraste|6\\.2 Documentos|detalle de actualidad|3\\.3 no hay desborde|ultimas noticias conserva medios cargados|inicio responde",
+        "project":  "desktop-1024"
+    },
+    {
+        "id":  "mobile",
+        "timeout":  180000,
+        "files":  [
+                      "tests/e2e/contact.spec.ts",
+                      "tests/e2e/public-experience.spec.ts"
+                  ],
+        "count":  3,
+        "filter":  "Contacto anuncia|3\\.3 no hay desborde|detalle de actualidad",
+        "project":  "mobile-320"
+    },
+    {
+        "id":  "pdf",
+        "timeout":  180000,
+        "files":  [
+                      "tests/e2e/document-admin.spec.ts"
+                  ],
+        "count":  1,
+        "filter":  "E1 reemplaza",
+        "project":  "tablet-768"
+    }
+]

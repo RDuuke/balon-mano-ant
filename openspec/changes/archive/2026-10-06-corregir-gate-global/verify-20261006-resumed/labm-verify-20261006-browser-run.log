@@ -1,0 +1,73 @@
+? Verifying lockfile against supply-chain policies (298 entries)...
+Lockfile is up to date, resolution step is skipped
+Already up to date
+✓ Lockfile passes supply-chain policies (298 entries in 6.8s)
+
+Done in 8.2s using pnpm v11.17.0
+
+Running 220 tests using 1 worker
+
+[1A[2K[1/220] [mobile-320] › tests/e2e/contact.spec.ts:15:5 › Contacto conserva columnas legibles en tablet y desktop
+[1A[2K[2/220] [mobile-320] › tests/e2e/contact.spec.ts:31:5 › Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa
+[1A[2K  1) [mobile-320] › tests/e2e/contact.spec.ts:31:5 › Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa 
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+    Error: locator.fill: Test timeout of 120000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.labm-contact__form').locator('[name="nombre"]')[22m
+
+
+       5 |
+       6 | async function completeContactForm(form) {
+    >  7 |   await form.locator('[name="nombre"]').fill('Ada');
+         |                                         ^
+       8 |   await form.locator('[name="apellidos"]').fill('Lovelace');
+       9 |   await form.locator('[name="correo"]').fill('ada@example.com');
+      10 |   await form.locator('[name="asunto"]').fill('Consulta');
+        at completeContactForm (/app/tests/e2e/contact.spec.ts:7:41)
+        at /app/tests/e2e/contact.spec.ts:36:9
+
+    Error Context: openspec/changes/corregir-gate-global/verify-20261006-resumed/browser-output/contact-Contacto-anuncia-e-84a62--repetidas-mientras-procesa-mobile-320/error-context.md
+
+
+[1A[2K[3/220] [mobile-320] › tests/e2e/contact.spec.ts:47:5 › Contacto no muestra el estado de envío cuando la validación nativa rechaza el formulario
+[1A[2K[4/220] [mobile-320] › tests/e2e/contact.spec.ts:60:5 › Contacto publica los datos institucionales y un formulario accesible
+[1A[2K[5/220] [mobile-320] › tests/e2e/contact.spec.ts:84:5 › Contacto asocia errores, conserva teclado y no revela la configuración interna
+[1A[2K[6/220] [mobile-320] › tests/e2e/document-admin.spec.ts:111:7 › experiencia administrativa de documentos PDF › A1.1 selecciona un PDF desde Media Library sin mostrar ID ni URL
+[1A[2K[7/220] [mobile-320] › tests/e2e/document-admin.spec.ts:122:7 › experiencia administrativa de documentos PDF › A1.2 permite reemplazar y retirar sin borrar el adjunto
+[1A[2K[8/220] [mobile-320] › tests/e2e/document-admin.spec.ts:132:7 › experiencia administrativa de documentos PDF › A1.3 un fallo de Media Library conserva la asociación previa y orienta
+[1A[2K[9/220] [mobile-320] › tests/e2e/document-admin.spec.ts:139:7 › experiencia administrativa de documentos PDF › A2.1 muestra nombre, peso y estado textual del PDF
+[1A[2K[10/220] [mobile-320] › tests/e2e/document-admin.spec.ts:147:7 › experiencia administrativa de documentos PDF › A2.2 informa el menor límite efectivo configurado por WordPress
+[1A[2K[11/220] [mobile-320] › tests/e2e/document-admin.spec.ts:157:7 › experiencia administrativa de documentos PDF › A2.3 rechaza un archivo sobredimensionado con acción correctiva
+[1A[2K[12/220] [mobile-320] › tests/e2e/document-admin.spec.ts:164:7 › experiencia administrativa de documentos PDF › A3.1 completa el flujo del editor de bloques solo con teclado
+[1A[2K[13/220] [mobile-320] › tests/e2e/document-admin.spec.ts:174:7 › experiencia administrativa de documentos PDF › A3.2 el editor clásico ofrece controles equivalentes y ayuda asociada
+[1A[2K[14/220] [mobile-320] › tests/e2e/document-admin.spec.ts:183:7 › experiencia administrativa de documentos PDF › A3.3 anuncia errores, enfoca el primer campo inválido y pasa axe
+[1A[2K[15/220] [mobile-320] › tests/e2e/document-admin.spec.ts:196:7 › experiencia administrativa de documentos PDF › E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección
+[1A[2K[16/220] [mobile-320] › tests/e2e/document-admin.spec.ts:284:7 › experiencia administrativa de documentos PDF › E2 identifica ayuda y estado al enfocar controles de ambos editores
+[1A[2K[17/220] [mobile-320] › tests/e2e/document-admin.spec.ts:304:7 › experiencia administrativa de documentos PDF › E3 fallo real de carga conserva asociación y ofrece error accionable
+[1A[2K[18/220] [mobile-320] › tests/e2e/document-admin.spec.ts:316:7 › experiencia administrativa de documentos PDF › E4 carga real sobredimensionada se rechaza con límite visible
+[1A[2K[19/220] [mobile-320] › tests/e2e/document-admin.spec.ts:345:7 › experiencia administrativa de documentos PDF › E5 selecciona, reemplaza, retira y corrige con activación por teclado
+[1A[2K[20/220] [mobile-320] › tests/e2e/home.spec.ts:6:5 › ultimas noticias conserva medios cargados y metadatos semanticos
+[1A[2K[21/220] [mobile-320] › tests/e2e/home.spec.ts:32:5 › ultimas noticias compone una destacada, tres laterales y navegacion editorial
+[1A[2K[22/220] [mobile-320] › tests/e2e/home.spec.ts:44:5 › ultimas noticias conserva orden y geometria responsive sin desborde
+[1A[2K[23/220] [mobile-320] › tests/e2e/home.spec.ts:68:5 › ultimas noticias conserva orden secuencial y foco visible a 320 pixeles
+[1A[2K[24/220] [mobile-320] › tests/e2e/home.spec.ts:97:5 › slider muestra dots circulares alineados y sin desborde vertical normal
+[1A[2K[25/220] [mobile-320] › tests/e2e/home.spec.ts:158:5 › secciones del inicio usan las superficies exactas del diseño
+[1A[2K[26/220] [mobile-320] › tests/e2e/home.spec.ts:173:5 › vinculacion reproduce la composicion editorial y se adapta sin desborde
+[1A[2K[27/220] [mobile-320] › tests/e2e/home.spec.ts:217:5 › slider mantiene altura al usar anterior, siguiente e indicadores
+[1A[2K[28/220] [mobile-320] › tests/e2e/home.spec.ts:239:5 › inicio responde y no presenta violaciones axe automaticas
+[1A[2K[29/220] [mobile-320] › tests/e2e/home.spec.ts:247:5 › inicio conserva el orden aprobado y excluye secciones retiradas
+[1A[2K[30/220] [mobile-320] › tests/e2e/home.spec.ts:259:5 › slider conserva controles y aliados funciona como marquee solo de logos
+[1A[2K[31/220] [mobile-320] › tests/e2e/home.spec.ts:356:5 › slider y aliados quedan estaticos con movimiento reducido
+[1A[2K[32/220] [mobile-320] › tests/e2e/home.spec.ts:397:5 › aliados mantiene proporción, alt y ancho sin desborde
+[1A[2K[33/220] [mobile-320] › tests/e2e/public-experience.spec.ts:14:5 › Nosotros inicia con un banner editorial estático y responsive
+[1A[2K[mobile-320] › tests/e2e/public-experience.spec.ts:14:5 › Nosotros inicia con un banner editorial estático y responsive
+6.2 geometry 320: {"overflow":false,"sideBySide":false,"stacked":true}
+
+[1A[2K6.2 geometry 1440: {"overflow":false,"sideBySide":true,"stacked":false}
+
+[1A[2K[34/220] [mobile-320] › tests/e2e/public-experience.spec.ts:67:5 › Nosotros presenta Misión y Visión administrables con composición responsive
+[1A[2K[35/220] [mobile-320] › tests/e2e/public-experience.spec.ts:134:5 › Misión y Visión adaptan contenido editorial largo sin desborde ni solapamiento
+undefined
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command was killed with SIGTERM (Termination): playwright test '--workers=1' '--timeout=120000' '--global-timeout=1200000' '--reporter=line,json' '--output=openspec/changes/corregir-gate-global/verify-20261006-resumed/browser-output'

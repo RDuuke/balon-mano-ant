@@ -214,6 +214,10 @@ Decision rules:
 - If it fails twice, inform the user with options: retry, continue from the
   previous phase, or abandon
 
+## Incremental VERIFY Policy
+
+Delegate VERIFY under skills/flow-nea-verify/SKILL.md Step 0: first checks are scoped to change impact; re-VERIFY runs only failed, pending/interrupted or invalidated checks and reuses traceable valid PASS. Require executed/reused/pending/invalidation summaries and retain skill_resolution. Discovery never triggers a full gate by default: decompose stages and select tests. Preserve explicit global obligations through valid accumulated evidence or report conflicts; filtered tests cannot prove full suites or global coverage. Separate code, environment and interruption; interruption never PASS. ARCHIVE requires current valid evidence for required checks.
+
 ## Response Handling
 
 - If `status` is `failed` or `artifacts` is empty, DO NOT advance

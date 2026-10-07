@@ -3,6 +3,32 @@ import AxeBuilder from '@axe-core/playwright';
 
 const targetWidths = [320, 768, 1024, 1200, 1440];
 
+test('ultimas noticias conserva medios cargados y metadatos semanticos', async ({ page }) => {
+  await page.goto('/');
+  const articles = page.locator('[data-labm-section="actualidad"] .labm-home-news__article-link');
+  await expect(articles).toHaveCount(4);
+  for (const article of await articles.all()) {
+    await expect(article.getByRole('heading')).toBeVisible();
+    await expect(article).toHaveAttribute('href', /\/actualidad\/[^/]+\/$/);
+    const date = article.locator('time');
+    await expect(date).toBeVisible();
+    expect(Number.isNaN(Date.parse(await date.getAttribute('datetime') ?? ''))).toBe(false);
+    const image = article.locator('img');
+    await expect(image).toHaveCount(1);
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toBeVisible();
+    await expect.poll(() => image.evaluate((element: HTMLImageElement) =>
+      element.complete && element.naturalWidth > 0 && element.naturalHeight > 0,
+    )).toBe(true);
+    const source = await image.evaluate((element: HTMLImageElement) => element.currentSrc);
+    expect(new URL(source).protocol).toMatch(/^https?:$/);
+    if (new URL(source).pathname.includes('/themes/labm/')) {
+      expect(new URL(source).pathname).toMatch(/\/assets\/images\/hero-balonmano-(?:antioquia|seleccion)-v1\.png$/);
+      await expect(image).toHaveAttribute('alt', '');
+    }
+  }
+});
+
 test('ultimas noticias compone una destacada, tres laterales y navegacion editorial', async ({ page }) => {
   await page.goto('/');
   const news = page.locator('[data-labm-section="actualidad"]');

@@ -6,10 +6,12 @@
 2. Compose: `docker compose config --quiet`.
 3. Smoke: ejecute los cuatro scripts de `tests/smoke/` con servicios saludables.
 4. PHP: `composer test`, integracion con el runtime WordPress, `composer lint` y `composer analyse` dentro de los contenedores documentados por `scripts/gate.ps1`.
-5. Navegador portable: `./scripts/browser-gate.ps1 -Task playwright` ejecuta Node 22.13.1 y pnpm 11.17.0 aislados en Docker, sin depender del Node del host.
+5. Navegador portable: `./scripts/browser-gate.ps1 -Task playwright` ejecuta Node 22.13.1 y pnpm 11.17.0 aislados en Docker, sin depender del Node del host. Las dependencias Linux se guardan en el volumen `labm_browser_node_modules`, separado de `node_modules` del host para evitar errores de permisos al renombrar paquetes en Windows; pnpm y Chromium conservan sus volúmenes de caché.
 6. Lighthouse y SEO quedan diferidos a un cambio futuro y no bloquean el gate actual. La especificaciÃ³n vigente conserva esos umbrales, por lo que sus escenarios no deben declararse conformes hasta tramitar el cambio formal correspondiente.
 
 `./scripts/gate.ps1 -IncludeBrowser` registra version, salida y `ExitCode` en `artifacts/`, que esta ignorado. Una herramienta ausente queda **NO EJECUTADA** y hace fallar el gate.
+
+El runner portable ejecuta Playwright con un trabajador: los cuatro proyectos comparten la misma base WordPress y el usuario administrativo, incluido su estado temporal de recuperación. Esto evita que un proyecto consuma el estado de otro y reduce la contención del runtime local; se conservan todos los casos, los cuatro proyectos y sus límites de tiempo. La ejecución completa puede tardar más que una matriz sobre entornos independientes.
 
 ## Validacion desde entorno limpio
 

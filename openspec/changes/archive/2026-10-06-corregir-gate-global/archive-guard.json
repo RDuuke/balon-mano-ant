@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-10-06T20:23:09.604513-05:00",
+  "current_inputs_checked": 118,
+  "original_artifact_sha256": {
+    ".execution-log.md": "9cb7584af810d2ff51ec37ff217aba14172175d3e3b44977c4e2e4866b03079a",
+    "apply-progress.md": "805ee01d6115a93b4dcf6537e7f1ffb2137c5f9d1aa699518bf3f5cccb3a3a20",
+    "design.md": "d889983785a6e015edb1d5af5114adbea79b387a2716dbe4c689d5bdf1547b5a",
+    "exploration.md": "d7e4829ea0b128912d399c2fec41a8b8f9e7b9696fcb5b9c99d0b655f3515221",
+    "proposal.md": "6acc58782d0315b86dac58481844f04623397b239d7e8fb944d3a2be6acc04b2",
+    "tasks.md": "e6e318eda2134e60b050d83e7ae0d79e88b3f6efd8f57464ce0c01c0e58fd1d0",
+    "verify-report.md": "1c6b5b77ab8daa26f9551ff05cadc414c28b131e72c255f8ec827c23471ef15d",
+    "verify-20261006-resumed/clover.xml": "38367eb60f9fe4b56e72390980cffb116f1fe274950c004180f04879a9ce4f38",
+    "verify-20261006-resumed/composer-analyse.log": "eba9c4428d5e97cdf363df09c3b980621386214639efe8968b00b0a3d0888043",
+    "verify-20261006-resumed/composer-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verify-20261006-resumed/composer-test.log": "f3d59a55f4446360528d30dc892ba3ff1ded74c9a3e91176048b673b9e10ab27",
+    "verify-20261006-resumed/current-inputs.json": "dfb7121935f29a661ea3406f0bf4869c100aa75367bc3a6ba410c3f6ccf81f84",
+    "verify-20261006-resumed/final-inputs.json": "b7a06f11f496ac88605bc81b168ad4d0466f82b4757bd83aa633e97dcb041575",
+    "verify-20261006-resumed/final-result.json": "7e56818b9b33d928bc970f12804c05c9a64ee23b393699bdc0aaaf9a4a1d58a7",
+    "verify-20261006-resumed/focal-desktop-results.json": "fcc220fa3af9ff7d10de53d65c2a7866a46abcfb587d8091bd031e1535e8648b",
+    "verify-20261006-resumed/focal-desktop-state.json": "27b77f648d732ad30106e9f089b013e56db28af62ace90ae8878f10e602c6c45",
+    "verify-20261006-resumed/focal-desktop.log": "f1d325198d0c0dc0e1a8eccd799f4330eceec51f119372c6fcfa4260761c80ed",
+    "verify-20261006-resumed/focal-mobile-results.json": "f405fd3d8d2dc7851e238b2e102632aaa5288fb5fd7d54047e2d269ed4c74165",
+    "verify-20261006-resumed/focal-mobile-state.json": "5666c8b6762984412331eb367037b0f77b1020b38d3741d0dfa1a72d6866c3b6",
+    "verify-20261006-resumed/focal-mobile.log": "7fe401499fa001b2a21dec6f396ad1465656b56c29ae5c32e63d3fb87d01f5a2",
+    "verify-20261006-resumed/focal-pdf-results.json": "8f4d484bc448774ed03dcda3377942b1a2f4f5e91396ba2d79d441b4bb99ade0",
+    "verify-20261006-resumed/focal-pdf-state.json": "7b42d7c6d56a67664cae8dc698ab5e1caa01a8e9a0470af8a4fe9dcf3442bbd9",
+    "verify-20261006-resumed/focal-pdf.log": "a27d5b0e96b8545cdd0a5e4d31dbee6f2e1ff24675c7c8648f2a5bc8d0d7adde",
+    "verify-20261006-resumed/focal-selection.json": "43f849d2502141a2d2f0bdf926af2437f780c01e2086981a88f84b955243e0e7",
+    "verify-20261006-resumed/focal-stage-results.json": "818484208f91397fa1292ea71bcdbf791acb995805d256827c065bc87e7b39ae",
+    "verify-20261006-resumed/focal-supervisor.ps1": "f03282a443d22c908269fd6b52ce8aa83892060061d14b93b3bb8f5405c5b60f",
+    "verify-20261006-resumed/individual-check-results.json": "914efe909b429b9c3db04d1f88013d698c23343fac6d7a1317e922aa1aad6536",
+    "verify-20261006-resumed/integration-coverage.log": "caf50d5b9c4032fab916f62a14397dd24593d2b7f454195d0a1ab620c05d0858",
+    "verify-20261006-resumed/labm-verify-20261006-browser-deps-state.json": "53c8503f169d5cc208929aa2965cf24d4ceed703f92de3a06570f4c6cd452296",
+    "verify-20261006-resumed/labm-verify-20261006-browser-deps.log": "fd537934a2a533fd37b11517441b288c18ce1521b71e3649554e95e1d9de80e7",
+    "verify-20261006-resumed/labm-verify-20261006-browser-run-state.json": "08af3fe2438da30558e3c4bfa2a03d5b26e789aba61e5c4ac7eb2bd4f2696474",
+    "verify-20261006-resumed/labm-verify-20261006-browser-run.log": "afebf5dbf2ce006d0fd8709fd26dcb0565b53e89566188b827cba3a4f15377b3",
+    "verify-20261006-resumed/labm-verify-20261006-browser-state.json": "6ee0db7be8494d2cbbdecb7a46fed6904df219a453adb2f841a9fa537747decd",
+    "verify-20261006-resumed/labm-verify-20261006-browser.log": "dd5be8006cabf5296ba25b7cc39682ca392b3bb606fff0ee7bf33dff660c86b6",
+    "verify-20261006-resumed/labm-verify-20261006-coverage-state.json": "505b5db47320513e89bb22c2202915d15c4db23a301280b473fae9b6852655ad",
+    "verify-20261006-resumed/labm-verify-20261006-coverage.log": "caf50d5b9c4032fab916f62a14397dd24593d2b7f454195d0a1ab620c05d0858",
+    "verify-20261006-resumed/official-restore-result.json": "224ebc2920fd466fef3ab20503d271433f9cc1e779c789e1da6cb5041e1fcd93",
+    "verify-20261006-resumed/official-restore.log": "e05939f36f984a3d8451db22ea238604ae6bedac8dfcf837ba96e58323b895dd",
+    "verify-20261006-resumed/persistence-audit.json": "974cf633aa8a36804701994091a5c09d764d8acd0c49d4f0043088b5ef928bca",
+    "verify-20261006-resumed/quality-results.json": "89269ab1141d16548496bca3a4583ebfdbfca4acef90fa48459fd31c94433583",
+    "verify-20261006-resumed/readiness-1.log": "e3d80c685e6be3bbc8798781e56b0cdc98f2b1e6a0625ce7ab7607d0e219d280",
+    "verify-20261006-resumed/readiness-2.log": "e3d80c685e6be3bbc8798781e56b0cdc98f2b1e6a0625ce7ab7607d0e219d280",
+    "verify-20261006-resumed/restored-state-audit.json": "4b82024e1432a76badade18297be2d7632f7ce451a9d221b7410026cd7a29b19",
+    "verify-20261006-resumed/restored-uploads-sha256.txt": "9a4ab61c80fb1161ff2ee935aa4e6179402473ce76945fd7cf4733dab62c6765",
+    "verify-20261006-resumed/scope-change-result.json": "d727ac6015e67961161483af4b8034f53314df3cb714ce6472f214a6a1de9112",
+    "verify-20261006-resumed/verification-summary.json": "208e75d32032d9c9604f64ab718416299cec6ac0c57a40cfdd2bb720aeb1af62",
+    "verify-20261006-resumed/verify-before-final.md": "bed991a3764c545ec2efe5895b49b289ce3090c90a0b8f1719f8af8ce995ce89",
+    "verify-20261006T194650-0500/diagnostic.md": "e07d56735f9f622f7e7312a6bb3b81ce707b344a7973ec543061b76d01af62c0",
+    "verify-20261006T194650-0500/inputs.json": "f19311775c40837d863103e2bface0e6bc8012ac7b627a1fbda5bf55e7d844b1",
+    "verify-20261006T194650-0500/previous-verify-report.md": "62e04cad16e5a31516b5aa27dc63506f3f4e1cc361fa3c41fa374e9d09020fcd",
+    "verify-20261006T194650-0500/verification-summary.json": "72170a933e45c166551ff438112b863c3ac0726e2543a1ddec6855947a6877e4",
+    "verify-20261006-resumed/focal-desktop-output/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+    "verify-20261006-resumed/focal-mobile-output/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+    "verify-20261006-resumed/focal-pdf-output/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903",
+    "verify-20261006-resumed/browser-output/contact-Contacto-anuncia-e-84a62--repetidas-mientras-procesa-mobile-320/error-context.md": "fc771988ee958bcf22dbab16e22e7ab921df3f8217ab6ca026537aa71fe19c3d",
+    "specs/actualidad/spec.md": "7f53fe76a67fb84b899e3e9a747b281bfffe9b2dd007b6681602a3f889e31045",
+    "specs/calidad-seguridad/spec.md": "120e6c55aaaa69cb9fa580fd5f1d12d0fbcbf8235dd4bab8ec6e62defbeb69bc",
+    "specs/document-admin-experience/spec.md": "7dd1ce7f2cc04921ca3c18507b562f81c2d662960e8c6ff489e771d2ec98ec84",
+    "specs/documentos-contacto/spec.md": "81dc26099181c883c478c35fa373f8c713c7d1ad7345007c0f51d9ce4365320b",
+    "specs/experiencia-publica/spec.md": "5383984330b1d5d83c3397597ac62585d10311ece35572a94d1d391588eaf047",
+    "specs/fixtures/spec.md": "ec978dc0742cbdcb467e34094865973280a8e6d6e0940f0434bb3b520e5f8f0f",
+    "specs/home-news/spec.md": "7e05eeda26bc9153b6ca2804fd4ca64cd6b2e093de3714f9efe041c0e7c2c48e"
+  },
+  "spec_sync": {
+    "actualidad": {
+      "added": 1,
+      "modified": 1
+    },
+    "calidad-seguridad": {
+      "added": 3,
+      "modified": 0
+    },
+    "document-admin-experience": {
+      "added": 0,
+      "modified": 1
+    },
+    "documentos-contacto": {
+      "added": 2,
+      "modified": 0
+    },
+    "experiencia-publica": {
+      "added": 1,
+      "modified": 1
+    },
+    "fixtures": {
+      "added": 1,
+      "modified": 0
+    },
+    "home-news": {
+      "added": 0,
+      "modified": 1
+    }
+  },
+  "evidence_preserved_after_move": true
+}

@@ -3,6 +3,73 @@
 use PHPUnit\Framework\TestCase;
 
 final class DocumentContactTest extends TestCase {
+	/** El adaptador legado valida, permite reintentar fallos y deduplica entregas. */
+	public function test_legacy_contact_validation_retry_and_duplicate_delivery(): void {
+		$token = 'coverage-' . wp_generate_uuid4();
+		$key = 'labm_contact_' . hash( 'sha256', $token );
+		$calls = array();
+		$deliver = false;
+		$filter = static function ( $result, $attributes ) use ( &$calls, &$deliver ) {
+			$calls[] = $attributes;
+			return $deliver;
+		};
+		add_filter( 'pre_wp_mail', $filter, 10, 2 );
+		try {
+			$invalid = labm_core_process_contact_legacy( array( 'sitio_web' => 'spam' ) );
+			self::assertFalse( $invalid['ok'] );
+			foreach ( array( 'nonce', 'antispam', 'nombre', 'apellidos', 'asunto', 'mensaje', 'correo' ) as $field ) {
+				self::assertArrayHasKey( $field, $invalid['errors'] );
+			}
+			self::assertCount( 0, $calls );
+			$data = array( 'nonce' => wp_create_nonce( 'labm_contacto' ), 'nombre' => 'Ana', 'apellidos' => 'Prueba', 'asunto' => '<b>Consulta</b>', 'mensaje' => '<b>Mensaje</b>', 'correo' => 'coverage@example.invalid', 'token' => $token );
+			self::assertArrayHasKey( 'delivery', labm_core_process_contact_legacy( $data )['errors'] );
+			self::assertFalse( get_transient( $key ) );
+			$deliver = true;
+			self::assertTrue( labm_core_process_contact_legacy( $data )['ok'] );
+			self::assertTrue( labm_core_process_contact_legacy( $data )['ok'] );
+			self::assertCount( 2, $calls );
+			self::assertSame( 'Consulta', $calls[1]['subject'] );
+			self::assertSame( 'Mensaje', $calls[1]['message'] );
+			self::assertSame( array( 'Reply-To: coverage@example.invalid' ), $calls[1]['headers'] );
+		} finally {
+			remove_filter( 'pre_wp_mail', $filter, 10 );
+			delete_transient( $key );
+		}
+	}
+
+	/** El metabox recupera el intento fallido una sola vez sin modificar el PDF guardado. */
+	public function test_classic_metabox_renders_saved_pdf_and_consumes_escaped_failed_input(): void {
+		$pdf = $this->create_document_admin_attachment();
+		$post_id = $this->create_document_admin_post( array( 'meta_input' => array( 'labm_test_fixture' => 1, 'labm_documento_pdf_id' => $pdf, 'labm_documento_fecha' => '2026-01-01' ) ) );
+		$key = labm_core_document_admin_failed_state_key();
+		$previous = get_transient( $key );
+		try {
+			delete_transient( $key );
+			ob_start();
+			labm_core_document_admin_render_meta_box( get_post( $post_id ) );
+			$html = (string) ob_get_clean();
+			self::assertStringContainsString( 'value="' . $pdf . '" data-labm-pdf-id', $html );
+			self::assertStringContainsString( 'value="2026-01-01"', $html );
+			self::assertStringContainsString( '_labm_document_nonce', $html );
+			set_transient( $key, array( 'message' => '<script>error</script>', 'input' => array( 'labm_documento_pdf_id' => 0, 'labm_documento_fecha' => '" onfocus="alert(1)', 'labm_documento_categoria' => array( 0 ) ) ), MINUTE_IN_SECONDS );
+			ob_start();
+			labm_core_document_admin_render_meta_box( get_post( $post_id ) );
+			$html = (string) ob_get_clean();
+			self::assertStringContainsString( '&lt;script&gt;error&lt;/script&gt;', $html );
+			self::assertStringNotContainsString( 'value="" onfocus=', $html );
+			self::assertStringContainsString( 'value="0" data-labm-pdf-id', $html );
+			self::assertFalse( get_transient( $key ) );
+			self::assertSame( $pdf, (int) get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
+			self::assertSame( '2026-01-01', get_post_meta( $post_id, 'labm_documento_fecha', true ) );
+		} finally {
+			delete_transient( $key );
+			if ( false !== $previous ) {
+				set_transient( $key, $previous, MINUTE_IN_SECONDS );
+			}
+			wp_delete_post( $post_id, true );
+		}
+	}
+
 	/** @var mixed */
 	private $smtp_settings_option;
 
@@ -1231,5 +1298,85 @@ final class DocumentContactTest extends TestCase {
 		$html = labm_theme_render_contact();
 
 		self::assertMatchesRegularExpression( '/<a href="[^"]+">política de privacidad<\/a>/u', $html );
+	}
+
+	/** Las entradas no escalares no producen avisos ni consumen un estado ajeno. */
+	public function test_contact_prg_rejects_array_query_without_consuming_state(): void {
+		$previous_get = $_GET;
+		$state_id     = 'Array';
+		$key          = 'labm_contact_state_' . hash( 'sha256', $state_id );
+		$state        = array( 'ok' => true, 'errors' => array() );
+		set_transient( $key, $state, 10 * MINUTE_IN_SECONDS );
+		$_GET['contacto_estado'] = array( 'no-es-un-identificador' );
+		set_error_handler(
+			static function ( $severity, $message, $file, $line ) {
+				throw new ErrorException( $message, 0, $severity, $file, $line );
+			}
+		);
+
+		try {
+			$html = labm_theme_render_contact();
+			self::assertStringNotContainsString( 'Recibimos tu mensaje.', $html );
+			self::assertSame( $state, get_transient( $key ) );
+			unset( $_GET['contacto_estado'] );
+			self::assertStringContainsString( 'data-labm-contact-form', labm_theme_render_contact() );
+		} finally {
+			restore_error_handler();
+			$_GET = $previous_get;
+			delete_transient( $key );
+		}
+	}
+
+	/** Un método no escalar se rechaza antes de procesar el formulario. */
+	public function test_contact_handler_rejects_array_method_without_delivery(): void {
+		$previous_server = $_SERVER;
+		$previous_post   = $_POST;
+		$state_ids       = array();
+		$sent            = false;
+		$mail_filter     = static function () use ( &$sent ) {
+			$sent = true;
+			return true;
+		};
+		$redirect_filter = static function ( $location ) use ( &$state_ids ) {
+			parse_str( (string) wp_parse_url( $location, PHP_URL_QUERY ), $query );
+			$state_ids[] = $query['contacto_estado'];
+			throw new RuntimeException( 'Redirección interceptada por la prueba.' );
+		};
+		$_POST = array( 'nonce' => 'invalido' );
+		add_filter( 'pre_wp_mail', $mail_filter );
+		add_filter( 'wp_redirect', $redirect_filter );
+
+		try {
+			foreach ( array( array( 'POST' ), null, 'GET', 'post' ) as $method ) {
+				if ( null === $method ) {
+					unset( $_SERVER['REQUEST_METHOD'] );
+				} else {
+					$_SERVER['REQUEST_METHOD'] = $method;
+				}
+				try {
+					labm_core_handle_contact_send();
+					self::fail( 'El handler debe redirigir.' );
+				} catch ( RuntimeException $exception ) {
+					self::assertSame( 'Redirección interceptada por la prueba.', $exception->getMessage() );
+				}
+				$state = labm_core_contact_consume_state( end( $state_ids ) );
+				self::assertFalse( $state['ok'] );
+				if ( 'post' === $method ) {
+					self::assertContains( 'nonce', $state['errors'] );
+				} else {
+					self::assertSame( array( 'request' ), $state['errors'] );
+				}
+			}
+			self::assertCount( 4, $state_ids );
+			self::assertFalse( $sent );
+		} finally {
+			$_SERVER = $previous_server;
+			$_POST   = $previous_post;
+			remove_filter( 'pre_wp_mail', $mail_filter );
+			remove_filter( 'wp_redirect', $redirect_filter );
+			foreach ( $state_ids as $state_id ) {
+				delete_transient( 'labm_contact_state_' . hash( 'sha256', $state_id ) );
+			}
+		}
 	}
 }

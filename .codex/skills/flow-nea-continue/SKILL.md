@@ -60,7 +60,7 @@ Invoke the next phase skill as the orchestrator would normally do, passing chang
 Next phase mapping:
 
 - `QUICK` -> `APPLY`
-- `VERIFY` -> `ARCHIVE`
+- `VERIFY` -> `ARCHIVE` only with complete current valid required evidence; otherwise resume targeted VERIFY under Step 0 for failed, pending/interrupted or invalidated checks, routing proven code defects to APPLY. Pass evidence and executed/reused/pending/invalidation summaries; never restart the whole gate by default.
 - standard phases follow the normal dependency chain
 
 ## Rules

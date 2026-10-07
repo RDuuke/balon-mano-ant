@@ -1,8 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const publicRoutes = ['/', '/nosotros/', '/actualidad/', '/selecciones/'];
 const targetWidths = [320, 768, 1024, 1200, 1440];
+
+async function activateLinkByKeyboard(page: Page, link: Locator) {
+  await expect(link).toBeVisible();
+  await link.focus();
+  await expect(link).toBeFocused();
+  await page.keyboard.press('Enter');
+}
 
 test('Nosotros inicia con un banner editorial estático y responsive', async ({ page }) => {
   await page.goto('/nosotros/');
@@ -28,6 +35,7 @@ test('Nosotros inicia con un banner editorial estático y responsive', async ({ 
         stacked: mediaBox.top >= contentBox.bottom - 1,
       };
     });
+    console.log(`6.2 geometry ${width}: ${JSON.stringify(geometry)}`);
     expect(geometry.overflow, `desborde a ${width}px`).toBe(false);
     expect(width === 320 ? geometry.stacked : geometry.sideBySide).toBe(true);
 
@@ -179,8 +187,9 @@ test('Nosotros presenta integrantes editables, filtrables y responsive', async (
   await expect(page).toHaveURL(/grupo=entrenadores/);
   const filtered = page.locator('[data-labm-section="nosotros-equipo"]');
   await expect(filtered.getByRole('link', { name: 'Entrenadores' })).toHaveAttribute('aria-current', 'true');
-  await expect(filtered.locator('[data-labm-team-card]')).toHaveCount(2);
-  await expect(filtered.getByText('Mateo Giraldo')).toHaveCount(0);
+  await expect(filtered.locator('[data-labm-team-card]:visible')).toHaveCount(2);
+  expect(await filtered.locator('[data-labm-team-card]:visible').evaluateAll((cards) => cards.map((card) => card.getAttribute('data-labm-team-group')))).toEqual(['entrenadores', 'entrenadores']);
+  await expect(filtered.getByText('Mateo Giraldo')).toBeHidden();
 
   await page.goto('/nosotros/');
   for (const width of targetWidths) {
@@ -360,7 +369,16 @@ test('3.1 navegación global, páginas institucionales, foco y ruta ausente', as
 test('3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad', async ({ page }) => {
   await page.goto('/actualidad/');
   await expect(page.getByRole('heading', { level: 1, name: 'Actualidad' })).toBeVisible();
-  await expect(page.locator('[data-labm-listado="actualidad"] article')).toHaveCount(3);
+  const listing = page.locator('[data-labm-listado="actualidad"]');
+  const featured = listing.locator('[data-labm-actualidad-destacada]');
+  const cards = listing.locator('[data-labm-actualidad-tarjeta]');
+  await expect(featured).toHaveCount(1);
+  await expect(cards).toHaveCount(3);
+  const editorialIds = await listing.locator('[data-labm-actualidad-post-id]').evaluateAll((articles) => articles.map((article) => article.getAttribute('data-labm-actualidad-post-id')));
+  expect(editorialIds).toHaveLength(4);
+  expect(new Set(editorialIds).size).toBe(editorialIds.length);
+  await expect(featured.getByRole('heading', { level: 2 })).toHaveCount(1);
+  await expect(cards.getByRole('heading', { level: 2 })).toHaveCount(3);
   await expect(page.getByRole('link', { name: /página siguiente/i })).toBeVisible();
   await expect(page.getByText(/actualidad incompleta/i)).toHaveCount(0);
   const detail = page.locator('[data-labm-listado="actualidad"] article').first().getByRole('link').first();
@@ -385,8 +403,8 @@ test('3.4 documentos ofrece filtros, estado vacío y composición responsive', a
 
   await page.goto('/documentos/?texto=sin-resultados-ficticios&orden=antiguos');
   await expect(form.getByLabel('Buscar')).toHaveValue('sin-resultados-ficticios');
-  await expect(page.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /estado vacío/i })).toBeVisible();
+  await expect(form.getByRole('link', { name: /limpiar filtros/i })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'No encontramos documentos' })).toBeVisible();
 
   await page.setViewportSize({ width: 320, height: 900 });
   await page.reload();
@@ -416,6 +434,99 @@ test('3.3 no hay desborde, axe pasa y reduced motion se respeta', async ({ page 
   }
   const motion = await page.locator('main').evaluate((element) => getComputedStyle(element).scrollBehavior);
   expect(motion).toBe('auto');
+});
+
+test('3.1 contraste, estados y foco cumplen AA en Actualidad a cinco viewports', async ({ page }) => {
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/actualidad/');
+    const filterButton = page.locator('[data-labm-actualidad-filtros] button');
+    await filterButton.focus();
+    const contrast = await page.evaluate(() => {
+      const toRgb = (color: string) => {
+        const values = color.match(/[\d.]+/g)?.map(Number) ?? [];
+        return values.slice(0, 3);
+      };
+      const luminance = (color: string) => toRgb(color).reduce((total, channel, index) => {
+        const normalized = channel / 255;
+        const linear = normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        return total + linear * [0.2126, 0.7152, 0.0722][index];
+      }, 0);
+      const ratio = (foreground: string, background: string) => {
+        const foregroundLuminance = luminance(foreground);
+        const backgroundLuminance = luminance(background);
+        return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
+      };
+      const background = (element: HTMLElement | null) => {
+        let current = element;
+        while (current) {
+          const color = getComputedStyle(current).backgroundColor;
+          if (color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') return color;
+          current = current.parentElement;
+        }
+        return 'rgb(255, 255, 255)';
+      };
+      const textRatio = (selector: string) => {
+        const element = document.querySelector<HTMLElement>(selector);
+        if (!element) throw new Error(`Elemento ausente: ${selector}`);
+        const style = getComputedStyle(element);
+        return ratio(style.color, background(element));
+      };
+      const focused = document.querySelector<HTMLElement>('[data-labm-actualidad-filtros] button');
+      if (!focused) throw new Error('Botón de filtros ausente');
+      const focusedStyle = getComputedStyle(focused);
+      return {
+        heroKicker: textRatio('[data-labm-section="actualidad-hero"] .labm-actualidad-hero__kicker'),
+        featuredMeta: textRatio('[data-labm-actualidad-destacada] .labm-actualidad-meta'),
+        cardMeta: textRatio('[data-labm-actualidad-tarjeta] .labm-actualidad-meta'),
+        buttonText: ratio(focusedStyle.color, focusedStyle.backgroundColor),
+        focusIndicator: ratio(focusedStyle.outlineColor, focusedStyle.backgroundColor),
+      };
+    });
+    expect(contrast.heroKicker, `kicker a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.featuredMeta, `meta destacada a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.cardMeta, `meta tarjeta a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.buttonText, `texto del botón a ${width}px`).toBeGreaterThanOrEqual(4.5);
+    expect(contrast.focusIndicator, `foco del botón a ${width}px`).toBeGreaterThanOrEqual(3);
+    expect((await new AxeBuilder({ page }).include('[data-labm-listado="actualidad"]').analyze()).violations).toEqual([]);
+  }
+});
+
+test('6.2 Documentos conserva composición y texto largo sin desborde', async ({ page }) => {
+  await page.goto('/documentos/');
+  const banner = page.locator('[data-labm-section="documentos-banner"]');
+  const heading = banner.getByRole('heading', { level: 1 });
+  const summary = banner.locator('.labm-documents-banner__summary');
+  await expect(banner).toHaveCount(1);
+
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.reload();
+    await heading.evaluate((element) => {
+      element.textContent = 'DOCUMENTOS INSTITUCIONALES Y TRANSPARENCIA EDITORIAL DE LA LIGA ANTIOQUEÑA DE BALONMANO';
+    });
+    await summary.evaluate((element) => {
+      element.textContent = 'Texto editorial largo para comprobar que el encabezado mantiene la jerarquía, adapta su altura y conserva todas las acciones visibles sin recortar contenido ni provocar desplazamiento horizontal.';
+    });
+    const geometry = await banner.evaluate((element) => {
+      const content = element.querySelector<HTMLElement>('.labm-documents-banner__content');
+      const title = element.querySelector<HTMLElement>('h1');
+      const copy = element.querySelector<HTMLElement>('.labm-documents-banner__summary');
+      if (!content || !title || !copy) throw new Error('Composición de Documentos incompleta');
+      return {
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        contentFits: content.scrollHeight <= content.clientHeight + 1,
+        titleVisible: title.getBoundingClientRect().bottom <= content.getBoundingClientRect().bottom + 1,
+        copyVisible: copy.getBoundingClientRect().bottom <= content.getBoundingClientRect().bottom + 1,
+        bannerWidth: element.getBoundingClientRect().width,
+      };
+    });
+    expect(geometry.overflow, `desborde de Documentos a ${width}px`).toBe(false);
+    expect(geometry.contentFits, `recorte del contenido a ${width}px`).toBe(true);
+    expect(geometry.titleVisible, `título fuera del banner a ${width}px`).toBe(true);
+    expect(geometry.copyVisible, `resumen fuera del banner a ${width}px`).toBe(true);
+    expect(geometry.bannerWidth).toBeLessThanOrEqual(width + 1);
+  }
 });
 
 test('portada y Selecciones conservan contenido en los anchos objetivo', async ({ page }) => {
@@ -460,8 +571,8 @@ test('1.2 actualidad reproduce las regiones Pencil, filtros y navegación respon
   const [heroBox, filtersBox, searchBox, categoryBox, submitBox, listingBox, featuredMediaBox] = await Promise.all([
     hero.boundingBox(),
     filters.boundingBox(),
-    filters.getByLabel(/buscar noticias/i).boundingBox(),
-    filters.getByLabel(/categor/i).boundingBox(),
+    filters.locator('input[name="texto"]').boundingBox(),
+    filters.locator('select[name="categoria"]').boundingBox(),
     filters.getByRole('button', { name: /aplicar filtro/i }).boundingBox(),
     listing.boundingBox(),
     listing.locator('[data-labm-actualidad-destacada] > :first-child').boundingBox(),
@@ -540,11 +651,27 @@ test('detalle de actualidad mantiene contenido nativo y compartir accesible', as
   expect(heroBox!.y + heroBox!.height).toBeLessThanOrEqual(mediaBox!.y + 1);
   expect(Math.abs(heroBox!.x)).toBeLessThanOrEqual(1);
   expect(Math.abs(mediaBox!.x)).toBeLessThanOrEqual(1);
-  expect(heroBox!.width).toBeGreaterThanOrEqual(1023);
-  expect(mediaBox!.width).toBeGreaterThanOrEqual(1023);
+  const viewport = page.viewportSize();
+  const expectedFullWidth = Math.min(1023, viewport?.width ?? 1023);
+  expect(heroBox!.width).toBeGreaterThanOrEqual(expectedFullWidth);
+  expect(mediaBox!.width).toBeGreaterThanOrEqual(expectedFullWidth);
   expect(titleBox!.width).toBeLessThanOrEqual(heroBox!.width - 32);
   expect(titleBox!.height).toBeLessThan(heroBox!.height);
-  expect(mediaBox!.height).toBeGreaterThan(250);
+  const imageGeometry = await media.locator('img').evaluate((element: HTMLImageElement) => ({
+    complete: element.complete,
+    naturalWidth: element.naturalWidth,
+    naturalHeight: element.naturalHeight,
+    maxHeight: parseFloat(getComputedStyle(element).maxHeight),
+    position: getComputedStyle(element).position,
+  }));
+  expect(imageGeometry.complete).toBe(true);
+  expect(imageGeometry.naturalWidth).toBeGreaterThan(0);
+  expect(imageGeometry.naturalHeight).toBeGreaterThan(0);
+  expect(imageGeometry.position).toBe('static');
+  const proportionalHeight = mediaImageBox!.width * imageGeometry.naturalHeight / imageGeometry.naturalWidth;
+  const expectedImageHeight = Math.min(proportionalHeight, imageGeometry.maxHeight || Infinity);
+  expect(Math.abs(mediaImageBox!.height - expectedImageHeight)).toBeLessThanOrEqual(1);
+  expect(Math.abs(mediaBox!.height - mediaImageBox!.height)).toBeLessThanOrEqual(1);
   expect(mediaImageBox!.y).toBeGreaterThanOrEqual(mediaBox!.y);
   expect(mediaBox!.y + mediaBox!.height).toBeLessThan((await detail.boundingBox())!.y);
   await expect(detail).toBeVisible();
@@ -576,4 +703,61 @@ test('detalle de actualidad mantiene contenido nativo y compartir accesible', as
   await noJavaScriptPage.goto(detailPath);
   await expect(noJavaScriptPage.getByLabel('Enlace de esta publicación')).toBeVisible();
   await noJavaScript.close();
+});
+
+for (const javaScriptEnabled of [true, false]) {
+  test(`Nosotros filtros por teclado y privacidad con JS ${javaScriptEnabled}`, async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled });
+    const page = await context.newPage();
+    try {
+      await page.goto(`${process.env.WP_URL || 'http://localhost:8080'}/nosotros/`);
+      const section = page.locator('[data-labm-team]');
+      const trainers = section.getByRole('link', { name: 'Entrenadores', exact: true });
+      await activateLinkByKeyboard(page, trainers);
+      await expect(page).toHaveURL(/grupo=entrenadores/);
+      await expect(trainers).toHaveAttribute('aria-current', 'true');
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(2);
+      await expect(section.getByText('Mateo Giraldo')).toBeHidden();
+      await expect(section.getByText('Vacante de ejemplo')).toHaveCount(0);
+      await activateLinkByKeyboard(page, section.getByRole('link', { name: 'Todos', exact: true }));
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+      await expect(page).not.toHaveURL(/grupo=/);
+      await page.goto(`${process.env.WP_URL || 'http://localhost:8080'}/nosotros/?grupo=desconocido`);
+      await expect(section.getByRole('link', { name: 'Todos', exact: true })).toHaveAttribute('aria-current', 'true');
+      await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+    } finally {
+      await context.close();
+    }
+  });
+}
+
+test('Nosotros anuncia y restablece un grupo vacío al filtrar localmente', async ({ page }) => {
+  await page.goto('/nosotros/');
+  const section = page.locator('[data-labm-team]');
+  // Variante editorial local: los integrantes públicos pertenecen a otros grupos.
+  await section.locator('[data-labm-team-card]').evaluateAll((cards) => cards.forEach((card) => card.setAttribute('data-labm-team-group', 'comite')));
+  await section.getByRole('link', { name: 'Entrenadores', exact: true }).click();
+  await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(0);
+  await expect(section.getByRole('status')).toHaveText('No hay integrantes publicados en este grupo.');
+  await section.getByRole('link', { name: 'Todos', exact: true }).click();
+  await expect(section.locator('[data-labm-team-card]:visible')).toHaveCount(4);
+  await expect(section.getByRole('status')).toBeHidden();
+});
+
+test('Documentos limpia ambas regiones por teclado y restablece todos los controles', async ({ page }) => {
+  for (const region of ['formulario', 'vacio']) {
+    await page.goto('/documentos/?texto=sin-resultados-ficticios&categoria=desconocida&anio=1900&orden=antiguos&pagina=999');
+    const form = page.locator('.labm-documents-filters form');
+    const empty = page.getByRole('region', { name: 'No encontramos documentos' });
+    const clear = (region === 'formulario' ? form : empty).getByRole('link', { name: 'Limpiar filtros', exact: true });
+    await expect(clear).toHaveAttribute('href', /\/documentos\/$/);
+    await activateLinkByKeyboard(page, clear);
+    await expect(page).toHaveURL(/\/documentos\/$/);
+    await expect(form.getByLabel('Buscar', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Categoría', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Año', { exact: true })).toHaveValue('');
+    await expect(form.getByLabel('Orden', { exact: true })).toHaveValue('recientes');
+    await expect(page.getByRole('region', { name: 'Documentos publicados' })).toBeVisible();
+    await expect(page.getByText(/documento privado/i)).toHaveCount(0);
+  }
 });

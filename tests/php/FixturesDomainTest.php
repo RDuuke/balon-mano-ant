@@ -203,23 +203,44 @@ final class FixturesDomainTest extends TestCase {
 	}
 	/** Un fallo al escribir el logo demo se comunica y no queda oculto. */
 	public function test_home_allies_fixture_reports_upload_failures(): void {
-		$attachment = get_page_by_path( 'demo-labm-logo-arco-comun', OBJECT, 'attachment' );
-		if ( $attachment ) {
-			wp_delete_attachment( $attachment->ID, true );
-		}
+		$command = new LABM_Fixtures_Command();
+		$command->load( array(), array() );
+		$foreign_id = wp_insert_post( array( 'post_title' => 'Contenido ajeno al fallo de logo', 'post_content' => '<p>Conservar.</p>', 'post_type' => 'labm_aliado', 'post_status' => 'publish' ) );
+		$foreign    = get_post( $foreign_id )->to_array();
+		$ally       = get_page_by_path( 'demo-labm-aliado-arco-comun', OBJECT, 'labm_aliado' );
+		$attachment = get_post( get_post_thumbnail_id( $ally->ID ) );
+		self::assertInstanceOf( WP_Post::class, $attachment );
+		self::assertSame( 'demo-labm-image-arco-comun', $attachment->post_name );
+		wp_delete_attachment( $attachment->ID, true );
 		$unwritable_upload = static function ( $uploads ) {
-			$uploads['path']    = '/proc/ruta-labm-inexistente/sin-permisos';
-			$uploads['basedir'] = '/proc/ruta-labm-inexistente/sin-permisos';
+			$uploads['path'] = '/proc/ruta-labm-inexistente/sin-permisos';
 			return $uploads;
 		};
 		add_filter( 'upload_dir', $unwritable_upload );
 		try {
-			$this->expectException( RuntimeException::class );
-			$this->expectExceptionMessage( 'arco-comun.png' );
-			( new LABM_Fixtures_Command() )->load( array(), array() );
+			try {
+				$command->load( array(), array() );
+				self::fail( 'El recurso aislado debe comunicar el fallo de importación.' );
+			} catch ( RuntimeException $error ) {
+				self::assertStringContainsString( 'arco-comun.png', $error->getMessage() );
+			}
+			self::assertSame( 0, get_post_thumbnail_id( $ally->ID ) );
+			self::assertSame( $foreign, get_post( $foreign_id )->to_array() );
 		} finally {
 			remove_filter( 'upload_dir', $unwritable_upload );
-			( new LABM_Fixtures_Command() )->load( array(), array() );
+			try {
+				$command->load( array(), array() );
+				$ally         = get_page_by_path( 'demo-labm-aliado-arco-comun', OBJECT, 'labm_aliado' );
+				$recovered_id = get_post_thumbnail_id( $ally->ID );
+				self::assertGreaterThan( 0, $recovered_id );
+				self::assertSame( 'image/png', get_post_mime_type( $recovered_id ) );
+				$command->load( array(), array() );
+				self::assertSame( $recovered_id, get_post_thumbnail_id( $ally->ID ) );
+				self::assertCount( 1, get_posts( array( 'name' => 'demo-labm-image-arco-comun', 'post_type' => 'attachment', 'post_status' => 'inherit', 'posts_per_page' => -1 ) ) );
+				self::assertSame( $foreign, get_post( $foreign_id )->to_array() );
+			} finally {
+				wp_delete_post( $foreign_id, true );
+			}
 		}
 	}
 

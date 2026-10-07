@@ -162,14 +162,14 @@ function labm_theme_render_contact() {
 	if ( ! function_exists( 'labm_core_get_contact_settings' ) ) {
 		return '<section class="labm-contact" data-labm-section="contacto"><h1>' . esc_html__( 'Contacto', 'labm' ) . '</h1><p class="labm-notice">' . esc_html__( 'El formulario no está disponible en este momento.', 'labm' ) . '</p></section>';
 	}
-	$settings = labm_core_get_contact_settings();
-	$state_id = isset( $_GET['contacto_estado'] ) && function_exists( 'labm_core_sanitize_contact_state_id' ) ? labm_core_sanitize_contact_state_id( wp_unslash( $_GET['contacto_estado'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Estado opaco de PRG.
-	$state    = $state_id && function_exists( 'labm_core_contact_consume_state' ) ? labm_core_contact_consume_state( $state_id ) : array();
-	$errors   = array_fill_keys( is_array( $state['errors'] ?? null ) ? $state['errors'] : array(), true );
+	$settings       = labm_core_get_contact_settings();
+	$state_id       = isset( $_GET['contacto_estado'] ) && function_exists( 'labm_core_sanitize_contact_state_id' ) ? labm_core_sanitize_contact_state_id( sanitize_text_field( wp_unslash( $_GET['contacto_estado'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Estado opaco de PRG, sin datos personales ni mutaciones del formulario.
+	$state          = $state_id && function_exists( 'labm_core_contact_consume_state' ) ? labm_core_contact_consume_state( $state_id ) : array();
+	$errors         = array_fill_keys( is_array( $state['errors'] ?? null ) ? $state['errors'] : array(), true );
 	$delivery_error = isset( $errors['delivery'] );
-	$footer   = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
-	$privacy  = $footer['policy_url'] ?? '/privacidad/';
-	$fields   = array(
+	$footer         = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
+	$privacy        = $footer['policy_url'] ?? '/privacidad/';
+	$fields         = array(
 		'nombre'         => __( 'Nombre', 'labm' ),
 		'apellidos'      => __( 'Apellidos', 'labm' ),
 		'correo'         => __( 'Correo electrónico', 'labm' ),
@@ -186,7 +186,14 @@ function labm_theme_render_contact() {
 			<section class="labm-contact__details" aria-labelledby="labm-contact-details-title"><h2 id="labm-contact-details-title"><?php esc_html_e( 'Datos de contacto', 'labm' ); ?></h2>
 				<dl><div><dt><?php esc_html_e( 'Correo', 'labm' ); ?></dt><dd><a href="mailto:<?php echo esc_attr( $settings['email'] ); ?>"><?php echo esc_html( $settings['email'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Teléfono', 'labm' ); ?></dt><dd><a href="tel:<?php echo esc_attr( $settings['phone'] ); ?>"><?php echo esc_html( $settings['phone'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Dirección', 'labm' ); ?></dt><dd><?php echo esc_html( $settings['address'] ); ?></dd></div></dl>
 				<p><a class="labm-contact__map" href="<?php echo esc_url( $settings['map_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Abrir ubicación en Google Maps', 'labm' ); ?></a></p>
-				<?php if ( $settings['socials'] ) : ?><nav aria-label="<?php esc_attr_e( 'Redes sociales', 'labm' ); ?>"><ul class="labm-contact__socials"><?php foreach ( $settings['socials'] as $social ) : ?><li><a href="<?php echo esc_url( $social['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $social['label'] ); ?></a></li><?php endforeach; ?></ul></nav><?php endif; ?>
+				<?php
+				if ( $settings['socials'] ) :
+					?>
+					<nav aria-label="<?php esc_attr_e( 'Redes sociales', 'labm' ); ?>"><ul class="labm-contact__socials">
+					<?php
+					foreach ( $settings['socials'] as $social ) :
+						?>
+					<li><a href="<?php echo esc_url( $social['url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $social['label'] ); ?></a></li><?php endforeach; ?></ul></nav><?php endif; ?>
 			</section>
 			<section class="labm-contact__form-wrap" id="formulario" aria-labelledby="labm-contact-form-title"><h2 id="labm-contact-form-title"><?php esc_html_e( 'Envía tu mensaje', 'labm' ); ?></h2>
 				<?php if ( ! empty( $state['ok'] ) ) : ?>
@@ -194,7 +201,14 @@ function labm_theme_render_contact() {
 				<?php elseif ( $delivery_error ) : ?>
 					<div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'No pudimos enviar el mensaje en este momento. Inténtalo de nuevo más tarde.', 'labm' ); ?></p></div>
 				<?php elseif ( $errors ) : ?>
-					<div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'Revisa los campos marcados e inténtalo de nuevo.', 'labm' ); ?></p><ul><?php foreach ( array_keys( $errors ) as $field ) : ?><?php if ( isset( $fields[ $field ] ) ) : ?><li><a href="#labm-contact-<?php echo esc_attr( $field ); ?>"><?php echo esc_html( $fields[ $field ] ); ?></a></li><?php endif; ?><?php endforeach; ?></ul></div>
+					<div class="labm-contact__status labm-contact__status--error" role="alert" aria-live="assertive"><p><?php esc_html_e( 'Revisa los campos marcados e inténtalo de nuevo.', 'labm' ); ?></p><ul>
+					<?php
+					foreach ( array_keys( $errors ) as $field ) :
+						?>
+						<?php
+						if ( isset( $fields[ $field ] ) ) :
+							?>
+						<li><a href="#labm-contact-<?php echo esc_attr( $field ); ?>"><?php echo esc_html( $fields[ $field ] ); ?></a></li><?php endif; ?><?php endforeach; ?></ul></div>
 				<?php endif; ?>
 				<form class="labm-contact__form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" aria-busy="false" data-labm-contact-form>
 					<input type="hidden" name="action" value="labm_contact_send"><?php wp_nonce_field( 'labm_contacto', 'nonce' ); ?><input type="hidden" name="token" value="<?php echo esc_attr( wp_generate_password( 32, false, false ) ); ?>">
@@ -307,6 +321,12 @@ function labm_theme_render_about_team( $requested_group = null ) {
 	if ( array() === $items && '' === $group ) {
 		return '';
 	}
+	$visible_items = array_filter(
+		$items,
+		static function ( $item ) use ( $group ) {
+			return '' === $group || $group === $item['group'];
+		}
+	);
 
 	ob_start();
 	?>
@@ -320,9 +340,8 @@ function labm_theme_render_about_team( $requested_group = null ) {
 				<?php endforeach; ?>
 			</nav>
 		</header>
-		<?php if ( array() === $items ) : ?>
-			<p class="labm-about-team__empty"><?php esc_html_e( 'No hay integrantes publicados en este grupo.', 'labm' ); ?></p>
-		<?php else : ?>
+		<p class="labm-about-team__empty" data-labm-team-empty role="status"<?php echo array() !== $visible_items ? ' hidden' : ''; ?>><?php esc_html_e( 'No hay integrantes publicados en este grupo.', 'labm' ); ?></p>
+		<?php if ( array() !== $items ) : ?>
 			<div class="labm-about-team__grid">
 				<?php foreach ( $items as $item ) : ?>
 					<article class="labm-about-team__card" data-labm-team-card data-labm-team-group="<?php echo esc_attr( $item['group'] ); ?>"<?php echo '' !== $group && $group !== $item['group'] ? ' hidden' : ''; ?>>
@@ -639,15 +658,20 @@ function labm_theme_home_news_archive_url( $post_type = 'labm_actualidad' ) {
  */
 function labm_theme_home_news_media( $post, $featured = false ) {
 
-	$class     = $featured ? 'labm-home-news__featured-image' : 'labm-home-news__side-image';
-	$thumbnail = get_the_post_thumbnail(
+	$class      = $featured ? 'labm-home-news__featured-image' : 'labm-home-news__side-image';
+	$image_id   = get_post_thumbnail_id( $post );
+	$attachment = $image_id ? get_post( $image_id ) : null;
+	$parent     = $attachment && $attachment->post_parent ? get_post( $attachment->post_parent ) : null;
+	$public     = $attachment && 'publish' === get_post_status( $attachment )
+		&& '' === $attachment->post_password && ( ! $parent || '' === $parent->post_password );
+	$thumbnail  = $public ? get_the_post_thumbnail(
 		$post,
 		$featured ? 'large' : 'medium_large',
 		array(
 			'class'   => $class,
 			'loading' => $featured ? 'eager' : 'lazy',
 		)
-	);
+	) : '';
 	if ( '' !== $thumbnail ) {
 		return $thumbnail;
 	}
@@ -664,7 +688,11 @@ function labm_theme_home_news_media( $post, $featured = false ) {
 	);
 }
 
-/** Mantiene la misma imagen de respaldo en listado, inicio y detalle. */
+/**
+ * Mantiene la misma imagen de respaldo en listado, inicio y detalle.
+ *
+ * @param WP_Post $post Publicacion que se eval?a o representa.
+ */
 function labm_theme_news_fallback_path( $post ) {
 	$allowed = array(
 		'assets/images/hero-balonmano-antioquia-v1.png',
@@ -699,7 +727,11 @@ function labm_theme_home_news_meta( $post ) {
 	return implode( '<span aria-hidden="true"> · </span>', $parts );
 }
 
-/** Obtiene una URL canónica absoluta apta para compartir. */
+/**
+ * Obtiene una URL canónica absoluta apta para compartir.
+ *
+ * @param WP_Post $post Publicación que se representa.
+ */
 function labm_theme_actualidad_canonical_url( $post ) {
 
 	$url    = esc_url_raw( (string) get_permalink( $post ) );
@@ -710,13 +742,21 @@ function labm_theme_actualidad_canonical_url( $post ) {
 	return in_array( $scheme, array( 'http', 'https' ), true ) && '' !== $host ? $url : '';
 }
 
-/** Comprueba que la publicación puede aparecer en su detalle público. */
+/**
+ * Comprueba que la publicación puede aparecer en su detalle público.
+ *
+ * @param WP_Post|null $post Publicación que se evalúa.
+ */
 function labm_theme_is_public_actualidad( $post ) {
 
 	return $post instanceof WP_Post && 'labm_actualidad' === $post->post_type && 'publish' === $post->post_status;
 }
 
-/** Renderiza el hero editorial del detalle de Actualidad. */
+/**
+ * Renderiza el hero editorial del detalle de Actualidad.
+ *
+ * @param WP_Post $post Publicacion que se eval?a o representa.
+ */
 function labm_theme_render_actualidad_hero( $post ) {
 
 	if ( ! labm_theme_is_public_actualidad( $post ) ) {
@@ -742,7 +782,11 @@ function labm_theme_render_actualidad_hero( $post ) {
 	return (string) ob_get_clean();
 }
 
-/** Renderiza el medio destacado o su fallback seguro. */
+/**
+ * Renderiza el medio destacado o su fallback seguro.
+ *
+ * @param WP_Post $post Publicacion que se eval?a o representa.
+ */
 function labm_theme_render_actualidad_media( $post ) {
 
 	if ( ! labm_theme_is_public_actualidad( $post ) ) {
@@ -758,7 +802,7 @@ function labm_theme_render_actualidad_media( $post ) {
 		)
 	);
 	if ( '' === $thumbnail ) {
-		$path = labm_theme_news_fallback_path( $post );
+		$path      = labm_theme_news_fallback_path( $post );
 		$thumbnail = sprintf(
 			'<img class="labm-actualidad-detail__image" src="%1$s" alt="" loading="eager" width="1536" height="864">',
 			esc_url( get_theme_file_uri( $path ) )
@@ -768,7 +812,11 @@ function labm_theme_render_actualidad_media( $post ) {
 	return '<div class="labm-actualidad-detail__media" data-labm-actualidad-media>' . wp_kses_post( $thumbnail ) . '</div>';
 }
 
-/** Renderiza los controles de compartir del detalle editorial. */
+/**
+ * Renderiza los controles de compartir del detalle editorial.
+ *
+ * @param WP_Post $post Publicacion que se eval?a o representa.
+ */
 function labm_theme_render_actualidad_detail( $post ) {
 
 	if ( ! labm_theme_is_public_actualidad( $post ) ) {
@@ -832,7 +880,7 @@ function labm_theme_actualidad_body_shortcode() {
 		return get_the_password_form( $post );
 	}
 
-	$galleries = array();
+	$galleries       = array();
 	$collect_gallery = static function ( $html ) use ( &$galleries ) {
 		$galleries[] = $html;
 		return '';
@@ -845,8 +893,8 @@ function labm_theme_actualidad_body_shortcode() {
 	}
 
 	$return_link = '<p class="labm-actualidad-detail-page__return"><a href="' . esc_url( get_post_type_archive_link( 'labm_actualidad' ) ) . '">' . esc_html__( 'Volver a Actualidad', 'labm' ) . '</a></p>';
-	$html = '<div class="labm-actualidad-detail-page__reading"><div class="entry-content wp-block-post-content labm-actualidad-detail-page__content">' . $content . $return_link . '</div>';
-	$html .= labm_theme_render_actualidad_detail( $post ) . '</div>';
+	$html        = '<div class="labm-actualidad-detail-page__reading"><div class="entry-content wp-block-post-content labm-actualidad-detail-page__content">' . $content . $return_link . '</div>';
+	$html       .= labm_theme_render_actualidad_detail( $post ) . '</div>';
 	if ( $galleries ) {
 		$html .= '<section class="labm-actualidad-detail-page__gallery" aria-labelledby="labm-actualidad-gallery-title"><div class="labm-actualidad-detail-page__gallery-inner"><h2 id="labm-actualidad-gallery-title">' . esc_html__( 'Galería', 'labm' ) . '</h2>' . implode( '', $galleries ) . '</div></section>';
 	}
@@ -1189,7 +1237,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 		<div class="labm-actualidad-listado" data-labm-listado="<?php echo esc_attr( $data_name ); ?>">
 			<?php $featured = array_shift( $query->posts ); ?>
 			<?php if ( $featured ) : ?>
-				<article class="labm-actualidad-destacada" data-labm-actualidad-destacada>
+				<article class="labm-actualidad-destacada" data-labm-actualidad-destacada data-labm-actualidad-post-id="<?php echo esc_attr( (string) $featured->ID ); ?>">
 					<div class="labm-actualidad-destacada__media">
 						<?php echo labm_theme_actualidad_media( $featured, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</div>
@@ -1200,7 +1248,7 @@ function labm_theme_render_listing( $post_type, $filters ) {
 			<?php endif; ?>
 			<div class="labm-actualidad-tarjetas">
 				<?php foreach ( $query->posts as $post ) : ?>
-					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta>
+					<article class="labm-actualidad-tarjeta" data-labm-actualidad-tarjeta data-labm-actualidad-post-id="<?php echo esc_attr( (string) $post->ID ); ?>">
 						<a class="labm-actualidad-tarjeta__media" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( labm_theme_home_news_title( $post ) ); ?>"><?php echo labm_theme_actualidad_media( $post ); /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. */ ?></a>
 						<?php echo labm_theme_actualidad_article_content( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper seguro. ?>
 					</article>

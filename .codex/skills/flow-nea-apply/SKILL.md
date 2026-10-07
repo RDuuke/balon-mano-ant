@@ -73,7 +73,7 @@ For each task:
 1. **RED** — write the test, run it, confirm it fails.
 2. **GREEN** — write the minimum code that makes the test pass.
 3. **TRIANGULATE** (optional) — add a second test covering an edge case.
-4. **REFACTOR** — clean up; all tests stay green.
+4. **REFACTOR** — clean up; affected tests stay green; reuse unaffected valid PASS under flow-nea-verify Step 0, never rerun a full gate by default.
 
 Record evidence in `openspec/changes/{change-name}/apply-progress.md` using
 this exact format (append per task):
@@ -86,6 +86,8 @@ this exact format (append per task):
 - **TRIANGULATE:** test `{archivo}::{nombre}` cubre `{caso}`. (omitir si no aplica)
 - **REFACTOR:** `{notas}` (omitir si no aplica)
 ```
+
+Record date/time with timezone, exact commands/filters, actual scope, exit status, logs and relevant file/dependency hashes including working-tree inputs for VERIFY reuse. Identify checks invalidated by later relevant edits. Environment failure and interruption prove neither code RED nor GREEN.
 
 If the gate is active and you cannot honor it for a task (e.g., test
 infrastructure missing), STOP that task, mark `status: warning`, and report

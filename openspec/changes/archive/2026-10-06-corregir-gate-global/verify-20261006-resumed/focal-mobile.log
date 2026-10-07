@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+  ✓  1 [mobile-320] › tests/e2e/contact.spec.ts:31:5 › Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa (2.3s)
+  ✓  2 [mobile-320] › tests/e2e/public-experience.spec.ts:426:5 › 3.3 no hay desborde, axe pasa y reduced motion se respeta (5.7s)
+  ✓  3 [mobile-320] › tests/e2e/public-experience.spec.ts:625:5 › detalle de actualidad mantiene contenido nativo y compartir accesible (5.0s)
+
+  3 passed (14.9s)

@@ -64,9 +64,34 @@ final class PublicExperienceTest extends TestCase {
 		self::assertStringContainsString( 'Director técnico', $html );
 
 		$filtered = labm_theme_render_about_team( 'entrenadores' );
-		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-card' ) );
+		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-group="entrenadores">' ) );
 		self::assertStringContainsString( 'aria-current="true"', $filtered );
-		self::assertStringNotContainsString( 'Mateo Giraldo', $filtered );
+		self::assertSame( 2, preg_match_all( '/<article\b[^>]*data-labm-team-card[^>]* hidden>/', $filtered ) );
+		self::assertStringContainsString( 'Mateo Giraldo', $filtered );
+	}
+
+	/** Un grupo seleccionado sin miembros mantiene filtros y anuncia el vacío. */
+	public function test_about_team_selected_empty_group_keeps_filters(): void {
+		$members = get_posts( array( 'post_type' => 'labm_integrante', 'posts_per_page' => -1, 'tax_query' => array( array( 'taxonomy' => 'labm_grupo_integrante', 'field' => 'slug', 'terms' => 'entrenadores' ) ) ) );
+		self::assertNotEmpty( $members );
+		try {
+			foreach ( $members as $member ) {
+				wp_update_post( array( 'ID' => $member->ID, 'post_status' => 'private' ) );
+			}
+			$html = labm_theme_render_about_team( 'entrenadores' );
+			self::assertStringContainsString( 'No hay integrantes publicados en este grupo.', $html );
+			self::assertStringContainsString( 'data-labm-team-empty role="status"', $html );
+			self::assertStringContainsString( 'data-labm-team-filter-group="entrenadores" aria-current="true"', $html );
+			self::assertSame( 4, substr_count( $html, 'data-labm-team-filter' ) - substr_count( $html, 'data-labm-team-filter-group' ) );
+			foreach ( $members as $member ) {
+				self::assertStringNotContainsString( preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $member->post_title ), $html );
+			}
+		} finally {
+			foreach ( $members as $member ) {
+				wp_update_post( array( 'ID' => $member->ID, 'post_status' => $member->post_status ) );
+			}
+		}
+		self::assertSame( labm_theme_render_about_team( '' ), labm_theme_render_about_team( 'desconocido' ) );
 	}
 
 	/** Integrantes incompletos o no públicos nunca se revelan. */
@@ -376,6 +401,74 @@ final class PublicExperienceTest extends TestCase {
 			}
 			if ( isset( $draft_id ) ) {
 				wp_delete_post( $draft_id, true );
+			}
+		}
+	}
+
+	/** El listado de actualidad conserva roles, orden, filtros, privacidad y paginas parciales. */
+	public function test_actualidad_listing_keeps_editorial_roles_unique_across_pages_and_filters(): void {
+		$term = get_term_by( 'name', 'Noticias', 'labm_categoria' );
+		self::assertNotFalse( $term );
+		$post_ids = array();
+
+		try {
+			for ( $index = 1; $index <= 9; $index++ ) {
+				$post_ids[] = wp_insert_post(
+					array(
+						'post_type'    => 'labm_actualidad',
+						'post_status'  => 'publish',
+						'post_title'   => sprintf( 'Gate global actualidad %d', $index ),
+						'post_excerpt' => 'Resumen del contrato de listado editorial.',
+						'post_date'    => sprintf( '2026-09-%02d 12:00:00', $index ),
+					)
+				);
+				wp_set_object_terms( end( $post_ids ), (int) $term->term_id, 'labm_categoria' );
+			}
+			$private_id = wp_insert_post(
+				array(
+					'post_type'   => 'labm_actualidad',
+					'post_status' => 'draft',
+					'post_title'  => 'Gate global actualidad privada',
+				)
+			);
+			wp_set_object_terms( $private_id, (int) $term->term_id, 'labm_categoria' );
+
+			$filters = array(
+				'texto'     => 'Gate global actualidad',
+				'categoria' => 'Noticias',
+			);
+			$page_one = labm_theme_render_listing( 'labm_actualidad', $filters + array( 'pagina' => 1 ) );
+			preg_match_all( '/data-labm-actualidad-post-id="(\d+)"/', $page_one, $page_one_ids );
+			$expected_page_one = array_map( 'strval', array_slice( array_reverse( $post_ids ), 0, 4 ) );
+
+			self::assertSame( $expected_page_one, $page_one_ids[1] );
+			self::assertSame( 1, substr_count( $page_one, 'data-labm-actualidad-destacada' ) );
+			self::assertSame( 3, substr_count( $page_one, 'data-labm-actualidad-tarjeta' ) );
+			self::assertSame( count( $page_one_ids[1] ), count( array_unique( $page_one_ids[1] ) ) );
+			self::assertStringContainsString( 'texto=Gate+global+actualidad', $page_one );
+			self::assertStringContainsString( 'categoria=Noticias', $page_one );
+			self::assertStringNotContainsString( 'Gate global actualidad privada', $page_one );
+
+			$page_three = labm_theme_render_listing( 'labm_actualidad', $filters + array( 'pagina' => 3 ) );
+			preg_match_all( '/data-labm-actualidad-post-id="(\d+)"/', $page_three, $page_three_ids );
+			self::assertSame( array( (string) $post_ids[0] ), $page_three_ids[1] );
+			self::assertSame( 1, substr_count( $page_three, 'data-labm-actualidad-destacada' ) );
+			self::assertSame( 0, substr_count( $page_three, 'data-labm-actualidad-tarjeta' ) );
+			self::assertStringNotContainsString( 'pagina=4', $page_three );
+
+			$page_out_of_range = labm_theme_render_listing( 'labm_actualidad', $filters + array( 'pagina' => 4 ) );
+			self::assertStringContainsString( 'data-labm-actualidad-vacio', $page_out_of_range );
+			self::assertStringNotContainsString( 'data-labm-actualidad-post-id', $page_out_of_range );
+			self::assertStringNotContainsString( 'data-labm-actualidad-destacada', $page_out_of_range );
+			self::assertStringNotContainsString( 'data-labm-actualidad-tarjeta', $page_out_of_range );
+			self::assertStringNotContainsString( 'labm-pagination', $page_out_of_range );
+			self::assertStringNotContainsString( 'Gate global actualidad privada', $page_out_of_range );
+		} finally {
+			foreach ( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			if ( isset( $private_id ) ) {
+				wp_delete_post( $private_id, true );
 			}
 		}
 	}

@@ -79,7 +79,7 @@ function labm_core_document_catalog_normalize_filters( $filters ) {
  */
 function labm_core_document_catalog_query( $filters = array(), $page = 1, $per_page = 10 ) {
 	$filters = labm_core_document_catalog_normalize_filters( $filters );
-	$args = array(
+	$args    = array(
 		'post_type'      => 'labm_documento',
 		'post_status'    => 'publish',
 		'paged'          => max( 1, absint( $page ) ),
@@ -93,7 +93,7 @@ function labm_core_document_catalog_query( $filters = array(), $page = 1, $per_p
 		$args['s'] = $filters['texto'];
 	}
 	if ( $filters['categoria'] ) {
-		$args['tax_query'] = array(
+		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- El catalogo paginado combina la categoria editorial solicitada con documentos publicados.
 			array(
 				'taxonomy' => 'labm_documento_categoria',
 				'field'    => 'term_id',
@@ -102,7 +102,7 @@ function labm_core_document_catalog_query( $filters = array(), $page = 1, $per_p
 		);
 	}
 	if ( $filters['anio'] ) {
-		$args['meta_query'] = array(
+		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- El ano editorial reside en labm_documento_fecha y no coincide necesariamente con post_date.
 			array(
 				'key'     => 'labm_documento_fecha',
 				'value'   => '^' . $filters['anio'] . '-[0-9]{2}-[0-9]{2}$',
@@ -150,7 +150,7 @@ function labm_core_document_download_url( $post_id ) {
 
 /** Entrega un PDF público con Content-Disposition cuando el navegador lo necesita. */
 function labm_core_download_document() {
-	$post_id       = isset( $_GET['document'] ) ? absint( wp_unslash( $_GET['document'] ) ) : 0;
+	$post_id       = isset( $_GET['document'] ) ? absint( wp_unslash( $_GET['document'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Descarga publica de solo lectura; se valida tipo, publicacion, PDF y archivo antes de servir.
 	$attachment_id = absint( get_post_meta( $post_id, 'labm_documento_pdf_id', true ) );
 	$post          = get_post( $post_id );
 	$path          = $attachment_id ? get_attached_file( $attachment_id ) : '';
@@ -174,8 +174,8 @@ add_action( 'admin_post_nopriv_labm_document_download', 'labm_core_download_docu
  * @return string
  */
 function labm_core_document_page_url( $page, $filters = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Compatibilidad de firma.
-	$normalized  = labm_core_document_catalog_normalize_filters( $filters );
-	$args        = array( 'pagina' => max( 1, absint( $page ) ) );
+	$normalized = labm_core_document_catalog_normalize_filters( $filters );
+	$args       = array( 'pagina' => max( 1, absint( $page ) ) );
 	if ( '' !== $normalized['texto'] ) {
 		$args['texto'] = $normalized['texto'];
 	}
@@ -202,8 +202,8 @@ function labm_core_document_catalog_filter_options() {
 			'order'      => 'ASC',
 		)
 	);
-	$years = array();
-	$posts = get_posts(
+	$years      = array();
+	$posts      = get_posts(
 		array(
 			'post_type'      => 'labm_documento',
 			'post_status'    => 'publish',
@@ -232,16 +232,16 @@ function labm_core_document_catalog_filter_options() {
  * @return int
  */
 function labm_core_document_catalog_current_page() {
-	return isset( $_GET['pagina'] ) ? max( 1, absint( wp_unslash( $_GET['pagina'] ) ) ) : 1;
+	return isset( $_GET['pagina'] ) ? max( 1, absint( wp_unslash( $_GET['pagina'] ) ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Paginacion publica de solo lectura.
 }
 
 /** Obtiene los filtros públicos activos desde la URL del catálogo. */
 function labm_core_document_catalog_current_filters() {
 	$filters = array();
 	foreach ( array( 'texto', 'categoria', 'anio', 'orden' ) as $key ) {
-		if ( isset( $_GET[ $key ] ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Se desescapa, valida escalar y sanea inmediatamente en la asignación siguiente.
-			$raw            = wp_unslash( $_GET[ $key ] );
+		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Filtros publicos de solo lectura.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended -- Filtro p?blico de solo lectura; se desescapa, valida escalar y sanea inmediatamente en la asignación siguiente.
+			$raw             = wp_unslash( $_GET[ $key ] );
 			$filters[ $key ] = is_scalar( $raw ) ? sanitize_text_field( (string) $raw ) : '';
 		}
 	}
@@ -257,10 +257,10 @@ function labm_core_document_catalog_current_filters() {
  * @return string
  */
 function labm_core_render_document_catalog( $filters = array(), $page = 1, $per_page = 10 ) {
-	$page    = max( 1, absint( $page ) );
-	$filters = labm_core_document_catalog_normalize_filters( $filters );
-	$query   = labm_core_document_catalog_query( $filters, $page, $per_page );
-	$options = labm_core_document_catalog_filter_options();
+	$page        = max( 1, absint( $page ) );
+	$filters     = labm_core_document_catalog_normalize_filters( $filters );
+	$query       = labm_core_document_catalog_query( $filters, $page, $per_page );
+	$options     = labm_core_document_catalog_filter_options();
 	$page_object = get_page_by_path( 'documentos' );
 	$action      = $page_object ? get_permalink( $page_object ) : get_post_type_archive_link( 'labm_documento' );
 	$html        = '<section class="labm-documents-filters alignfull" aria-label="' . esc_attr__( 'Filtrar documentos', 'labm-core' ) . '"><form method="get" action="' . esc_url( $action ) . '">';
@@ -277,7 +277,7 @@ function labm_core_render_document_catalog( $filters = array(), $page = 1, $per_
 	if ( $filters['texto'] || $filters['categoria'] || $filters['anio'] || 'recientes' !== $filters['orden'] ) {
 		$html .= '<a href="' . esc_url( $action ) . '">' . esc_html__( 'Limpiar filtros', 'labm-core' ) . '</a>';
 	}
-	$html .= '</div></form></section>';
+	$html              .= '</div></form></section>';
 	$has_active_filters = $filters['texto'] || $filters['categoria'] || $filters['anio'] || 'recientes' !== $filters['orden'];
 	if ( ! $query->have_posts() ) {
 		$empty_action = $has_active_filters ? '<a class="labm-documents-empty__clear" href="' . esc_url( $action ) . '">' . esc_html__( 'Limpiar filtros', 'labm-core' ) . '</a>' : '';
@@ -285,12 +285,12 @@ function labm_core_render_document_catalog( $filters = array(), $page = 1, $per_
 	}
 	/* translators: %s: cantidad de documentos encontrados. */
 	$summary = sprintf( _n( '%s documento publicado', '%s documentos publicados', (int) $query->found_posts, 'labm-core' ), number_format_i18n( $query->found_posts ) );
-	$html  .= '<section class="labm-documents-catalog" aria-label="' . esc_attr__( 'Documentos publicados', 'labm-core' ) . '"><p class="labm-documents-catalog__summary">' . esc_html( $summary ) . '</p><div class="labm-documents-catalog__list">';
+	$html   .= '<section class="labm-documents-catalog" aria-label="' . esc_attr__( 'Documentos publicados', 'labm-core' ) . '"><p class="labm-documents-catalog__summary">' . esc_html( $summary ) . '</p><div class="labm-documents-catalog__list">';
 	foreach ( $query->posts as $post ) {
-		$url       = labm_core_document_pdf_url( $post->ID );
-		$date      = (string) get_post_meta( $post->ID, 'labm_documento_fecha', true );
-		$terms     = get_the_terms( $post->ID, 'labm_documento_categoria' );
-		$category  = ! is_wp_error( $terms ) && $terms ? $terms[0]->name : '';
+		$url        = labm_core_document_pdf_url( $post->ID );
+		$date       = (string) get_post_meta( $post->ID, 'labm_documento_fecha', true );
+		$terms      = get_the_terms( $post->ID, 'labm_documento_categoria' );
+		$category   = ! is_wp_error( $terms ) && $terms ? $terms[0]->name : '';
 		$attachment = absint( get_post_meta( $post->ID, 'labm_documento_pdf_id', true ) );
 		$path       = $attachment ? get_attached_file( $attachment ) : '';
 		$size       = $path && is_readable( $path ) ? size_format( (int) filesize( $path ) ) : '';
@@ -440,7 +440,10 @@ function labm_core_get_contact_settings() {
 		$url   = esc_url_raw( $footer[ $network . '_url' ] ?? '', array( 'http', 'https' ) );
 		$label = sanitize_text_field( $footer[ $network . '_label' ] ?? '' );
 		if ( '' !== $url && '' !== $label ) {
-			$socials[ $network ] = array( 'label' => $label, 'url' => $url );
+			$socials[ $network ] = array(
+				'label' => $label,
+				'url'   => $url,
+			);
 		}
 	}
 	return array(
@@ -477,7 +480,11 @@ function labm_core_contact_recipients() {
 	return $recipients;
 }
 
-/** Reserva de forma atomica un token mientras se entrega un mensaje. */
+/**
+ * Reserva de forma atomica un token mientras se entrega un mensaje.
+ *
+ * @param string $token Identificador de idempotencia saneado.
+ */
 function labm_core_contact_reserve_token( $token ) {
 	if ( '' === $token ) {
 		return '';
@@ -493,7 +500,11 @@ function labm_core_contact_reserve_token( $token ) {
 	return add_option( $lock, time() + HOUR_IN_SECONDS, '', false ) ? $lock : false;
 }
 
-/** Libera una reserva fallida o completada. */
+/**
+ * Libera una reserva fallida o completada.
+ *
+ * @param string|false $lock Clave de reserva o ausencia de reserva.
+ */
 function labm_core_contact_release_token( $lock ) {
 	if ( is_string( $lock ) && '' !== $lock ) {
 		delete_option( $lock );
@@ -514,12 +525,12 @@ function labm_core_render_contact_email( $contact, $use_cid_logo = true ) {
 	if ( '' !== $logo_path ) {
 		$logo_source = $use_cid_logo ? 'cid:' . labm_core_contact_logo_cid() : ( function_exists( 'get_theme_file_uri' ) ? get_theme_file_uri( 'assets/images/logo-color.jpg' ) : '' );
 	}
-	$logo        = '' !== $logo_source ? '<img src="' . ( $use_cid_logo ? $logo_source : esc_url( $logo_source ) ) . '" width="240" alt="LABM — Liga Antioqueña de Balonmano" style="display:block;width:240px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">' : '';
-	$name        = trim( (string) ( $contact['nombre'] ?? '' ) . ' ' . (string) ( $contact['apellidos'] ?? '' ) );
-	$email       = (string) ( $contact['correo'] ?? '' );
-	$phone       = (string) ( $contact['telefono'] ?? '' );
-	$message     = nl2br( esc_html( (string) ( $contact['mensaje'] ?? '' ) ) );
-	$details     = sprintf(
+	$logo    = '' !== $logo_source ? '<img src="' . ( $use_cid_logo ? $logo_source : esc_url( $logo_source ) ) . '" width="240" alt="LABM — Liga Antioqueña de Balonmano" style="display:block;width:240px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">' : '';
+	$name    = trim( (string) ( $contact['nombre'] ?? '' ) . ' ' . (string) ( $contact['apellidos'] ?? '' ) );
+	$email   = (string) ( $contact['correo'] ?? '' );
+	$phone   = (string) ( $contact['telefono'] ?? '' );
+	$message = nl2br( esc_html( (string) ( $contact['mensaje'] ?? '' ) ) );
+	$details = sprintf(
 		'<tr><td style="padding:0 0 10px;font:700 14px/20px Arial,sans-serif;color:#202020;">Nombre</td><td style="padding:0 0 10px;font:400 14px/20px Arial,sans-serif;color:#202020;">%1$s</td></tr><tr><td style="padding:0 0 10px;font:700 14px/20px Arial,sans-serif;color:#202020;">Correo</td><td style="padding:0 0 10px;font:400 14px/20px Arial,sans-serif;color:#202020;"><a href="mailto:%2$s" style="color:#202020;">%2$s</a></td></tr>',
 		esc_html( $name ),
 		esc_attr( $email )
@@ -587,7 +598,11 @@ function labm_core_embed_contact_logo( $phpmailer ) {
 }
 add_action( 'phpmailer_init', 'labm_core_embed_contact_logo', 20 );
 
-/** Procesa contacto sin retener datos personales fuera de la entrega. */
+/**
+ * Procesa contacto sin retener datos personales fuera de la entrega.
+ *
+ * @param array $data Datos del formulario que se validan antes de entregar.
+ */
 function labm_core_process_contact( $data ) {
 	$errors = array();
 	$nonce  = isset( $data['nonce'] ) ? sanitize_text_field( $data['nonce'] ) : '';
@@ -610,18 +625,27 @@ function labm_core_process_contact( $data ) {
 		$errors['consentimiento'] = __( 'Debes aceptar el tratamiento de datos para enviar el mensaje.', 'labm-core' );
 	}
 	if ( $errors ) {
-		return array( 'ok' => false, 'errors' => $errors );
+		return array(
+			'ok'     => false,
+			'errors' => $errors,
+		);
 	}
 	$token = sanitize_key( $data['token'] ?? '' );
 	if ( '' === $token ) {
-		return array( 'ok' => false, 'errors' => array( 'token' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ) );
+		return array(
+			'ok'     => false,
+			'errors' => array( 'token' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ),
+		);
 	}
-	$lock  = labm_core_contact_reserve_token( $token );
+	$lock = labm_core_contact_reserve_token( $token );
 	if ( false === $lock ) {
-		return array( 'ok' => true, 'errors' => array() );
+		return array(
+			'ok'     => true,
+			'errors' => array(),
+		);
 	}
-	$phone = preg_replace( '/[^0-9+()\-\s]/', '', (string) ( $data['telefono'] ?? '' ) );
-	$body  = labm_core_render_contact_email(
+	$phone      = preg_replace( '/[^0-9+()\-\s]/', '', (string) ( $data['telefono'] ?? '' ) );
+	$body       = labm_core_render_contact_email(
 		array(
 			'nombre'    => sanitize_text_field( $data['nombre'] ),
 			'apellidos' => sanitize_text_field( $data['apellidos'] ),
@@ -631,26 +655,40 @@ function labm_core_process_contact( $data ) {
 		)
 	);
 	$recipients = labm_core_contact_recipients();
-	$sent = wp_mail( $recipients, sanitize_text_field( $data['asunto'] ), $body, array( 'Reply-To: ' . $email, 'Content-Type: text/html; charset=UTF-8' ) );
+	$sent       = wp_mail( $recipients, sanitize_text_field( $data['asunto'] ), $body, array( 'Reply-To: ' . $email, 'Content-Type: text/html; charset=UTF-8' ) );
 	if ( ! $sent ) {
 		labm_core_contact_release_token( $lock );
 		do_action( 'labm_core_contact_delivery_failed', array( 'code' => 'mail_delivery_failed' ) );
-		return array( 'ok' => false, 'errors' => array( 'delivery' => __( 'No pudimos enviar el mensaje. Inténtalo de nuevo.', 'labm-core' ) ) );
+		return array(
+			'ok'     => false,
+			'errors' => array( 'delivery' => __( 'No pudimos enviar el mensaje. Inténtalo de nuevo.', 'labm-core' ) ),
+		);
 	}
 	if ( '' !== $token ) {
 		set_transient( 'labm_contact_' . hash( 'sha256', $token ), 1, HOUR_IN_SECONDS );
 	}
 	labm_core_contact_release_token( $lock );
-	return array( 'ok' => true, 'errors' => array() );
+	return array(
+		'ok'     => true,
+		'errors' => array(),
+	);
 }
 
-/** Conserva el alfabeto del identificador opaco generado para el estado PRG. */
+/**
+ * Conserva el alfabeto del identificador opaco generado para el estado PRG.
+ *
+ * @param string $state_id Identificador opaco del estado.
+ */
 function labm_core_sanitize_contact_state_id( $state_id ) {
 	$state_id = preg_replace( '/[^A-Za-z0-9]/', '', (string) $state_id );
 	return is_string( $state_id ) ? $state_id : '';
 }
 
-/** Recupera una sola vez el estado opaco de una redireccion POST-Redirect-GET. */
+/**
+ * Recupera una sola vez el estado opaco de una redireccion POST-Redirect-GET.
+ *
+ * @param string $state_id Identificador opaco del estado.
+ */
 function labm_core_contact_consume_state( $state_id ) {
 	$state_id = labm_core_sanitize_contact_state_id( $state_id );
 	if ( '' === $state_id ) {
@@ -664,12 +702,19 @@ function labm_core_contact_consume_state( $state_id ) {
 
 /** Atiende exclusivamente POST y redirige a Contacto sin datos personales. */
 function labm_core_handle_contact_send() {
-	$result = array( 'ok' => false, 'errors' => array( 'request' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ) );
-	if ( 'POST' === strtoupper( $_SERVER['REQUEST_METHOD'] ?? '' ) ) {
-		$result = labm_core_process_contact( wp_unslash( $_POST ) );
+	$result = array(
+		'ok'     => false,
+		'errors' => array( 'request' => __( 'No fue posible procesar el formulario.', 'labm-core' ) ),
+	);
+	$method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+	if ( 'POST' === strtoupper( $method ) ) {
+		$result = labm_core_process_contact( wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- El procesador verifica el nonce labm_contacto antes de entregar correo.
 	}
 	$state_id = wp_generate_password( 32, false, false );
-	$state    = array( 'ok' => ! empty( $result['ok'] ), 'errors' => array_keys( is_array( $result['errors'] ?? null ) ? $result['errors'] : array() ) );
+	$state    = array(
+		'ok'     => ! empty( $result['ok'] ),
+		'errors' => array_keys( is_array( $result['errors'] ?? null ) ? $result['errors'] : array() ),
+	);
 	set_transient( 'labm_contact_state_' . hash( 'sha256', $state_id ), $state, 10 * MINUTE_IN_SECONDS );
 	wp_safe_redirect( add_query_arg( 'contacto_estado', rawurlencode( $state_id ), home_url( '/contacto/#formulario' ) ) );
 	exit;

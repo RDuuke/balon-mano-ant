@@ -27,6 +27,66 @@ $labm_runtime_root = getenv( 'WP_TESTS_RUNTIME_ROOT' ) ?: '/wordpress';
 require_once $labm_runtime_root . '/wp-content/plugins/labm-core/includes/class-labm-fixtures-command.php';
 
 final class ClosingCoverageTest extends TestCase {
+	/** Repetir el registro conserva los contratos REST y las capacidades del dominio. */
+	public function test_registration_preserves_public_types_taxonomies_and_meta_contracts(): void {
+		for ( $attempt = 0; $attempt < 2; ++$attempt ) {
+			labm_core_register_content_types();
+			labm_core_register_meta();
+			foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento' ) as $type ) {
+				$object = get_post_type_object( $type );
+				self::assertTrue( $object->public );
+				self::assertTrue( $object->show_in_rest );
+				self::assertTrue( $object->map_meta_cap );
+				self::assertTrue( post_type_supports( $type, 'custom-fields' ) );
+			}
+			self::assertSame( 'selecciones', get_post_type_object( 'labm_seleccion' )->rewrite['slug'] );
+			foreach ( array( 'labm_modalidad', 'labm_categoria', 'labm_documento_categoria', 'labm_grupo_integrante' ) as $taxonomy ) {
+				self::assertTrue( get_taxonomy( $taxonomy )->show_in_rest );
+				self::assertTrue( get_taxonomy( $taxonomy )->hierarchical );
+			}
+			$meta = get_registered_meta_keys( 'post', 'labm_documento' );
+			self::assertSame( 'integer', $meta['labm_documento_pdf_id']['type'] );
+			self::assertSame( 0, $meta['labm_documento_pdf_id']['default'] );
+			self::assertSame( 'absint', $meta['labm_documento_pdf_id']['sanitize_callback'] );
+			self::assertSame( 'labm_core_sanitize_iso_date', $meta['labm_documento_fecha']['sanitize_callback'] );
+			self::assertSame( 'labm_core_auth_post_meta', $meta['labm_documento_fecha']['auth_callback'] );
+			self::assertSame( 'manage_labm_documento_types', get_taxonomy( 'labm_documento_categoria' )->cap->manage_terms );
+		}
+	}
+
+	/** Una version vigente no oculta capacidades editoriales perdidas. */
+	public function test_capability_repair_restores_editorial_access_without_granting_type_governance(): void {
+		$roles = array();
+		$version = get_option( 'labm_core_capabilities_version', null );
+		foreach ( array( 'administrator', 'editor' ) as $name ) {
+			$roles[ $name ] = get_role( $name )->capabilities;
+		}
+		try {
+			get_role( 'editor' )->remove_cap( 'edit_labm_selecciones' );
+			get_role( 'editor' )->remove_cap( 'assign_labm_documento_types' );
+			get_role( 'editor' )->add_cap( 'manage_labm_documento_types' );
+			update_option( 'labm_core_capabilities_version', LABM_CORE_CAPABILITIES_VERSION );
+			labm_core_ensure_capabilities();
+			labm_core_ensure_capabilities();
+			self::assertTrue( get_role( 'editor' )->has_cap( 'edit_labm_selecciones' ) );
+			self::assertTrue( get_role( 'editor' )->has_cap( 'assign_labm_documento_types' ) );
+			self::assertFalse( get_role( 'editor' )->has_cap( 'manage_labm_documento_types' ) );
+			self::assertTrue( get_role( 'administrator' )->has_cap( 'manage_labm_documento_types' ) );
+			self::assertSame( LABM_CORE_CAPABILITIES_VERSION, get_option( 'labm_core_capabilities_version' ) );
+		} finally {
+			foreach ( $roles as $name => $capabilities ) {
+				$role = get_role( $name );
+				foreach ( array_diff_key( $role->capabilities, $capabilities ) as $cap => $grant ) {
+					$role->remove_cap( $cap );
+				}
+				foreach ( $capabilities as $cap => $grant ) {
+					$role->add_cap( $cap, $grant );
+				}
+			}
+			null === $version ? delete_option( 'labm_core_capabilities_version' ) : update_option( 'labm_core_capabilities_version', $version );
+		}
+	}
+
 	/**
 	 * La suite completa reinyecta la opcion de rutas por estado compartido;
 	 * el caso aislado sigue cubriendo el contrato de activacion.

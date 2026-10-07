@@ -7,7 +7,7 @@ trigger: >
 license: MIT
 metadata:
   author: juan-duque
-  version: "2.0"
+  version: "2.1.0"
   scope: [root]
   invoker: flow-nea-orchestrator
 ---
@@ -55,6 +55,18 @@ Clasificar cada problema encontrado con uno de estos niveles:
 Read and follow: skills/_shared/persistence-contract.md
 
 ## What to Do
+
+### Step 0: Scoped and Incremental Verification
+
+First VERIFY selects tests, static checks and build stages for affected files, requirements and dependency impact. Explain any shared impact. Discovery of a monolithic command is not a mandate: decompose its stages and select tests. Never rerun the full gate by default.
+
+Re-VERIFY executes only failed, pending/interrupted or invalidated checks. Reuse valid PASS from APPLY or earlier VERIFY. Require real traceable evidence per check: ID, date/time with timezone, exact command/filters, actual stage/test scope, exit status/outcome, log/artifact reference, relevant files and SHA-256 hashes, revision and environment/tool/config identity. Include staged, unstaged and relevant untracked working-tree contents when applicable; commit identity alone is insufficient for dirty trees. Track dependency inputs including shared code, fixtures, lockfiles, runtime/config and persisted state when applicable. Compare current inputs before reuse and explain validity. Relevant edits invalidate affected checks only; missing provenance or unknown impact requires targeted checks or remains pending, never an automatic full gate.
+
+Report executed/reused/pending/invalidation in the report and envelope. Entries reference check IDs and evidence; invalidation records changed inputs, affected checks and reasons. Preserve previous evidence and distinguish superseded outcomes from current validity. Explain selected/reused/not-applicable stages. Build/type checks follow the same policy.
+
+Never call filtered tests a complete suite. Preserve explicit global requirements from specs/config: satisfy them with accumulated valid evidence covering every required stage/test on compatible current inputs, or record missing scope/conflict in pending and risks. Never delete or silently downgrade the requirement. Never average subset coverage or recalculate global coverage from subsets; global thresholds require evidence with the full configured instrumentation scope.
+
+Distinguish code failures, environment failures and interruptions. Environment failure does not prove a code defect. Interruption never PASS, even with green partial output. Only independently completed stages with their own exit status/provenance can be reused. Required pending checks and unresolved global obligations block success and ARCHIVE: return status failed with cause, without automatically routing environment/interruption failures to code fixes. COMPLIANT requires current valid real execution evidence, executed now or reused.
 
 ### Step 1: Check Completeness
 
@@ -135,7 +147,7 @@ Detect test command from:
 4) Makefile
 If not found, report as warning.
 
-Run tests and capture pass/fail.
+Select tests under Step 0; execute only checks needing evidence and capture actual scope, exit status and provenance.
 
 ### Step 5: Build/Type Check (Real Execution)
 
@@ -155,10 +167,10 @@ Detect coverage command from:
 If not found, skip this step (do not report as warning).
 
 If a coverage command is found:
-- Run it and capture the overall coverage percentage.
+- Discovery alone does not require execution. Reuse valid evidence or select scoped coverage under Step 0; label instrumentation/test scope. Never present subset coverage as global or recalculate global coverage from subsets.
 - Include the coverage percentage in verify-report.md under a
   `## Cobertura de Codigo` section.
-- If coverage is below the threshold configured in
+- Compare thresholds only for matching instrumentation scope; missing required global evidence remains pending/conflict. If comparable coverage is below the threshold configured in
   `openspec/config.yaml -> gates.verify.coverage_threshold` (legacy
   `rules.verify.coverage_threshold`, default: 80%),
   set status to `warning` and add a risk: "Cobertura por debajo del umbral:
@@ -222,7 +234,9 @@ Code that implements the feature without a passing test is UNTESTED = FAILING.
   - task id / description
   ```
 
-  If all tests pass and build succeeds, omit the `## Fallos Detectados` section entirely.
+  Preserve the structure above for code failures. Report environment failures, interruptions and pending/global conflicts separately with check IDs. Omit the failures section only when no current failures or required pending checks remain.
+
+  Include scope, provenance and executed/reused/pending/invalidation summaries. Populate pending_tasks and notes below from unresolved checks/conflicts; never clear them by copying empty example values.
 
 - Update openspec/changes/.status.yaml:
   ```yaml
@@ -245,6 +259,8 @@ If `experimental.neabrain: true` and NeaBrain available:
   - `tags`: [change-name, "verify", status]
 If unavailable, skip silently.
 
+When all required evidence is valid, recommend ARCHIVE. For proven code defects recommend APPLY; for pending execution, environment failures or interruptions recommend targeted VERIFY. Do not automatically retry the same interrupted command without first recording a concrete execution remedy or diagnostic.
+
 ### Step 8: Return Summary
 
 Return a structured envelope with: status, executive_summary,
@@ -252,7 +268,7 @@ detailed_report (optional), artifacts, next_recommended, risks.
 
 ## Rules
 
-- Always execute tests; static analysis is not enough.
+- Require real execution evidence, executed now or validly reused under Step 0; static inspection alone cannot prove behavioral PASS. Never rerun the full gate by default.
 - In quick mode, verification may come from `quick.md` plus real execution; do not invent missing specs.
 - Code that works but has no test = UNTESTED = FAILING. No exceptions.
 - Classify every issue as CRITICAL / WARNING / SUGGESTION.
@@ -274,8 +290,9 @@ detailed_report (optional), artifacts, next_recommended, risks.
       "type": "markdown"
     }
   ],
-  "next_recommended": "ARCHIVE | APPLY",
+  "next_recommended": "ARCHIVE | APPLY | VERIFY",
   "risks": ["list of risks or blockers"],
+  "verification_summary": {"executed": [], "reused": [], "pending": [], "invalidation": []},
   "skill_resolution": "injected | fallback-registry | fallback-path | none"
 }
 ```
