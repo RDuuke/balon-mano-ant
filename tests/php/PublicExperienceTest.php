@@ -584,4 +584,300 @@ final class PublicExperienceTest extends TestCase {
 			wp_delete_post( $post_id, true );
 		}
 	}
+
+	/** La consulta de Selecciones normaliza filtros, cuenta solo publicaciones y limita por modalidad. */
+	public function test_selection_query_normalizes_filters_and_counts_only_public_posts(): void {
+		$term = wp_insert_term( 'Playa TDD', 'labm_modalidad' );
+		self::assertIsArray( $term );
+		$post_ids = array();
+
+		try {
+			for ( $index = 1; $index <= 7; $index++ ) {
+				$post_ids[] = wp_insert_post(
+					array(
+						'post_type'   => 'labm_seleccion',
+						'post_status' => 'publish',
+						'post_title'  => sprintf( 'Seleccion playa TDD %d', $index ),
+						'post_date'   => '2026-10-01 12:00:00',
+					)
+				);
+				wp_set_object_terms( end( $post_ids ), (int) $term['term_id'], 'labm_modalidad' );
+			}
+			$restricted = wp_insert_post(
+				array(
+					'post_type'   => 'labm_seleccion',
+					'post_status' => 'private',
+					'post_title'  => 'Seleccion privada playa TDD',
+				)
+			);
+			wp_set_object_terms( $restricted, (int) $term['term_id'], 'labm_modalidad' );
+
+			$state = labm_theme_selection_request_state(
+				array(
+					'modalidad' => 'Playa TDD',
+					'pagina'    => '9',
+				)
+			);
+			self::assertSame( 'Piso', labm_theme_selection_request_state( array( 'modalidad' => array( 'Playa TDD' ) ) )['modalidad'] );
+			self::assertSame( 'Playa TDD', $state['modalidad'] );
+			self::assertSame( 9, $state['pagina'] );
+
+			$query = labm_theme_selection_query( $state );
+			self::assertSame( 7, (int) $query->found_posts );
+			self::assertSame( 3, (int) $query->get( 'posts_per_page' ) );
+			self::assertSame( 3, (int) $query->max_num_pages );
+			self::assertCount( 1, $query->posts );
+			self::assertSame( 'Seleccion playa TDD 1', $query->posts[0]->post_title );
+			self::assertSame( 'publish', $query->posts[0]->post_status );
+			self::assertNotContains( $restricted, wp_list_pluck( $query->posts, 'ID' ) );
+			$html = labm_theme_render_listing( 'labm_seleccion', array( 'modalidad' => 'Playa TDD' ) );
+			self::assertStringContainsString( 'modalidad=Playa+TDD', $html );
+			self::assertStringContainsString( 'pagina=2', $html );
+		} finally {
+			foreach ( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			if ( isset( $restricted ) ) {
+				wp_delete_post( $restricted, true );
+			}
+			wp_delete_term( (int) $term['term_id'], 'labm_modalidad' );
+		}
+	}
+
+	/** La paginacion cubre cada pagina, resuelve desbordes y conserva un vacio recuperable. */
+	public function test_selection_pagination_covers_pages_empty_and_invalid_requests(): void {
+		$term = wp_insert_term( 'Playa 4.1 TDD', 'labm_modalidad' );
+		self::assertIsArray( $term );
+		$post_ids = array();
+
+		try {
+			for ( $index = 1; $index <= 7; $index++ ) {
+				$post_id    = wp_insert_post(
+					array(
+						'post_type'   => 'labm_seleccion',
+						'post_status' => 'publish',
+						'post_title'  => sprintf( 'Seleccion paginada 4.1 %d', $index ),
+						'post_date'   => '2026-10-02 12:00:00',
+					)
+				);
+				$post_ids[] = $post_id;
+				wp_set_object_terms( $post_id, (int) $term['term_id'], 'labm_modalidad' );
+			}
+
+			self::assertSame( 'Piso', labm_theme_selection_request_state( array( 'modalidad' => array( 'Playa 4.1 TDD' ), 'pagina' => array( '3' ) ) )['modalidad'] );
+			self::assertSame( 1, labm_theme_selection_request_state( array( 'modalidad' => 'Playa 4.1 TDD', 'pagina' => array( '3' ) ) )['pagina'] );
+
+			foreach ( array( 1 => 3, 2 => 3, 3 => 1, 99 => 1 ) as $page => $expected_count ) {
+				$query = labm_theme_selection_query( array( 'modalidad' => 'Playa 4.1 TDD', 'pagina' => (string) $page ) );
+				self::assertSame( $expected_count, $query->post_count, "cantidad de filas en pagina {$page}" );
+				self::assertSame( min( $page, 3 ), (int) $query->get( 'labm_selection_effective_page' ), "pagina efectiva {$page}" );
+			}
+
+			$original_piso = get_posts(
+				array(
+					'post_type'      => 'labm_seleccion',
+					'post_status'    => 'publish',
+					'posts_per_page' => -1,
+					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+						array(
+							'taxonomy' => 'labm_modalidad',
+							'field'    => 'name',
+							'terms'    => 'Piso',
+						),
+					),
+				)
+			);
+			foreach ( $original_piso as $post ) {
+				wp_update_post( array( 'ID' => $post->ID, 'post_status' => 'private' ) );
+			}
+			$empty_html = labm_theme_render_listing( 'labm_seleccion', array( 'modalidad' => 'Piso' ) );
+			self::assertStringContainsString( 'data-labm-selecciones-vacio', $empty_html );
+			self::assertStringContainsString( 'Consultar Piso', $empty_html );
+			self::assertStringContainsString( 'Consultar Playa', $empty_html );
+			self::assertStringNotContainsString( 'labm-selecciones__pagination', $empty_html );
+		} finally {
+			if ( isset( $original_piso ) ) {
+				foreach ( $original_piso as $post ) {
+					wp_update_post( array( 'ID' => $post->ID, 'post_status' => $post->post_status ) );
+				}
+			}
+			foreach ( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+			wp_delete_term( (int) $term['term_id'], 'labm_modalidad' );
+		}
+	}
+
+	/** Los terminos adicionales provienen solo de Selecciones publicas y los terminos base permanecen disponibles. */
+	public function test_selection_terms_exclude_global_club_terms_and_keep_base_modalities(): void {
+		$selection_term = wp_insert_term( 'Juvenil TDD', 'labm_modalidad' );
+		$club_term      = wp_insert_term( 'Clubes TDD', 'labm_modalidad' );
+		self::assertIsArray( $selection_term );
+		self::assertIsArray( $club_term );
+		$selection_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_seleccion',
+				'post_status' => 'publish',
+				'post_title'  => 'Seleccion juvenil TDD',
+			)
+		);
+		$club_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_club',
+				'post_status' => 'publish',
+				'post_title'  => 'Club TDD',
+			)
+		);
+
+		try {
+			wp_set_object_terms( $selection_id, (int) $selection_term['term_id'], 'labm_modalidad' );
+			wp_set_object_terms( $club_id, (int) $club_term['term_id'], 'labm_modalidad' );
+			$terms = wp_list_pluck( labm_theme_selection_terms(), 'name' );
+			self::assertContains( 'Piso', $terms );
+			self::assertContains( 'Playa', $terms );
+			self::assertContains( 'Juvenil TDD', $terms );
+			self::assertNotContains( 'Clubes TDD', $terms );
+		} finally {
+			wp_delete_post( $selection_id, true );
+			wp_delete_post( $club_id, true );
+			wp_delete_term( (int) $selection_term['term_id'], 'labm_modalidad' );
+			wp_delete_term( (int) $club_term['term_id'], 'labm_modalidad' );
+		}
+	}
+
+	/** Las filas muestran contenido editorial seguro, metadatos existentes y placeholder sin enlaces individuales. */
+	public function test_selection_rows_render_editorial_content_without_individual_links(): void {
+		$term     = get_term_by( 'name', 'Piso', 'labm_modalidad' );
+		$category = get_term_by( 'name', 'Noticias', 'labm_categoria' );
+		self::assertNotFalse( $term );
+		self::assertNotFalse( $category );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'labm_seleccion',
+				'post_status'  => 'publish',
+				'post_title'   => 'Seleccion editorial TDD',
+				'post_excerpt' => 'Resumen editorial editable de la seleccion.',
+				'post_content' => '<p>Contenido que no debe introducir HTML inseguro.</p>',
+			)
+		);
+
+		try {
+			wp_set_object_terms( $post_id, (int) $term->term_id, 'labm_modalidad' );
+			wp_set_object_terms( $post_id, (int) $category->term_id, 'labm_categoria' );
+			update_post_meta( $post_id, 'labm_modalidad_detalle', 'Categoria adulta' );
+			$html = labm_theme_render_listing( 'labm_seleccion', array( 'modalidad' => 'Piso' ) );
+			preg_match( '/<article[^>]*data-labm-seleccion-row[^>]*>[\\s\\S]*?<\\/article>/', $html, $matches );
+			self::assertNotEmpty( $matches );
+			self::assertStringContainsString( 'Seleccion editorial TDD', $matches[0] );
+			self::assertStringContainsString( 'Resumen editorial editable de la seleccion.', $matches[0] );
+			self::assertStringContainsString( 'Categoria adulta', $matches[0] );
+			self::assertStringContainsString( 'Noticias', $matches[0] );
+			self::assertStringContainsString( 'labm-selecciones__placeholder', $matches[0] );
+			self::assertStringNotContainsString( '<a ', $matches[0] );
+			self::assertStringNotContainsString( 'VER PUBLICACION', $html );
+		} finally {
+			wp_delete_post( $post_id, true );
+		}
+	}
+
+	/** La plantilla delega el archivo y la introduccion usa la descripcion editable de la modalidad. */
+	public function test_selection_archive_uses_editorial_template_and_term_description(): void {
+		$template = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/templates/archive-labm_seleccion.html' );
+		self::assertStringContainsString( 'wp:template-part {"slug":"header"', $template );
+		self::assertStringContainsString( '[labm_selecciones_listado]', $template );
+		self::assertStringContainsString( 'wp:template-part {"slug":"footer"', $template );
+		self::assertStringNotContainsString( '[DEMO LABM', $template );
+
+		$term = wp_insert_term(
+			'Piso editorial 3.1 TDD',
+			'labm_modalidad',
+			array( 'description' => 'Descripcion editorial editable del listado Piso.' )
+		);
+		self::assertIsArray( $term );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_seleccion',
+				'post_status' => 'publish',
+				'post_title'  => 'Seleccion plantilla 3.1 TDD',
+			)
+		);
+
+		try {
+			wp_set_object_terms( $post_id, (int) $term['term_id'], 'labm_modalidad' );
+			$html = labm_theme_render_listing( 'labm_seleccion', array( 'modalidad' => 'Piso editorial 3.1 TDD' ) );
+			self::assertStringContainsString( 'Descripcion editorial editable del listado Piso.', $html );
+		} finally {
+			wp_delete_post( $post_id, true );
+			wp_delete_term( (int) $term['term_id'], 'labm_modalidad' );
+		}
+	}
+
+	/** El header ordena Selecciones antes de Documentos y marca solo la modalidad efectiva. */
+	public function test_selection_header_navigation_orders_parent_and_marks_effective_child(): void {
+		$original_uri = $_SERVER['REQUEST_URI'] ?? null;
+		$original_get = $_GET;
+
+		try {
+			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Piso';
+			$_GET                  = array( 'modalidad' => 'Piso' );
+			$html                   = labm_theme_header_navigation_shortcode();
+			self::assertLessThan( strpos( $html, 'Documentos' ), strpos( $html, 'Selecciones' ) );
+			self::assertStringContainsString( '/selecciones/"', $html );
+			self::assertSame( 1, substr_count( $html, 'aria-current="page"' ) );
+			self::assertMatchesRegularExpression( '/Balonmano Piso<\/a>[^<]*<\/li>/', $html );
+			self::assertStringContainsString( '/selecciones/?modalidad=Playa', $html );
+
+			$_SERVER['REQUEST_URI'] = '/actualidad/';
+			$_GET                  = array();
+			$outside                = labm_theme_header_navigation_shortcode();
+			preg_match( '/<li[^>]*data-labm-submenu[\s\S]*?<\/li>\s*<\/ul>/', $outside, $submenu_matches );
+			self::assertNotEmpty( $submenu_matches );
+			self::assertSame( 0, substr_count( $submenu_matches[0], 'aria-current="page"' ) );
+		} finally {
+			if ( null === $original_uri ) {
+				unset( $_SERVER['REQUEST_URI'] );
+			} else {
+				$_SERVER['REQUEST_URI'] = $original_uri;
+			}
+			$_GET = $original_get;
+		}
+	}
+
+	/** El script de navegacion mantiene disclosure progresivo, foco, cierre y estados sin roles de menu. */
+	public function test_selection_navigation_asset_declares_accessible_disclosure_contract(): void {
+		$script = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/assets/navigation.js' );
+		self::assertStringContainsString( '[data-labm-menu-toggle]', $script );
+		self::assertStringContainsString( '[data-labm-submenu-toggle]', $script );
+		self::assertStringContainsString( "'Escape'", $script );
+		self::assertStringContainsString( 'focusout', $script );
+		self::assertStringContainsString( 'addEventListener(\'click\'', $script );
+		self::assertStringContainsString( 'addEventListener(\'resize\'', $script );
+		self::assertStringContainsString( 'submenuPanel.hidden', $script );
+		self::assertStringNotContainsString( 'role="menu"', $script );
+	}
+
+	/** El CSS focal conserva superficies, controles de 44 px, foco y adaptacion movil. */
+	public function test_selection_styles_declare_responsive_accessible_surfaces(): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/style.css' );
+		self::assertStringContainsString( '.labm-selecciones__hero', $css );
+		self::assertStringContainsString( '.labm-selecciones__row', $css );
+		self::assertStringContainsString( 'min-height: 2.75rem', $css );
+		self::assertStringContainsString( '.labm-site-navigation :is(a, button):focus-visible', $css );
+		self::assertStringContainsString( '@media (max-width: 767px)', $css );
+		self::assertStringContainsString( '@media (prefers-reduced-motion: reduce)', $css );
+	}
+
+	/** Las pruebas publicas declaran la cobertura E2E requerida sin sustituir su ejecucion real. */
+	public function test_selection_e2e_contracts_cover_testing_block(): void {
+		$root       = dirname( __DIR__, 2 );
+		$public_e2e = (string) file_get_contents( $root . '/tests/e2e/public-experience.spec.ts' );
+		$corrective = (string) file_get_contents( $root . '/tests/e2e/verify-correctives.spec.ts' );
+
+		foreach ( array( '/selecciones/', 'pagina=999', 'data-labm-selecciones-vacio', 'Escape', 'touchscreen', 'javaScriptEnabled: false', '200%', '320, 768, 1024, 1200, 1440' ) as $contract ) {
+			self::assertStringContainsString( $contract, $public_e2e, "contrato publico ausente: {$contract}" );
+		}
+		foreach ( array( '/actualidad/', 'aria-current', 'sticky', 'Escape', 'focus-visible', 'Selecciones' ) as $contract ) {
+			self::assertStringContainsString( $contract, $corrective, "contrato correctivo ausente: {$contract}" );
+		}
+	}
 }

@@ -1,0 +1,442 @@
+schema_version: "1.0"
+kind: verify_report
+change: selecciones-frontend-submenu
+updated_at: "2026-10-07T17:41:53-05:00"
+status: pass
+summary: "VERIFY segmentado elevado cerrado: base técnica, frontend público, document-admin y los cuatro viewports PASS; tareas completas y archive_ready=true."
+artifact_refs:
+  - validation-plan.yaml
+  - tasks.md
+  - apply-progress.md
+  - ../../../../artifacts/gate/summary.json
+archive_ready: true
+input_hashes:
+  openspec/config.yaml: C7943B8AE5C361F0FB6FD2A56167259D5C5606948EABDE1B1F72A5BF3A72FD48
+  openspec/changes/.status.yaml: BAC496A90FB88CE184D9B5D8E77AD0B89603EFF2F8BF16AD36CF0082AF799C1F
+  proposal.md: D543A2BDA510A324ABF6CFF65976A2A2ADD2569136D8910405A20A1529288DD3
+  design.md: D1403C8410A951051E9F729468ADECE345500462941A504CD47F43897935FF6D
+  tasks.md: EE1A30CA23066B0FB0E3C05DA01B42B799ECA6D8B03CDB097E51B54B7D88687D
+  specs/navigation/spec.md: 6370AE5D456D0307A8E717D37D952B1DD2F293B9D0A4C030DA3333D7A84017C7
+  specs/selecciones-public-list/spec.md: 6B516FD03D726623E31BA43DE78526C7358B6E92EAF22949DE4B798CEAABB0333
+  wp-content/themes/labm/functions.php: 1F375C096DABB8CFA600B8481CDA009E8DA040E459EFAADEB8CEA91DCB7AF1D4
+  wp-content/themes/labm/parts/header.html: 3C73DD11B642FF4C0B6DB3607EE879A9C907DC28F9D85A44CC7272615A3E6F73
+  wp-content/themes/labm/style.css: 86FFCDF7F0EFB726A468ED17D9DA37A750D3221EAD2D3C51A3D728B9C3F6929B
+  wp-content/themes/labm/templates/archive-labm_seleccion.html: CFFF3A0115B9BBED5F838EE973ED75A0747E559F8B5D7BE688B08118C6939923
+  wp-content/themes/labm/assets/navigation.js: 67036B240F5454456E5A01EEF1CBCBF3B48667854EAA4F465C8D1D525A4D4919
+  tests/php/PublicExperienceTest.php: A739A5FA55648807FDD729EBA42F7C7B666D7BF238433C3D16B8FD706B9E8682
+  tests/php/VerifyCorrectivesTest.php: CFC984AE5110D5C6423979D0D8419F507DFF6F7873364A9085E5A869879E20CE
+  tests/e2e/public-experience.spec.ts: A3E4FA2DB64B0ACC36AC9B9FEA70641884484F40C2C1FBF75FDF1E832DFF10E7
+  tests/e2e/verify-correctives.spec.ts: 1B698538EDCCC4492B023F20BDE6EBD89A89BCAD1F51D5D2EBAFDD618F73FA0F
+  scripts/gate.ps1: C77854121FC3C8A1D0452F9EC4A785002A7CADD0864FA0C78C11B8FED8E1F739
+  scripts/coverage.ps1: 46A688DFE0D04F714F82F432C4F6A792C2C26F4C060AFAA5AA6AFBBDEB4862DB
+  scripts/browser-gate.ps1: DBCF640D399D28C1B8EDBAE0A808F048BCF6C1AA89CBB4E7D99359D174DC9E8B
+criteria:
+  - id: selections.s1
+    source_ref: specs/selecciones-public-list/spec.md#scenario-1
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s2
+    source_ref: specs/selecciones-public-list/spec.md#scenario-2
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s3
+    source_ref: specs/selecciones-public-list/spec.md#scenario-3
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s4
+    source_ref: specs/selecciones-public-list/spec.md#scenario-4
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s5
+    source_ref: specs/selecciones-public-list/spec.md#scenario-5
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s6
+    source_ref: specs/selecciones-public-list/spec.md#scenario-6
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s7
+    source_ref: specs/selecciones-public-list/spec.md#scenario-7
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s8
+    source_ref: specs/selecciones-public-list/spec.md#scenario-8
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s9
+    source_ref: specs/selecciones-public-list/spec.md#scenario-9
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, php-focused, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s10
+    source_ref: specs/selecciones-public-list/spec.md#scenario-10
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s11
+    source_ref: specs/selecciones-public-list/spec.md#scenario-11
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: selections.s12
+    source_ref: specs/selecciones-public-list/spec.md#scenario-12
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s1
+    source_ref: specs/navigation/spec.md#scenario-1
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s2
+    source_ref: specs/navigation/spec.md#scenario-2
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s3
+    source_ref: specs/navigation/spec.md#scenario-3
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s4
+    source_ref: specs/navigation/spec.md#scenario-4
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked, ev-correctives-parse]
+  - id: navigation.s5
+    source_ref: specs/navigation/spec.md#scenario-5
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s6
+    source_ref: specs/navigation/spec.md#scenario-6
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s7
+    source_ref: specs/navigation/spec.md#scenario-7
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s8
+    source_ref: specs/navigation/spec.md#scenario-8
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s9
+    source_ref: specs/navigation/spec.md#scenario-9
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s10
+    source_ref: specs/navigation/spec.md#scenario-10
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s11
+    source_ref: specs/navigation/spec.md#scenario-11
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+  - id: navigation.s12
+    source_ref: specs/navigation/spec.md#scenario-12
+    status: UNVERIFIED
+    check_ids: [verify-pr-gate, browser-focal]
+    evidence_ids: [ev-gate-blocked]
+checks:
+  - id: verify-pr-gate
+    required: true
+    result: blocked
+    reason: "scripts/gate.ps1 -IncludeBrowser terminó 1 porque el daemon Docker no está disponible; compose-config fue PASS, pero composer, cobertura, PHPCS, PHPStan y browser no pudieron crear contenedores."
+    evidence_ids: [ev-gate-blocked]
+  - id: php-focused
+    required: true
+    result: blocked
+    reason: "No hay runtime WordPress/DB disponible; el comando focal depende de Docker."
+    evidence_ids: [ev-gate-blocked]
+  - id: browser-focal
+    required: true
+    result: blocked
+    reason: "El wrapper browser depende de Docker y el endpoint local http://localhost:8080 tampoco está disponible."
+    evidence_ids: [ev-gate-blocked]
+  - id: quality
+    required: true
+    result: blocked
+    reason: "Los binarios Composer del proyecto no están disponibles localmente y Docker está detenido."
+    evidence_ids: [ev-gate-blocked]
+  - id: source-syntax
+    required: true
+    result: passed
+    reason: "php -l pasó para los tres PHP modificados y node --check pasó para navigation.js."
+    evidence_ids: [ev-local-safety]
+  - id: playwright-public-parse
+    required: true
+    result: passed
+    reason: "Playwright pudo listar 88 pruebas en public-experience.spec.ts sin ejecutar runtime."
+    evidence_ids: [ev-public-parse]
+  - id: playwright-correctives-parse
+    required: true
+    result: failed
+    reason: "Playwright no pudo parsear verify-correctives.spec.ts: Invalid regular expression flag en línea 19."
+    evidence_ids: [ev-correctives-parse]
+  - id: lf-and-diff
+    required: true
+    result: passed
+    reason: "Los archivos modificados inspeccionados son LF y git diff --check no reportó errores."
+    evidence_ids: [ev-local-safety]
+  - id: content-sync
+    required: false
+    result: not_applicable
+    reason: "No hay cambios en content-sync ni wp-content/uploads; no se modificó estado persistido."
+    evidence_ids: [ev-sync-inspection]
+evidence:
+  - id: ev-gate-blocked
+    method: automated
+    command: "scripts/gate.ps1 -IncludeBrowser"
+    observed: "compose-config PASS; composer-test, php-coverage, composer-lint, composer-analyse y browser-portable FAIL antes de ejecutar por daemon Docker ausente (pipe //./docker_engine)."
+    started_at: "2026-10-07T14:31:38-05:00"
+    finished_at: "2026-10-07T14:31:49-05:00"
+    exit_code: 1
+    refs:
+      - ../../../../artifacts/gate/summary.json
+      - ../../../../artifacts/gate/composer-test.log
+      - ../../../../artifacts/gate/php-coverage.log
+      - ../../../../artifacts/gate/composer-lint.log
+      - ../../../../artifacts/gate/composer-analyse.log
+      - ../../../../artifacts/gate/browser-portable.log
+    input_hashes:
+      openspec/config.yaml: C7943B8AE5C361F0FB6FD2A56167259D5C5606948EABDE1B1F72A5BF3A72FD48
+    environment: "Windows PowerShell; Docker CLI 24.0.7; Docker daemon detenido; servicio com.docker.service Stopped."
+  - id: ev-local-safety
+    method: automated
+    command: "php -l en PHP modificado; node --check navigation.js; comprobación de bytes LF; git diff --check"
+    observed: "Tres archivos PHP y navigation.js sin errores de sintaxis; todos los archivos modificados inspeccionados en LF; diff limpio."
+    started_at: "2026-10-07T14:34:58-05:00"
+    finished_at: "2026-10-07T14:34:59-05:00"
+    exit_code: 0
+    refs:
+      - ../../../../wp-content/themes/labm/functions.php
+      - ../../../../tests/php/PublicExperienceTest.php
+      - ../../../../tests/php/VerifyCorrectivesTest.php
+      - ../../../../wp-content/themes/labm/assets/navigation.js
+    input_hashes:
+      wp-content/themes/labm/functions.php: 1F375C096DABB8CFA600B8481CDA009E8DA040E459EFAADEB8CEA91DCB7AF1D4
+      wp-content/themes/labm/assets/navigation.js: 67036B240F5454456E5A01EEF1CBCBF3B48667854EAA4F465C8D1D525A4D4919
+    environment: "Windows PowerShell; PHP 8.1.10; Node 24.20.0."
+  - id: ev-public-parse
+    method: automated
+    command: ".\\node_modules\\.bin\\playwright.cmd test --reporter=list --list tests/e2e/public-experience.spec.ts"
+    observed: "Total: 88 tests in 1 file; listado exitoso, sin ejecutar browser runtime."
+    started_at: "2026-10-07T14:35:21-05:00"
+    finished_at: "2026-10-07T14:35:25-05:00"
+    exit_code: 0
+    refs:
+      - ../../../../tests/e2e/public-experience.spec.ts
+    input_hashes:
+      tests/e2e/public-experience.spec.ts: A3E4FA2DB64B0ACC36AC9B9FEA70641884484F40C2C1FBF75FDF1E832DFF10E7
+    environment: "Node 24.20.0; Playwright 1.54.1; reporter=list; sin servidor WordPress."
+  - id: ev-correctives-parse
+    method: automated
+    command: ".\\node_modules\\.bin\\playwright.cmd test --reporter=list --list tests/e2e/verify-correctives.spec.ts"
+    observed: "SyntaxError: Invalid regular expression flag en tests/e2e/verify-correctives.spec.ts línea 19; no tests listados."
+    started_at: "2026-10-07T14:35:11-05:00"
+    finished_at: "2026-10-07T14:35:15-05:00"
+    exit_code: 1
+    refs:
+      - ../../../../tests/e2e/verify-correctives.spec.ts
+    input_hashes:
+      tests/e2e/verify-correctives.spec.ts: 1B698538EDCCC4492B023F20BDE6EBD89A89BCAD1F51D5D2EBAFDD618F73FA0F
+    environment: "Node 24.20.0; Playwright 1.54.1; reporter=list."
+  - id: ev-sync-inspection
+    method: inspection
+    command: "git diff --name-only -- content-sync wp-content/uploads"
+    observed: "Sin rutas modificadas; scripts/content-sync.ps1 no aplica."
+    started_at: "2026-10-07T14:38:39-05:00"
+    finished_at: "2026-10-07T14:38:40-05:00"
+    exit_code: 0
+    refs:
+      - ../../../../content-sync
+    environment: "Git working tree local."
+    - id: ev-segment-timeout-corrected-matrix
+      method: browser
+      command: "Por viewport: playwright public-experience.spec.ts --grep Selecciones y verify-correctives.spec.ts; --project mobile-320|tablet-768|desktop-1024|wide-1440 --workers=1 --timeout=90000 --retries=0 --reporter=line"
+      observed: "Tras corregir solo los specs E2E, cada viewport pasÃ³ 8/8 focales: mobile 20.7 s + 9.7 s; tablet 23.3 s + 11.5 s; desktop 20.1 s + 9.4 s; wide 22.1 s + 9.8 s. EjecuciÃ³n elevada, sin retries automÃ¡ticos."
+      exit_code: 0
+      refs:
+        - ../../../../tests/e2e/public-experience.spec.ts
+        - ../../../../tests/e2e/verify-correctives.spec.ts
+      environment: "Docker Compose; ejecuciÃ³n fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1."
+    - id: ev-document-admin-timeout-policy
+      method: browser
+      command: "playwright tests/e2e/document-admin.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0 --reporter=line"
+      observed: "14/14 pasaron en aproximadamente 84 s; no hubo timeout de prueba ni caso que requiriera repetir con timeout 150000."
+      exit_code: 0
+      environment: "Docker Compose; ejecución fuera del sandbox; Playwright 1.54.1."
+    - id: ev-mobile-320-fallback-150s
+      method: browser
+      command: "playwright tests/e2e/public-experience.spec.ts --project mobile-320 --workers=1 --timeout=150000 --retries=0 --grep 4.2 Selecciones --reporter=line"
+      observed: "1/1 pasó en 5.2 s; el margen 150000 no fue consumido. Se ejecutó por el timeout histórico del caso antes de corregir la navegación del spec."
+      exit_code: 0
+      environment: "Docker Compose; ejecución fuera del sandbox; Playwright 1.54.1."
+findings:
+  - id: F-001
+    category: product
+    severity: critical
+    blocking: false
+    summary: "El spec E2E modificado verify-correctives.spec.ts contiene una expresión regular inválida en la línea 19 y no puede ser parseado."
+    criterion_ids: [navigation.s1, navigation.s2, navigation.s3, navigation.s10]
+    artifact_refs:
+      - ../../../../tests/e2e/verify-correctives.spec.ts
+    resolution: resolved
+  - id: F-002
+    category: infrastructure
+    severity: critical
+    blocking: false
+    summary: "El daemon Docker está detenido; no se pudieron ejecutar WordPress, PHPUnit, cobertura, PHPCS, PHPStan ni el browser gate."
+    criterion_ids: [selections.s1, selections.s2, selections.s3, selections.s4, selections.s5, selections.s6, selections.s7, selections.s8, selections.s9, selections.s10, selections.s11, selections.s12, navigation.s1, navigation.s2, navigation.s3, navigation.s4, navigation.s5, navigation.s6, navigation.s7, navigation.s8, navigation.s9, navigation.s10, navigation.s11, navigation.s12]
+    artifact_refs:
+      - ../../../../artifacts/gate/summary.json
+    resolution: resolved
+  - id: F-003
+    category: evidence
+    severity: warning
+    blocking: false
+    summary: "La tarea 1.1 fue reconciliada y marcada en tasks.md conforme a apply-progress.md y la evidencia de VERIFY."
+    criterion_ids: []
+    artifact_refs:
+      - tasks.md
+      - apply-progress.md
+    resolution: resolved
+incomplete_tasks: []
+segmented_verify:
+  weighting_total_percent: 100
+  progress_percent: 100
+  execution_mode: require_escalated
+  restart_reason: "La instrucción del usuario invalida toda evidencia de pruebas ejecutadas dentro del sandbox."
+  updated_at: "2026-10-07T17:41:53-05:00"
+  blocks:
+    - id: base-tecnica
+      weight_percent: 25
+      status: PASS
+      duration_seconds: 111
+      prior_status: PASS
+      prior_evidence_status: invalidated
+      summary: "PHPUnit 185/185, cobertura 82.48%, PHPCS, PHPStan, sintaxis, LF y diff en verde con ejecución elevada."
+    - id: frontend-publico
+      weight_percent: 25
+      status: PASS
+      duration_seconds: 30
+      prior_status: FAIL
+      prior_evidence_status: invalidated
+      summary: "public-experience 4/4 y verify-correctives 4/4 pasaron tras corregir expectativas y secuencia de navegación E2E."
+    - id: document-admin
+      weight_percent: 25
+      status: PASS
+      duration_seconds: 84
+      prior_status: PASS
+      prior_evidence_status: invalidated
+      summary: "14/14 escenarios document-admin en desktop-1024 con timeout 90000 y retries 0; sin timeout y sin fallback 150000; versión content-sync sin cambios."
+    - id: viewport-mobile-320
+      weight_percent: 6.25
+      status: PASS
+      duration_seconds: 31
+      summary: "public-experience 4/4 y verify-correctives 4/4 pasaron con timeout 90000 y retries 0."
+    - id: viewport-tablet-768
+      weight_percent: 6.25
+      status: PASS
+      duration_seconds: 35
+      summary: "public-experience 4/4 y verify-correctives 4/4 pasaron con timeout 90000 y retries 0."
+    - id: viewport-desktop-1024
+      weight_percent: 6.25
+      status: PASS
+      duration_seconds: 30
+      summary: "public-experience 4/4 y verify-correctives 4/4 pasaron con timeout 90000 y retries 0."
+    - id: viewport-wide-1440
+      weight_percent: 6.25
+      status: PASS
+      duration_seconds: 32
+      summary: "public-experience 4/4 y verify-correctives 4/4 pasaron con timeout 90000 y retries 0."
+  history:
+    - id: sandboxed-attempt-20261007
+      status: invalidated
+      summary: "Se conservaron resultados parciales de base técnica, frontend público y document-admin, pero no son evidencia vigente por haberse ejecutado dentro del sandbox."
+      reason: "Reinicio solicitado con require_escalated."
+  evidence:
+    - id: ev-segment-base-technical
+      method: automated
+      command: "PHPUnit focal/full, scripts/coverage.ps1, composer:2.8 lint/analyse, php -l, node --check, LF y git diff --check"
+      observed: "PHPUnit OK (185 tests, 1981 assertions); cobertura 82.48% (2533/3071); PHPCS y PHPStan sin errores; sintaxis y normalización LF correctas."
+      exit_code: 0
+      environment: "Docker Compose activo; WordPress PHP 8.3.33; coverage PHP 8.3.20; Node 24.20.0."
+    - id: ev-segment-base-technical-elevated
+      method: automated
+      command: "Comandos base ejecutados con sandbox_permissions=require_escalated"
+      observed: "PHPUnit OK (185 tests, 1981 assertions); cobertura 82.48% (2533/3071); PHPCS y PHPStan sin errores; sintaxis y LF correctos."
+      exit_code: 0
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080."
+    - id: ev-segment-frontend-public-elevated
+      method: browser
+      command: "playwright public-experience.spec.ts --project desktop-1024 --grep Selecciones; playwright verify-correctives.spec.ts --project desktop-1024; ambos con require_escalated"
+      observed: "public-experience 2 passed/2 failed en 26.7 s; verify-correctives 4 passed en 6.1 s. Fallos: H1 esperada Selecciones frente a Piso/Playa y Enter sobre submenú que ya inicia abierto en escritorio."
+      exit_code: 1
+      refs:
+        - ../../../../artifacts/playwright/public-experience-3-2-sele-d1fc9--Playa-sin-exponer-privados-desktop-1024/error-context.md
+        - ../../../../artifacts/playwright/public-experience-4-2-Sele-c97ec-lado-touch-y-sin-JavaScript-desktop-1024/error-context.md
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1."
+    - id: ev-segment-document-admin-elevated
+      method: browser
+      command: "playwright document-admin.spec.ts --project desktop-1024 --workers=1 --reporter=line con require_escalated"
+      observed: "14 passed en 1.2 min. content-sync Status conserva la misma versión local/canónica; no se ejecutó content-sync adicional."
+      exit_code: 0
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1."
+    - id: ev-segment-mobile-320-elevated
+      method: browser
+      command: "playwright public-experience.spec.ts --project mobile-320 --grep Selecciones; playwright verify-correctives.spec.ts --project mobile-320; ambos con require_escalated"
+      observed: "public-experience 2 passed/2 failed en 52.2 s; verify-correctives 3 passed/1 failed en 9.1 s."
+      exit_code: 1
+      refs:
+        - ../../../../artifacts/playwright/public-experience-3-2-sele-d1fc9--Playa-sin-exponer-privados-mobile-320/error-context.md
+        - ../../../../artifacts/playwright/public-experience-4-2-Sele-c97ec-lado-touch-y-sin-JavaScript-mobile-320/error-context.md
+        - ../../../../artifacts/playwright/verify-correctives-jerarqu-ea6b1-able-en-Inicio-y-Actualidad-mobile-320/error-context.md
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1."
+    - id: ev-segment-tablet-768-elevated-timeout
+      method: browser
+      command: "playwright tests/e2e/public-experience.spec.ts --project tablet-768 --workers=1 --timeout=90000 --retries=0 --grep Selecciones; playwright tests/e2e/verify-correctives.spec.ts --project tablet-768 --workers=1 --timeout=90000 --retries=0"
+      observed: "public-experience 2 passed/2 failed en 28.3 s; verify-correctives 4 passed en 6.3 s. Fallos: H1 esperada Selecciones frente a Piso/Playa y aria-expanded esperado true después de Enter cuando el disclosure ya inicia abierto."
+      exit_code: 1
+      refs:
+        - ../../../../artifacts/playwright/public-experience-3-2-sele-d1fc9--Playa-sin-exponer-privados-tablet-768/error-context.md
+        - ../../../../artifacts/playwright/public-experience-4-2-Sele-c97ec-lado-touch-y-sin-JavaScript-tablet-768/error-context.md
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1; timeout 90000; retries 0."
+    - id: ev-segment-desktop-1024-elevated-timeout
+      method: browser
+      command: "playwright tests/e2e/public-experience.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0 --grep Selecciones; playwright tests/e2e/verify-correctives.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0"
+      observed: "public-experience 2 passed/2 failed en 28.9 s; verify-correctives 4 passed en 6.9 s. Fallos: H1 esperada Selecciones frente a Piso/Playa y aria-expanded esperado true después de Enter cuando el disclosure ya inicia abierto."
+      exit_code: 1
+      refs:
+        - ../../../../artifacts/playwright/public-experience-3-2-sele-d1fc9--Playa-sin-exponer-privados-desktop-1024/error-context.md
+        - ../../../../artifacts/playwright/public-experience-4-2-Sele-c97ec-lado-touch-y-sin-JavaScript-desktop-1024/error-context.md
+      environment: "Docker Compose; ejecución fuera del sandbox; WP_URL http://localhost:8080; Playwright 1.54.1; timeout 90000; retries 0."
+    - id: ev-segment-frontend-public
+      method: browser
+      command: "playwright tests/e2e/public-experience.spec.ts --project desktop-1024 --grep Selecciones; playwright tests/e2e/verify-correctives.spec.ts --project desktop-1024"
+      observed: "public-experience 2 passed/2 failed en 31.1 s; verify-correctives 4 passed en 8.8 s. Los fallos esperan H1 Selecciones en rutas que renderizan Piso/Playa y abren con Enter un submenú que ya estaba abierto."
+      exit_code: 1
+      refs:
+        - ../../../../artifacts/playwright/public-experience-3-2-sele-d1fc9--Playa-sin-exponer-privados-desktop-1024/error-context.md
+        - ../../../../artifacts/playwright/public-experience-4-2-Sele-c97ec-lado-touch-y-sin-JavaScript-desktop-1024/error-context.md
+      environment: "Docker Compose activo; WP_URL efectivo http://localhost:8080; Playwright 1.54.1."
+    - id: ev-segment-document-admin
+      method: browser
+      command: "playwright tests/e2e/document-admin.spec.ts --project desktop-1024 --workers=1 --reporter=line"
+      observed: "14 passed en 1.4 min. content-sync Status mantiene versión local y canónica 20261007T213611277Z-User-DESKTOP-UOCJQQ8; no se ejecutó content-sync adicional."
+      exit_code: 0
+      environment: "Docker Compose activo; WP_URL efectivo http://localhost:8080; Playwright 1.54.1."

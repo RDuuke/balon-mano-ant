@@ -172,8 +172,10 @@ final class VerifyCorrectivesTest extends TestCase {
 	public function test_navegacion_completa_portada_completa_y_seccion_opcional(): void {
 
 		$header = file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/parts/header.html' );
+		self::assertStringContainsString( '[labm_header_navigation]', $header );
+		$navigation = labm_theme_header_navigation_shortcode();
 		foreach ( array( 'Inicio', 'Nosotros', 'Actualidad', 'Selecciones', 'Documentos', 'Contacto' ) as $label ) {
-			self::assertStringContainsString( $label, $header );
+			self::assertStringContainsString( $label, $navigation );
 		}
 		$sections = labm_theme_home_sections( array( 'actualidad' => false ) );
 		self::assertSame( array( 'slider', 'presentacion', 'clubes', 'evento', 'vinculacion', 'aliados' ), $sections );

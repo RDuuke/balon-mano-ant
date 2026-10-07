@@ -416,10 +416,89 @@ test('3.4 documentos ofrece filtros, estado vacío y composición responsive', a
 test('3.2 selecciones filtra Piso y Playa sin exponer privados', async ({ page }) => {
   for (const modalidad of ['Piso', 'Playa']) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);
-    await expect(page.getByRole('heading', { level: 1, name: 'Selecciones' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(modalidad);
     await expect(page.locator('[data-labm-listado="selecciones"] article')).not.toHaveCount(0);
     await expect(page.getByText(/selección privada/i)).toHaveCount(0);
     await expect(page.locator('[data-labm-modalidad]')).toContainText(modalidad);
+  }
+});
+
+test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin JavaScript', async ({ page, browser }) => {
+  await page.goto('/selecciones/?modalidad=Piso&pagina=999');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Piso');
+  await expect(page.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
+  await expect(page.locator('[data-labm-seleccion-row] a')).toHaveCount(0);
+
+  const pagination = page.locator('[data-labm-listado="selecciones"] .labm-selecciones__pagination');
+  if (await pagination.count()) {
+    await expect(pagination.locator('[aria-current="page"]')).toHaveCount(1);
+    await expect(pagination).toContainText(/p[aá]gina/i);
+  }
+
+  const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
+  const menuToggle = page.getByRole('button', { name: /abrir men/i });
+  if (await menuToggle.isVisible()) {
+    await menuToggle.click();
+  }
+  await expect(submenuToggle).toBeVisible();
+  if ('true' === await submenuToggle.getAttribute('aria-expanded')) {
+    await submenuToggle.click();
+  }
+  await submenuToggle.focus();
+  await page.keyboard.press('Enter');
+  await expect(submenuToggle).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Escape');
+  await expect(submenuToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(submenuToggle).toBeFocused();
+
+  await page.goto('/selecciones/?modalidad=Playa&pagina=999');
+  const empty = page.locator('[data-labm-selecciones-vacio]');
+  if (await empty.count()) {
+    await expect(empty).toContainText(/Consultar Piso|Consultar Playa/);
+    await expect(page.locator('.labm-selecciones__pagination')).toHaveCount(0);
+  }
+
+  const touchContext = await browser.newContext({ hasTouch: true });
+  const touchPage = await touchContext.newPage();
+  try {
+    await touchPage.setViewportSize({ width: 320, height: 800 });
+    await touchPage.goto('/selecciones/');
+    const touchMenuToggle = touchPage.getByRole('button', { name: /abrir men/i });
+    if (await touchMenuToggle.isVisible()) {
+      await touchMenuToggle.click();
+    }
+    const touchToggle = touchPage.getByRole('button', { name: /submen[uú] de selecciones/i });
+    const touchBox = await touchToggle.boundingBox();
+    expect(touchBox).not.toBeNull();
+    await touchPage.touchscreen.tap(touchBox!.x + touchBox!.width / 2, touchBox!.y + touchBox!.height / 2);
+    await expect(touchToggle).toHaveAttribute('aria-expanded', 'true');
+  } finally {
+    await touchContext.close();
+  }
+
+  const noJavaScript = await browser.newContext({ javaScriptEnabled: false });
+  const noJavaScriptPage = await noJavaScript.newPage();
+  try {
+    await noJavaScriptPage.goto('/selecciones/?modalidad=Piso&pagina=999');
+    await expect(noJavaScriptPage.getByRole('heading', { level: 1 })).toHaveText('Piso');
+    await expect(noJavaScriptPage.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
+  } finally {
+    await noJavaScript.close();
+  }
+});
+
+test('4.4 Selecciones conserva contraste y ausencia de desborde al 200% en cinco anchos', async ({ page }) => {
+  for (const width of targetWidths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/selecciones/?modalidad=Piso');
+    await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    const focusTarget = page.locator('[data-labm-listado="selecciones"] select, [data-labm-listado="selecciones"] a').first();
+    await focusTarget.focus();
+    await expect(page.locator(':focus-visible')).toHaveCount(1);
+    expect(await focusTarget.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid');
+    const results = await new AxeBuilder({ page }).include('[data-labm-listado="selecciones"]').analyze();
+    expect(results.violations).toEqual([]);
   }
 });
 
