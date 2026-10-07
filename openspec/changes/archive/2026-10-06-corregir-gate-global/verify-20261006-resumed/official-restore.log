@@ -1,0 +1,99 @@
+docker.exe :  Container labm-wp-cli-run-bd404e6a126b Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...a126b Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-bd404e6a126b Created 
+mysqldump: Deprecated program name. It will be removed in a future release, use '/usr/bin/mariadb-dump' instead
+mysqldump: Deprecated program name. It will be removed in a future release, use '/usr/bin/mariadb-dump' instead
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+docker.exe :  labm-wordpress-1 Copying 
+labm-wordpress-1:/var/www/html/.content-sync/database-85283e855ec54762aa264626706d776f.sql to 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-ba8820da588f4ef0b0c95fe28432f786\payload\database.sql
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( labm-wordpress...ad\database.sql:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ labm-wordpress-1 Copied labm-wordpress-1:/var/www/html/.content-sync/database-85283e855ec54762aa264626706d776f.sql to 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-ba8820da588f4ef0b0c95fe28432f786\payload\database.sql
+docker.exe :  labm-wordpress-1 Copying labm-wordpress-1:/var/www/html/wp-content/uploads/. to 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-ba8820da588f4ef0b0c95fe28432f786\payload\uploads
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( labm-wordpress...payload\uploads:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ labm-wordpress-1 Copied labm-wordpress-1:/var/www/html/wp-content/uploads/. to 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-ba8820da588f4ef0b0c95fe28432f786\payload\uploads
+docker.exe :  labm-wordpress-1 Copying 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-0bc7885437d4448da4c07ba3ede8a190\database.sql to 
+labm-wordpress-1:/var/www/html/.content-sync/import-a93629c8d7d34023b9713594755da680.sql
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( labm-wordpress...594755da680.sql:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ labm-wordpress-1 Copied 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-0bc7885437d4448da4c07ba3ede8a190\database.sql to 
+labm-wordpress-1:/var/www/html/.content-sync/import-a93629c8d7d34023b9713594755da680.sql
+docker.exe :  Container labm-wp-cli-run-7c5f5aa66ef6 Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...66ef6 Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-7c5f5aa66ef6 Created 
+mysql: Deprecated program name. It will be removed in a future release, use '/usr/bin/mariadb' instead
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+docker.exe :  Container labm-wp-cli-run-4f542795ab56 Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...5ab56 Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-4f542795ab56 Created 
+docker.exe :  Container labm-wp-cli-run-44448d7fbb91 Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...fbb91 Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-44448d7fbb91 Created 
+docker.exe :  labm-wordpress-1 Copying 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-0bc7885437d4448da4c07ba3ede8a190\uploads\.\ to 
+labm-wordpress-1:/var/www/html/wp-content/uploads
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( labm-wordpress...content/uploads:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ labm-wordpress-1 Copied 
+C:\Users\rduuqe\AppData\Local\Temp\labm-content-sync-0bc7885437d4448da4c07ba3ede8a190\uploads\.\ to 
+labm-wordpress-1:/var/www/html/wp-content/uploads
+docker.exe :  Container labm-wp-cli-run-a4dabde95e4f Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...95e4f Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-a4dabde95e4f Created 
+docker.exe :  Container labm-wp-cli-run-4d6da72615ea Creating 
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\content-sync.ps1: 76 Carácter: 13
++             & docker @Arguments
++             ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm...615ea Creating :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-wp-cli-run-4d6da72615ea Created 
+Respaldo restaurado: C:\Users\rduuqe\Documents\BalonManoAnt\.content-sync\backups\backup-manual-20261007T004758902Z-rduuqe-RDUUQE.zip. Respaldo del estado reemplazado: Respaldo creado y verificado: C:\Users\rduuqe\Documents\BalonManoAnt\.content-sync\backups\backup-pre-restore-20261007T011358832Z-rduuqe-RDUUQE.zip C:\Users\rduuqe\Documents\BalonManoAnt\.content-sync\backups\backup-pre-restore-20261007T011358832Z-rduuqe-RDUUQE.zip

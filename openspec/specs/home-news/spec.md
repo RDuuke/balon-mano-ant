@@ -47,8 +47,24 @@ La sección MUST mostrar la primera noticia como destacada y hasta tres noticias
 - ENTONCES no se emite un CTA roto y las noticias conservan enlaces válidos
 
 ### Requirement: Metadatos, medios y adaptación
+Cada noticia MUST conservar título, categoría y fecha semántica cuando estén disponibles. Su imagen MUST priorizar la destacada válida, después un medio editorial permitido y finalmente un respaldo institucional seguro coherente con el diseño vigente. El respaldo MUST NOT sugerir una imagen específica de la noticia ni exponer medios restringidos.
 
-Cada pieza MUST exponer título, categoría y fecha semántica. La destacada y las laterales SHOULD mostrar imagen; ante su ausencia MUST existir un fallback no engañoso. La sección MUST adaptarse sin scroll horizontal y conservar orden de lectura y foco visibles.
+La secci?n MUST adaptarse sin scroll horizontal y conservar orden de lectura y foco visibles.
+
+#### Scenario: Imagen destacada válida
+- DADO una noticia pública con destacada válida y medio alternativo
+- CUANDO aparece en portada como destacada o lateral
+- ENTONCES usa su destacada y conserva metadatos y enlace al detalle.
+
+#### Scenario: Destacada ausente
+- DADO una noticia pública sin destacada y con medio editorial permitido
+- CUANDO se presenta
+- ENTONCES usa ese medio; si tampoco existe, presenta el respaldo institucional seguro.
+
+#### Scenario: Medio inválido o restringido
+- DADO referencias de medios inexistentes, inseguras o no públicas
+- CUANDO se presenta la noticia
+- ENTONCES no expone esas referencias ni imágenes rotas y conserva texto y navegación con respaldo seguro.
 
 #### Scenario: Datos editoriales completos
 

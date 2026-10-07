@@ -1,0 +1,58 @@
+{
+  "executed": [
+    {
+      "id": "docker-diagnostic",
+      "outcome": "environment_failure",
+      "exit_status": 1,
+      "command": "docker ps -a; docker info; docker stats --no-stream; docker events --filter event=oom",
+      "evidence": "diagnostic.md"
+    },
+    {
+      "id": "canonical-integrity",
+      "outcome": "PASS",
+      "sha256": "ffe9c63b752090ec7d53c8b3822ea70041c9e3e6eb3dfffd7f0a3188cf6e045e",
+      "version": "20261001T194755441Z-rduuqe-RDUUQE"
+    }
+  ],
+  "reused": [],
+  "pending": [
+    {
+      "id": "composer-test",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "wordpress-integration",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "php-coverage-global",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "composer-lint",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "composer-analyse",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "browser-full",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "scenario-evidence",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    },
+    {
+      "id": "persisted-state-validation",
+      "reason": "Docker unavailable and/or historical provenance insufficient; not a demonstrated current code defect"
+    }
+  ],
+  "invalidation": [
+    {
+      "id": "historical-evidence",
+      "reason": "Report 2026-10-05 disagrees with summary/logs timestamped 2026-10-01; no historical input hash manifest/runtime identity. Historical results retained, not accepted as current PASS."
+    }
+  ]
+}

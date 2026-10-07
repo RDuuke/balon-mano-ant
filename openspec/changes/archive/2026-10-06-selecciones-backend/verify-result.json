@@ -1,0 +1,151 @@
+{
+  "status": "ok",
+  "executive_summary": "Selecciones12/12COMPLIANT; evidencia vigente reutilizada de integracion176/1895,cobertura82.74 y calidad/gatefocal aprobados. Sin nuevas pruebas ni persistenciaWP.",
+  "artifacts": [
+    {
+      "name": "verify_report",
+      "path": "openspec/changes/selecciones-backend/verify-report.md",
+      "type": "markdown"
+    },
+    {
+      "name": "reuse_evidence",
+      "path": "openspec/changes/selecciones-backend/verify-reuse-evidence.json",
+      "type": "json"
+    },
+    {
+      "name": "historical_report",
+      "path": "openspec/changes/selecciones-backend/verify-report-before-reuse-20261006.md",
+      "type": "markdown"
+    },
+    {
+      "name": "status",
+      "path": "openspec/changes/.status.yaml",
+      "type": "yaml"
+    },
+    {
+      "name": "execution_log",
+      "path": "openspec/changes/selecciones-backend/.execution-log.md",
+      "type": "markdown"
+    }
+  ],
+  "next_recommended": "ARCHIVE",
+  "risks": [
+    "TDDadvisory documental: 1.1, 3.1, 3.2, 3.3, 4.1, 4.2; no bloqueante",
+    "Skill testing opcional ausente; no bloqueante"
+  ],
+  "skill_resolution": "injected",
+  "verification_summary": {
+    "executed": [],
+    "reused": [
+      {
+        "id": "selection:test_current_version_repairs_selection_capabilities_additively",
+        "status": "PASS",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/integration-coverage.log",
+        "suite": "WordPress runtime",
+        "scope": "Metodo incluido en176PASS; no se atribuyen431aserciones focales historicas a la ejecucion actual"
+      },
+      {
+        "id": "selection:test_selection_editorial_fields_and_extensible_terms_through_rest",
+        "status": "PASS",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/integration-coverage.log",
+        "suite": "WordPress runtime",
+        "scope": "Metodo incluido en176PASS; no se atribuyen431aserciones focales historicas a la ejecucion actual"
+      },
+      {
+        "id": "selection:test_selection_detail_metadata_rest_sanitization_and_authorization",
+        "status": "PASS",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/integration-coverage.log",
+        "suite": "WordPress runtime",
+        "scope": "Metodo incluido en176PASS; no se atribuyen431aserciones focales historicas a la ejecucion actual"
+      },
+      {
+        "id": "selection:test_selection_public_rest_excludes_restricted_content",
+        "status": "PASS",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/integration-coverage.log",
+        "suite": "WordPress runtime",
+        "scope": "Metodo incluido en176PASS; no se atribuyen431aserciones focales historicas a la ejecucion actual"
+      },
+      {
+        "id": "composer-test",
+        "status": "PASS",
+        "exit": 0,
+        "command": "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 test",
+        "start": "2026-10-06T19:49:37.1936271-05:00",
+        "end": "2026-10-06T19:49:39.7139434-05:00",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/composer-test.log"
+      },
+      {
+        "id": "composer-lint",
+        "status": "PASS",
+        "exit": 0,
+        "command": "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint",
+        "start": "2026-10-06T19:49:39.7381779-05:00",
+        "end": "2026-10-06T19:49:44.7138341-05:00",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/composer-lint.log"
+      },
+      {
+        "id": "composer-analyse",
+        "status": "PASS",
+        "exit": 0,
+        "command": "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress",
+        "start": "2026-10-06T19:49:44.7694633-05:00",
+        "end": "2026-10-06T19:50:27.2812258-05:00",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/composer-analyse.log"
+      },
+      {
+        "id": "wordpress-integration",
+        "status": "PASS",
+        "tests": 176,
+        "assertions": 1895,
+        "exit": 0,
+        "start": "2026-10-07T00:53:24.497165883Z",
+        "end": "2026-10-07T00:54:00.495199411Z",
+        "command": "docker run [montajes/env documentados] --entrypoint php labm-coverage:php8.3 -d pcov.enabled=1 -d pcov.directory=/wordpress/wp-content /app/vendor/bin/phpunit -c phpunit.integration.xml.dist --coverage-clover=/app/openspec/changes/corregir-gate-global/verify-20261006-resumed/clover.xml",
+        "args": [
+          "-d",
+          "pcov.enabled=1",
+          "-d",
+          "pcov.directory=/wordpress/wp-content",
+          "/app/vendor/bin/phpunit",
+          "-c",
+          "phpunit.integration.xml.dist",
+          "--coverage-clover=/app/openspec/changes/corregir-gate-global/verify-20261006-resumed/clover.xml"
+        ],
+        "image": "sha256:fe68176903e0d5ff9c6b5191654d623c0acea7282b7473f427d3af049f370105",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/integration-coverage.log"
+      },
+      {
+        "id": "php-coverage-global",
+        "status": "PASS",
+        "percentage": 82.74,
+        "covered": 2334,
+        "statements": 2821,
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/clover.xml"
+      },
+      {
+        "id": "shared-gate-browser-authorized",
+        "status": "PASS",
+        "scope": "18focales del gate archivado; no suite completa ni18pruebas especificas de Selecciones",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/individual-check-results.json"
+      },
+      {
+        "id": "persisted-state-validation",
+        "status": "PASS",
+        "evidence": "openspec/changes/archive/2026-10-06-corregir-gate-global/verify-20261006-resumed/persistence-audit.json"
+      }
+    ],
+    "pending": [],
+    "invalidation": [
+      {
+        "id": "historic-coverage-74.10",
+        "status": "superseded",
+        "reason": "Cobertura global compatible actual82.74%,2334/2821; no suma de subsets"
+      },
+      {
+        "id": "historic-browser-incomplete",
+        "status": "superseded",
+        "reason": "Dependencia gate aprobada y archivada con criterio focal autorizado; interrupcion anterior nuncaPASS"
+      }
+    ]
+  }
+}

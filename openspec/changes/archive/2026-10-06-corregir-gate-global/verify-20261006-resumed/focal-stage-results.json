@@ -1,0 +1,44 @@
+[
+    {
+        "id":  "browser-focal-desktop",
+        "container":  "labm-verify-20261006-focal-desktop",
+        "start":  "2026-10-06T20:11:44.3565118-05:00",
+        "end":  "2026-10-06T20:12:45.7189356-05:00",
+        "exit":  0,
+        "oom":  false,
+        "project":  "desktop-1024",
+        "expected":  14,
+        "filter":  "Nosotros presenta integrantes|Nosotros filtros|Nosotros anuncia|Documentos limpia|3\\.2 actualidad ofrece|3\\.4 documentos ofrece|1\\.2 actualidad reproduce|3\\.1 contraste|6\\.2 Documentos|detalle de actualidad|3\\.3 no hay desborde|ultimas noticias conserva medios cargados|inicio responde",
+        "command":  "docker run -d --name labm-verify-20261006-focal-desktop --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -e PLAYWRIGHT_JSON_OUTPUT_NAME=/app/openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-desktop-results.json -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 pnpm exec playwright test tests/e2e/public-experience.spec.ts tests/e2e/home.spec.ts --grep Nosotros presenta integrantes|Nosotros filtros|Nosotros anuncia|Documentos limpia|3\\.2 actualidad ofrece|3\\.4 documentos ofrece|1\\.2 actualidad reproduce|3\\.1 contraste|6\\.2 Documentos|detalle de actualidad|3\\.3 no hay desborde|ultimas noticias conserva medios cargados|inicio responde --project desktop-1024 --workers=1 --timeout=120000 --global-timeout=360000 --reporter=list,json --output=openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-desktop-output",
+        "json":  "focal-desktop-results.json",
+        "log":  "focal-desktop.log"
+    },
+    {
+        "id":  "browser-focal-mobile",
+        "container":  "labm-verify-20261006-focal-mobile",
+        "start":  "2026-10-06T20:12:46.1806757-05:00",
+        "end":  "2026-10-06T20:13:16.9715444-05:00",
+        "exit":  0,
+        "oom":  false,
+        "project":  "mobile-320",
+        "expected":  3,
+        "filter":  "Contacto anuncia|3\\.3 no hay desborde|detalle de actualidad",
+        "command":  "docker run -d --name labm-verify-20261006-focal-mobile --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -e PLAYWRIGHT_JSON_OUTPUT_NAME=/app/openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-mobile-results.json -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 pnpm exec playwright test tests/e2e/contact.spec.ts tests/e2e/public-experience.spec.ts --grep Contacto anuncia|3\\.3 no hay desborde|detalle de actualidad --project mobile-320 --workers=1 --timeout=120000 --global-timeout=180000 --reporter=list,json --output=openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-mobile-output",
+        "json":  "focal-mobile-results.json",
+        "log":  "focal-mobile.log"
+    },
+    {
+        "id":  "browser-focal-pdf",
+        "container":  "labm-verify-20261006-focal-pdf",
+        "start":  "2026-10-06T20:13:17.4111075-05:00",
+        "end":  "2026-10-06T20:13:48.2083530-05:00",
+        "exit":  0,
+        "oom":  false,
+        "project":  "tablet-768",
+        "expected":  1,
+        "filter":  "E1 reemplaza",
+        "command":  "docker run -d --name labm-verify-20261006-focal-pdf --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -e PLAYWRIGHT_JSON_OUTPUT_NAME=/app/openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-pdf-results.json -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_browser_node_modules:/app/node_modules -v labm_pnpm_store:/pnpm/store -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 pnpm exec playwright test tests/e2e/document-admin.spec.ts --grep E1 reemplaza --project tablet-768 --workers=1 --timeout=120000 --global-timeout=180000 --reporter=list,json --output=openspec/changes/corregir-gate-global/verify-20261006-resumed/focal-pdf-output",
+        "json":  "focal-pdf-results.json",
+        "log":  "focal-pdf.log"
+    }
+]

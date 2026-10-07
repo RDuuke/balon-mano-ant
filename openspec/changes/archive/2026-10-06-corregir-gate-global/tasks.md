@@ -40,4 +40,4 @@ Cada lote sigue RED→GREEN→REFACTOR genuino, registrando comandos/resultados 
 
 ## Fase 7: cierre
 - [x] 7.1 Limpiar/restaurar recursos propios; si persistencia cambió, ejecutar `scripts/content-sync.ps1` oficial y verificar versión/hash/exclusiones; comprobar LF modificados.
-- [x] 7.2 Ejecutar `scripts/gate.ps1 -IncludeBrowser` íntegro; registrar cobertura fresca y todas las etapas en `verify-report.md`; emitir handoff sin archivar cambios ajenos.
+- [x] 7.2 Aplicar el criterio browser focal de la SPEC-FIX aprobada en `specs/calidad-seguridad/spec.md`: checklist de fallos históricos y pruebas afectadas con mapping y PASS real actual o reutilizado válido, sin exigir las 220 pruebas; conservar cobertura PHP fresca ≥80 % y demás etapas PASS válidas sin repetirlas, registrar evidencia en `verify-report.md` y emitir handoff sin archivar cambios ajenos.

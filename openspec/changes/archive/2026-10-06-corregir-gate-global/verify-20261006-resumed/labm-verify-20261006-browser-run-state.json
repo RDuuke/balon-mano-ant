@@ -1,0 +1,32 @@
+{
+    "name":  "labm-verify-20261006-browser-run",
+    "image":  "sha256:acde47b36f9ef9839996745e34c896f4182eadaaec1f3cc7c9003faac963360f",
+    "state":  {
+                  "Status":  "exited",
+                  "Running":  false,
+                  "Paused":  false,
+                  "Restarting":  false,
+                  "OOMKilled":  false,
+                  "Dead":  false,
+                  "Pid":  0,
+                  "ExitCode":  1,
+                  "Error":  "",
+                  "StartedAt":  "2026-10-07T00:58:46.98015457Z",
+                  "FinishedAt":  "2026-10-07T01:03:06.27555621Z"
+              },
+    "args":  {
+                 "value":  [
+                               "pnpm",
+                               "exec",
+                               "playwright",
+                               "test",
+                               "--workers=1",
+                               "--timeout=120000",
+                               "--global-timeout=1200000",
+                               "--reporter=line,json",
+                               "--output=openspec/changes/corregir-gate-global/verify-20261006-resumed/browser-output"
+                           ],
+                 "Count":  9
+             },
+    "captured":  "2026-10-06T20:03:17.3626893-05:00"
+}

@@ -1,0 +1,110 @@
+{
+  "status": "warning",
+  "executive_summary": "Browser detenido por cambio de alcance autorizado; calidad/integracion/cobertura PASS conservados. SPEC-FIX y VERIFY focal pendientes.",
+  "artifacts": [
+    "verify-report.md",
+    ".status.yaml",
+    ".execution-log.md",
+    "verify-20261006-resumed/verification-summary.json",
+    "verify-20261006-resumed/labm-verify-20261006-browser-run-state.json",
+    "verify-20261006-resumed/labm-verify-20261006-browser-run.log"
+  ],
+  "next_recommended": "SPEC-FIX, luego VERIFY focal",
+  "risks": [
+    "Estado WordPress temporal; restore oficial pendiente",
+    "Contacto tuvo mantenimiento transitorio; diagnosticar antes focal",
+    "No aceptar suite parcial como cumplimiento full; specs/config sin modificar"
+  ],
+  "skill_resolution": "injected",
+  "verification_summary": {
+    "executed": [
+      {
+        "id": "wordpress-integration",
+        "status": "PASS",
+        "tests": 176,
+        "assertions": 1895,
+        "exit": 0,
+        "evidence": "integration-coverage.log"
+      },
+      {
+        "id": "php-coverage-global",
+        "status": "PASS",
+        "covered": 2334,
+        "statements": 2821,
+        "percentage": 82.74,
+        "exit": 0,
+        "evidence": "clover.xml"
+      },
+      {
+        "id": "browser-start-initial",
+        "status": "environment_failure",
+        "exit": 1,
+        "evidence": "labm-verify-20261006-browser.log"
+      },
+      {
+        "id": "browser-deps",
+        "status": "PASS",
+        "exit": 0,
+        "duration_seconds": 150.46,
+        "evidence": "labm-verify-20261006-browser-deps-state.json"
+      },
+      {
+        "id": "browser-full",
+        "status": "cancelled_by_user_scope_change",
+        "exit": 1,
+        "signal": "SIGTERM",
+        "oom_killed": false,
+        "progress_started": 35,
+        "total_planned": 220,
+        "evidence": [
+          "labm-verify-20261006-browser-run-state.json",
+          "labm-verify-20261006-browser-run.log"
+        ],
+        "reason": "Usuario aprobo explicitamente acotar y detener; no defecto de producto ni PASS de suite"
+      }
+    ],
+    "reused": [
+      {
+        "id": "composer-test",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-test.log",
+        "validity": "current manifest matches relevant quality inputs; stage independently completed"
+      },
+      {
+        "id": "composer-lint",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-lint.log",
+        "validity": "current manifest matches relevant quality inputs; stage independently completed"
+      },
+      {
+        "id": "composer-analyse",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-analyse.log",
+        "validity": "current manifest matches relevant quality inputs; stage independently completed"
+      }
+    ],
+    "pending": [
+      {
+        "id": "spec-fix-browser-scope",
+        "reason": "Requisito/config full browser aun intactos; root debe delegar SPEC-FIX especifico"
+      },
+      {
+        "id": "browser-focal",
+        "reason": "Seleccion failed/affected pendiente tras SPEC-FIX; no nuevas pruebas ejecutadas"
+      },
+      {
+        "id": "persisted-state-validation",
+        "reason": "Opciones/fixtures temporales preservados para siguiente tanda; restore oficial obligatorio al concluir"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "browser-start-initial",
+        "reason": "CLI absent in Linux dependency volume; setup with frozen lockfile is concrete remedy before new run"
+      }
+    ]
+  }
+}

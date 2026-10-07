@@ -33,12 +33,14 @@ Read openspec/changes/.status.yaml.
 
 If .status.yaml is missing:
 - Infer phase from existing artifacts using the same fallback table as flow-nea-continue.
-- If verify-report.md exists for this change, create .status.yaml with phase: VERIFY and proceed.
+- If verify-report.md exists for this change, infer phase VERIFY; proceed only after the evidence guard below succeeds.
 - Otherwise, create .status.yaml with the inferred phase and stop with status `warning`, reporting the inferred state.
 
 If .status.yaml exists:
 - If `phase` is not `VERIFY`, stop and return status `failed` with message: "Cannot archive: last completed phase is '{phase}', expected VERIFY. Run /flow-nea-verify first."
 - If `awaiting_approval: true`, stop and return status `failed` with message: "Cannot archive: proposal is pending user approval."
+
+Before archive mutations, validate required evidence against current relevant inputs under flow-nea-verify Step 0. Accept valid accumulated PASS without rerunning tests. Failed, required pending/interrupted or invalidated checks and unresolved explicit global obligations block ARCHIVE; return check IDs for targeted resolution. Phase or report existence alone is insufficient.
 
 ### Step 1: Sync Delta Specs to Main Specs (openspec mode)
 
@@ -83,7 +85,7 @@ detailed_report (optional), artifacts, next_recommended, risks.
 
 - Never archive with critical verify issues.
 - Always read .status.yaml before archiving; if missing, infer from artifacts.
-- Reject archive only if inferred phase is not VERIFY and verify-report.md is absent.
+- Reject archive if required evidence is absent, failed, pending or invalid; never run a full gate merely to archive.
 - Always sync specs before archiving.
 - Preserve requirements not mentioned in the delta.
 - Use ISO date format for archive folder prefix.

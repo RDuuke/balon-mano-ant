@@ -1,0 +1,30 @@
+{
+    "status":  "PASS",
+    "timestamp":  "2026-10-06T20:26:59.9577215-05:00",
+    "current_input_hashes":  114,
+    "evidence_hashes":  8,
+    "matrix_compliant":  12,
+    "tasks_complete":  10,
+    "spec_requirements_added":  4,
+    "original_artifact_sha256":  {
+                                     "apply-progress.md":  "59be9b1064611b9ca0a4d1dcbc885ea157b4a3512655920e2ec20bb56b67e24b",
+                                     "verify-final-runtime-clean-audit.json":  "348e005ba9c0b468fa3734ede26cb3bf01e846a00d0c3aa56a9c3b1851fd91fd",
+                                     "exploration.md":  "171e3f8e32299f3f3ade31898545a18c0c65a3b8cd7a394dbc3dbc31c2d5924d",
+                                     "specs\\arquitectura-cms\\spec.md":  "b63e97e098b3a481ad9b41397e4a03447afe2e2f50808f42979e8fa8c82bb3b5",
+                                     ".paused-state.yaml":  "3a687d3f4b6cab321a550f7db47e27b98f22a303a22334a388ec4d48ffe8ef90",
+                                     "fix-report-1.md":  "967c076345e2e07fc45284a240f224f70da22be48bcc0000ab1994f157a1a63f",
+                                     "proposal.md":  "a17770b9d5dfa16d69dfc499142bb4ade69c909ab368d985d28d17921b318a7d",
+                                     "verify-report.md":  "f87b0d0c1ee0409064c9f5b49a1e5be5917cefcf037b4287a3e6dfecb653812c",
+                                     "verify-runtime-clean-audit.json":  "43923ad53f0cb9fbff1c7e40caaadf4763489b345ba763b869392ab9c41005db",
+                                     ".execution-log.md":  "eccc06ae7bcf218504dc36930b66654436ef191c05b2d7dc352da48ba0d68f46",
+                                     "verify-result.json":  "be8ef609eb83878d80a52d806d561aeff081de6ae0caa3e57de48c1d747ef285",
+                                     "design.md":  "bc963e113b6b50db271cc0b34d52c78fe0c182c1474d3d1fe6825b98fe5a2b1b",
+                                     "verify-report-before-reuse-20261006.md":  "60450daab24ca86e3690c86f5493ad30f28fd962aa25153670f977d58fa80a01",
+                                     "tasks.md":  "1decf5cf6b7f567465a053f781ad5a3bfb9335678c22e8ceb95b5c66b70bfaee",
+                                     "verify-final-runtime-audit.json":  "335944f75cb96178319d3d37af09332ed89d4583a6d3101260578b5c538ff881",
+                                     "fix-report-2.md":  "fc2c7a40319460b05de574e0260dc0745e7a9a8de19934a52d1347e2669ab3ba",
+                                     "verify-runtime-audit.json":  "3845a16b0cc4248b8ca15e4dba3b8c54ab9319aa33251de277cb188e403fe287",
+                                     "verify-reuse-evidence.json":  "6ed6571f4258de1d61d92466c8f11768155a7f74f036c34ba746ff1d32d03e63"
+                                 },
+    "evidence_preserved_after_move":  true
+}

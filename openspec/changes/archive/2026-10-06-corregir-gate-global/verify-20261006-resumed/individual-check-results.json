@@ -1,0 +1,200 @@
+[
+  {
+    "id": "browser-focal-desktop:ultimas noticias conserva medios cargados y metadatos semanticos",
+    "stage": "browser-focal-desktop",
+    "title": "ultimas noticias conserva medios cargados y metadatos semanticos",
+    "file": "home.spec.ts",
+    "line": 6,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 2288,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:inicio responde y no presenta violaciones axe automaticas",
+    "stage": "browser-focal-desktop",
+    "title": "inicio responde y no presenta violaciones axe automaticas",
+    "file": "home.spec.ts",
+    "line": 239,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 3402,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:Nosotros presenta integrantes editables, filtrables y responsive",
+    "stage": "browser-focal-desktop",
+    "title": "Nosotros presenta integrantes editables, filtrables y responsive",
+    "file": "public-experience.spec.ts",
+    "line": 169,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 2861,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad",
+    "stage": "browser-focal-desktop",
+    "title": "3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad",
+    "file": "public-experience.spec.ts",
+    "line": 369,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 1500,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:3.4 documentos ofrece filtros, estado vacío y composición responsive",
+    "stage": "browser-focal-desktop",
+    "title": "3.4 documentos ofrece filtros, estado vacío y composición responsive",
+    "file": "public-experience.spec.ts",
+    "line": 393,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 1286,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:3.3 no hay desborde, axe pasa y reduced motion se respeta",
+    "stage": "browser-focal-desktop",
+    "title": "3.3 no hay desborde, axe pasa y reduced motion se respeta",
+    "file": "public-experience.spec.ts",
+    "line": 426,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 7307,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:3.1 contraste, estados y foco cumplen AA en Actualidad a cinco viewports",
+    "stage": "browser-focal-desktop",
+    "title": "3.1 contraste, estados y foco cumplen AA en Actualidad a cinco viewports",
+    "file": "public-experience.spec.ts",
+    "line": 439,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 5563,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:6.2 Documentos conserva composición y texto largo sin desborde",
+    "stage": "browser-focal-desktop",
+    "title": "6.2 Documentos conserva composición y texto largo sin desborde",
+    "file": "public-experience.spec.ts",
+    "line": 495,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 2740,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:1.2 actualidad reproduce las regiones Pencil, filtros y navegación responsive",
+    "stage": "browser-focal-desktop",
+    "title": "1.2 actualidad reproduce las regiones Pencil, filtros y navegación responsive",
+    "file": "public-experience.spec.ts",
+    "line": 544,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 3060,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:detalle de actualidad mantiene contenido nativo y compartir accesible",
+    "stage": "browser-focal-desktop",
+    "title": "detalle de actualidad mantiene contenido nativo y compartir accesible",
+    "file": "public-experience.spec.ts",
+    "line": 625,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 5240,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:Nosotros filtros por teclado y privacidad con JS true",
+    "stage": "browser-focal-desktop",
+    "title": "Nosotros filtros por teclado y privacidad con JS true",
+    "file": "public-experience.spec.ts",
+    "line": 709,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 1676,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:Nosotros filtros por teclado y privacidad con JS false",
+    "stage": "browser-focal-desktop",
+    "title": "Nosotros filtros por teclado y privacidad con JS false",
+    "file": "public-experience.spec.ts",
+    "line": 709,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 2309,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:Nosotros anuncia y restablece un grupo vacío al filtrar localmente",
+    "stage": "browser-focal-desktop",
+    "title": "Nosotros anuncia y restablece un grupo vacío al filtrar localmente",
+    "file": "public-experience.spec.ts",
+    "line": 734,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 1007,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-desktop:Documentos limpia ambas regiones por teclado y restablece todos los controles",
+    "stage": "browser-focal-desktop",
+    "title": "Documentos limpia ambas regiones por teclado y restablece todos los controles",
+    "file": "public-experience.spec.ts",
+    "line": 747,
+    "project": "desktop-1024",
+    "status": "PASS",
+    "duration_ms": 1683,
+    "report": "focal-desktop-results.json"
+  },
+  {
+    "id": "browser-focal-mobile:Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa",
+    "stage": "browser-focal-mobile",
+    "title": "Contacto anuncia el envío dentro del botón y evita solicitudes repetidas mientras procesa",
+    "file": "contact.spec.ts",
+    "line": 31,
+    "project": "mobile-320",
+    "status": "PASS",
+    "duration_ms": 2302,
+    "report": "focal-mobile-results.json"
+  },
+  {
+    "id": "browser-focal-mobile:3.3 no hay desborde, axe pasa y reduced motion se respeta",
+    "stage": "browser-focal-mobile",
+    "title": "3.3 no hay desborde, axe pasa y reduced motion se respeta",
+    "file": "public-experience.spec.ts",
+    "line": 426,
+    "project": "mobile-320",
+    "status": "PASS",
+    "duration_ms": 5702,
+    "report": "focal-mobile-results.json"
+  },
+  {
+    "id": "browser-focal-mobile:detalle de actualidad mantiene contenido nativo y compartir accesible",
+    "stage": "browser-focal-mobile",
+    "title": "detalle de actualidad mantiene contenido nativo y compartir accesible",
+    "file": "public-experience.spec.ts",
+    "line": 625,
+    "project": "mobile-320",
+    "status": "PASS",
+    "duration_ms": 5036,
+    "report": "focal-mobile-results.json"
+  },
+  {
+    "id": "browser-focal-pdf:E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección",
+    "stage": "browser-focal-pdf",
+    "title": "E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección",
+    "file": "document-admin.spec.ts",
+    "line": 196,
+    "project": "tablet-768",
+    "status": "PASS",
+    "duration_ms": 13801,
+    "report": "focal-pdf-results.json"
+  }
+]

@@ -2,21 +2,23 @@
 
 ## ADDED Requirements
 
-### Requirement: Gate global íntegro y reproducible
-La aceptación MUST ejecutar el gate oficial completo con navegador, pruebas PHP e integración, estándares y análisis estático. MUST exigir cobertura PHP fresca de al menos 80 %, cero errores de estándares/análisis y pruebas satisfactorias sin omisiones derivadas de fallos. MUST NOT reducir umbrales, fuentes, suites ni garantías para obtener aprobación.
+### Requirement: Gate reproducible con navegador focal autorizado
+Solo para `corregir-gate-global`, la autorización explícita «Sí, acotar y detener la suite completa» MUST prevalecer sobre la exigencia de suite Playwright completa de `openspec/config.yaml` y los artefactos previos de este cambio. La aceptación browser MUST cubrir el checklist de pruebas históricamente fallidas y pruebas afectadas por las correcciones, sin exigir las 220 pruebas Playwright. Cada entrada MUST mapear fallo o cambio afectado, escenario/prueba y evidencia PASS real actual o reutilizada válida, identificando ejecución, resultado y vigencia respecto del código y entorno evaluados. MUST NOT omitir entradas por fallo ni atribuir PASS a pruebas no ejecutadas.
 
-#### Scenario: Ejecución completa satisfactoria
-- DADO entorno limpio y todas las herramientas disponibles
-- CUANDO se ejecuta el gate oficial completo
-- ENTONCES cada etapa aprueba y la evidencia identifica comandos, resultados y cobertura fresca mínima de 80 %.
+Pruebas PHP e integración, cobertura PHP fresca de al menos 80 % y cero errores de estándares/análisis MUST conservarse. Evidencias PASS válidas de builds, unitarias, lint y análisis MUST reutilizarse sin repetirlas; los resultados anteriores MUST permanecer intactos. Esta excepción solo acota navegador y MUST NOT reducir umbrales PHP, alterar fuentes/suites o extenderse a otros cambios.
+
+#### Scenario: Checklist focal satisfactorio
+- DADO checklist de fallos históricos y pruebas afectadas, con mapping y evidencia vigente
+- CUANDO se evalúa el cierre autorizado con navegador focal
+- ENTONCES todas sus entradas tienen PASS real trazable, se conservan las demás etapas PASS y la cobertura fresca mínima de 80 %, sin exigir 220 pruebas.
 
 #### Scenario: Exactamente el umbral
 - DADO cobertura fresca de 80 % y demás etapas satisfactorias
 - CUANDO se evalúa el gate
 - ENTONCES aprueba cobertura sin ampliar la conclusión a auditorías no realizadas.
 
-#### Scenario: Fallo, omisión o evidencia antigua
-- DADO una etapa fallida, omitida por fallo o cobertura de otra ejecución
+#### Scenario: Fallo, omisión o evidencia inválida
+- DADO una entrada focal fallida, sin mapping o sin evidencia vigente, una etapa requerida fallida o cobertura de otra ejecución
 - CUANDO se revisa la aceptación
 - ENTONCES falla y conserva el diagnóstico sin declarar el cambio completo.
 

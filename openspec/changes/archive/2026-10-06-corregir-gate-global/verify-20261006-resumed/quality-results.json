@@ -1,0 +1,26 @@
+[
+    {
+        "id":  "composer-test",
+        "start":  "2026-10-06T19:49:37.1936271-05:00",
+        "end":  "2026-10-06T19:49:39.7139434-05:00",
+        "exit":  0,
+        "command":  "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 test",
+        "log":  "composer-test.log"
+    },
+    {
+        "id":  "composer-lint",
+        "start":  "2026-10-06T19:49:39.7381779-05:00",
+        "end":  "2026-10-06T19:49:44.7138341-05:00",
+        "exit":  0,
+        "command":  "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint",
+        "log":  "composer-lint.log"
+    },
+    {
+        "id":  "composer-analyse",
+        "start":  "2026-10-06T19:49:44.7694633-05:00",
+        "end":  "2026-10-06T19:50:27.2812258-05:00",
+        "exit":  0,
+        "command":  "docker run --rm -v C:\\Users\\rduuqe\\Documents\\BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress",
+        "log":  "composer-analyse.log"
+    }
+]

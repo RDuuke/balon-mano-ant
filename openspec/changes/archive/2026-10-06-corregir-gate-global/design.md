@@ -2,7 +2,7 @@
 
 ## Enfoque técnico
 
-Lotes trazables a doce requisitos; preservar cambios anteriores y snapshots. Baseline: PHPUnit7fallos, cobertura73.47%, PHPCS35errores/68warnings, PHPStan1error, Playwright28fallos. Primero contratos autónomos, contraste y calidad; después cobertura por Clover. Dimensiones y Detalle requieren dependencias explícitas. Cierre: `scripts/gate.ps1 -IncludeBrowser` íntegro.
+Lotes trazables a doce requisitos; preservar cambios anteriores y snapshots. Baseline: PHPUnit7fallos, cobertura73.47%, PHPCS35errores/68warnings, PHPStan1error, Playwright28fallos. Primero contratos autónomos, contraste y calidad; después cobertura por Clover. Dimensiones y Detalle requieren dependencias explícitas. Cierre browser focal según la excepción específica de `specs/calidad-seguridad/spec.md`, autorizada con «Sí, acotar y detener la suite completa»; no se exige ejecutar las 220 pruebas Playwright. Conservar las demás etapas y sus resultados.
 
 ## Decisiones de arquitectura
 
@@ -49,9 +49,9 @@ El renderer actual de Detalle usa `the_content`, recoge galerías mediante filtr
 | Capa | Comprobación | Enfoque |
 |---|---|---|
 | PHPUnit/integración | Éxito, borde, error y recuperación | TDD strict RED/GREEN por tarea; cobertura fresca≥80 %. |
-| Playwright | Visibilidad, filtros, PDF, privacidad | Con/sin JS donde aplica; recursos propios con limpieza en `finally`. |
+| Playwright | Checklist de fallos históricos y pruebas afectadas por correcciones | Mapear fallo/cambio a escenario/prueba y evidencia PASS real actual o reutilizada válida con ejecución, resultado y vigencia de código/entorno; con/sin JS donde aplica y limpieza en `finally`. Sin exigir suite completa. |
 | Visual/accesibilidad | Contraste, foco, composición | Axe y mediciones aprobadas a320/768/1024/1200/1440px. |
-| Calidad | PHPCS/PHPStan y LF | Gate completo; documentar warnings restantes sin ocultarlos. |
+| Calidad | PHPCS/PHPStan y LF | Conservar exigencias y evidencias PASS válidas de builds, unitarias, lint y análisis sin repetirlas; documentar warnings restantes sin ocultarlos. |
 
 ## Migración y reversión
 

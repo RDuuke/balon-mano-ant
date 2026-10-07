@@ -1,0 +1,81 @@
+? Verifying lockfile against supply-chain policies (298 entries)...
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +297
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 297, reused 11, downloaded 0, added 0
+Progress: resolved 297, reused 26, downloaded 0, added 0
+Progress: resolved 297, reused 55, downloaded 0, added 0
+Progress: resolved 297, reused 79, downloaded 0, added 0
+Progress: resolved 297, reused 100, downloaded 0, added 0
+Progress: resolved 297, reused 135, downloaded 0, added 0
+✓ Lockfile passes supply-chain policies (298 entries in 8.7s)
+Progress: resolved 297, reused 167, downloaded 0, added 0
+Progress: resolved 297, reused 222, downloaded 0, added 0
+Progress: resolved 297, reused 290, downloaded 0, added 0
+Progress: resolved 297, reused 293, downloaded 0, added 6
+Progress: resolved 297, reused 293, downloaded 0, added 12
+Progress: resolved 297, reused 294, downloaded 0, added 16
+Progress: resolved 297, reused 296, downloaded 0, added 22
+Progress: resolved 297, reused 296, downloaded 0, added 25
+Progress: resolved 297, reused 296, downloaded 0, added 32
+Progress: resolved 297, reused 296, downloaded 0, added 37
+Progress: resolved 297, reused 296, downloaded 0, added 46
+Progress: resolved 297, reused 296, downloaded 0, added 53
+Progress: resolved 297, reused 296, downloaded 0, added 57
+Progress: resolved 297, reused 296, downloaded 0, added 60
+Progress: resolved 297, reused 296, downloaded 0, added 63
+Progress: resolved 297, reused 297, downloaded 0, added 66
+Progress: resolved 297, reused 297, downloaded 0, added 72
+Progress: resolved 297, reused 297, downloaded 0, added 80
+Progress: resolved 297, reused 297, downloaded 0, added 83
+Progress: resolved 297, reused 297, downloaded 0, added 89
+Progress: resolved 297, reused 297, downloaded 0, added 92
+Progress: resolved 297, reused 297, downloaded 0, added 93
+Progress: resolved 297, reused 297, downloaded 0, added 96
+Progress: resolved 297, reused 297, downloaded 0, added 101
+Progress: resolved 297, reused 297, downloaded 0, added 102
+Progress: resolved 297, reused 297, downloaded 0, added 103
+Progress: resolved 297, reused 297, downloaded 0, added 104
+Progress: resolved 297, reused 297, downloaded 0, added 105
+Progress: resolved 297, reused 297, downloaded 0, added 106
+Progress: resolved 297, reused 297, downloaded 0, added 112
+Progress: resolved 297, reused 297, downloaded 0, added 115
+Progress: resolved 297, reused 297, downloaded 0, added 120
+Progress: resolved 297, reused 297, downloaded 0, added 122
+Progress: resolved 297, reused 297, downloaded 0, added 128
+Progress: resolved 297, reused 297, downloaded 0, added 131
+Progress: resolved 297, reused 297, downloaded 0, added 142
+Progress: resolved 297, reused 297, downloaded 0, added 149
+Progress: resolved 297, reused 297, downloaded 0, added 154
+Progress: resolved 297, reused 297, downloaded 0, added 156
+Progress: resolved 297, reused 297, downloaded 0, added 160
+Progress: resolved 297, reused 297, downloaded 0, added 164
+Progress: resolved 297, reused 297, downloaded 0, added 171
+Progress: resolved 297, reused 297, downloaded 0, added 179
+Progress: resolved 297, reused 297, downloaded 0, added 195
+Progress: resolved 297, reused 297, downloaded 0, added 204
+Progress: resolved 297, reused 297, downloaded 0, added 208
+Progress: resolved 297, reused 297, downloaded 0, added 216
+Progress: resolved 297, reused 297, downloaded 0, added 236
+Progress: resolved 297, reused 297, downloaded 0, added 253
+Progress: resolved 297, reused 297, downloaded 0, added 263
+Progress: resolved 297, reused 297, downloaded 0, added 271
+Progress: resolved 297, reused 297, downloaded 0, added 287
+Progress: resolved 297, reused 297, downloaded 0, added 289
+Progress: resolved 297, reused 297, downloaded 0, added 291
+Progress: resolved 297, reused 297, downloaded 0, added 292
+Progress: resolved 297, reused 297, downloaded 0, added 293
+Progress: resolved 297, reused 297, downloaded 0, added 294
+Progress: resolved 297, reused 297, downloaded 0, added 295
+Progress: resolved 297, reused 297, downloaded 0, added 296
+Progress: resolved 297, reused 297, downloaded 0, added 297
+Progress: resolved 297, reused 297, downloaded 0, added 297, done
+
+devDependencies:
++ @axe-core/playwright 4.10.2
++ @lhci/cli 0.14.0
++ @playwright/test 1.54.1
++ lighthouse 12.1.0
+
+Done in 2m 30.1s using pnpm v11.17.0

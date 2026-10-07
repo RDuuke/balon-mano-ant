@@ -1,0 +1,127 @@
+{
+  "status": "ok",
+  "executive_summary": "18/18focalPASS bajoSPEC-FIX; calidad/integracionPASS conservados,coberturaglobal82.74%; restoreoficialPASS y canonico preservado.",
+  "artifacts": [
+    {
+      "name": "verify_report",
+      "path": "openspec/changes/corregir-gate-global/verify-report.md",
+      "type": "markdown"
+    },
+    {
+      "name": "status",
+      "path": "openspec/changes/.status.yaml",
+      "type": "yaml"
+    },
+    {
+      "name": "execution_log",
+      "path": "openspec/changes/corregir-gate-global/.execution-log.md",
+      "type": "markdown"
+    },
+    {
+      "name": "evidence",
+      "path": "openspec/changes/corregir-gate-global/verify-20261006-resumed/",
+      "type": "directory"
+    }
+  ],
+  "next_recommended": "ARCHIVE",
+  "risks": [
+    "TDDadvisory:11tareas sin encabezado individual RED/GREEN; no bloquea segunskill y autorizacion"
+  ],
+  "skill_resolution": "injected",
+  "verification_summary": {
+    "executed": [
+      {
+        "id": "browser-focal-desktop",
+        "status": "PASS",
+        "exit": 0,
+        "report": "focal-desktop-results.json",
+        "log": "focal-desktop.log",
+        "count": 14,
+        "project": "desktop-1024"
+      },
+      {
+        "id": "browser-focal-mobile",
+        "status": "PASS",
+        "exit": 0,
+        "report": "focal-mobile-results.json",
+        "log": "focal-mobile.log",
+        "count": 3,
+        "project": "mobile-320"
+      },
+      {
+        "id": "browser-focal-pdf",
+        "status": "PASS",
+        "exit": 0,
+        "report": "focal-pdf-results.json",
+        "log": "focal-pdf.log",
+        "count": 1,
+        "project": "tablet-768"
+      },
+      {
+        "id": "persisted-state-validation",
+        "status": "PASS",
+        "evidence": "persistence-audit.json",
+        "restore": "official-restore.log"
+      }
+    ],
+    "reused": [
+      {
+        "id": "composer-test",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-test.log",
+        "validity": "Independent completed stage; relevant source/lock/config hashes unchanged; image identity recorded"
+      },
+      {
+        "id": "composer-lint",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-lint.log",
+        "validity": "Independent completed stage; relevant source/lock/config hashes unchanged; image identity recorded"
+      },
+      {
+        "id": "composer-analyse",
+        "status": "PASS",
+        "exit": 0,
+        "evidence": "composer-analyse.log",
+        "validity": "Independent completed stage; relevant source/lock/config hashes unchanged; image identity recorded"
+      },
+      {
+        "id": "wordpress-integration",
+        "status": "PASS",
+        "tests": 176,
+        "assertions": 1895,
+        "exit": 0,
+        "evidence": "integration-coverage.log",
+        "validity": "Same current PHP/runtime/config/source inputs; official restore reinstates baseline state"
+      },
+      {
+        "id": "php-coverage-global",
+        "status": "PASS",
+        "percentage": 82.74,
+        "covered": 2334,
+        "statements": 2821,
+        "evidence": "clover.xml",
+        "validity": "Full configured instrumentation; source/config hashes unchanged; no subset aggregation"
+      }
+    ],
+    "pending": [],
+    "invalidation": [
+      {
+        "id": "browser-full",
+        "status": "cancelled_by_user_scope_change",
+        "reason": "Authorized scope change reconciled by SPEC-FIX; no suite PASS claimed and no partial-case PASS reused"
+      },
+      {
+        "id": "contact-maintenance",
+        "status": "superseded",
+        "reason": "Preflight HTTP200/no maintenance and exact failed mobile case now PASS"
+      },
+      {
+        "id": "browser-start-initial",
+        "status": "superseded",
+        "reason": "Missing CLI repaired with frozen-lockfile; focal reporters now complete and PASS"
+      }
+    ]
+  }
+}

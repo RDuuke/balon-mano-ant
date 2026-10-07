@@ -1,0 +1,14 @@
+PHPUnit 11.5.27 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.20 with PCOV 1.0.12
+Configuration: /app/phpunit.integration.xml.dist
+
+...............................................................  63 / 176 ( 35%)
+............................................................... 126 / 176 ( 71%)
+..................................................              176 / 176 (100%)
+
+Time: 00:34.525, Memory: 64.50 MB
+
+OK (176 tests, 1895 assertions)
+
+Generating code coverage report in Clover XML format ... done [00:00.114]

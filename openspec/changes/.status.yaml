@@ -1,8 +1,8 @@
 schema_version: "1.3"
-phase: VERIFY
-change: "corregir-gate-global"
+phase: ARCHIVE
+change: "selecciones-backend"
 awaiting_approval: false
-completed: false
+completed: true
 pending_tasks: []
-modified_artifacts: ["tasks.md", "apply-progress.md", "verify-report.md"]
-notes: "APPLY completo: 26/26 tareas del cambio marcadas. VERIFY no ok: summary.json registra compose, PHPUnit, cobertura, lint y analisis PASS, pero browser-portable FAIL exit137; no se archiva. Canonico preservado y opciones WordPress restauradas a localhost."
+modified_artifacts: []
+notes: "ARCHIVE completado:12/12COMPLIANT,10/10tareas; specs sincronizadas; evidencia vigente acumulada aceptada. Archivo: openspec/changes/archive/2026-10-06-selecciones-backend. TDD advisory no bloqueante."

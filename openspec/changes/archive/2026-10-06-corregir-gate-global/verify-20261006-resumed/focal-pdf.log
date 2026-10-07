@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ✓  1 [tablet-768] › tests/e2e/document-admin.spec.ts:196:7 › experiencia administrativa de documentos PDF › E1 reemplaza por biblioteca, guarda por HTTP clásico y reintenta sin reselección (13.8s)
+
+  1 passed (22.7s)

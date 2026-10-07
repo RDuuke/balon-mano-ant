@@ -2,7 +2,7 @@
 
 ## Intención
 
-Restablecer el gate completo tras VERIFY de Selecciones: siete fallos PHPUnit, cobertura 73.47 %, 35 errores PHPCS, un error PHPStan y 28 fallos Playwright. La exploración distingue contratos acoplados de defectos reales; Selecciones permanece VERIFY failed, FIX2/2.
+Restablecer el gate con aceptación browser focal según la SPEC-FIX aprobada en `specs/calidad-seguridad/spec.md` tras VERIFY de Selecciones: siete fallos PHPUnit, cobertura 73.47 %, 35 errores PHPCS, un error PHPStan y 28 fallos Playwright. La exploración distingue contratos acoplados de defectos reales; Selecciones permanece VERIFY failed, FIX2/2.
 
 ## Alcance
 
@@ -52,7 +52,7 @@ Revertir únicamente hunks de las rutas anteriores, conservando snapshots y camb
 
 ## Criterios verificables
 
-- [ ] `scripts/gate.ps1 -IncludeBrowser` verde completo; cobertura fresca ≥80 %; PHPCS/PHPStan sin errores.
-- [ ] Playwright sin omisiones causadas por fallos; contratos funcionales, privacidad y WCAG 2.2 AA íntegros.
+- [ ] Aceptación según la SPEC-FIX aprobada en `specs/calidad-seguridad/spec.md`: browser focal, cobertura PHP fresca ≥80 % y PHPCS/PHPStan sin errores; conservar las demás etapas y reutilizar sus PASS válidos sin repetirlas.
+- [ ] Checklist Playwright de fallos históricos y pruebas afectadas con mapping y PASS real actual o reutilizado válido, sin omisiones por fallos ni exigencia de las 220 pruebas; contratos funcionales, privacidad y WCAG 2.2 AA íntegros.
 - [ ] LF en archivos tocados; sincronización verificada si afecta persistencia.
 - [ ] Handoff documentado para reanudar VERIFY de Selecciones y flujo propio de Detalle, sin archivo automático.

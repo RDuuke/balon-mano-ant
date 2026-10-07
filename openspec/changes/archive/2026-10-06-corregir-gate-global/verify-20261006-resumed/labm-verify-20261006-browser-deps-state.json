@@ -1,0 +1,26 @@
+{
+    "name":  "labm-verify-20261006-browser-deps",
+    "image":  "sha256:acde47b36f9ef9839996745e34c896f4182eadaaec1f3cc7c9003faac963360f",
+    "state":  {
+                  "Status":  "exited",
+                  "Running":  false,
+                  "Paused":  false,
+                  "Restarting":  false,
+                  "OOMKilled":  false,
+                  "Dead":  false,
+                  "Pid":  0,
+                  "ExitCode":  0,
+                  "Error":  "",
+                  "StartedAt":  "2026-10-07T00:55:40.044558792Z",
+                  "FinishedAt":  "2026-10-07T00:58:10.504929846Z"
+              },
+    "args":  {
+                 "value":  [
+                               "pnpm",
+                               "install",
+                               "--frozen-lockfile"
+                           ],
+                 "Count":  3
+             },
+    "captured":  "2026-10-06T20:03:16.7998716-05:00"
+}
