@@ -372,14 +372,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "Xoyan",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "qZ0nn",
+                  "name": "Redes sociales Inicio",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "j3Cl6",
+                      "name": "Instagram Inicio",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "TyiCG",
+                      "name": "Facebook Inicio",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "fE1AA",
+                      "name": "YouTube Inicio",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -522,18 +552,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "tz1EV",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -3228,14 +3246,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "dglpM",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "TGuA2",
+                  "name": "Redes sociales Actualidad",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "EGFsW",
+                      "name": "Instagram Actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "c5Tix6",
+                      "name": "Facebook Actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "qUfk5",
+                      "name": "YouTube Actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -3378,18 +3426,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "D63Ic6",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -4155,14 +4191,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "bL2Qq",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "h0RDv",
+                  "name": "Redes sociales Detalle actualidad",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "c0ZlNS",
+                      "name": "Instagram Detalle actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "C2U2l",
+                      "name": "Facebook Detalle actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "T2Meww",
+                      "name": "YouTube Detalle actualidad",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -4305,18 +4371,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "pNsh6",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -5131,14 +5185,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "PueU3",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "x9Ppk",
+                  "name": "Redes sociales Documentos",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Q3pCc",
+                      "name": "Instagram Documentos",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "x0Hm1",
+                      "name": "Facebook Documentos",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "W5hAGQ",
+                      "name": "YouTube Documentos",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -5281,18 +5365,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "E8Blsa",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -5750,7 +5822,7 @@
       "name": "Selecciones — Desktop",
       "clip": true,
       "width": 1440,
-      "height": 2528,
+      "height": 1930,
       "fill": "$surface",
       "layout": "vertical",
       "children": [
@@ -5783,14 +5855,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "eVNDM",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "dsQca",
+                  "name": "Redes sociales Selecciones",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "c75vp8",
+                      "name": "Instagram Selecciones",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "g2zo9",
+                      "name": "Facebook Selecciones",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "N7rfv",
+                      "name": "YouTube Selecciones",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -5908,11 +6010,11 @@
                       "type": "text",
                       "id": "UoQq3",
                       "name": "Enlace Selecciones⌄",
-                      "fill": "$ink",
-                      "content": "Selecciones⌄",
+                      "fill": "$primary-dark",
+                      "content": "Selecciones  ⌃",
                       "fontFamily": "$font-body",
                       "fontSize": 14,
-                      "fontWeight": "500"
+                      "fontWeight": "700"
                     },
                     {
                       "type": "text",
@@ -5933,18 +6035,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "nr9DO",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -5965,29 +6055,14 @@
           "clip": true,
           "width": "fill_container",
           "height": 520,
-          "fill": {
-            "type": "image",
-            "enabled": true,
-            "url": "https://images.unsplash.com/photo-1732446572652-59d00514802c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDJ8&ixlib=rb-4.1.0&q=80&w=1080",
-            "mode": "fill"
-          },
+          "fill": "$ink",
           "layout": "none",
           "children": [
-            {
-              "type": "rectangle",
-              "id": "Sa6H0",
-              "x": 0,
-              "y": 0,
-              "name": "Overlay Hero Selecciones",
-              "fill": "#000000AA",
-              "width": 1440,
-              "height": 520
-            },
             {
               "type": "frame",
               "id": "U9s8Y",
               "x": 120,
-              "y": 105,
+              "y": 110,
               "name": "Contenido Hero Selecciones",
               "width": 760,
               "height": 320,
@@ -6010,7 +6085,7 @@
                   "id": "TlTri",
                   "name": "Título Selecciones",
                   "fill": "$surface",
-                  "content": "NUESTRAS SELECCIONES",
+                  "content": "SELECCIÓN ANTIOQUIA · PISO",
                   "fontFamily": "$font-heading",
                   "fontSize": 72,
                   "fontWeight": "700"
@@ -6022,166 +6097,117 @@
                   "fill": "#FFFFFFDD",
                   "textGrowth": "fixed-width",
                   "width": 650,
-                  "content": "Participaciones, convocatorias, torneos y logros de las modalidades oficiales.",
+                  "content": "Participaciones y registro fotográfico de nuestras selecciones de balonmano de piso.",
                   "lineHeight": 1.5,
                   "fontFamily": "$font-body",
                   "fontSize": 18,
                   "fontWeight": "normal"
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "gsCvJ",
-          "name": "Selector Modalidades",
-          "width": "fill_container",
-          "height": 120,
-          "fill": "$surface-soft",
-          "gap": 14,
-          "padding": [
-            32,
-            120
-          ],
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "frame",
-              "id": "Y96AK",
-              "name": "Modalidad BALONMANO PISO",
-              "width": 250,
-              "height": 56,
-              "fill": "$primary",
-              "stroke": "$ink",
-              "strokeWidth": 1,
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "eo2Vn",
-                  "name": "Etiqueta BALONMANO PISO",
-                  "fill": "$ink",
-                  "content": "BALONMANO PISO",
-                  "fontFamily": "$font-body",
-                  "fontSize": 13,
-                  "fontWeight": "700"
-                }
-              ]
             },
             {
               "type": "frame",
-              "id": "dpPii",
-              "name": "Modalidad BALONMANO PLAYA",
-              "width": 250,
-              "height": 56,
+              "id": "yRBhE",
+              "x": 770,
+              "y": 0,
+              "name": "Menú Selecciones integrado",
+              "width": 286,
+              "height": 122,
               "fill": "$surface",
               "stroke": "$ink",
               "strokeWidth": 1,
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "LQ8nJ",
-                  "name": "Etiqueta BALONMANO PLAYA",
-                  "fill": "$ink",
-                  "content": "BALONMANO PLAYA",
-                  "fontFamily": "$font-body",
-                  "fontSize": 13,
-                  "fontWeight": "700"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "ZnOgh",
-          "name": "Resumen Balonmano Piso",
-          "width": "fill_container",
-          "height": 560,
-          "fill": "$surface",
-          "gap": 60,
-          "padding": [
-            70,
-            120
-          ],
-          "children": [
-            {
-              "type": "frame",
-              "id": "gd9jm",
-              "name": "Imagen Balonmano Piso",
-              "metadata": {
-                "type": "unsplash",
-                "username": "wolfart32",
-                "link": "https://unsplash.com/@wolfart32",
-                "author": "Rodrigo Rodrigues | WOLF Λ R T"
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#00000044",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 18
               },
-              "width": 600,
-              "height": "fill_container",
-              "fill": {
-                "type": "image",
-                "enabled": true,
-                "url": "https://images.unsplash.com/photo-1783973566204-10c2519d78cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDN8&ixlib=rb-4.1.0&q=80&w=1080",
-                "mode": "fill"
-              }
-            },
-            {
-              "type": "frame",
-              "id": "wHuzx",
-              "name": "Contenido Balonmano Piso",
-              "width": 540,
-              "height": "fill_container",
-              "layout": "vertical",
-              "gap": 20,
-              "justifyContent": "center",
+              "layout": "none",
               "children": [
                 {
                   "type": "text",
-                  "id": "FdLJI",
-                  "name": "Etiqueta Piso",
-                  "fill": "$primary-dark",
-                  "content": "MODALIDAD ACTIVA",
+                  "id": "w5l5TD",
+                  "x": 16,
+                  "y": 12,
+                  "name": "Rótulo Menú integrado",
+                  "fill": "$muted",
+                  "content": "SELECCIONES",
+                  "fontFamily": "$font-body",
+                  "fontSize": 11,
+                  "fontWeight": "700",
+                  "letterSpacing": 1.2
+                },
+                {
+                  "type": "rectangle",
+                  "id": "X8QRa",
+                  "x": 0,
+                  "y": 36,
+                  "name": "Fondo Piso integrado",
+                  "fill": "$primary",
+                  "width": 286,
+                  "height": 43
+                },
+                {
+                  "type": "text",
+                  "id": "H3swWG",
+                  "x": 16,
+                  "y": 49,
+                  "name": "Piso integrado",
+                  "fill": "$ink",
+                  "content": "BALONMANO PISO",
                   "fontFamily": "$font-body",
                   "fontSize": 12,
                   "fontWeight": "700"
                 },
                 {
+                  "type": "icon",
+                  "id": "E6oNAA",
+                  "x": 252,
+                  "y": 49,
+                  "name": "Flecha Piso integrada",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                },
+                {
+                  "type": "rectangle",
+                  "id": "BhoNb",
+                  "x": 0,
+                  "y": 79,
+                  "name": "Fondo Playa integrado",
+                  "fill": "$surface",
+                  "width": 286,
+                  "height": 42
+                },
+                {
                   "type": "text",
-                  "id": "p9c31",
-                  "name": "Título Piso",
+                  "id": "YCm3F",
+                  "x": 16,
+                  "y": 92,
+                  "name": "Playa integrada",
                   "fill": "$ink",
-                  "content": "BALONMANO DE PISO",
-                  "fontFamily": "$font-heading",
-                  "fontSize": 52,
+                  "content": "BALONMANO PLAYA",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
                   "fontWeight": "700"
                 },
                 {
-                  "type": "text",
-                  "id": "aymkn",
-                  "name": "Texto Piso",
-                  "fill": "$text",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Contenido demo para presentar categorías, procesos deportivos y representación competitiva. Esta modalidad permanece en Selecciones, no en el Home.",
-                  "lineHeight": 1.55,
-                  "fontFamily": "$font-body",
-                  "fontSize": 17,
-                  "fontWeight": "normal"
-                },
-                {
-                  "id": "nEyaR",
-                  "type": "ref",
-                  "ref": "FA6pF",
-                  "name": "Ver convocatorias Piso",
-                  "width": "fit_content",
-                  "descendants": {
-                    "lMSEs": {
-                      "content": "VER CONVOCATORIAS"
-                    }
-                  }
+                  "type": "icon",
+                  "id": "L570wU",
+                  "x": 252,
+                  "y": 92,
+                  "name": "Flecha Playa integrada",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
                 }
               ]
             }
@@ -6189,78 +6215,137 @@
         },
         {
           "type": "frame",
-          "id": "tScFH",
-          "name": "Participaciones y logros",
+          "id": "Q1tm53",
+          "name": "Introducción Participaciones",
           "width": "fill_container",
-          "height": 760,
+          "height": 130,
           "fill": "$surface-soft",
           "layout": "vertical",
-          "gap": 34,
+          "gap": 10,
           "padding": [
-            60,
+            28,
+            120
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "BgwOb",
+              "name": "Título Introducción Participaciones",
+              "fill": "$ink",
+              "content": "PARTICIPACIONES Y REGISTRO FOTOGRÁFICO",
+              "fontFamily": "$font-heading",
+              "fontSize": 34,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "ArDQr",
+              "name": "Subtítulo Participaciones",
+              "fill": "$text",
+              "textGrowth": "fixed-width",
+              "width": 900,
+              "content": "Consulta los eventos en los que ha participado la selección de piso y recorre las fotografías oficiales compartidas por cada proceso deportivo.",
+              "lineHeight": 1.45,
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ImSRL",
+          "name": "Balonmano de Piso",
+          "width": "fill_container",
+          "height": 700,
+          "fill": "$surface",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            34,
             120
           ],
           "children": [
             {
               "type": "frame",
-              "id": "aNgmg",
-              "name": "Encabezado Historial",
+              "id": "DTvd2",
+              "name": "Encabezado Balonmano de Piso",
               "width": "fill_container",
+              "height": 76,
               "justifyContent": "space_between",
               "alignItems": "end",
               "children": [
                 {
-                  "type": "text",
-                  "id": "FU9Jp",
-                  "name": "Título Historial",
-                  "fill": "$ink",
-                  "content": "PARTICIPACIONES Y LOGROS",
-                  "fontFamily": "$font-heading",
-                  "fontSize": 50,
-                  "fontWeight": "700"
+                  "type": "frame",
+                  "id": "Atg9T",
+                  "name": "Título Balonmano de Piso",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "g2tklc",
+                      "name": "Etiqueta Balonmano de Piso",
+                      "fill": "$primary-dark",
+                      "content": "MODALIDAD 01",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "700",
+                      "letterSpacing": 1.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "YD1HP",
+                      "name": "Modalidad Balonmano de Piso",
+                      "fill": "$ink",
+                      "content": "BALONMANO DE PISO",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 40,
+                      "fontWeight": "700"
+                    }
+                  ]
                 },
                 {
                   "type": "text",
-                  "id": "KVKA0",
-                  "name": "Filtro periodo",
-                  "fill": "$primary-dark",
-                  "content": "TODOS LOS PERIODOS ⌄",
+                  "id": "AwBxx",
+                  "name": "Resumen Balonmano de Piso",
+                  "fill": "$muted",
+                  "content": "3 participaciones registradas",
                   "fontFamily": "$font-body",
-                  "fontSize": 12,
+                  "fontSize": 13,
                   "fontWeight": "700"
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "M2O28",
-              "name": "Tarjetas Historial",
+              "id": "A8GEV",
+              "name": "Publicaciones Balonmano Piso",
               "width": "fill_container",
-              "height": 520,
-              "gap": 24,
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
               "children": [
                 {
                   "type": "frame",
-                  "id": "U4EKU",
-                  "name": "TORNEO DEMO",
-                  "width": 360,
+                  "id": "D06v6",
+                  "name": "Publicación Piso Nacional de Selecciones Juvenil",
+                  "width": "fill_container",
                   "height": "fill_container",
                   "fill": "$surface",
-                  "layout": "vertical",
-                  "gap": 14,
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "MCnO1",
-                      "name": "Imagen TORNEO DEMO",
-                      "metadata": {
-                        "type": "unsplash",
-                        "username": "fabz97",
-                        "link": "https://unsplash.com/@fabz97",
-                        "author": "Fabio Henning"
-                      },
-                      "width": "fill_container",
-                      "height": 280,
+                      "id": "ATY5A",
+                      "name": "Portada Piso Nacional de Selecciones Juvenil",
+                      "width": 220,
+                      "height": "fill_container",
                       "fill": {
                         "type": "image",
                         "enabled": true,
@@ -6270,47 +6355,54 @@
                     },
                     {
                       "type": "frame",
-                      "id": "p9XSNE",
-                      "name": "Contenido TORNEO DEMO",
+                      "id": "hlaJX",
+                      "name": "Contenido Piso Nacional de Selecciones Juvenil",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 10,
-                      "padding": [
-                        6,
-                        22,
-                        22,
-                        22
-                      ],
+                      "gap": 7,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
-                          "id": "o1gCm",
-                          "name": "Periodo TORNEO DEMO",
+                          "id": "ANDLQ",
+                          "name": "Tipo Piso Nacional de Selecciones Juvenil",
                           "fill": "$primary-dark",
-                          "content": "2026",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 36,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "e4ZOk",
-                          "name": "Título TORNEO DEMO",
-                          "fill": "$ink",
-                          "content": "TORNEO DEMO",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 26,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "a4tyy",
-                          "name": "Meta TORNEO DEMO",
-                          "fill": "$muted",
-                          "content": "Ubicación por confirmar",
+                          "content": "BALONMANO PISO · EVENTO",
                           "fontFamily": "$font-body",
-                          "fontSize": 13,
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "JZrXI",
+                          "name": "Título Piso Nacional de Selecciones Juvenil",
+                          "fill": "$ink",
+                          "content": "Nacional de Selecciones Juvenil",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "CEhny",
+                          "name": "Datos Piso Nacional de Selecciones Juvenil",
+                          "fill": "$text",
+                          "content": "Juvenil masculino · Medellín, Antioquia · 2026 · Participación",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "l9gzSs",
+                          "name": "Abrir Piso Nacional de Selecciones Juvenil",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
                         }
                       ]
                     }
@@ -6318,26 +6410,23 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Jh4gr",
-                  "name": "CONVOCATORIA DEMO",
-                  "width": 360,
+                  "id": "QeodX",
+                  "name": "Publicación Piso Torneo Nacional Interligas",
+                  "width": "fill_container",
                   "height": "fill_container",
                   "fill": "$surface",
-                  "layout": "vertical",
-                  "gap": 14,
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "YO4A7",
-                      "name": "Imagen CONVOCATORIA DEMO",
-                      "metadata": {
-                        "type": "unsplash",
-                        "username": "prfl",
-                        "link": "https://unsplash.com/@prfl",
-                        "author": "Piotr Czirnia"
-                      },
-                      "width": "fill_container",
-                      "height": 280,
+                      "id": "p1n9F",
+                      "name": "Portada Piso Torneo Nacional Interligas",
+                      "width": 220,
+                      "height": "fill_container",
                       "fill": {
                         "type": "image",
                         "enabled": true,
@@ -6347,47 +6436,54 @@
                     },
                     {
                       "type": "frame",
-                      "id": "cVt3C",
-                      "name": "Contenido CONVOCATORIA DEMO",
+                      "id": "iTgXb",
+                      "name": "Contenido Piso Torneo Nacional Interligas",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 10,
-                      "padding": [
-                        6,
-                        22,
-                        22,
-                        22
-                      ],
+                      "gap": 7,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
-                          "id": "UE2mm",
-                          "name": "Periodo CONVOCATORIA DEMO",
+                          "id": "mWUbe",
+                          "name": "Tipo Piso Torneo Nacional Interligas",
                           "fill": "$primary-dark",
-                          "content": "2025",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 36,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "oTXHq",
-                          "name": "Título CONVOCATORIA DEMO",
-                          "fill": "$ink",
-                          "content": "CONVOCATORIA DEMO",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 26,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "qp0Iz",
-                          "name": "Meta CONVOCATORIA DEMO",
-                          "fill": "$muted",
-                          "content": "Categorías configurables",
+                          "content": "BALONMANO PISO · EVENTO",
                           "fontFamily": "$font-body",
-                          "fontSize": 13,
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "Ty62m",
+                          "name": "Título Piso Torneo Nacional Interligas",
+                          "fill": "$ink",
+                          "content": "Torneo Nacional Interligas",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rs6qn",
+                          "name": "Datos Piso Torneo Nacional Interligas",
+                          "fill": "$text",
+                          "content": "Mayores femenino · Cali, Valle · 2026 · Semifinalista",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "lslE2",
+                          "name": "Abrir Piso Torneo Nacional Interligas",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
                         }
                       ]
                     }
@@ -6395,76 +6491,80 @@
                 },
                 {
                   "type": "frame",
-                  "id": "hRn92",
-                  "name": "LOGRO DEMO",
-                  "width": 360,
+                  "id": "m5CHHn",
+                  "name": "Publicación Piso Festival Nacional de Balonmano",
+                  "width": "fill_container",
                   "height": "fill_container",
                   "fill": "$surface",
-                  "layout": "vertical",
-                  "gap": 14,
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "frame",
-                      "id": "X1shI9",
-                      "name": "Imagen LOGRO DEMO",
-                      "metadata": {
-                        "type": "unsplash",
-                        "username": "fotospk",
-                        "link": "https://unsplash.com/@fotospk",
-                        "author": "Fotos"
-                      },
-                      "width": "fill_container",
-                      "height": 280,
+                      "id": "elYND",
+                      "name": "Portada Piso Festival Nacional de Balonmano",
+                      "width": 220,
+                      "height": "fill_container",
                       "fill": {
                         "type": "image",
                         "enabled": true,
-                        "url": "https://images.unsplash.com/photo-1659081439066-1097244cb710?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "url": "https://images.unsplash.com/photo-1783973566204-10c2519d78cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDN8&ixlib=rb-4.1.0&q=80&w=1080",
                         "mode": "fill"
                       }
                     },
                     {
                       "type": "frame",
-                      "id": "r4qKi3",
-                      "name": "Contenido LOGRO DEMO",
+                      "id": "SQIju",
+                      "name": "Contenido Piso Festival Nacional de Balonmano",
                       "width": "fill_container",
                       "layout": "vertical",
-                      "gap": 10,
-                      "padding": [
-                        6,
-                        22,
-                        22,
-                        22
-                      ],
+                      "gap": 7,
+                      "justifyContent": "center",
                       "children": [
                         {
                           "type": "text",
-                          "id": "fsKBY",
-                          "name": "Periodo LOGRO DEMO",
+                          "id": "VfgPA",
+                          "name": "Tipo Piso Festival Nacional de Balonmano",
                           "fill": "$primary-dark",
-                          "content": "2024",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 36,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "S2VrZx",
-                          "name": "Título LOGRO DEMO",
-                          "fill": "$ink",
-                          "content": "LOGRO DEMO",
-                          "fontFamily": "$font-heading",
-                          "fontSize": 26,
-                          "fontWeight": "700"
-                        },
-                        {
-                          "type": "text",
-                          "id": "aGSno",
-                          "name": "Meta LOGRO DEMO",
-                          "fill": "$muted",
-                          "content": "Galería administrable",
+                          "content": "BALONMANO PISO · EVENTO",
                           "fontFamily": "$font-body",
-                          "fontSize": 13,
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "sQfXb",
+                          "name": "Título Piso Festival Nacional de Balonmano",
+                          "fill": "$ink",
+                          "content": "Festival Nacional de Balonmano",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "In6T7",
+                          "name": "Datos Piso Festival Nacional de Balonmano",
+                          "fill": "$text",
+                          "content": "Infantil mixto · Bogotá, D.C. · 2025 · Participación",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "safsE",
+                          "name": "Abrir Piso Festival Nacional de Balonmano",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
                         }
                       ]
                     }
@@ -6476,7 +6576,7 @@
         },
         {
           "type": "frame",
-          "id": "D7qxFn",
+          "id": "QTENd",
           "name": "Footer Selecciones",
           "width": "fill_container",
           "height": 440,
@@ -6492,7 +6592,7 @@
           "children": [
             {
               "type": "frame",
-              "id": "g5vAnO",
+              "id": "HaPa0",
               "name": "Contenido principal footer",
               "width": "fill_container",
               "height": 250,
@@ -6500,7 +6600,7 @@
               "children": [
                 {
                   "type": "frame",
-                  "id": "y8XKd",
+                  "id": "IU4q8",
                   "name": "Marca footer",
                   "width": 360,
                   "layout": "vertical",
@@ -6508,7 +6608,7 @@
                   "children": [
                     {
                       "type": "text",
-                      "id": "RZWUC",
+                      "id": "G3GaoW",
                       "name": "Logo footer",
                       "fill": "$primary",
                       "content": "LABM",
@@ -6518,7 +6618,7 @@
                     },
                     {
                       "type": "text",
-                      "id": "rfTbQ",
+                      "id": "uKyzx",
                       "name": "Descripción footer",
                       "fill": "#FFFFFFCC",
                       "textGrowth": "fixed-width",
@@ -6533,26 +6633,27 @@
                 },
                 {
                   "type": "frame",
-                  "id": "Xe6zu",
-                  "name": "Columna NAVEGACIÓN",
+                  "id": "m3R36",
+                  "name": "Navegación footer",
                   "width": 210,
                   "layout": "vertical",
                   "gap": 16,
                   "children": [
                     {
                       "type": "text",
-                      "id": "zNbqG",
-                      "name": "Título NAVEGACIÓN",
+                      "id": "GCGkR",
+                      "name": "Título Navegación footer",
                       "fill": "$primary",
                       "content": "NAVEGACIÓN",
-                      "fontFamily": "Inter",
+                      "fontFamily": "$font-body",
                       "fontSize": 12,
-                      "fontWeight": "700"
+                      "fontWeight": "700",
+                      "letterSpacing": 1
                     },
                     {
                       "type": "text",
-                      "id": "n3C8qZ",
-                      "name": "Enlaces NAVEGACIÓN",
+                      "id": "pPfIa",
+                      "name": "Enlaces Navegación footer",
                       "fill": "#FFFFFFCC",
                       "content": "Inicio\nNosotros\nActualidad\nSelecciones",
                       "lineHeight": 1.8,
@@ -6564,26 +6665,27 @@
                 },
                 {
                   "type": "frame",
-                  "id": "y5eczY",
-                  "name": "Columna RECURSOS",
+                  "id": "i7GZ0",
+                  "name": "Recursos footer",
                   "width": 210,
                   "layout": "vertical",
                   "gap": 16,
                   "children": [
                     {
                       "type": "text",
-                      "id": "phRO7",
-                      "name": "Título RECURSOS",
+                      "id": "b7DPKj",
+                      "name": "Título Recursos footer",
                       "fill": "$primary",
                       "content": "RECURSOS",
-                      "fontFamily": "Inter",
+                      "fontFamily": "$font-body",
                       "fontSize": 12,
-                      "fontWeight": "700"
+                      "fontWeight": "700",
+                      "letterSpacing": 1
                     },
                     {
                       "type": "text",
-                      "id": "c5L0aS",
-                      "name": "Enlaces RECURSOS",
+                      "id": "rRG5W",
+                      "name": "Enlaces Recursos footer",
                       "fill": "#FFFFFFCC",
                       "content": "Documentos\nContacto\nPrivacidad",
                       "lineHeight": 1.8,
@@ -6595,26 +6697,27 @@
                 },
                 {
                   "type": "frame",
-                  "id": "J5VZH",
-                  "name": "Columna CONTACTO DEMO",
+                  "id": "rCowo",
+                  "name": "Contacto footer",
                   "width": 210,
                   "layout": "vertical",
                   "gap": 16,
                   "children": [
                     {
                       "type": "text",
-                      "id": "zCpbR",
-                      "name": "Título CONTACTO DEMO",
+                      "id": "U7EU81",
+                      "name": "Título Contacto footer",
                       "fill": "$primary",
-                      "content": "CONTACTO DEMO",
-                      "fontFamily": "Inter",
+                      "content": "CONTACTO",
+                      "fontFamily": "$font-body",
                       "fontSize": 12,
-                      "fontWeight": "700"
+                      "fontWeight": "700",
+                      "letterSpacing": 1
                     },
                     {
                       "type": "text",
-                      "id": "F05EVv",
-                      "name": "Enlaces CONTACTO DEMO",
+                      "id": "f4vR8",
+                      "name": "Enlaces Contacto footer",
                       "fill": "#FFFFFFCC",
                       "content": "Correo por configurar\nTeléfono por configurar\nRedes sociales",
                       "lineHeight": 1.8,
@@ -6628,7 +6731,7 @@
             },
             {
               "type": "frame",
-              "id": "AX4IO",
+              "id": "qpZog",
               "name": "Legal footer",
               "width": "fill_container",
               "height": 48,
@@ -6641,7 +6744,7 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "ZUIub",
+                  "id": "xu7vm",
                   "name": "Copyright",
                   "fill": "#FFFFFF99",
                   "content": "© 2026 Liga Antioqueña de Balonmano · Año dinámico",
@@ -6651,7 +6754,7 @@
                 },
                 {
                   "type": "text",
-                  "id": "YGgkj",
+                  "id": "ZXpea",
                   "name": "Política",
                   "fill": "#FFFFFF99",
                   "content": "Política de tratamiento de datos",
@@ -6706,14 +6809,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "Q2eGBS",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "rKJ4X",
+                  "name": "Redes sociales Contacto",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "BPHZB",
+                      "name": "Instagram Contacto",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "FgPr5",
+                      "name": "Facebook Contacto",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "ID4WG",
+                      "name": "YouTube Contacto",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -6856,18 +6989,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "qZJRs",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -8130,14 +8251,44 @@
                   "fontWeight": "normal"
                 },
                 {
-                  "type": "text",
-                  "id": "UbvLr",
-                  "name": "Redes demo",
-                  "fill": "$primary",
-                  "content": "Instagram   Facebook   YouTube",
-                  "fontFamily": "$font-body",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "type": "frame",
+                  "id": "zIn1c",
+                  "name": "Redes sociales Nosotros",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "VdVEQ",
+                      "name": "Instagram Nosotros",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "Pj7gV",
+                      "name": "Facebook Nosotros",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "bZfyZ",
+                      "name": "YouTube Nosotros",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
                 }
               ]
             }
@@ -8280,18 +8431,6 @@
                       "fontFamily": "$font-body",
                       "fontSize": 14,
                       "fontWeight": "500"
-                    },
-                    {
-                      "id": "bK8Ck",
-                      "type": "ref",
-                      "ref": "FA6pF",
-                      "name": "CTA Vincúlate",
-                      "height": 48,
-                      "descendants": {
-                        "lMSEs": {
-                          "content": "VINCÚLATE"
-                        }
-                      }
                     }
                   ]
                 }
@@ -9211,6 +9350,1318 @@
                   "fontWeight": "normal"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "p1GT2",
+      "x": 11550,
+      "y": 0,
+      "name": "Archivo de Selecciones — Desktop",
+      "clip": true,
+      "width": 1440,
+      "height": 1640,
+      "fill": "$surface",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "DvcJv",
+          "name": "Barra institucional Archivo",
+          "width": "fill_container",
+          "height": 40,
+          "fill": "$ink",
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "yC8Tp",
+              "name": "Contenido barra Archivo",
+              "width": 1200,
+              "height": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qUVr6",
+                  "name": "Contacto Archivo",
+                  "fill": "$surface",
+                  "content": "CONTENIDO DEMO · contacto@liga.example",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "Byvnw",
+                  "name": "Redes sociales Archivo",
+                  "height": 24,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "EI7Zy",
+                      "name": "Instagram Archivo",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "instagram",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "a4Kan",
+                      "name": "Facebook Archivo",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "facebook",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "SkQaS",
+                      "name": "YouTube Archivo",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "youtube",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "D04F4",
+          "name": "Navegación Archivo",
+          "width": "fill_container",
+          "height": 88,
+          "fill": "$surface",
+          "stroke": "$line",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "nvbOL",
+              "name": "Contenido navegación Archivo",
+              "width": 1200,
+              "height": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "LUWiI",
+                  "name": "Marca Archivo",
+                  "width": 230,
+                  "height": 56,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "vcnpM",
+                      "name": "Logo Archivo",
+                      "width": 52,
+                      "height": 52,
+                      "fill": "$surface-soft",
+                      "stroke": "$ink",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Rzuad",
+                          "name": "Sigla logo Archivo",
+                          "fill": "$ink",
+                          "content": "LABM",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ptwl3",
+                      "name": "Nombre Archivo",
+                      "fill": "$ink",
+                      "textGrowth": "fixed-width",
+                      "width": 150,
+                      "content": "LIGA ANTIOQUEÑA\nDE BALONMANO",
+                      "lineHeight": 1,
+                      "fontFamily": "$font-heading",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Haj4V",
+                  "name": "Enlaces Archivo",
+                  "height": "fill_container",
+                  "gap": 26,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "SF8Ik",
+                      "name": "Enlace Archivo Inicio",
+                      "fill": "$ink",
+                      "content": "Inicio",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "BkGrv",
+                      "name": "Enlace Archivo Nosotros",
+                      "fill": "$ink",
+                      "content": "Nosotros",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "FOtc5",
+                      "name": "Enlace Archivo Actualidad",
+                      "fill": "$ink",
+                      "content": "Actualidad",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "p4hUC",
+                      "name": "Enlace Archivo Selecciones",
+                      "fill": "$primary-dark",
+                      "content": "Selecciones",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "pHjnS",
+                      "name": "Enlace Archivo Documentos",
+                      "fill": "$ink",
+                      "content": "Documentos",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "enJDV",
+                      "name": "Enlace Archivo Contacto",
+                      "fill": "$ink",
+                      "content": "Contacto",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jr5yJ",
+                      "name": "CTA Archivo",
+                      "height": 44,
+                      "fill": "$primary",
+                      "padding": [
+                        0,
+                        18
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Tlx93",
+                          "name": "Etiqueta CTA Archivo",
+                          "fill": "$ink",
+                          "content": "VINCÚLATE",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "uhXyv",
+          "name": "Encabezado Archivo de Selecciones",
+          "width": "fill_container",
+          "height": 230,
+          "fill": "$ink",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            42,
+            120
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "i9lEi",
+              "name": "Miga Archivo",
+              "fill": "$primary",
+              "content": "INICIO  /  SELECCIONES  /  BALONMANO PLAYA",
+              "fontFamily": "$font-body",
+              "fontSize": 12,
+              "fontWeight": "700",
+              "letterSpacing": 1.3
+            },
+            {
+              "type": "text",
+              "id": "UmCpF",
+              "name": "Título Archivo Selecciones",
+              "fill": "$surface",
+              "content": "SELECCIÓN ANTIOQUIA · PLAYA",
+              "fontFamily": "$font-heading",
+              "fontSize": 58,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "y0a7K",
+              "name": "Descripción Archivo Selecciones",
+              "fill": "#FFFFFFCC",
+              "content": "Participaciones y registro fotográfico de nuestras selecciones de balonmano playa.",
+              "fontFamily": "$font-body",
+              "fontSize": 17,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ziEez",
+          "name": "Introducción Playa",
+          "width": "fill_container",
+          "height": 120,
+          "fill": "$surface-soft",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            26,
+            120
+          ],
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "p0hVD0",
+              "name": "Título Introducción Playa",
+              "fill": "$ink",
+              "content": "PARTICIPACIONES Y REGISTRO FOTOGRÁFICO",
+              "fontFamily": "$font-heading",
+              "fontSize": 32,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "B1Up4",
+              "name": "Subtítulo Introducción Playa",
+              "fill": "$text",
+              "content": "Eventos, resultados y fotografías oficiales de la selección de balonmano playa en sus distintas categorías.",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "fo7wU",
+          "name": "Participaciones Balonmano Playa",
+          "width": "fill_container",
+          "height": 700,
+          "fill": "$surface",
+          "layout": "vertical",
+          "gap": 14,
+          "padding": [
+            30,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "B4rfYM",
+              "name": "Encabezado Participaciones Playa",
+              "width": "fill_container",
+              "height": 68,
+              "justifyContent": "space_between",
+              "alignItems": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "T5aqG",
+                  "name": "Título Participaciones Playa",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "vvXqr",
+                      "name": "Etiqueta Participaciones Playa",
+                      "fill": "$primary-dark",
+                      "content": "BALONMANO PLAYA",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "700",
+                      "letterSpacing": 1.4
+                    },
+                    {
+                      "type": "text",
+                      "id": "r8RDHv",
+                      "name": "Nombre Participaciones Playa",
+                      "fill": "$ink",
+                      "content": "EVENTOS Y PARTICIPACIONES",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 38,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "b4j4R",
+                  "name": "Resumen Participaciones Playa",
+                  "fill": "$muted",
+                  "content": "3 participaciones registradas",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "k1yYZ",
+              "name": "Publicaciones Balonmano Playa",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Et2ez",
+                  "name": "Publicación Playa Circuito Nacional de Playa",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$surface",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "S3exoW",
+                      "name": "Portada Playa Circuito Nacional de Playa",
+                      "width": 220,
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1659081439066-1097244cb710?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "EwIOI",
+                      "name": "Contenido Playa Circuito Nacional de Playa",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 7,
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "z6AzQ",
+                          "name": "Tipo Playa Circuito Nacional de Playa",
+                          "fill": "$primary-dark",
+                          "content": "BALONMANO PLAYA · EVENTO",
+                          "fontFamily": "$font-body",
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "D3opMy",
+                          "name": "Título Playa Circuito Nacional de Playa",
+                          "fill": "$ink",
+                          "content": "Circuito Nacional de Playa",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MAwsh",
+                          "name": "Datos Playa Circuito Nacional de Playa",
+                          "fill": "$text",
+                          "content": "Mayores masculino · Santa Marta, Magdalena · 2026 · Participación",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VFt6I",
+                          "name": "Abrir Playa Circuito Nacional de Playa",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rV2Hf",
+                  "name": "Publicación Playa Copa Nacional de Clubes y Selecciones",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$surface",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "lIlLg",
+                      "name": "Portada Playa Copa Nacional de Clubes y Selecciones",
+                      "width": 220,
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1741291875703-a2353c2c2946?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "LzNmP",
+                      "name": "Contenido Playa Copa Nacional de Clubes y Selecciones",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 7,
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "f71doM",
+                          "name": "Tipo Playa Copa Nacional de Clubes y Selecciones",
+                          "fill": "$primary-dark",
+                          "content": "BALONMANO PLAYA · EVENTO",
+                          "fontFamily": "$font-body",
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "LPe9k",
+                          "name": "Título Playa Copa Nacional de Clubes y Selecciones",
+                          "fill": "$ink",
+                          "content": "Copa Nacional de Clubes y Selecciones",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "t6cG5",
+                          "name": "Datos Playa Copa Nacional de Clubes y Selecciones",
+                          "fill": "$text",
+                          "content": "Juvenil femenino · Cartagena, Bolívar · 2026 · Subcampeonato",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Z2fgO",
+                          "name": "Abrir Playa Copa Nacional de Clubes y Selecciones",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "GQnUp",
+                  "name": "Publicación Playa Festival Nacional de Playa",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "$surface",
+                  "stroke": "$line",
+                  "strokeWidth": 1,
+                  "gap": 18,
+                  "padding": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dW48j",
+                      "name": "Portada Playa Festival Nacional de Playa",
+                      "width": 220,
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1655715890182-f3673285a06c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3ODc4ODg1MDR8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "fill"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E9Ssn6",
+                      "name": "Contenido Playa Festival Nacional de Playa",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 7,
+                      "justifyContent": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "seYvM",
+                          "name": "Tipo Playa Festival Nacional de Playa",
+                          "fill": "$primary-dark",
+                          "content": "BALONMANO PLAYA · EVENTO",
+                          "fontFamily": "$font-body",
+                          "fontSize": 11,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "rfrS4",
+                          "name": "Título Playa Festival Nacional de Playa",
+                          "fill": "$ink",
+                          "content": "Festival Nacional de Playa",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 28,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Gcm9j",
+                          "name": "Datos Playa Festival Nacional de Playa",
+                          "fill": "$text",
+                          "content": "Juvenil masculino · San Andrés · 2025 · Participación",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "TDFhC",
+                          "name": "Abrir Playa Festival Nacional de Playa",
+                          "fill": "$ink",
+                          "content": "VER PUBLICACIÓN  →",
+                          "fontFamily": "$font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700",
+                          "letterSpacing": 1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tsQrR",
+          "name": "Footer Archivo",
+          "width": "fill_container",
+          "height": 440,
+          "fill": "$ink",
+          "layout": "vertical",
+          "gap": 42,
+          "padding": [
+            64,
+            120,
+            30,
+            120
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "QvAUt",
+              "name": "Contenido Footer Archivo",
+              "width": "fill_container",
+              "height": 250,
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "I7cGZJ",
+                  "name": "Marca Footer Archivo",
+                  "width": 360,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mBtWC",
+                      "name": "LABM Footer Archivo",
+                      "fill": "$primary",
+                      "content": "LABM",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 54,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "xqbEM",
+                      "name": "Descripción Footer Archivo",
+                      "fill": "#FFFFFFCC",
+                      "textGrowth": "fixed-width",
+                      "width": 330,
+                      "content": "Liga Antioqueña de Balonmano\nInformación institucional administrable.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font-body",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QTsez",
+                  "name": "Navegación Footer Archivo",
+                  "width": 210,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Ltfrh",
+                      "name": "Título Navegación Footer Archivo",
+                      "fill": "$primary",
+                      "content": "NAVEGACIÓN",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "700",
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "c0ZlG",
+                      "name": "Enlaces Navegación Footer Archivo",
+                      "fill": "#FFFFFFCC",
+                      "content": "Inicio\nNosotros\nActualidad\nSelecciones",
+                      "lineHeight": 1.8,
+                      "fontFamily": "$font-body",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "l1JZqY",
+                  "name": "Recursos Footer Archivo",
+                  "width": 210,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TU9Cg",
+                      "name": "Título Recursos Footer Archivo",
+                      "fill": "$primary",
+                      "content": "RECURSOS",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "700",
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "Ub5c4",
+                      "name": "Enlaces Recursos Footer Archivo",
+                      "fill": "#FFFFFFCC",
+                      "content": "Documentos\nContacto\nPrivacidad",
+                      "lineHeight": 1.8,
+                      "fontFamily": "$font-body",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "q9DuM",
+                  "name": "Contacto Footer Archivo",
+                  "width": 210,
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "QIn4y",
+                      "name": "Título Contacto Footer Archivo",
+                      "fill": "$primary",
+                      "content": "CONTACTO",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "700",
+                      "letterSpacing": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "u2rtKi",
+                      "name": "Enlaces Contacto Footer Archivo",
+                      "fill": "#FFFFFFCC",
+                      "content": "Correo por configurar\nTeléfono por configurar\nRedes sociales",
+                      "lineHeight": 1.8,
+                      "fontFamily": "$font-body",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "uxzE0",
+              "name": "Legal Footer Archivo",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "#FFFFFF33",
+              "strokeWidth": {
+                "top": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mMzZ0",
+                  "name": "Copyright Archivo",
+                  "fill": "#FFFFFF99",
+                  "content": "© 2026 Liga Antioqueña de Balonmano · Año dinámico",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "YX94E",
+                  "name": "Política Archivo",
+                  "fill": "#FFFFFF99",
+                  "content": "Política de tratamiento de datos",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "coPGt",
+      "x": 3660,
+      "y": 0,
+      "name": "Selecciones — Mobile menú abierto",
+      "clip": true,
+      "width": 390,
+      "height": 854,
+      "fill": "$surface",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Wqt9i",
+          "name": "Navegación Mobile abierta",
+          "width": "fill_container",
+          "height": 72,
+          "fill": "$surface",
+          "stroke": "$line",
+          "strokeWidth": {
+            "bottom": 1
+          },
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "bJrwK",
+              "name": "Marca Mobile abierta",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "heWYU",
+                  "name": "Logo Mobile abierta",
+                  "width": 34,
+                  "height": 34,
+                  "fill": "$surface-soft",
+                  "stroke": "$ink",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "oYdKA",
+                      "name": "Sigla Mobile abierta",
+                      "fill": "$ink",
+                      "content": "LABM",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 11,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "nXjYD",
+                  "name": "Nombre Mobile abierta",
+                  "fill": "$ink",
+                  "textGrowth": "fixed-width",
+                  "width": 112,
+                  "content": "LIGA ANTIOQUEÑA\nDE BALONMANO",
+                  "lineHeight": 1,
+                  "fontFamily": "$font-heading",
+                  "fontSize": 12,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "v2Uyf",
+              "name": "Cerrar menú Mobile",
+              "width": 38,
+              "height": 38,
+              "fill": "$ink",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "tPNYC",
+                  "name": "Ícono cerrar Mobile",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "x",
+                  "library": "lucide",
+                  "fill": "$surface"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OJS3y",
+          "name": "Menú Mobile expandido",
+          "width": "fill_container",
+          "height": 460,
+          "fill": "$surface",
+          "layout": "vertical",
+          "padding": [
+            16,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "Yo8D6",
+              "name": "Menú Mobile Inicio",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "$line",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "vu6X7",
+                  "name": "Etiqueta Mobile Inicio",
+                  "fill": "$ink",
+                  "content": "Inicio",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "cLDjZ",
+                  "name": "Flecha Mobile Inicio",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "dxxfd",
+              "name": "Menú Mobile Nosotros",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "$line",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wV27J",
+                  "name": "Etiqueta Mobile Nosotros",
+                  "fill": "$ink",
+                  "content": "Nosotros",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "zlOn6",
+                  "name": "Flecha Mobile Nosotros",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Y5iAVL",
+              "name": "Menú Mobile Actualidad",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "$line",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EqQ74",
+                  "name": "Etiqueta Mobile Actualidad",
+                  "fill": "$ink",
+                  "content": "Actualidad",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "r7H22",
+                  "name": "Flecha Mobile Actualidad",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "G0pFYo",
+              "name": "Selecciones Mobile expandido",
+              "width": "fill_container",
+              "height": 140,
+              "fill": "$surface-soft",
+              "layout": "vertical",
+              "gap": 8,
+              "padding": [
+                12,
+                14
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "n0Zl5",
+                  "name": "Cabecera Selecciones Mobile",
+                  "width": "fill_container",
+                  "height": 30,
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "i3ktw",
+                      "name": "Etiqueta Selecciones Mobile",
+                      "fill": "$primary-dark",
+                      "content": "SELECCIONES",
+                      "fontFamily": "$font-body",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "c0PJ7",
+                      "name": "Chevron Selecciones Mobile",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "chevron-up",
+                      "library": "lucide",
+                      "fill": "$primary-dark"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dvTzK",
+                  "name": "Submenú Mobile Balonmano Piso",
+                  "width": "fill_container",
+                  "height": 34,
+                  "padding": [
+                    0,
+                    8
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "rp20t",
+                      "name": "Etiqueta Submenú Mobile Balonmano Piso",
+                      "fill": "$ink",
+                      "content": "Balonmano Piso",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "YfC9t",
+                      "name": "Flecha Submenú Mobile Balonmano Piso",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$ink"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HJyeS",
+                  "name": "Submenú Mobile Balonmano Playa",
+                  "width": "fill_container",
+                  "height": 34,
+                  "padding": [
+                    0,
+                    8
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TaEj4",
+                      "name": "Etiqueta Submenú Mobile Balonmano Playa",
+                      "fill": "$ink",
+                      "content": "Balonmano Playa",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "FnJHX",
+                      "name": "Flecha Submenú Mobile Balonmano Playa",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$ink"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QAFpg",
+              "name": "Menú Mobile Documentos",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "$line",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "M6o4r",
+                  "name": "Etiqueta Mobile Documentos",
+                  "fill": "$ink",
+                  "content": "Documentos",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "sR4RV",
+                  "name": "Flecha Mobile Documentos",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Wqer0",
+              "name": "Menú Mobile Contacto",
+              "width": "fill_container",
+              "height": 48,
+              "stroke": "$line",
+              "strokeWidth": {
+                "bottom": 1
+              },
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Dw1iF",
+                  "name": "Etiqueta Mobile Contacto",
+                  "fill": "$ink",
+                  "content": "Contacto",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "icon",
+                  "id": "K01nsv",
+                  "name": "Flecha Mobile Contacto",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "arrow-up-right",
+                  "library": "lucide",
+                  "fill": "$ink"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Jtesa",
+          "name": "Hero Mobile detrás del menú",
+          "width": "fill_container",
+          "height": "fill_container",
+          "fill": "$ink",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            38,
+            20
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "xQkvN",
+              "name": "Etiqueta Hero Mobile",
+              "fill": "$primary",
+              "content": "SELECCIÓN ANTIOQUIA",
+              "fontFamily": "$font-body",
+              "fontSize": 11,
+              "fontWeight": "700",
+              "letterSpacing": 1.2
+            },
+            {
+              "type": "text",
+              "id": "vmFo9",
+              "name": "Título Hero Mobile",
+              "fill": "$surface",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "BALONMANO\nDE PISO",
+              "lineHeight": 0.92,
+              "fontFamily": "$font-heading",
+              "fontSize": 42,
+              "fontWeight": "700"
+            },
+            {
+              "type": "text",
+              "id": "L9tfpn",
+              "name": "Texto Hero Mobile",
+              "fill": "#FFFFFFCC",
+              "content": "Participaciones y publicaciones oficiales.",
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         }
