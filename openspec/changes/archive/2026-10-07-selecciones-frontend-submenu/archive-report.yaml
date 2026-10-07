@@ -1,0 +1,36 @@
+schema_version: "1.0"
+kind: archive_report
+status: ok
+change: "selecciones-frontend-submenu"
+archived_at: "2026-10-07T17:41:53-05:00"
+verification_ref: "verify-report.yaml"
+verification_sha256: "FD3A416C1CE8483C62CA272D9F1FC517EFC0EF94F6A487458D935BFF9EFFF586"
+destination: "openspec/changes/archive/2026-10-07-selecciones-frontend-submenu"
+archive_ready: true
+tests_executed: false
+domains:
+  - id: experiencia-publica
+    base: "../../../specs/experiencia-publica/spec.md"
+    before_sha256: "3D57E66B372B13603A8D378C8B55C3644ECCA82832F28A2DB8ACAABAB62166C9"
+    after_sha256: "71F788D5C273998651B765FF047ECAA3A7BE8E53E404901FE03F3C2EC4A678F3"
+    operations:
+      - added: "Sección principal"
+      - added: "Disclosure accesible"
+      - added: "Panel móvil"
+      - added: "Presentación fiel"
+      - added: "Colección pública"
+      - added: "Estado de consulta y paginación"
+      - added: "Filas editoriales"
+      - added: "Fidelidad visual"
+    preserved: "Requisitos y escenarios no relacionados conservados."
+transaction:
+  journal: ".archive-transaction.yaml"
+  backup: ".archive-transaction/backups/experiencia-publica.spec.md"
+  final_status: archived
+state:
+  completed: true
+  phase: ARCHIVE
+  next_recommended: null
+notes:
+  - "No se ejecutaron pruebas, gates, commits, push ni despliegues durante ARCHIVE."
+  - "No aplica content-sync: el cambio no modificó estado persistido WordPress ni uploads."

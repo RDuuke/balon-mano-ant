@@ -1,0 +1,252 @@
+schema_version: "1.0"
+kind: validation_plan
+change: selecciones-frontend-submenu
+updated_at: "2026-10-07T17:41:53-05:00"
+status: pass
+summary: "VERIFY segmentado cerrado: siete bloques independientes, 100% PASS y archive_ready=true; no se ejecutó el gate monolítico."
+execution_policy: "Todas las pruebas de VERIFY deben ejecutarse fuera del sandbox con require_escalated; la evidencia previa sandboxed no es válida para el cierre."
+artifact_refs:
+  - proposal.md
+  - design.md
+  - tasks.md
+  - specs/navigation/spec.md
+  - specs/selecciones-public-list/spec.md
+impact:
+  areas:
+    - listado público de Selecciones
+    - navegación global y disclosure accesible
+    - responsive y contraste
+    - regresiones PHP y browser
+  shared_dependencies:
+    - WordPress runtime
+    - tema LABM
+    - navegación del header
+  risk: "alto"
+  reason: "El cambio modifica una plantilla pública, helpers compartidos del tema, header global, JavaScript de navegación y pruebas de regresión."
+weighting:
+  total_percent: 100
+  decision: "Se sustituye la agrupación legacy del gate por la segmentación solicitada; los pesos son de seguimiento y no relajan checks obligatorios."
+  blocks:
+    - id: base-tecnica
+      label: "Base técnica"
+      weight_percent: 25
+      scope: "PHPUnit, cobertura, PHPCS, PHPStan y seguridad de fuentes"
+    - id: frontend-publico
+      label: "Frontend público"
+      weight_percent: 25
+      scope: "Selecciones, navegación y regresiones públicas focales"
+    - id: document-admin
+      label: "Administración document-admin"
+      weight_percent: 25
+      scope: "Flujo administrativo de PDF como regresión compartida"
+    - id: viewport-mobile-320
+      label: "Viewport mobile-320"
+      weight_percent: 6.25
+      scope: "Selecciones y navegación focal en mobile-320"
+    - id: viewport-tablet-768
+      label: "Viewport tablet-768"
+      weight_percent: 6.25
+      scope: "Selecciones y navegación focal en tablet-768"
+    - id: viewport-desktop-1024
+      label: "Viewport desktop-1024"
+      weight_percent: 6.25
+      scope: "Selecciones y navegación focal en desktop-1024"
+    - id: viewport-wide-1440
+      label: "Viewport wide-1440"
+      weight_percent: 6.25
+      scope: "Selecciones y navegación focal en wide-1440"
+checks:
+  - id: legacy-verify-pr-gate
+    criteria:
+      - selections.s1-s12
+      - navigation.s1-s12
+    method: automated
+    required: false
+    scope: "referencia legacy no ejecutada en VERIFY segmentado"
+    command: "No ejecutar: reemplazado por checks independientes"
+    expected: "Todos los gates pasan, incluida cobertura PHP mínima de 80 por ciento y Playwright."
+    capability: docker
+    reason: "Gate obligatorio declarado en openspec/config.yaml."
+  - id: legacy-php-focused
+    criteria:
+      - selections.s1-s9
+      - navigation.s1-s3
+    method: automated
+    required: false
+    scope: "referencia legacy; sustituida por base-phpunit"
+    command: "docker compose run --rm -T --no-deps --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v ${PWD}:/work:ro -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist"
+    expected: "Pruebas focales en verde sin exponer privados, Clubes ni enlaces individuales."
+    capability: docker-wordpress
+    reason: "La lógica depende del runtime WordPress y de fixtures temporales."
+  - id: legacy-browser-focal
+    criteria:
+      - selections.s1-s12
+      - navigation.s1-s12
+    method: browser
+    required: false
+    scope: "referencia legacy; sustituida por frontend-publico y viewports"
+    command: "No ejecutar: reemplazado por checks browser independientes"
+    expected: "Navegación, teclado, touch, sin JavaScript, responsive, foco, contraste y ausencia de desborde pasan."
+    capability: docker-browser
+    reason: "La propuesta conserva una focalización browser, pero el gate verify_pr global sigue siendo obligatorio."
+  - id: legacy-quality
+    criteria:
+      - selections.s1-s12
+      - navigation.s1-s12
+    method: automated
+    required: false
+    scope: "referencia legacy; sustituida por base-phpcs y base-phpstan"
+    command: "No ejecutar: reemplazado por checks técnicos independientes"
+    expected: "PHPCS y PHPStan pasan sin diagnósticos nuevos."
+    capability: docker-composer
+    reason: "Gate quick_local y verify_pr declaran análisis estático aplicable."
+  - id: legacy-source-safety
+    criteria:
+      - selections.s1-s12
+      - navigation.s1-s12
+    method: inspection
+    required: false
+    scope: "referencia legacy; sustituida por base-source-safety"
+    command: "php -l; node --check; comprobación de bytes LF; git diff --check"
+    expected: "Sin errores de sintaxis, sin CRLF y sin errores de whitespace."
+    capability: php-node-git
+    reason: "Obligación explícita del proyecto y de AGENTS.md."
+  - id: content-sync
+    criteria: []
+    method: inspection
+    required: false
+    scope: "estado persistido WordPress/uploads"
+    command: "git diff --name-only -- content-sync wp-content/uploads"
+    expected: "Sin cambios persistidos; scripts/content-sync.ps1 no aplica."
+    capability: git
+    reason: "El alcance declarado modifica código, pruebas y artefactos OpenSpec, no contenido ni uploads."
+  - id: base-phpunit
+    block: base-tecnica
+    criteria: [selections.s1-s9, navigation.s1-s3]
+    method: automated
+    required: true
+    scope: "suite de integración PHPUnit WordPress"
+    command: 'docker compose run --rm -T --no-deps --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v ${PWD}:/work:ro -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist'
+    expected: "Suite PHPUnit en verde."
+    capability: docker-wordpress
+    reason: "La lógica del cambio depende del runtime WordPress y de consultas/fixtures temporales."
+  - id: base-coverage
+    block: base-tecnica
+    criteria: [selections.s1-s9, navigation.s1-s3]
+    method: automated
+    required: true
+    scope: "cobertura PHP de integración"
+    command: './scripts/coverage.ps1'
+    expected: "Suite de cobertura en verde y cobertura mínima configurada de 80 por ciento."
+    capability: docker-coverage
+    reason: "La obligación de cobertura existente se conserva dentro de la base técnica."
+  - id: base-phpcs
+    block: base-tecnica
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: automated
+    required: true
+    scope: "PHPCS/WPCS"
+    command: 'docker run --rm -v ${PWD}:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint'
+    expected: "PHPCS sin diagnósticos nuevos."
+    capability: docker-composer
+    reason: "El estándar de código PHP es un gate configurado del proyecto."
+  - id: base-phpstan
+    block: base-tecnica
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: automated
+    required: true
+    scope: "PHPStan/static analysis"
+    command: 'docker run --rm -v ${PWD}:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress'
+    expected: "PHPStan sin diagnósticos nuevos."
+    capability: docker-composer
+    reason: "El análisis estático existente se conserva dentro del bloque técnico."
+  - id: base-source-safety
+    block: base-tecnica
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: inspection
+    required: true
+    scope: "sintaxis, LF y whitespace"
+    command: 'php -l en PHP modificado; node --check wp-content/themes/labm/assets/navigation.js; comprobación de bytes LF; git diff --check'
+    expected: "Sin errores de sintaxis, CRLF ni errores de whitespace."
+    capability: php-node-git
+    reason: "Obligación explícita de AGENTS.md."
+  - id: frontend-publico
+    block: frontend-publico
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "spec público focal de Selecciones y navegación en desktop-1024"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/public-experience.spec.ts tests/e2e/verify-correctives.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0 --grep "Selecciones|navegaci|jerarqu|recorrido" --reporter=line'
+    expected: "Escenarios públicos focales en verde, sin desborde ni regresión de navegación."
+    capability: playwright-local
+    reason: "Valida el comportamiento público real sin repetir el gate global."
+  - id: document-admin
+    block: document-admin
+    criteria: [navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "spec completa document-admin en desktop-1024"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/document-admin.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0 --reporter=line'
+    expected: "Los escenarios A1-A3 y E1-E5 de document-admin pasan."
+    capability: playwright-local
+    reason: "El header y los estilos globales son compartidos con administración."
+  - id: viewport-mobile-320
+    block: viewport-mobile-320
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "specs públicos focales en mobile-320"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/public-experience.spec.ts tests/e2e/verify-correctives.spec.ts --project mobile-320 --workers=1 --timeout=90000 --retries=0 --grep "Selecciones|navegaci|jerarqu|recorrido" --reporter=line'
+    expected: "Disclosure, teclado, touch, foco y listado público pasan en 320 px."
+    capability: playwright-local
+    reason: "Viewport móvil explícitamente afectado por el menú responsive."
+  - id: viewport-tablet-768
+    block: viewport-tablet-768
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "specs públicos focales en tablet-768"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/public-experience.spec.ts tests/e2e/verify-correctives.spec.ts --project tablet-768 --workers=1 --timeout=90000 --retries=0 --grep "Selecciones|navegaci|jerarqu|recorrido" --reporter=line'
+    expected: "Listado y transición responsive pasan en 768 px."
+    capability: playwright-local
+    reason: "Viewport tablet requerido por la matriz responsive del cambio."
+  - id: viewport-desktop-1024
+    block: viewport-desktop-1024
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "specs públicos focales en desktop-1024"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/public-experience.spec.ts tests/e2e/verify-correctives.spec.ts --project desktop-1024 --workers=1 --timeout=90000 --retries=0 --grep "Selecciones|navegaci|jerarqu|recorrido" --reporter=line'
+    expected: "Navegación desktop, estados activos y listado pasan en 1024 px."
+    capability: playwright-local
+    reason: "Viewport desktop requerido y compartido con el bloque público."
+  - id: viewport-wide-1440
+    block: viewport-wide-1440
+    criteria: [selections.s1-s12, navigation.s1-s12]
+    method: browser
+    required: true
+    scope: "specs públicos focales en wide-1440"
+    command: '.\\node_modules\\.bin\\playwright.cmd test tests/e2e/public-experience.spec.ts tests/e2e/verify-correctives.spec.ts --project wide-1440 --workers=1 --timeout=90000 --retries=0 --grep "Selecciones|navegaci|jerarqu|recorrido" --reporter=line'
+    expected: "Navegación y listado sin desborde pasan en 1440 px."
+    capability: playwright-local
+    reason: "Viewport wide requerido por la matriz responsive del cambio."
+  - id: content-sync-audit
+    block: frontend-publico
+    criteria: []
+    method: inspection
+    required: false
+    scope: "estado persistido WordPress y uploads después de las pruebas"
+    command: './scripts/content-sync.ps1 -Action Status; git diff --name-only -- content-sync wp-content/uploads'
+    expected: "Sin cambios netos de contenido/uploads; content-sync no se ejecuta si no hay estado persistido afectado."
+    capability: git
+    reason: "Las pruebas deben limpiar sus fixtures; se audita el estado antes de cerrar VERIFY."
+exceptions:
+  - id: segmented-verify
+    decision: "Se mantiene el gate obligatorio por capacidades, pero se ejecuta mediante comandos independientes por bloque; no se ejecuta scripts/gate.ps1 -IncludeBrowser como proceso monolítico."
+    reason: "Instrucción explícita del usuario para obtener progreso y aislar bloqueos por duración."
+  - id: weighting-legacy
+    decision: "La ponderación legacy no estaba expresada por bloques; se adopta la matriz 25/25/25/6.25/6.25/6.25/6.25 solicitada."
+    reason: "La suma es 100 por ciento y no cambia la obligatoriedad de los checks."
+  - id: elevated-test-execution
+    decision: "Se reinicia VERIFY y cada comando de prueba se ejecuta con sandbox_permissions=require_escalated."
+    reason: "Instrucción explícita del usuario tras invalidar la ejecución sandboxed."

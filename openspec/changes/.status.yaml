@@ -1,8 +1,9 @@
 schema_version: "1.3"
 phase: ARCHIVE
-change: "selecciones-backend"
+change: "selecciones-frontend-submenu"
 awaiting_approval: false
 completed: true
 pending_tasks: []
 modified_artifacts: []
-notes: "ARCHIVE completado:12/12COMPLIANT,10/10tareas; specs sincronizadas; evidencia vigente acumulada aceptada. Archivo: openspec/changes/archive/2026-10-06-selecciones-backend. TDD advisory no bloqueante."
+archive_path: "openspec/changes/archive/2026-10-07-selecciones-frontend-submenu"
+notes: "ARCHIVE completado: deltas de navegación y listado sincronizados en specs/experiencia-publica; cambio archivado en archive/2026-10-07-selecciones-frontend-submenu. No se ejecutaron suites ni content-sync; 5.2 no aplica por no existir cambios de contenido/uploads persistidos."

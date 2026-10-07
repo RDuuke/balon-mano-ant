@@ -30,6 +30,9 @@ function labm_theme_enqueue_public_style() {
 	$back_to_top_script_path    = get_theme_file_path( 'assets/back-to-top.js' );
 	$back_to_top_script_version = file_exists( $back_to_top_script_path ) ? (string) filemtime( $back_to_top_script_path ) : wp_get_theme()->get( 'Version' );
 	wp_enqueue_script( 'labm-back-to-top', get_theme_file_uri( 'assets/back-to-top.js' ), array(), $back_to_top_script_version, true );
+	$navigation_script_path    = get_theme_file_path( 'assets/navigation.js' );
+	$navigation_script_version = file_exists( $navigation_script_path ) ? (string) filemtime( $navigation_script_path ) : wp_get_theme()->get( 'Version' );
+	wp_enqueue_script( 'labm-navigation', get_theme_file_uri( 'assets/navigation.js' ), array(), $navigation_script_version, true );
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 	}
@@ -55,6 +58,7 @@ add_action( 'wp_enqueue_scripts', 'labm_theme_enqueue_public_style' );
 function labm_theme_setup_public_experience() {
 	add_shortcode( 'labm_actualidad_listado', 'labm_theme_actualidad_shortcode' );
 	add_shortcode( 'labm_selecciones_listado', 'labm_theme_selecciones_shortcode' );
+	add_shortcode( 'labm_header_navigation', 'labm_theme_header_navigation_shortcode' );
 	add_shortcode( 'labm_actualidad_hero', 'labm_theme_actualidad_hero_shortcode' );
 	add_shortcode( 'labm_actualidad_media', 'labm_theme_actualidad_media_shortcode' );
 	add_shortcode( 'labm_actualidad_detalle', 'labm_theme_actualidad_detail_shortcode' );
@@ -1093,6 +1097,314 @@ function labm_theme_mark_current_navigation_link( $content, $block ) {
 add_filter( 'render_block_core/navigation-link', 'labm_theme_mark_current_navigation_link', 10, 2 );
 
 /**
+ * Devuelve los terminos de modalidad que tienen Selecciones publicas.
+ *
+ * Piso y Playa se conservan aunque no tengan publicaciones; no se consultan
+ * terminos globales de otros tipos de contenido.
+ *
+ * @return WP_Term[]
+ */
+function labm_theme_selection_terms() {
+	$terms_by_id  = array();
+	$public_ids   = get_posts(
+		array(
+			'post_type'      => 'labm_seleccion',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+	$public_terms = empty( $public_ids ) ? array() : wp_get_object_terms( $public_ids, 'labm_modalidad' );
+	if ( ! is_wp_error( $public_terms ) ) {
+		foreach ( $public_terms as $term ) {
+			$terms_by_id[ (int) $term->term_id ] = $term;
+		}
+	}
+
+	foreach ( array( 'Piso', 'Playa' ) as $base_name ) {
+		$term = get_term_by( 'name', $base_name, 'labm_modalidad' );
+		if ( $term instanceof WP_Term ) {
+			$terms_by_id[ (int) $term->term_id ] = $term;
+		}
+	}
+
+	$terms = array_values( $terms_by_id );
+	usort(
+		$terms,
+		static function ( $left, $right ) {
+			$base_order  = array(
+				'Piso'  => 0,
+				'Playa' => 1,
+			);
+			$left_order  = $base_order[ $left->name ] ?? 2;
+			$right_order = $base_order[ $right->name ] ?? 2;
+			if ( $left_order !== $right_order ) {
+				return $left_order <=> $right_order;
+			}
+			return strcasecmp( $left->name, $right->name );
+		}
+	);
+
+	return $terms;
+}
+
+/**
+ * Normaliza la modalidad y la pagina solicitadas por el listado publico.
+ *
+ * @param mixed $filters Filtros de solo lectura.
+ * @return array{modalidad:string,pagina:int}
+ */
+function labm_theme_selection_request_state( $filters = array() ) {
+	$filters            = is_array( $filters ) ? $filters : array();
+	$requested_modality = isset( $filters['modalidad'] ) && is_scalar( $filters['modalidad'] ) ? sanitize_text_field( (string) $filters['modalidad'] ) : '';
+	$modalidad          = 'Piso';
+	foreach ( labm_theme_selection_terms() as $term ) {
+		if ( $requested_modality === $term->name ) {
+			$modalidad = $term->name;
+			break;
+		}
+	}
+
+	$requested_page = isset( $filters['pagina'] ) && is_scalar( $filters['pagina'] ) ? (string) $filters['pagina'] : '';
+	$pagina         = preg_match( '/^[1-9][0-9]*$/', $requested_page ) ? (int) $requested_page : 1;
+
+	return array(
+		'modalidad' => $modalidad,
+		'pagina'    => max( 1, $pagina ),
+	);
+}
+
+/**
+ * Ejecuta la consulta publica de Selecciones y recupera la ultima pagina valida.
+ *
+ * @param array $state Estado normalizado.
+ * @return WP_Query
+ */
+function labm_theme_selection_query( $state = array() ) {
+	$state    = labm_theme_selection_request_state( $state );
+	$per_page = 3;
+	$args     = array(
+		'post_type'               => 'labm_seleccion',
+		'post_status'             => 'publish',
+		'posts_per_page'          => -1,
+		'paged'                   => $state['pagina'],
+		'labm_selection_internal' => true,
+		'orderby'                 => array(
+			'date' => 'DESC',
+			'ID'   => 'DESC',
+		),
+		'order'                   => 'DESC',
+		'ignore_sticky_posts'     => true,
+	);
+	$term     = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
+	if ( $term instanceof WP_Term ) {
+		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			array(
+				'taxonomy'         => 'labm_modalidad',
+				'field'            => 'term_id',
+				'terms'            => (int) $term->term_id,
+				'include_children' => false,
+			),
+		);
+	} else {
+		$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			array(
+				'taxonomy' => 'labm_modalidad',
+				'field'    => 'term_id',
+				'terms'    => -1,
+			),
+		);
+	}
+
+	$query                = new WP_Query( $args );
+	$total_posts          = (int) $query->found_posts;
+	$max_pages            = $total_posts > 0 ? (int) ceil( $total_posts / $per_page ) : 0;
+	$effective_page       = $max_pages > 0 ? min( (int) $state['pagina'], $max_pages ) : 1;
+	$start                = ( $effective_page - 1 ) * $per_page;
+	$query->posts         = array_slice( $query->posts, $start, $per_page );
+	$query->post_count    = count( $query->posts );
+	$query->max_num_pages = $max_pages;
+	$query->set( 'posts_per_page', $per_page );
+	$query->set( 'paged', $effective_page );
+	$query->set( 'labm_selection_effective_page', $effective_page );
+
+	return $query;
+}
+
+/**
+ * Ajusta la consulta principal del archivo sin afectar otros tipos de contenido.
+ *
+ * @param WP_Query $query Consulta principal de WordPress.
+ */
+function labm_theme_prepare_selection_archive_query( $query ) {
+	if ( is_admin() || $query->get( 'labm_selection_internal' ) || ! $query->is_main_query() || ( 'labm_seleccion' !== $query->get( 'post_type' ) && ! $query->is_post_type_archive( 'labm_seleccion' ) ) ) {
+		return;
+	}
+
+	$state = labm_theme_selection_request_state( wp_unslash( $_GET ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filtro publico de solo lectura.
+	$query->set( 'post_type', 'labm_seleccion' );
+	$query->set( 'post_status', 'publish' );
+	$query->set( 'posts_per_page', 3 );
+	$query->set( 'paged', $state['pagina'] );
+	$query->set(
+		'orderby',
+		array(
+			'date' => 'DESC',
+			'ID'   => 'DESC',
+		)
+	);
+	$query->set( 'order', 'DESC' );
+	$query->set( 'ignore_sticky_posts', true );
+	$term = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
+	$query->set(
+		'tax_query',
+		array(
+			array(
+				'taxonomy'         => 'labm_modalidad',
+				'field'            => 'term_id',
+				'terms'            => $term instanceof WP_Term ? (int) $term->term_id : -1,
+				'include_children' => false,
+			),
+		)
+	);
+}
+add_action( 'pre_get_posts', 'labm_theme_prepare_selection_archive_query' );
+
+/**
+ * Devuelve un resumen editorial saneado sin inventar datos deportivos.
+ *
+ * @param WP_Post $post Publicacion de Selecciones.
+ * @return string
+ */
+function labm_theme_selection_summary( $post ) {
+	$source = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
+	$source = trim( wp_strip_all_tags( strip_shortcodes( (string) $source ) ) );
+	return wp_trim_words( $source, 32, '…' );
+}
+
+/**
+ * Renderiza una imagen editorial existente o un placeholder neutro.
+ *
+ * @param WP_Post $post Publicacion de Selecciones.
+ * @return string
+ */
+function labm_theme_selection_media( $post ) {
+	if ( has_post_thumbnail( $post ) ) {
+		return get_the_post_thumbnail(
+			$post,
+			'medium_large',
+			array(
+				'alt'     => wp_strip_all_tags( get_the_title( $post ) ),
+				'loading' => 'lazy',
+			)
+		);
+	}
+
+	return '<span class="labm-selecciones__placeholder" role="img" aria-label="Imagen no disponible"><span aria-hidden="true">LABM</span></span>';
+}
+
+/**
+ * Renderiza el listado editorial publico de Selecciones.
+ *
+ * @param mixed $filters Filtros publicos de solo lectura.
+ * @return string
+ */
+function labm_theme_render_selection_listing( $filters = array() ) {
+	$state          = labm_theme_selection_request_state( $filters );
+	$query          = labm_theme_selection_query( $state );
+	$archive_url    = get_post_type_archive_link( 'labm_seleccion' );
+	$archive_url    = $archive_url ? $archive_url : home_url( '/selecciones/' );
+	$terms          = labm_theme_selection_terms();
+	$selection_term = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
+	$introduction   = $selection_term instanceof WP_Term ? trim( wp_strip_all_tags( (string) $selection_term->description ) ) : '';
+	$introduction   = '' !== $introduction ? $introduction : __( 'Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.', 'labm' );
+	$current_page   = (int) $query->get( 'labm_selection_effective_page' );
+	$pagination     = add_query_arg(
+		array(
+			'modalidad' => $state['modalidad'],
+			'pagina'    => '%#%',
+		),
+		$archive_url
+	);
+	$pagination     = str_replace( '%20', '+', $pagination );
+
+	ob_start();
+	?>
+	<section class="labm-selecciones" data-labm-listado="selecciones" data-labm-modalidad="<?php echo esc_attr( $state['modalidad'] ); ?>" aria-labelledby="labm-selecciones-title">
+		<header class="labm-selecciones__hero">
+			<p class="labm-selecciones__eyebrow"><?php esc_html_e( 'Selecciones LABM', 'labm' ); ?></p>
+			<h1 id="labm-selecciones-title"><?php echo esc_html( $state['modalidad'] ); ?></h1>
+			<p><?php echo esc_html( $introduction ); ?></p>
+		</header>
+		<div class="labm-selecciones__intro">
+			<?php /* translators: %d is the number of published selections. */ ?>
+			<p><?php printf( esc_html( _n( '%d selección publicada', '%d selecciones publicadas', (int) $query->found_posts, 'labm' ) ), (int) $query->found_posts ); ?></p>
+			<form class="labm-selecciones__selector" method="get" action="<?php echo esc_url( $archive_url ); ?>">
+				<label for="labm-selecciones-modalidad"><?php esc_html_e( 'Modalidad', 'labm' ); ?></label>
+				<select id="labm-selecciones-modalidad" name="modalidad">
+					<?php foreach ( $terms as $term ) : ?>
+						<option value="<?php echo esc_attr( $term->name ); ?>" <?php selected( $state['modalidad'], $term->name ); ?>><?php echo esc_html( $term->name ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<button type="submit"><?php esc_html_e( 'Consultar', 'labm' ); ?></button>
+			</form>
+		</div>
+		<?php if ( $query->have_posts() ) : ?>
+			<div class="labm-selecciones__rows">
+				<?php foreach ( $query->posts as $post ) : ?>
+					<article class="labm-selecciones__row" data-labm-seleccion-row data-labm-seleccion-id="<?php echo esc_attr( (string) $post->ID ); ?>">
+						<div class="labm-selecciones__media"><?php echo labm_theme_selection_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado por WordPress o helper seguro. ?></div>
+						<div class="labm-selecciones__content">
+							<p class="labm-selecciones__eyebrow"><?php echo esc_html( $state['modalidad'] ); ?></p>
+							<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
+							<?php $summary = labm_theme_selection_summary( $post ); ?>
+							<?php if ( '' !== $summary ) : ?>
+								<p><?php echo esc_html( $summary ); ?></p>
+							<?php endif; ?>
+							<?php $categories = get_the_terms( $post->ID, 'labm_categoria' ); ?>
+							<?php if ( is_array( $categories ) && ! empty( $categories ) ) : ?>
+								<p class="labm-selecciones__meta"><?php echo esc_html( implode( ', ', wp_list_pluck( $categories, 'name' ) ) ); ?></p>
+							<?php endif; ?>
+							<?php $detail = trim( (string) get_post_meta( $post->ID, 'labm_modalidad_detalle', true ) ); ?>
+							<?php if ( '' !== $detail ) : ?>
+								<p class="labm-selecciones__meta"><?php echo esc_html( $detail ); ?></p>
+							<?php endif; ?>
+						</div>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		<?php else : ?>
+			<div class="labm-selecciones__empty" data-labm-selecciones-vacio role="status">
+				<?php /* translators: %s is the selected modality name. */ ?>
+				<p><?php printf( esc_html__( 'No hay selecciones publicadas en %s.', 'labm' ), esc_html( $state['modalidad'] ) ); ?></p>
+				<p><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"><?php esc_html_e( 'Consultar Piso', 'labm' ); ?></a> <a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"><?php esc_html_e( 'Consultar Playa', 'labm' ); ?></a></p>
+			</div>
+		<?php endif; ?>
+		<?php if ( $query->max_num_pages > 1 ) : ?>
+			<nav class="labm-pagination labm-selecciones__pagination" aria-label="<?php esc_attr_e( 'Paginación de selecciones', 'labm' ); ?>">
+				<?php
+				$links = paginate_links(
+					array(
+						'base'      => $pagination,
+						'format'    => '',
+						'current'   => $current_page,
+						'total'     => (int) $query->max_num_pages,
+						'prev_text' => __( 'Página anterior', 'labm' ),
+						'next_text' => __( 'Página siguiente', 'labm' ),
+					)
+				);
+				echo wp_kses_post( str_replace( '%20', '+', (string) $links ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- enlaces saneados por wp_kses_post.
+				?>
+			</nav>
+		<?php endif; ?>
+	</section>
+	<?php
+	wp_reset_postdata();
+	return (string) ob_get_clean();
+}
+
+/**
  * Consulta publica, paginada y filtrada sin exponer estados no publicos.
  *
  * @param string $post_type Tipo de contenido.
@@ -1168,6 +1480,9 @@ function labm_theme_actualidad_article_content( $post ) {
  * @return string
  */
 function labm_theme_render_listing( $post_type, $filters ) {
+	if ( 'labm_seleccion' === $post_type ) {
+		return labm_theme_render_selection_listing( $filters );
+	}
 	if ( ! post_type_exists( $post_type ) ) {
 		return '<p class="labm-notice">' . esc_html__( 'Esta sección no está disponible por el momento.', 'labm' ) . '</p>';
 	}
@@ -1312,6 +1627,64 @@ function labm_theme_actualidad_shortcode() {
  */
 function labm_theme_selecciones_shortcode() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filtro publico de solo lectura.
-	$filters = array_map( 'sanitize_text_field', wp_unslash( $_GET ) );
+	$filters = wp_unslash( $_GET );
 	return labm_theme_render_listing( 'labm_seleccion', $filters );
+}
+
+/** Renderiza la navegacion compartida con un submenu progresivo de Selecciones. */
+function labm_theme_header_navigation_shortcode() {
+	$request_uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
+	$current_path = untrailingslashit( (string) wp_parse_url( $request_uri, PHP_URL_PATH ) );
+	$archive_url  = get_post_type_archive_link( 'labm_seleccion' );
+	$archive_url  = $archive_url ? $archive_url : home_url( '/selecciones/' );
+	$archive_path = untrailingslashit( (string) wp_parse_url( $archive_url, PHP_URL_PATH ) );
+	$is_archive   = $current_path === $archive_path;
+	if ( $is_archive ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- estado publico de solo lectura.
+		$state = labm_theme_selection_request_state( wp_unslash( $_GET ) );
+	} else {
+		$state = array(
+			'modalidad' => '',
+			'pagina'    => 1,
+		);
+	}
+	$items = array(
+		'Inicio'      => home_url( '/' ),
+		'Nosotros'    => home_url( '/nosotros/' ),
+		'Actualidad'  => home_url( '/actualidad/' ),
+		'Selecciones' => $archive_url,
+		'Documentos'  => home_url( '/documentos/' ),
+		'Contacto'    => home_url( '/contacto/' ),
+	);
+
+	ob_start();
+	?>
+	<nav class="labm-site-navigation" data-labm-navigation aria-label="<?php esc_attr_e( 'Navegación principal', 'labm' ); ?>">
+		<div class="labm-site-navigation__mobile-controls">
+			<button type="button" class="labm-site-navigation__menu-toggle" data-labm-menu-toggle aria-controls="labm-site-navigation-panel" aria-expanded="true"><span data-labm-menu-label><?php esc_html_e( 'Cerrar menú', 'labm' ); ?></span></button>
+		</div>
+		<div id="labm-site-navigation-panel" class="labm-site-navigation__panel" data-labm-menu-panel>
+			<ul class="labm-site-navigation__list">
+				<?php foreach ( $items as $label => $url ) : ?>
+					<?php if ( 'Selecciones' === $label ) : ?>
+						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_archive ? ' is-current-section' : ''; ?>" data-labm-submenu>
+							<div class="labm-site-navigation__parent">
+								<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Selecciones', 'labm' ); ?></a>
+								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true" aria-label="<?php esc_attr_e( 'Cerrar submenú de Selecciones', 'labm' ); ?>"><span aria-hidden="true">⌄</span></button>
+							</div>
+							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_archive && 'Piso' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_archive && 'Playa' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
+							</ul>
+						</li>
+					<?php else : ?>
+						<?php $is_current = untrailingslashit( (string) wp_parse_url( $url, PHP_URL_PATH ) ) === $current_path; ?>
+						<li class="labm-site-navigation__item"><a href="<?php echo esc_url( $url ); ?>"<?php echo $is_current ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a></li>
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+	</nav>
+	<?php
+	return (string) ob_get_clean();
 }

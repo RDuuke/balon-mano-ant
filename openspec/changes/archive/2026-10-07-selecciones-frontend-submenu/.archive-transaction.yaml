@@ -1,0 +1,32 @@
+schema_version: "1.0"
+change: "selecciones-frontend-submenu"
+verification_fingerprint:
+  verify_report_sha256: "FD3A416C1CE8483C62CA272D9F1FC517EFC0EF94F6A487458D935BFF9EFFF586"
+  tasks_sha256: "EE1A30CA23066B0FB0E3C05DA01B42B799ECA6D8B03CDB097E51B54B7D88687D"
+destination: "openspec/changes/archive/2026-10-07-selecciones-frontend-submenu"
+status: archived
+domains:
+  - id: experiencia-publica
+    base: "openspec/specs/experiencia-publica/spec.md"
+    before_sha256: "3D57E66B372B13603A8D378C8B55C3644ECCA82832F28A2DB8ACAABAB62166C9"
+    after_sha256: "71F788D5C273998651B765FF047ECAA3A7BE8E53E404901FE03F3C2EC4A678F3"
+    backup: ".archive-transaction/backups/experiencia-publica.spec.md"
+    operations:
+      - add: "navigation: Sección principal"
+      - add: "navigation: Disclosure accesible"
+      - add: "navigation: Panel móvil"
+      - add: "navigation: Presentación fiel"
+      - add: "selecciones-public-list: Colección pública"
+      - add: "selecciones-public-list: Estado de consulta y paginación"
+      - add: "selecciones-public-list: Filas editoriales"
+      - add: "selecciones-public-list: Fidelidad visual"
+  - id: no-other-domain
+    base: null
+    operations: []
+prepared_refs:
+  - "specs/navigation/spec.md"
+  - "specs/selecciones-public-list/spec.md"
+  - "../../../specs/experiencia-publica/spec.md"
+prepared_file: "openspec/specs/experiencia-publica/spec.md"
+archive_report: "archive-report.yaml"
+progress: archived
