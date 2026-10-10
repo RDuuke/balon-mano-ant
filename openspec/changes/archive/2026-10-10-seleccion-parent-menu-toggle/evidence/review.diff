@@ -1,0 +1,423 @@
+diff --git a/tests/e2e/public-experience.spec.ts b/tests/e2e/public-experience.spec.ts
+index bfa95d2..c9f553e 100644
+--- a/tests/e2e/public-experience.spec.ts
++++ b/tests/e2e/public-experience.spec.ts
+@@ -348,7 +348,7 @@ test('contenido publico conserva ancho maximo, centrado y gutters coherentes', a
+ 
+ test('3.1 navegación global, páginas institucionales, foco y ruta ausente', async ({ page }) => {
+   await page.goto('/');
+-  const openMenu = page.getByRole('button', { name: /open menu|abrir menÃº/i });
++  const openMenu = page.getByRole('button', { name: /open menu|abrir men/i });
+   if (await openMenu.isVisible()) await openMenu.click();
+   const navigation = page.getByRole('navigation', { name: /navegación principal/i });
+   await expect(navigation).toBeVisible();
+@@ -435,7 +435,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
+     await expect(pagination).toContainText(/p[aá]gina/i);
+   }
+ 
+-  const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
++  const submenuToggle = page.getByRole('button', { name: 'Selecciones', exact: true });
+   const menuToggle = page.getByRole('button', { name: /abrir men/i });
+   if (await menuToggle.isVisible()) {
+     await menuToggle.click();
+@@ -467,7 +467,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
+     if (await touchMenuToggle.isVisible()) {
+       await touchMenuToggle.click();
+     }
+-    const touchToggle = touchPage.getByRole('button', { name: /submen[uú] de selecciones/i });
++    const touchToggle = touchPage.getByRole('button', { name: 'Selecciones', exact: true });
+     const touchBox = await touchToggle.boundingBox();
+     expect(touchBox).not.toBeNull();
+     await touchPage.touchscreen.tap(touchBox!.x + touchBox!.width / 2, touchBox!.y + touchBox!.height / 2);
+@@ -480,6 +480,8 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
+   const noJavaScriptPage = await noJavaScript.newPage();
+   try {
+     await noJavaScriptPage.goto('/selecciones/?modalidad=Piso&pagina=999');
++    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeVisible();
++    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Playa', exact: true })).toBeVisible();
+     await expect(noJavaScriptPage.getByRole('heading', { level: 1 })).toHaveText('Piso');
+     await expect(noJavaScriptPage.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
+   } finally {
+diff --git a/tests/e2e/verify-correctives.spec.ts b/tests/e2e/verify-correctives.spec.ts
+index c8535c2..148b769 100644
+--- a/tests/e2e/verify-correctives.spec.ts
++++ b/tests/e2e/verify-correctives.spec.ts
+@@ -5,7 +5,7 @@ test('navegacion escritorio completa y ubicacion activa', async ({ page }) => {
+   const open = page.getByRole('button', { name: /open menu|abrir menú/i });
+   if (await open.isVisible()) await open.click();
+   const nav = page.getByRole('navigation', { name: /principal/i });
+-  for (const label of ['Inicio', 'Nosotros', 'Actualidad', 'Selecciones', 'Documentos', 'Contacto']) {
++  for (const label of ['Inicio', 'Nosotros', 'Actualidad', 'Documentos', 'Contacto']) {
+     await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible();
+   }
+   await expect(nav.getByRole('link', { name: 'Inicio', exact: true })).toHaveAttribute('aria-current', 'page');
+@@ -13,13 +13,16 @@ test('navegacion escritorio completa y ubicacion activa', async ({ page }) => {
+ 
+ test('submenú de Selecciones se cierra al abandonar su contexto', async ({ page }) => {
+   await page.goto('/');
+-  const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
+-  await submenuToggle.click();
++  const menu = page.getByRole('button', { name: /abrir men/i });
++  if (await menu.isVisible()) await menu.click();
++  const submenuToggle = page.getByRole('button', { name: 'Selecciones', exact: true });
++  await submenuToggle.focus();
++  await page.keyboard.press('Enter');
+   await expect(submenuToggle).toHaveAttribute('aria-expanded', 'true');
+   const nav = page.getByRole('navigation', { name: /principal/i });
+   await nav.getByRole('link', { name: 'Actualidad', exact: true }).click();
+   await expect(page).toHaveURL(/\/actualidad\/$/);
+-  await expect(page.getByRole('button', { name: /abrir submen[uú] de selecciones/i })).toHaveAttribute('aria-expanded', 'false');
++  await expect(page.locator('[data-labm-submenu-toggle]')).toHaveAttribute('aria-expanded', 'false');
+ });
+ 
+ test('jerarquia de header permanece estable en Inicio y Actualidad', async ({ page }) => {
+@@ -30,12 +33,14 @@ test('jerarquia de header permanece estable en Inicio y Actualidad', async ({ pa
+       await open.click();
+     }
+     const nav = page.getByRole('navigation', { name: /principal/i });
+-    const submenuToggle = nav.getByRole('button', { name: /submen[uú] de selecciones/i });
++    const submenuToggle = nav.getByRole('button', { name: 'Selecciones', exact: true });
+     if ('false' === await submenuToggle.getAttribute('aria-expanded')) {
+-      await submenuToggle.click();
++      await submenuToggle.focus();
++      await page.keyboard.press('Enter');
+     }
+-    const parent = nav.getByRole('link', { name: 'Selecciones', exact: true });
+-    await expect(parent).toHaveAttribute('href', /\/selecciones\/$/);
++    const parent = submenuToggle;
++    await expect(nav.getByRole('link', { name: 'Selecciones', exact: true })).toHaveCount(0);
++    await expect(parent).not.toHaveAttribute('href');
+     await expect(nav.getByRole('link', { name: 'Balonmano Piso', exact: true })).toHaveAttribute('href', /modalidad=Piso/);
+     await expect(nav.getByRole('link', { name: 'Balonmano Playa', exact: true })).toHaveAttribute('href', /modalidad=Playa/);
+     await expect(nav.getByRole('link', { name: route === '/' ? 'Inicio' : 'Actualidad', exact: true })).toHaveAttribute('aria-current', 'page');
+@@ -55,9 +60,10 @@ test('navegacion movil conserva foco visible y recorrido predecible', async ({ p
+   await expect(page.locator(':focus-visible')).toHaveCount(1);
+   await page.keyboard.press('Enter');
+   const links = page.getByRole('navigation', { name: /principal/i }).getByRole('link');
+-  await expect(links).toHaveCount(6);
+-  const submenuToggle = page.getByRole('button', { name: /abrir submen.*selecciones/i });
+-  await submenuToggle.click();
++  await expect(links).toHaveCount(5);
++  const submenuToggle = page.getByRole('button', { name: 'Selecciones', exact: true });
++  await submenuToggle.focus();
++  await page.keyboard.press('Enter');
+   await expect(page.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeVisible();
+   await page.keyboard.press('Escape');
+   await expect(submenuToggle).toHaveAttribute('aria-expanded', 'false');
+@@ -75,3 +81,87 @@ test('recorrido accesible llega al contenido y mantiene mensajes identificables'
+   await expect(page).toHaveURL(/#contenido-principal$/);
+   await expect(page.locator('#contenido-principal')).toBeVisible();
+ });
++
++
++test('submenu Selecciones abre por hover y conserva cierre por clic y Escape', async ({ page }) => {
++  test.skip((page.viewportSize()?.width ?? 320) < 768, 'Hover en escritorio');
++  await page.goto('/');
++  const toggle = page.getByRole('button', { name: 'Selecciones', exact: true });
++  const group = page.locator('[data-labm-submenu]');
++  await toggle.hover();
++  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
++  await page.getByRole('link', { name: 'Balonmano Piso', exact: true }).hover();
++  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
++  await page.getByRole('navigation', { name: /principal/i }).getByRole('link', { name: 'Inicio', exact: true }).hover();
++  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++  await toggle.hover();
++  await toggle.click();
++  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++  await expect(page).toHaveURL(/\/$/);
++  await page.mouse.move(0, 0);
++  await toggle.hover();
++  await page.keyboard.press('Escape');
++  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++  await expect(toggle).toBeFocused();
++  await expect(group).not.toHaveClass(/is-current-section/);
++});
++
++test('submenu Selecciones conserva padre activo y teclado en ambas modalidades', async ({ page }) => {
++  for (const modalidad of ['Piso', 'Playa']) {
++    await page.goto(`/selecciones/?modalidad=${modalidad}`);
++    const menu = page.getByRole('button', { name: /abrir men/i });
++    if (await menu.isVisible()) await menu.click();
++    const toggle = page.getByRole('button', { name: 'Selecciones', exact: true });
++    const group = page.locator('[data-labm-submenu]');
++    await expect(group).toHaveClass(/is-current-section/);
++    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++    const activeColor = await toggle.evaluate(el => getComputedStyle(el).color);
++    await page.keyboard.press('Tab');
++    await toggle.focus();
++    await expect(page.locator(':focus-visible')).toHaveCount(1);
++    await page.keyboard.press('Space');
++    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
++    expect(await toggle.evaluate(el => getComputedStyle(el).color)).toBe(activeColor);
++    await page.keyboard.press('Tab');
++    await expect(page.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeFocused();
++    await expect(group.locator('[aria-current="page"]')).toHaveCount(1);
++    await expect(page.getByRole('link', { name: `Balonmano ${modalidad}`, exact: true })).toHaveAttribute('aria-current', 'page');
++    await page.keyboard.press('Escape');
++    await expect(toggle).toBeFocused();
++    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++    await page.keyboard.press('Enter');
++    await page.getByRole('link', { name: `Balonmano ${modalidad === 'Piso' ? 'Playa' : 'Piso'}`, exact: true }).click();
++    await expect(group).toHaveClass(/is-current-section/);
++  }
++});
++
++test('header Selecciones mantiene padre y modalidad seleccionados en internas', async ({ page }) => {
++  // Canonical WordPress keeps localhost URLs; route assets without changing persisted options.
++  await page.route('http://localhost:8080/**', route => route.continue({
++    url: route.request().url().replace('http://localhost:8080', 'http://host.docker.internal:8080')
++  }));
++  for (const modalidad of ['Piso', 'Playa']) {
++    await page.goto(`/selecciones/?modalidad=${modalidad}`);
++    const publication = page.locator('[data-labm-seleccion-row] a.labm-selecciones__publication-link').first();
++    await expect(publication).toBeVisible();
++    const target = new URL((await publication.getAttribute('href'))!);
++    await page.goto(`${target.pathname}?modalidad=${modalidad === 'Piso' ? 'Playa' : 'Piso'}`);
++    const menu = page.getByRole('button', { name: /abrir men/i });
++    if (await menu.isVisible()) await menu.click();
++    const group = page.locator('[data-labm-submenu]');
++    const toggle = group.getByRole('button', { name: 'Selecciones', exact: true });
++    await expect(group).toHaveClass(/is-current-section/);
++    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++    await toggle.focus();
++    await page.keyboard.press('Enter');
++    const selected = group.getByRole('link', { name: `Balonmano ${modalidad}`, exact: true });
++    await expect(selected).toHaveAttribute('aria-current', 'location');
++    await expect(group.locator('[aria-current]')).toHaveCount(1);
++    const selectedBackground = await selected.evaluate(el => getComputedStyle(el).backgroundColor);
++    const other = group.getByRole('link', { name: `Balonmano ${modalidad === 'Piso' ? 'Playa' : 'Piso'}`, exact: true });
++    expect(await other.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(selectedBackground);
++    await page.keyboard.press('Escape');
++    await expect(group).toHaveClass(/is-current-section/);
++    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
++  }
++});
+diff --git a/tests/php/PublicExperienceTest.php b/tests/php/PublicExperienceTest.php
+index e493d8b..b1e3018 100644
+--- a/tests/php/PublicExperienceTest.php
++++ b/tests/php/PublicExperienceTest.php
+@@ -821,10 +821,18 @@ final class PublicExperienceTest extends TestCase {
+ 			$_GET                  = array( 'modalidad' => 'Piso' );
+ 			$html                   = labm_theme_header_navigation_shortcode();
+ 			self::assertLessThan( strpos( $html, 'Documentos' ), strpos( $html, 'Selecciones' ) );
+-			self::assertStringContainsString( '/selecciones/"', $html );
++			self::assertDoesNotMatchRegularExpression( '/<a[^>]*>Selecciones<\/a>/', $html );
++			self::assertMatchesRegularExpression( '/<button[^>]*data-labm-submenu-toggle[^>]*>\s*Selecciones/', $html );
++			self::assertStringContainsString( 'is-current-section', $html );
+ 			self::assertSame( 1, substr_count( $html, 'aria-current="page"' ) );
+ 			self::assertMatchesRegularExpression( '/Balonmano Piso<\/a>[^<]*<\/li>/', $html );
+ 			self::assertStringContainsString( '/selecciones/?modalidad=Playa', $html );
++			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Playa';
++			$_GET                  = array( 'modalidad' => 'Playa' );
++			$playa                  = labm_theme_header_navigation_shortcode();
++			self::assertStringContainsString( 'is-current-section', $playa );
++			self::assertSame( 1, substr_count( $playa, 'aria-current="page"' ) );
++			self::assertMatchesRegularExpression( '/<a[^>]*aria-current="page"[^>]*>Balonmano Playa<\/a>/', $playa );
+ 
+ 			$_SERVER['REQUEST_URI'] = '/actualidad/';
+ 			$_GET                  = array();
+@@ -842,6 +850,36 @@ final class PublicExperienceTest extends TestCase {
+ 		}
+ 	}
+ 
++	/** El detalle conserva la seccion y modalidad del articulo, incluso con un filtro ajeno en la URL. */
++	public function test_selection_header_navigation_marks_single_selection_modality(): void {
++		$original_query = $GLOBALS['wp_query'];
++		$original_get   = $_GET;
++		$original_uri   = $_SERVER['REQUEST_URI'] ?? '/';
++		$post_ids       = array();
++		try {
++			foreach ( array( 'Piso', 'Playa' ) as $modality ) {
++				$post_id    = wp_insert_post( array( 'post_type' => 'labm_seleccion', 'post_status' => 'publish', 'post_title' => 'Navigation single TDD ' . $modality ) );
++				$post_ids[] = $post_id;
++				wp_set_object_terms( $post_id, $modality, 'labm_modalidad' );
++				$GLOBALS['wp_query']    = new WP_Query( array( 'p' => $post_id, 'post_type' => 'labm_seleccion' ) );
++				$_SERVER['REQUEST_URI'] = '/seleccion/navigation-single/?modalidad=' . ( 'Piso' === $modality ? 'Playa' : 'Piso' );
++				$_GET                  = array( 'modalidad' => 'Piso' === $modality ? 'Playa' : 'Piso' );
++				$html                  = labm_theme_header_navigation_shortcode();
++				self::assertStringContainsString( 'is-current-section', $html );
++				self::assertMatchesRegularExpression( '/<a[^>]*aria-current="location"[^>]*>Balonmano ' . $modality . '<\/a>/', $html );
++				self::assertSame( 1, substr_count( $html, 'aria-current="location"' ) );
++				self::assertSame( 0, substr_count( $html, 'aria-current="page"' ) );
++			}
++		} finally {
++			$GLOBALS['wp_query']    = $original_query;
++			$_GET                  = $original_get;
++			$_SERVER['REQUEST_URI'] = $original_uri;
++			foreach ( $post_ids as $post_id ) {
++				wp_delete_post( $post_id, true );
++			}
++		}
++	}
++
+ 	/** El script de navegacion mantiene disclosure progresivo, foco, cierre y estados sin roles de menu. */
+ 	public function test_selection_navigation_asset_declares_accessible_disclosure_contract(): void {
+ 		$script = (string) file_get_contents( dirname( __DIR__, 2 ) . '/wp-content/themes/labm/assets/navigation.js' );
+diff --git a/wp-content/themes/labm/assets/navigation.js b/wp-content/themes/labm/assets/navigation.js
+index 58ecd2b..a8f0196 100644
+--- a/wp-content/themes/labm/assets/navigation.js
++++ b/wp-content/themes/labm/assets/navigation.js
+@@ -14,14 +14,13 @@
+ 	var submenuPanel = navigation.querySelector('[data-labm-submenu-panel]');
+ 	var mobileQuery = window.matchMedia('(max-width: 767px)');
+ 	var wasMobile = mobileQuery.matches;
+-	var submenuDefaultOpen = !!(submenu && submenu.classList.contains('is-current-section'));
++	var hoverQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+ 
+ 	function setSubmenu(open, restoreFocus) {
+ 		if (!submenu || !submenuToggle || !submenuPanel) {
+ 			return;
+ 		}
+ 		submenuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+-		submenuToggle.setAttribute('aria-label', open ? 'Cerrar submenú de Selecciones' : 'Abrir submenú de Selecciones');
+ 		submenu.classList.toggle('is-open', open);
+ 		submenuPanel.hidden = !open;
+ 		if (restoreFocus && !open) {
+@@ -51,7 +50,7 @@
+ 		if (isMobile !== wasMobile) {
+ 			setMenu(!isMobile, false);
+ 			if (!isMobile) {
+-				setSubmenu(submenuDefaultOpen, false);
++				setSubmenu(false, false);
+ 			}
+ 			wasMobile = isMobile;
+ 		}
+@@ -67,6 +66,23 @@
+ 	submenuToggle.addEventListener('click', function () {
+ 		setSubmenu(submenuToggle.getAttribute('aria-expanded') !== 'true', false);
+ 	});
++	submenu.addEventListener('pointerenter', function () {
++		if (!mobileQuery.matches && hoverQuery.matches) {
++			setSubmenu(true, false);
++		}
++	});
++	submenu.addEventListener('pointerleave', function () {
++		if (!submenu.contains(document.activeElement)) {
++			setSubmenu(false, false);
++		}
++	});
++	submenu.addEventListener('focusout', function () {
++		window.setTimeout(function () {
++			if (!submenu.contains(document.activeElement)) {
++				setSubmenu(false, false);
++			}
++		}, 0);
++	});
+ 	navigation.addEventListener('click', function (event) {
+ 		var link = event.target && event.target.closest ? event.target.closest('a') : null;
+ 		if (!link || !submenu || submenu.contains(link)) {
+@@ -109,6 +125,6 @@
+ 	});
+ 	window.addEventListener('resize', syncViewport);
+ 
+-	setSubmenu(!mobileQuery.matches && submenuDefaultOpen, false);
++	setSubmenu(false, false);
+ 	setMenu(!mobileQuery.matches, false);
+ }());
+diff --git a/wp-content/themes/labm/functions.php b/wp-content/themes/labm/functions.php
+index 5165158..1172f15 100644
+--- a/wp-content/themes/labm/functions.php
++++ b/wp-content/themes/labm/functions.php
+@@ -1379,7 +1379,9 @@ function labm_theme_render_selection_listing( $filters = array() ) {
+ 			<section class="labm-selecciones__collection" aria-labelledby="labm-selecciones-collection-title">
+ 				<header class="labm-selecciones__collection-header">
+ 					<div>
++						<?php /* translators: %s is the selection modality number. */ ?>
+ 						<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Modalidad %s', 'labm' ), 'Playa' === $state['modalidad'] ? '02' : '01' ) ); ?></p>
++						<?php /* translators: %s is the selection modality name. */ ?>
+ 						<h2 id="labm-selecciones-collection-title"><?php echo esc_html( sprintf( __( 'Balonmano de %s', 'labm' ), $state['modalidad'] ) ); ?></h2>
+ 					</div>
+ 					<?php /* translators: %d is the number of published selections. */ ?>
+@@ -1396,7 +1398,8 @@ function labm_theme_render_selection_listing( $filters = array() ) {
+ 					<article class="labm-selecciones__row" data-labm-seleccion-row data-labm-seleccion-id="<?php echo esc_attr( (string) $post->ID ); ?>">
+ 						<div class="labm-selecciones__media"><?php echo labm_theme_selection_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado por WordPress o helper seguro. ?></div>
+ 						<div class="labm-selecciones__content">
+-							<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Balonmano %s · %s', 'labm' ), $state['modalidad'], $selection_category ) ); ?></p>
++							<?php /* translators: 1: selection modality name, 2: event category. */ ?>
++							<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Balonmano %1$s · %2$s', 'labm' ), $state['modalidad'], $selection_category ) ); ?></p>
+ 							<h3><?php echo esc_html( labm_theme_selection_title( $post ) ); ?></h3>
+ 							<?php $summary = labm_theme_selection_summary( $post ); ?>
+ 							<?php if ( '' !== $summary ) : ?>
+@@ -1683,6 +1686,8 @@ function labm_theme_header_navigation_shortcode() {
+ 	$archive_url  = $archive_url ? $archive_url : home_url( '/selecciones/' );
+ 	$archive_path = untrailingslashit( (string) wp_parse_url( $archive_url, PHP_URL_PATH ) );
+ 	$is_archive   = $current_path === $archive_path;
++	$is_section   = $is_archive || is_singular( 'labm_seleccion' );
++	$current_type = $is_archive ? 'page' : 'location';
+ 	if ( $is_archive ) {
+ 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- estado publico de solo lectura.
+ 		$state = labm_theme_selection_request_state( wp_unslash( $_GET ) );
+@@ -1691,6 +1696,17 @@ function labm_theme_header_navigation_shortcode() {
+ 			'modalidad' => '',
+ 			'pagina'    => 1,
+ 		);
++		if ( $is_section ) {
++			$modalities = get_the_terms( get_queried_object_id(), 'labm_modalidad' );
++			if ( is_array( $modalities ) ) {
++				foreach ( $modalities as $modality ) {
++					if ( in_array( $modality->name, array( 'Piso', 'Playa' ), true ) ) {
++						$state['modalidad'] = $modality->name;
++						break;
++					}
++				}
++			}
++		}
+ 	}
+ 	$items = array(
+ 		'Inicio'      => home_url( '/' ),
+@@ -1711,14 +1727,13 @@ function labm_theme_header_navigation_shortcode() {
+ 			<ul class="labm-site-navigation__list">
+ 				<?php foreach ( $items as $label => $url ) : ?>
+ 					<?php if ( 'Selecciones' === $label ) : ?>
+-						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_archive ? ' is-current-section' : ''; ?>" data-labm-submenu>
++						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_section ? ' is-current-section' : ''; ?>" data-labm-submenu>
+ 							<div class="labm-site-navigation__parent">
+-								<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Selecciones', 'labm' ); ?></a>
+-								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true" aria-label="<?php esc_attr_e( 'Cerrar submenú de Selecciones', 'labm' ); ?>"><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
++								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
+ 							</div>
+ 							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
+-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_archive && 'Piso' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
+-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_archive && 'Playa' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
++								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_section && 'Piso' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
++								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_section && 'Playa' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
+ 							</ul>
+ 						</li>
+ 					<?php else : ?>
+diff --git a/wp-content/themes/labm/style.css b/wp-content/themes/labm/style.css
+index 1cf8052..e11b835 100644
+--- a/wp-content/themes/labm/style.css
++++ b/wp-content/themes/labm/style.css
+@@ -677,18 +677,18 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
+ .labm-site-navigation__panel[hidden], .labm-site-navigation__submenu[hidden] { display: none !important; }
+ .labm-site-navigation__list, .labm-site-navigation__submenu { display: flex; align-items: stretch; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+ .labm-site-navigation__item, .labm-site-navigation__parent { display: flex; align-items: center; min-width: 0; }
+-.labm-site-navigation__item > a, .labm-site-navigation__parent > a { display: inline-flex; min-height: 2.75rem; align-items: center; padding: .5rem .625rem; color: var(--labm-black); font-size: .875rem; font-weight: 700; line-height: 1.2; text-decoration: none; }
+-.labm-site-navigation__item > a:hover, .labm-site-navigation__item > a[aria-current="page"], .labm-site-navigation__item.is-current-section > .labm-site-navigation__parent > a, .labm-site-navigation__item--submenu.is-open > .labm-site-navigation__parent > a { color: var(--labm-green-dark); }
++.labm-site-navigation__item > a, .labm-site-navigation__parent > button { display: inline-flex; min-height: 2.75rem; align-items: center; padding: .5rem .625rem; color: var(--labm-black); font-size: .875rem; font-weight: 700; line-height: 1.2; text-decoration: none; }
++.labm-site-navigation__item > a:hover, .labm-site-navigation__item > a[aria-current="page"], .labm-site-navigation__item.is-current-section > .labm-site-navigation__parent > button, .labm-site-navigation__item--submenu.is-open > .labm-site-navigation__parent > button { color: var(--labm-green-dark); }
+ .labm-site-navigation__item--submenu { position: relative; display: block; }
+ .labm-site-navigation__parent { gap: 0; }
+ .labm-site-navigation__submenu-toggle, .labm-site-navigation__menu-toggle { min-width: 2.75rem; min-height: 2.75rem; border: 1px solid transparent; background: transparent; color: var(--labm-black); font: inherit; cursor: pointer; }
+-.labm-site-navigation__submenu-toggle { display: inline-grid; place-items: center; padding: 0; }
++.labm-site-navigation__submenu-toggle { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem .625rem; font-size: .875rem; font-weight: 700; line-height: 1.2; text-align: left; }
+ .labm-site-navigation__submenu-toggle svg { width: .75rem; height: .75rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; transition: transform .18s ease; }
+-.labm-site-navigation__item--submenu.is-open .labm-site-navigation__submenu-toggle { color: var(--labm-green-dark); }
++.labm-site-navigation__item.is-current-section .labm-site-navigation__submenu-toggle, .labm-site-navigation__submenu-toggle:hover, .labm-site-navigation__item--submenu.is-open .labm-site-navigation__submenu-toggle { color: var(--labm-green-dark); }
+ .labm-site-navigation__item--submenu.is-open .labm-site-navigation__submenu-toggle svg { transform: rotate(180deg); }
+ .labm-site-navigation__submenu { position: absolute; z-index: 50; top: calc(100% - .125rem); left: 0; display: grid; min-width: 13rem; gap: 0; padding: .25rem; border: 1px solid var(--labm-black); background: #fff; box-shadow: 0 .5rem 1rem rgb(32 32 32 / 14%); }
+ .labm-site-navigation__submenu a { display: flex; min-height: 2.75rem; align-items: center; padding: .625rem .75rem; color: var(--labm-black); font-size: .875rem; font-weight: 700; text-decoration: none; }
+-.labm-site-navigation__submenu a:hover, .labm-site-navigation__submenu a[aria-current="page"] { background: var(--labm-green); color: var(--labm-black); }
++.labm-site-navigation__submenu a:hover, .labm-site-navigation__submenu a[aria-current="page"], .labm-site-navigation__submenu a[aria-current="location"] { background: var(--labm-green); color: var(--labm-black); }
+ .labm-site-navigation :is(a, button):focus-visible { outline: 3px solid var(--labm-green-dark); outline-offset: 2px; }
+ 
+ /* Listado publico de Selecciones. */
+@@ -754,7 +754,7 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
+ 	.labm-site-navigation__panel { width: 100%; }
+ 	.labm-site-navigation__list { display: grid; gap: 0; }
+ 	.labm-site-navigation__item, .labm-site-navigation__parent { width: 100%; }
+-	.labm-site-navigation__item > a, .labm-site-navigation__parent > a { flex: 1 1 auto; }
++	.labm-site-navigation__item > a, .labm-site-navigation__parent > button { flex: 1 1 auto; }
+ 	.labm-site-navigation__submenu { position: static; min-width: 0; border: 0; border-top: 1px solid var(--labm-black); box-shadow: none; }
+ 	.labm-site-navigation__submenu a { padding-left: 1.5rem; }
+ 	.labm-selecciones__intro { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }

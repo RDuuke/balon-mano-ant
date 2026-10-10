@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-10-10T13:11:51.315484-05:00",
+  "restore_command": "./scripts/content-sync.ps1 -Action Restore -Backup .content-sync/backups/backup-manual-20261010T174543342Z-rduuqe-RDUUQE.zip -ConfirmReplace",
+  "restore_exit_code": 0,
+  "backup_validated_by_official_script": true,
+  "backup_source_url": "http://localhost:8080",
+  "backup_content_version": "20261010T044329353Z-User",
+  "local_version": "20261010T044329353Z-User",
+  "canonical_version": "20261010T044329353Z-User",
+  "canonical_sha256": "6ac1267c473e7de39faf7691f88faf7c0dbcebffa2a9faf5c8ab6ba5282cdeff",
+  "hash_matches_pointer": true,
+  "user_tables_in_canonical": false,
+  "canonical_changed": false,
+  "note": "Contenido editorial y uploads restaurados oficialmente. .env/owner no editados. El proceso excluye wp_users/wp_usermeta; no se exportaron usuarios."
+}

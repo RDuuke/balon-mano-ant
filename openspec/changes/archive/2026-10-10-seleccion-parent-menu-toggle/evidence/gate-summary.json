@@ -1,0 +1,38 @@
+[
+    {
+        "Name":  "compose-config",
+        "Status":  "PASS",
+        "ExitCode":  0,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    },
+    {
+        "Name":  "composer-test",
+        "Status":  "PASS",
+        "ExitCode":  0,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    },
+    {
+        "Name":  "php-coverage",
+        "Status":  "PASS",
+        "ExitCode":  0,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    },
+    {
+        "Name":  "composer-lint",
+        "Status":  "FAIL",
+        "ExitCode":  2,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    },
+    {
+        "Name":  "composer-analyse",
+        "Status":  "PASS",
+        "ExitCode":  0,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    },
+    {
+        "Name":  "browser-portable",
+        "Status":  "FAIL",
+        "ExitCode":  1,
+        "Detail":  "version=Docker version 29.7.2, build a7dcaa6"
+    }
+]

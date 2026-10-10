@@ -1,0 +1,8 @@
+Command: docker run --rm --add-host host.docker.internal:host-gateway -e CI=true -e WP_URL=http://host.docker.internal:8080 -v C:/Users/rduuqe/Documents/BalonManoAnt:/app -v labm_browser_node_modules:/app/node_modules -v labm_playwright_browsers:/root/.cache/ms-playwright -w /app labm-browser-gate:node-22.13.1 pnpm exec playwright test tests/e2e/verify-correctives.spec.ts --grep 'se cierra al abandonar' --workers=1 --retries=0
+Exit code: 0
+Running 4 tests using 1 worker
+PASS mobile-320: submenú de Selecciones se cierra al abandonar su contexto (771ms)
+PASS tablet-768: submenú de Selecciones se cierra al abandonar su contexto (925ms)
+PASS desktop-1024: submenú de Selecciones se cierra al abandonar su contexto (1.2s)
+PASS wide-1440: submenú de Selecciones se cierra al abandonar su contexto (918ms)
+4 passed (7.0s)

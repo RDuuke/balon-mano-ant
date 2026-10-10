@@ -1,0 +1,70 @@
+
+Running 20 tests using 6 workers
+
+pnpm.exe : (node:18768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being 
+set.
+En C:\Users\rduuqe\AppData\Local\pnpm\bin\pnpm.ps1: 14 Carácter: 3
++   & "$basedir/../global/v11/1144-19fa687ee49-9e8d6afef72414ba/node_mo ...
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:18768) Wa... env being set.:String) [], Remote 
+   Exception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [desktop-1024] › tests\e2e\public-experience.spec.ts:6:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (3.8s)
+  ok 2 [mobile-320] › tests\e2e\public-experience.spec.ts:6:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (4.6s)
+  ok 1 [mobile-320] › tests\e2e\home.spec.ts:4:5 › inicio responde y no presenta violaciones axe automaticas (4.7s)
+  ok 5 [tablet-768] › tests\e2e\home.spec.ts:4:5 › inicio responde y no presenta violaciones axe automaticas (4.7s)
+  ok 4 [desktop-1024] › tests\e2e\home.spec.ts:4:5 › inicio responde y no presenta violaciones axe automaticas (4.9s)
+  ok 6 [tablet-768] › tests\e2e\public-experience.spec.ts:6:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (4.4s)
+  ok 7 [desktop-1024] › tests\e2e\public-experience.spec.ts:24:5 › 3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad (2.6s)
+  ok 8 [mobile-320] › tests\e2e\public-experience.spec.ts:24:5 › 3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad (2.5s)
+(node:20276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 9 [tablet-768] › tests\e2e\public-experience.spec.ts:24:5 › 3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad (2.3s)
+  ok 10 [desktop-1024] › tests\e2e\public-experience.spec.ts:39:5 › 3.2 selecciones filtra Piso y Playa sin exponer privados (1.7s)
+  ok 11 [mobile-320] › tests\e2e\public-experience.spec.ts:39:5 › 3.2 selecciones filtra Piso y Playa sin exponer privados (1.9s)
+(node:20276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [tablet-768] › tests\e2e\public-experience.spec.ts:39:5 › 3.2 selecciones filtra Piso y Playa sin exponer privados (2.4s)
+  ok 15 [wide-1440] › tests\e2e\home.spec.ts:4:5 › inicio responde y no presenta violaciones axe automaticas (3.5s)
+  ok 16 [wide-1440] › tests\e2e\public-experience.spec.ts:6:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (2.8s)
+  ok 18 [wide-1440] › tests\e2e\public-experience.spec.ts:24:5 › 3.2 actualidad ofrece filtros, detalle, estado vacío y privacidad (2.2s)
+  ok 13 [desktop-1024] › tests\e2e\public-experience.spec.ts:49:5 › 3.3 no hay desborde, axe pasa y reduced motion se respeta (9.2s)
+  ok 14 [mobile-320] › tests\e2e\public-experience.spec.ts:49:5 › 3.3 no hay desborde, axe pasa y reduced motion se respeta (8.9s)
+  ok 19 [wide-1440] › tests\e2e\public-experience.spec.ts:39:5 › 3.2 selecciones filtra Piso y Playa sin exponer privados (1.8s)
+  ok 17 [tablet-768] › tests\e2e\public-experience.spec.ts:49:5 › 3.3 no hay desborde, axe pasa y reduced motion se respeta (8.4s)
+  ok 20 [wide-1440] › tests\e2e\public-experience.spec.ts:49:5 › 3.3 no hay desborde, axe pasa y reduced motion se respeta (4.4s)
+
+  20 passed (26.6s)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report artifacts\playwright-report[39m
+[36m[39m

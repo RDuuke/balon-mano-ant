@@ -1,0 +1,21 @@
+docker :  Container labm-db-1 Running 
+En línea: 2 Carácter: 28
++ ... tion).Path; docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTI ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm-db-1 Running :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-db-1 Waiting 
+ Container labm-db-1 Healthy 
+ Container labm-wordpress-run-b3561bd82bd2 Creating 
+ Container labm-wordpress-run-b3561bd82bd2 Created 
+PHPUnit 11.5.27 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.33
+Configuration: /work/phpunit.integration.xml.dist
+
+.                                                                   1 / 1 (100%)
+
+Time: 00:00.015, Memory: 44.50 MB
+
+OK (1 test, 12 assertions)

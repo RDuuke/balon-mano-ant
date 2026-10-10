@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-10-10T13:28:04.025721-05:00",
+  "baseline_commit": "43fac41189c5e6870fc4fb20ad83e132606f0d65",
+  "input_hashes": {
+    "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+    "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+    "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+    "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+    "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+    "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+    "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+    "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+    "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+    "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+    "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+    "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+    "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+    "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+    "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+    "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+  },
+  "red_source_hashes": {
+    "wp-content/themes/labm/functions.php": "a3fe915528f38e774fd34577a2d40ef503449f1ace21435437fb44f46c6d4ea6",
+    "wp-content/themes/labm/assets/navigation.js": "bd77e044cf17dd2009d8bdd4d4c1195faabf40030848650535ba5247fc7bb3d7",
+    "wp-content/themes/labm/style.css": "14999a82d21e9ea1fcefbc8006d751a9ae8756e3b8420006f26c590c623f8652"
+  },
+  "review_diff_sha256": "324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce",
+  "review_diff_lines": 218,
+  "sensitive_paths_touched": [],
+  "provenance_note": "Aclaracion de internas validada por RED/GREEN actual, cobertura actual y PHPStan. Evidencia anterior preservada; navegador de internas reemplaza scope singular. JS, listado y resto de rutas conservan comportamiento existente.",
+  "superseded_input_hashes": {
+    "tests/php/PublicExperienceTest.php": "98a76221f716339e1396e5d445b17bb1f412adf7f5edff20463d2ee718a8ee55",
+    "tests/e2e/verify-correctives.spec.ts": "19e51b0581dd6e5320c125b5bc886be1c05a49390f8cfd5a854898b28ff4b8fe",
+    "wp-content/themes/labm/functions.php": "300b9c14b4841d1e19bbdddc701c7ee79a7a4f28eb3f764bdb34a8d9b0b433f9",
+    "wp-content/themes/labm/style.css": "497faca228a30e97de6769e389a8d6ca905959feeacbead4a8d4e19259f4b2f0",
+    "openspec/changes/seleccion-parent-menu-toggle/quick.md": "7fa14fab0ebbc0ffef558cbce86847f566c45df9be7aadec22657988057bd5ff",
+    "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "781bd69547f570507103c45f5af5656d33ddbeebccf74f62f155c836bdb1f5e2"
+  },
+  "superseded_diff_fingerprint": "c0e012ede5a7b1684904ee301a7ba402c4ed7c63c240e459d34557073f146afa",
+  "superseded_by_mechanical_correction": {
+    "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+    "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+    "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+    "wp-content/themes/labm/functions.php": "b9470a9faa5eb62008b40cb569d485be0c572900966823a066daefac2f659393",
+    "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+    "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7"
+  },
+  "final_diff_fingerprint": "ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8",
+  "final_diff_lines": 223
+}

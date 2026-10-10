@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "kind": "apply_progress",
+  "change": "seleccion-parent-menu-toggle",
+  "updated_at": "2026-10-10T13:35:30.888587-05:00",
+  "status": "ok",
+  "summary": "Menu and internal active states implemented; authorized mechanical PHPCS correction passes. Ready for VERIFY.",
+  "artifact_refs": [
+    "quick.md",
+    "validation-plan.yaml",
+    "evidence/inputs.json",
+    "evidence/gate-summary.json",
+    "evidence/persistent-state.json",
+    "evidence/internal-adjustment.json"
+  ],
+  "tasks": [
+    {
+      "id": "q1",
+      "status": "complete",
+      "summary": "Casos de regresion escritos antes del producto; RED PHP y navegador ejecutados.",
+      "evidence_refs": [
+        "evidence/red-php.txt",
+        "evidence/red-browser.txt"
+      ],
+      "tdd": {
+        "applicability": "not_applicable",
+        "reason": "Preparacion de pruebas; los RED prueban q2/q3."
+      }
+    },
+    {
+      "id": "q2",
+      "status": "complete",
+      "summary": "Boton semantico sin enlace, texto/flecha, ruta activa y CSS/foco.",
+      "evidence_refs": [
+        "evidence/red-php.txt",
+        "evidence/green-php.txt",
+        "evidence/gate-php-coverage.log",
+        "evidence/focused-browser-first.txt",
+        "evidence/internal-adjustment.json"
+      ],
+      "tdd": {
+        "applicability": "behavioral",
+        "red_refs": [
+          "evidence/red-php.txt",
+          "evidence/internal-adjustment.json"
+        ],
+        "green_refs": [
+          "evidence/green-php.txt",
+          "evidence/gate-php-coverage.log",
+          "evidence/internal-adjustment.json"
+        ]
+      }
+    },
+    {
+      "id": "q3",
+      "status": "complete",
+      "summary": "Hover fino escritorio, click/touch, teclado y cierre accesible sincronizados; activo independiente de apertura.",
+      "evidence_refs": [
+        "evidence/red-browser.txt",
+        "evidence/focused-browser-first.txt",
+        "evidence/focused-browser-final.txt",
+        "evidence/gate-browser-portable.log",
+        "evidence/internal-adjustment.json"
+      ],
+      "tdd": {
+        "applicability": "behavioral",
+        "red_refs": [
+          "evidence/red-browser.txt",
+          "evidence/internal-adjustment.json"
+        ],
+        "green_refs": [
+          "evidence/focused-browser-first.txt",
+          "evidence/focused-browser-final.txt",
+          "evidence/internal-adjustment.json"
+        ],
+        "reason": "RED previo: boton aprobado ausente impide el recorrido hover/click. GREEN focal: hover 3 proyectos, teclado/activo 4 y cierre 4; touch/sinJS 4.2 PASS en suite completa."
+      }
+    },
+    {
+      "id": "q4",
+      "status": "complete",
+      "summary": "Checks and review approval resolved; four authorized PHPCS errors corrected and lint GREEN.",
+      "evidence_refs": [
+        "evidence/internal-adjustment.json",
+        "evidence/inputs.json",
+        "evidence/persistent-state.json"
+      ],
+      "tdd": {
+        "applicability": "not_applicable",
+        "reason": "Validacion y auditoria, sin nuevo comportamiento."
+      }
+    }
+  ],
+  "execution_results": {
+    "php_focal": "PASS actual: 2 tests, 20 assertions",
+    "integration": "PASS actual: 186 tests, 1993 assertions",
+    "coverage_percent": 82.92,
+    "phpstan": "PASS",
+    "phpcs": "PASS current after authorized correction, exit 0",
+    "full_browser_original": {
+      "passed": 234,
+      "failed": 9,
+      "skipped": 1,
+      "exit_code": 1
+    },
+    "browser_replacements": {
+      "first": {
+        "passed": 18,
+        "failed": 1,
+        "skipped": 1
+      },
+      "final_context_close": {
+        "passed": 4,
+        "failed": 0
+      }
+    },
+    "effective_browser": "243 casos PASS y 1 skip hover movil por combinacion incremental; no se presenta como nueva suite completa PASS.",
+    "environment_attempts": "pnpm host no disponible; pase Docker directo interrumpido SIGTERM por assets con URL local. Sustituido por gate oficial y focal con URLs temporales; no se usa como GREEN.",
+    "internal_browser": "PASS: cuatro proyectos, ambas modalidades y querystring contrario",
+    "phpcs_previous": "FAIL: four baseline errors, retained historical evidence"
+  },
+  "review_budget": {
+    "checked": true,
+    "tripped": true,
+    "diff_lines": 223,
+    "limit": 0,
+    "sensitive_paths_touched": [],
+    "diff_fingerprint": "ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8",
+    "status": "approved_with_explicit_mechanical_extension",
+    "reviewed_diff_fingerprint": "324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce"
+  },
+  "persistent_state": "Restaurado backup oficial; home/siteurl localhost:8080; version local/canonica coinciden; no Push requerido."
+}

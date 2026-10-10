@@ -1,0 +1,54 @@
+docker :  Container labm-db-1 Running 
+En línea: 2 Carácter: 131
++ ... | Out-Null; docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTI ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container labm-db-1 Running :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container labm-db-1 Waiting 
+ Container labm-db-1 Healthy 
+ Container labm-wordpress-run-9a5f9161cf45 Creating 
+ Container labm-wordpress-run-9a5f9161cf45 Created 
+PHPUnit 11.5.27 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.33
+Configuration: /work/phpunit.integration.xml.dist
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:00.021, Memory: 44.50 MB
+
+There was 1 failure:
+
+1) PublicExperienceTest::test_selection_header_navigation_orders_parent_and_marks_effective_child
+Failed asserting that '	<nav class="labm-site-navigation" data-labm-navigation aria-label="Navegación principal">\n
+		<div class="labm-site-navigation__mobile-controls">\n
+			<button type="button" class="labm-site-navigation__menu-toggle" data-labm-menu-toggle aria-controls="labm-site-navigation-panel" aria-expanded="true"><span data-labm-menu-label>Cerrar menú</span></button>\n
+		</div>\n
+		<div id="labm-site-navigation-panel" class="labm-site-navigation__panel" data-labm-menu-panel>\n
+			<ul class="labm-site-navigation__list">\n
+																					<li class="labm-site-navigation__item"><a href="http://localhost:8080/">Inicio</a></li>\n
+																										<li class="labm-site-navigation__item"><a href="http://localhost:8080/nosotros/">Nosotros</a></li>\n
+																										<li class="labm-site-navigation__item"><a href="http://localhost:8080/actualidad/">Actualidad</a></li>\n
+																				<li class="labm-site-navigation__item labm-site-navigation__item--submenu is-current-section" data-labm-submenu>\n
+							<div class="labm-site-navigation__parent">\n
+								<a href="http://localhost:8080/selecciones/">Selecciones</a>\n
+								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true" aria-label="Cerrar submenú de Selecciones"><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>\n
+							</div>\n
+							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>\n
+								<li><a href="http://localhost:8080/selecciones/?modalidad=Piso" aria-current="page">Balonmano Piso</a></li>\n
+								<li><a href="http://localhost:8080/selecciones/?modalidad=Playa">Balonmano Playa</a></li>\n
+							</ul>\n
+						</li>\n
+																										<li class="labm-site-navigation__item"><a href="http://localhost:8080/documentos/">Documentos</a></li>\n
+																										<li class="labm-site-navigation__item"><a href="http://localhost:8080/contacto/">Contacto</a></li>\n
+												</ul>\n
+		</div>\n
+	</nav>\n
+	' does not match PCRE pattern "/<a[^>]*>Selecciones<\/a>/".
+
+/work/tests/php/PublicExperienceTest.php:824
+
+FAILURES!
+Tests: 1, Assertions: 2, Failures: 1.
+

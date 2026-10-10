@@ -1,0 +1,8 @@
+{
+  "command": "docker run --rm -v ${PWD}:/app -v labm_composer_vendor:/app/vendor -v baseline-functions.php:/app/wp-content/themes/labm/functions.php:ro -w /app composer:2.8 lint",
+  "baseline_commit": "43fac41189c5e6870fc4fb20ad83e132606f0d65",
+  "baseline_source_sha256": "a3fe915528f38e774fd34577a2d40ef503449f1ace21435437fb44f46c6d4ea6",
+  "exit_code": 1,
+  "observed": "PHPCS devuelve 4 errores en las mismas lineas 1382, 1383 y 1399 con fuente HEAD aislada; falta translators en 3 cadenas y placeholders no numerados en Balonmano %s / %s. Composer reporta error code 2 interno.",
+  "recorded_at": "2026-10-10T13:03:42.944133-05:00"
+}

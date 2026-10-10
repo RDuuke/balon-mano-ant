@@ -1,0 +1,33 @@
+
+FILE: /app/wp-content/themes/labm/functions.php
+--------------------------------------------------------------------------------
+FOUND 4 ERRORS AFFECTING 3 LINES
+--------------------------------------------------------------------------------
+ 1382 | ERROR | [ ] A function call to __() with texts containing placeholders
+      |       |     was found, but was not accompanied by a "translators:"
+      |       |     comment on the line above to clarify the meaning of the
+      |       |     placeholders.
+ 1383 | ERROR | [ ] A function call to __() with texts containing placeholders
+      |       |     was found, but was not accompanied by a "translators:"
+      |       |     comment on the line above to clarify the meaning of the
+      |       |     placeholders.
+ 1399 | ERROR | [ ] A function call to __() with texts containing placeholders
+      |       |     was found, but was not accompanied by a "translators:"
+      |       |     comment on the line above to clarify the meaning of the
+      |       |     placeholders.
+ 1399 | ERROR | [x] Multiple placeholders in translatable strings should be
+      |       |     ordered. Expected "%1$s, %2$s", but got "%s, %s" in
+      |       |     'Balonmano %s · %s'.
+--------------------------------------------------------------------------------
+PHPCBF CAN FIX THE 1 MARKED SNIFF VIOLATIONS AUTOMATICALLY
+--------------------------------------------------------------------------------
+
+Time: 1.05 secs; Memory: 32MB
+
+docker : Script phpcs handling the lint event returned with error code 2
+En C:\Users\rduuqe\Documents\BalonManoAnt\scripts\gate.ps1: 62 Carácter: 40
++ ...  'docker' { docker run --rm -v "${root}:/app" -v labm_composer_vendor ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Script phpcs ha...th error code 2:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "change": "seleccion-parent-menu-toggle",
+  "verification_fingerprint": {
+    "original_verify_sha256": "15c9da25c52af20c1d5dd80f2eec6f2dbbec71fd684c585973842396910f31ae",
+    "approval_diff_fingerprint": "ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8",
+    "verify_report_sha256": "2b143709cad9fb0b9f24d7c13032c203d69acd521f18c0482ae18fa6a416e10a"
+  },
+  "destination": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle",
+  "status": "archived",
+  "domains": [
+    {
+      "domain": "experiencia-publica",
+      "base_ref": "openspec/specs/experiencia-publica/spec.md",
+      "before_hash": "71f788d5c273998651b765ff047ecaa3a7be8e53e404901fe03f3c2ec4a678f3",
+      "after_hash": "7b627d6f457f2c0639d5600fb249ca48b83909504e5338fc649f1a670758db64",
+      "modified": [
+        "Sección principal",
+        "Disclosure accesible"
+      ],
+      "added": [],
+      "removed": [],
+      "backup_ref": ".archive-transaction/backups/experiencia-publica.spec.md",
+      "prepared_ref": ".archive-transaction/prepared/experiencia-publica.spec.md",
+      "status": "archived"
+    }
+  ],
+  "archived_at": "2026-10-10T18:39:56.781Z"
+}

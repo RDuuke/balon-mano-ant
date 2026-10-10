@@ -1,0 +1,28 @@
+
+Running 1 test using 1 worker
+
+  ✘  1 [desktop-1024] › tests/e2e/verify-correctives.spec.ts:84:5 › submen? Selecciones abre por hover y conserva cierre por clic y Escape (30.0s)
+
+
+  1) [desktop-1024] › tests/e2e/verify-correctives.spec.ts:84:5 › submen? Selecciones abre por hover y conserva cierre por clic y Escape 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.hover: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('button', { name: 'Selecciones', exact: true })[22m
+
+
+      87 |   const toggle = page.getByRole('button', { name: 'Selecciones', exact: true });
+      88 |   const group = page.locator('[data-labm-submenu]');
+    > 89 |   await toggle.hover();
+         |                ^
+      90 |   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      91 |   await page.getByRole('link', { name: 'Balonmano Piso', exact: true }).hover();
+      92 |   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+        at /app/tests/e2e/verify-correctives.spec.ts:89:16
+
+    Error Context: artifacts/playwright/verify-correctives-submen--9f8fe-va-cierre-por-clic-y-Escape-desktop-1024/error-context.md
+
+  1 failed
+    [desktop-1024] › tests/e2e/verify-correctives.spec.ts:84:5 › submen? Selecciones abre por hover y conserva cierre por clic y Escape 

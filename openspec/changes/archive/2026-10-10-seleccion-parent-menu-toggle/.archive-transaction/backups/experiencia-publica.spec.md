@@ -451,50 +451,40 @@ Las vistas públicas afectadas MUST conservar foco perceptible y contraste WCAG 
 - ENTONCES falla e identifica componente, estado, fondo y relación observada.
 
 ### Requirement: Sección principal
-La navegacion MUST ofrecer un unico boton Selecciones con texto y flecha decorativa, sin enlace padre, aria-controls y aria-expanded sincronizado. MUST conservar Balonmano Piso/Playa hacia /selecciones/?modalidad=Piso y /selecciones/?modalidad=Playa, las demas secciones y el logotipo. El padre MUST conservar el estilo activo en el listado y en el detalle individual, independientemente de la apertura del submenu. En el listado solo el hijo de la modalidad efectiva MUST declarar aria-current="page"; en el detalle individual el hijo correspondiente a la taxonomia del articulo MUST usar aria-current="location", independientemente del querystring. Fuera de estas vistas MUST NOT marcar el padre ni sus hijos como actuales.
+MUST conservar enlace padre Selecciones a /selecciones/, disclosure independiente. MUST ofrecer Balonmano Piso/Playa hacia /selecciones/?modalidad=Piso y /selecciones/?modalidad=Playa. MUST conservar secciones/logotipo. Padre MUST identificar seccion; solo hijo de modalidad efectiva MUST declarar aria-current="page". Fuera del listado MUST NOT marcar hijos actuales.
 
 #### Scenario: 1
-- Dado Inicio o Actualidad con navegacion compartida
-- Cuando se hace clic en el boton Selecciones
-- Entonces la URL no cambia y el submenu alterna abierto/cerrado; sus hijos navegan a Piso o Playa.
+- Dado una página pública con navegación compartida
+- Cuando se activa el padre o cada hijo
+- Entonces padre abre Piso; hijos abren su modalidad.
 
 #### Scenario: 2
-- Dado el listado de Piso o Playa cargado directamente o mediante un enlace hijo
-- Cuando el panel se abre o se cierra
-- Entonces el padre conserva el estilo activo y solo el hijo de la modalidad efectiva declara aria-current="page".
+- Dado un término adicional seleccionado en el listado
+- Cuando se consulta la navegación
+- Entonces Selecciones identifica la sección y ninguno de los dos hijos declara página actual.
 
 #### Scenario: 3
-- Dado una modalidad invalida o un termino adicional en el listado
-- Cuando se presenta la navegacion
-- Entonces la modalidad invalida identifica Piso efectivo; un termino adicional mantiene Selecciones activo sin marcar ninguno de los dos hijos actuales.
-
-#### Scenario: Detalle individual
-- Dado un articulo de Selecciones Piso o Playa y un querystring con una modalidad distinta
-- Cuando se presenta su detalle
-- Entonces el padre y el hijo de la taxonomia del articulo permanecen seleccionados, con aria-current="location" en el hijo.
+- Dado una modalidad inválida en el archivo o una página fuera de Selecciones
+- Cuando se presenta la navegación
+- Entonces el archivo identifica Piso efectivo; la página externa no marca los hijos ni Selecciones como actuales.
 
 ### Requirement: Disclosure accesible
-El submenu MUST abrir/cerrar con clic, touch y Enter/Espacio sin depender de hover. En escritorio con puntero fino capaz de hover MUST abrir al entrar al boton, permanecer abierto durante el recorrido a sus hijos y cerrar al salir del grupo si el foco no permanece dentro. Clic y Escape MUST poder cerrarlo sin reapertura inmediata hasta una nueva entrada del puntero. MUST usar enlaces normales, nombres accesibles, aria-expanded sincronizado y aria-controls asociado al contenedor. Tab/Shift+Tab MUST seguir el orden logico; enlaces ocultos MUST excluirse del foco. Escape MUST cerrar el submenu y enfocar el boton. Clic/foco exterior MUST cerrarlo sin robar foco. MUST NOT usar roles de menu de aplicacion. Sin JavaScript los enlaces hijos MUST permanecer accesibles.
+Submenu MUST abrir/cerrar con clic, touch, Enter/Espacio sin depender de hover. MUST usar enlaces normales, nombres accesibles, aria-expanded sincronizado y aria-controls asociado al contenedor. Tab/Shift+Tab MUST seguir orden logico; ocultos MUST excluir foco. Escape MUST cerrar submenu y enfocar disparador. Clic/foco exterior MUST cerrarlo sin robar foco. MUST NOT usar roles de menu de aplicacion.
 
 #### Scenario: 4
-- Dado submenu cerrado y foco en el boton
+- Dado submenú cerrado y foco en el disparador
 - Cuando se pulsa Enter o Espacio y se recorre con Tab
-- Entonces alterna sin navegar, anuncia expansion y permite ambos enlaces con foco visible.
+- Entonces abre sin navegar, anuncia expansión y permite ambos enlaces.
 
 #### Scenario: 5
-- Dado submenu abierto
-- Cuando se hace clic fuera o Tab sale de la navegacion
+- Dado submenú abierto
+- Cuando se hace clic fuera o Tab sale de la navegación
 - Entonces se cierra y conserva el foco en el destino elegido.
 
 #### Scenario: 6
-- Dado foco en un hijo y submenu abierto
+- Dado foco en un hijo y submenú abierto
 - Cuando se pulsa Escape
-- Entonces se cierra, anuncia contraido y el foco retorna al boton sin alcanzar enlaces ocultos ni reabrir inmediatamente por hover.
-
-#### Scenario: Hover y clic en escritorio
-- Dado un puntero fino con hover en escritorio
-- Cuando entra al boton, recorre un hijo y sale del grupo sin foco interno
-- Entonces abre, permanece abierto en el recorrido y cierra al salir; clic alterna sin navegar y un cierre no se revierte sin una nueva entrada del puntero.
+- Entonces se cierra, anuncia contraído y el foco retorna al disparador sin alcanzar enlaces ocultos.
 
 ### Requirement: Panel móvil
 Panel movil MUST desplazar contenido segun coPGt, sin overlay modal ni bloqueo de foco. Panel/disclosure MUST tener nombres/estados independientes. Touch en disclosure MUST expandir sin navegar; en enlaces MUST navegar. Escape en submenu MUST cerrar Selecciones y enfocar disparador; posterior o desde resto del panel MUST cerrarlo y enfocar boton. Cerrar panel MUST contraer Selecciones. Destinos MUST ser alcanzables sin JavaScript a 320 px.

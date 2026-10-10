@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "kind": "execution_log",
+  "change": "seleccion-parent-menu-toggle",
+  "updated_at": "2026-10-10T18:39:56.785Z",
+  "status": "ok",
+  "summary": "ARCHIVE completo; especificacion consolidada y estado archivado.",
+  "artifact_refs": [
+    "quick.md",
+    "validation-plan.yaml",
+    ".status.yaml"
+  ],
+  "events": [
+    {
+      "id": "quick-001",
+      "phase": "QUICK",
+      "started_at": "2026-10-10T12:38:42.453862-05:00",
+      "finished_at": "2026-10-10T12:39:43.241870-05:00",
+      "status": "ok",
+      "summary": "Blueprint QUICK y plan persistidos y releÃ­dos; aprobaciÃ³n de alcance pendiente. Inicio registrado corresponde a la persistencia del blueprint; inspecciÃ³n preliminar anterior sin timestamp registrado.",
+      "artifact_refs": [
+        "quick.md",
+        "validation-plan.yaml",
+        ".status.yaml"
+      ],
+      "risks": [
+        "AprobaciÃ³n scope pendiente antes de APPLY."
+      ],
+      "attempt": 1,
+      "retried": false
+    },
+    {
+      "id": "scope-approved-001",
+      "phase": "QUICK",
+      "started_at": "2026-10-10T12:45:29.0737259-05:00",
+      "finished_at": "2026-10-10T12:45:29.0737259-05:00",
+      "status": "ok",
+      "summary": "Aprobación de alcance explícita registrada antes de APPLY.",
+      "artifact_refs": [
+        ".status.yaml"
+      ],
+      "risks": [],
+      "attempt": 1,
+      "retried": false
+    },
+    {
+      "id": "apply-001",
+      "phase": "APPLY",
+      "started_at": "2026-10-10T12:45:29.0737259-05:00",
+      "finished_at": "2026-10-10T13:13:08.415222-05:00",
+      "status": "warning",
+      "summary": "Control implementado y comportamiento GREEN. Pendientes gate de diff y PHPCS preexistente; sin permiso de archivo.",
+      "artifact_refs": [
+        "apply-progress.yaml",
+        "evidence/inputs.json",
+        "evidence/persistent-state.json"
+      ],
+      "risks": [
+        "PHPCS obligatorio anterior sin excepcion.",
+        "Review budget cero pendiente."
+      ],
+      "attempt": 1,
+      "retried": false
+    },
+    {
+      "id": "apply-002-internals",
+      "phase": "APPLY",
+      "started_at": "2026-10-10T13:22:08.001469-05:00",
+      "finished_at": "2026-10-10T13:28:04.025721-05:00",
+      "status": "warning",
+      "summary": "Control e internas GREEN; padre y modalidad propios activos. Pendientes diff aprobado y PHPCS anterior.",
+      "artifact_refs": [
+        "apply-progress.yaml",
+        "evidence/internal-adjustment.json",
+        "evidence/inputs.json"
+      ],
+      "risks": [
+        "PHPCS baseline y review budget siguen pendientes."
+      ],
+      "attempt": 2,
+      "retried": false
+    },
+    {
+      "id": "apply-003-authorized-lint",
+      "phase": "APPLY",
+      "started_at": "2026-10-10T13:31:39.643773-05:00",
+      "finished_at": "2026-10-10T13:35:30.888587-05:00",
+      "status": "ok",
+      "summary": "User approved reviewed diff and exact PHPCS corrections; lint GREEN and four format combinations equivalent. Final diff separately fingerprinted.",
+      "artifact_refs": [
+        ".status.yaml",
+        "apply-progress.yaml",
+        "evidence/internal-adjustment.json"
+      ],
+      "risks": [],
+      "attempt": 3,
+      "retried": false
+    },
+    {
+      "id": "verify-audit-5a08a4b2-0075-459a-8bbd-7cbf4c64b005",
+      "phase": "VERIFY",
+      "started_at": "2026-10-10T18:39:56.774Z",
+      "finished_at": "2026-10-10T18:39:56.774Z",
+      "status": "warning",
+      "summary": "Registro coordinador posterior: VERIFY revision 8 releido; seis criterios y ocho checks satisfechos, hashes vigentes y evidencia incremental explicita. Estas horas corresponden al registro, no al inicio de las pruebas.",
+      "artifact_refs": [
+        "verify-report.yaml",
+        ".status.yaml"
+      ],
+      "risks": [
+        "No se declara nueva suite completa final; se conservan resultados originales y reemplazos focales."
+      ],
+      "attempt": 1,
+      "retried": false
+    },
+    {
+      "id": "archive-f77e71bc-0b0c-4dfa-a335-7363a928b2ab",
+      "phase": "ARCHIVE",
+      "started_at": "2026-10-10T18:39:56.763Z",
+      "finished_at": "2026-10-10T18:39:56.785Z",
+      "status": "ok",
+      "summary": "Guard, consolidacion transaccional, traslado, hashes y cierre validados.",
+      "artifact_refs": [
+        "archive-report.yaml",
+        ".archive-transaction.yaml",
+        ".status.yaml"
+      ],
+      "risks": [
+        "Aviso informativo de evidencia incremental VERIFY conservado."
+      ],
+      "attempt": 1,
+      "retried": false
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "schema_version": "2.0",
+  "change": "seleccion-parent-menu-toggle",
+  "revision": 9,
+  "path": "quick",
+  "phase": "ARCHIVE",
+  "phase_status": "ok",
+  "completed_phases": [
+    "QUICK",
+    "APPLY",
+    "VERIFY",
+    "ARCHIVE"
+  ],
+  "completed": true,
+  "pending_tasks": [],
+  "modified_artifacts": [
+    "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/quick.md",
+    "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/validation-plan.yaml",
+    "tests/php/PublicExperienceTest.php",
+    "tests/e2e/verify-correctives.spec.ts",
+    "tests/e2e/public-experience.spec.ts",
+    "wp-content/themes/labm/functions.php",
+    "wp-content/themes/labm/assets/navigation.js",
+    "wp-content/themes/labm/style.css",
+    "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/apply-progress.yaml"
+  ],
+  "artifact_hashes": {
+    "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+    "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+  },
+  "approvals": [
+    {
+      "id": "scope-quick-001",
+      "kind": "scope",
+      "status": "approved",
+      "artifact_refs": [
+        "quick.md",
+        "validation-plan.yaml"
+      ],
+      "input_hashes": {
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "7fa14fab0ebbc0ffef558cbce86847f566c45df9be7aadec22657988057bd5ff",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "781bd69547f570507103c45f5af5656d33ddbeebccf74f62f155c836bdb1f5e2"
+      },
+      "scope": "Padre Selecciones sin enlace, hover/clic accesible y activo en Piso/Playa; pruebas y gates configurados.",
+      "reason": "Blueprint creado; requiere aceptaciÃ³n del alcance antes de APPLY.",
+      "user_instruction": "Si apruebo el alcance",
+      "approved_at": "2026-10-10T12:45:29.0737259-05:00"
+    },
+    {
+      "id": "review-budget-apply-001",
+      "kind": "review_budget",
+      "status": "approved",
+      "artifact_refs": [
+        "evidence/review.diff",
+        "evidence/inputs.json",
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "b9470a9faa5eb62008b40cb569d485be0c572900966823a066daefac2f659393",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7"
+      },
+      "scope": {
+        "diff_lines": 218,
+        "limit": 0,
+        "sensitive_paths": [],
+        "diff_fingerprint": "324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce",
+        "paths": [
+          "tests/php/PublicExperienceTest.php",
+          "tests/e2e/verify-correctives.spec.ts",
+          "tests/e2e/public-experience.spec.ts",
+          "wp-content/themes/labm/functions.php",
+          "wp-content/themes/labm/assets/navigation.js",
+          "wp-content/themes/labm/style.css"
+        ],
+        "baseline_commit": "43fac41189c5e6870fc4fb20ad83e132606f0d65"
+      },
+      "reason": "Usuario aprobo diff de 218 lineas y autorizo la correccion concreta de los cuatro errores PHPCS descritos.",
+      "superseded_diff_fingerprint": "c0e012ede5a7b1684904ee301a7ba402c4ed7c63c240e459d34557073f146afa",
+      "user_instruction": "Ok hazlo",
+      "approved_at": "2026-10-10T13:31:39.643773-05:00",
+      "authorized_mechanical_extension": {
+        "path": "wp-content/themes/labm/functions.php",
+        "changes": [
+          "Tres comentarios translators para placeholders",
+          "Numerar %1$s y %2$s en Balonmano, conservando orden y texto visible"
+        ],
+        "user_instruction": "Ok hazlo",
+        "final_diff_fingerprint": "ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8",
+        "final_diff_lines": 223,
+        "final_input_hashes": {
+          "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+          "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+          "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+          "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+          "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+          "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7"
+        },
+        "completed_at": "2026-10-10T13:35:30.888587-05:00",
+        "approval_basis": "User approved the reviewed 218-line fingerprint plus these exact mechanical corrections. Final fingerprint is recorded separately; it was not represented as the previously reviewed diff. APPLY skill: new material changes outside the reviewed scope need a new gate decision. No material behavior or path expansion occurred."
+      }
+    },
+    {
+      "id": "scope-internal-002",
+      "kind": "material_change",
+      "status": "approved",
+      "artifact_refs": [
+        "quick.md",
+        "validation-plan.yaml"
+      ],
+      "input_hashes": {
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "scope": "Mantener padre Selecciones y su modalidad activos en el detalle individual.",
+      "reason": "Aclaracion concreta solicitada por usuario; implementacion autorizada por coordinador.",
+      "user_instruction": "cuando entro a la interna de un item de selecciones debe seguir activo los menus, que se vean seleccionados, eso se puede hacer o no?",
+      "approved_at": "2026-10-10T13:22:08.001469-05:00"
+    }
+  ],
+  "blockers": [],
+  "fix_attempts": 0,
+  "archive_path": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle",
+  "notes": "ARCHIVE completado: dos requisitos de navegacion consolidados; evidencia incremental conservada; sin pruebas ni entrega adicionales.",
+  "invalidated_evidence": [],
+  "replaced_evidence": [
+    "coverage_snapshot_previous_header -> internal-adjustment coverage82.92",
+    "navigation-markup_previous_header -> PHP2tests20asserts",
+    "navigation-browser_singular -> internal-adjustment four projects"
+  ],
+  "resolved_blockers": [
+    {
+      "code": "required-phpcs-baseline",
+      "phase": "APPLY",
+      "reason": "PHPCS obligatorio conserva 4 errores anteriores reproducidos en HEAD. Requiere correccion autorizada o excepcion de validacion local explicita; baseline no exime el gate.",
+      "requires_user_input": true,
+      "artifact_refs": [
+        "evidence/gate-composer-lint.log",
+        "evidence/baseline-lint.json"
+      ],
+      "resolved_at": "2026-10-10T13:35:30.888587-05:00",
+      "resolution": "Authorized exact correction; PHPCS current exit 0"
+    }
+  ],
+  "archive_ready": true,
+  "verification_ref": "verify-report.yaml",
+  "archive_report_ref": "archive-report.yaml"
+}

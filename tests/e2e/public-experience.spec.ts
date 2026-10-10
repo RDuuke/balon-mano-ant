@@ -348,7 +348,7 @@ test('contenido publico conserva ancho maximo, centrado y gutters coherentes', a
 
 test('3.1 navegación global, páginas institucionales, foco y ruta ausente', async ({ page }) => {
   await page.goto('/');
-  const openMenu = page.getByRole('button', { name: /open menu|abrir menÃº/i });
+  const openMenu = page.getByRole('button', { name: /open menu|abrir men/i });
   if (await openMenu.isVisible()) await openMenu.click();
   const navigation = page.getByRole('navigation', { name: /navegación principal/i });
   await expect(navigation).toBeVisible();
@@ -435,7 +435,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
     await expect(pagination).toContainText(/p[aá]gina/i);
   }
 
-  const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
+  const submenuToggle = page.getByRole('button', { name: 'Selecciones', exact: true });
   const menuToggle = page.getByRole('button', { name: /abrir men/i });
   if (await menuToggle.isVisible()) {
     await menuToggle.click();
@@ -467,7 +467,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
     if (await touchMenuToggle.isVisible()) {
       await touchMenuToggle.click();
     }
-    const touchToggle = touchPage.getByRole('button', { name: /submen[uú] de selecciones/i });
+    const touchToggle = touchPage.getByRole('button', { name: 'Selecciones', exact: true });
     const touchBox = await touchToggle.boundingBox();
     expect(touchBox).not.toBeNull();
     await touchPage.touchscreen.tap(touchBox!.x + touchBox!.width / 2, touchBox!.y + touchBox!.height / 2);
@@ -480,6 +480,8 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
   const noJavaScriptPage = await noJavaScript.newPage();
   try {
     await noJavaScriptPage.goto('/selecciones/?modalidad=Piso&pagina=999');
+    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeVisible();
+    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Playa', exact: true })).toBeVisible();
     await expect(noJavaScriptPage.getByRole('heading', { level: 1 })).toHaveText('Piso');
     await expect(noJavaScriptPage.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
   } finally {

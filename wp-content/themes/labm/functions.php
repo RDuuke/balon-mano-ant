@@ -1379,7 +1379,9 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 			<section class="labm-selecciones__collection" aria-labelledby="labm-selecciones-collection-title">
 				<header class="labm-selecciones__collection-header">
 					<div>
+						<?php /* translators: %s is the selection modality number. */ ?>
 						<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Modalidad %s', 'labm' ), 'Playa' === $state['modalidad'] ? '02' : '01' ) ); ?></p>
+						<?php /* translators: %s is the selection modality name. */ ?>
 						<h2 id="labm-selecciones-collection-title"><?php echo esc_html( sprintf( __( 'Balonmano de %s', 'labm' ), $state['modalidad'] ) ); ?></h2>
 					</div>
 					<?php /* translators: %d is the number of published selections. */ ?>
@@ -1396,7 +1398,8 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 					<article class="labm-selecciones__row" data-labm-seleccion-row data-labm-seleccion-id="<?php echo esc_attr( (string) $post->ID ); ?>">
 						<div class="labm-selecciones__media"><?php echo labm_theme_selection_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado por WordPress o helper seguro. ?></div>
 						<div class="labm-selecciones__content">
-							<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Balonmano %s · %s', 'labm' ), $state['modalidad'], $selection_category ) ); ?></p>
+							<?php /* translators: 1: selection modality name, 2: event category. */ ?>
+							<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Balonmano %1$s · %2$s', 'labm' ), $state['modalidad'], $selection_category ) ); ?></p>
 							<h3><?php echo esc_html( labm_theme_selection_title( $post ) ); ?></h3>
 							<?php $summary = labm_theme_selection_summary( $post ); ?>
 							<?php if ( '' !== $summary ) : ?>
@@ -1683,6 +1686,8 @@ function labm_theme_header_navigation_shortcode() {
 	$archive_url  = $archive_url ? $archive_url : home_url( '/selecciones/' );
 	$archive_path = untrailingslashit( (string) wp_parse_url( $archive_url, PHP_URL_PATH ) );
 	$is_archive   = $current_path === $archive_path;
+	$is_section   = $is_archive || is_singular( 'labm_seleccion' );
+	$current_type = $is_archive ? 'page' : 'location';
 	if ( $is_archive ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- estado publico de solo lectura.
 		$state = labm_theme_selection_request_state( wp_unslash( $_GET ) );
@@ -1691,6 +1696,17 @@ function labm_theme_header_navigation_shortcode() {
 			'modalidad' => '',
 			'pagina'    => 1,
 		);
+		if ( $is_section ) {
+			$modalities = get_the_terms( get_queried_object_id(), 'labm_modalidad' );
+			if ( is_array( $modalities ) ) {
+				foreach ( $modalities as $modality ) {
+					if ( in_array( $modality->name, array( 'Piso', 'Playa' ), true ) ) {
+						$state['modalidad'] = $modality->name;
+						break;
+					}
+				}
+			}
+		}
 	}
 	$items = array(
 		'Inicio'      => home_url( '/' ),
@@ -1711,14 +1727,13 @@ function labm_theme_header_navigation_shortcode() {
 			<ul class="labm-site-navigation__list">
 				<?php foreach ( $items as $label => $url ) : ?>
 					<?php if ( 'Selecciones' === $label ) : ?>
-						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_archive ? ' is-current-section' : ''; ?>" data-labm-submenu>
+						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_section ? ' is-current-section' : ''; ?>" data-labm-submenu>
 							<div class="labm-site-navigation__parent">
-								<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Selecciones', 'labm' ); ?></a>
-								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true" aria-label="<?php esc_attr_e( 'Cerrar submenú de Selecciones', 'labm' ); ?>"><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
+								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
 							</div>
 							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_archive && 'Piso' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_archive && 'Playa' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_section && 'Piso' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_section && 'Playa' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
 							</ul>
 						</li>
 					<?php else : ?>
