@@ -1,0 +1,547 @@
+{
+  "schema_version": "1.0",
+  "kind": "verify_report",
+  "change": "seleccion-parent-menu-toggle",
+  "updated_at": "2026-10-10T13:37:07.920785-05:00",
+  "status": "warning",
+  "summary": "Criterios y gates satisfechos mediante evidencia ejecutada compatible; reuso incremental documentado. Listo para ARCHIVE.",
+  "artifact_refs": [
+    "quick.md",
+    "validation-plan.yaml",
+    "apply-progress.yaml",
+    "evidence/inputs.json",
+    "evidence/internal-adjustment.json"
+  ],
+  "archive_ready": true,
+  "input_hashes": {
+    "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+    "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+    "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+    "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+    "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+    "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+    "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+    "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+    "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+    "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+    "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+    "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+    "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+    "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+    "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+    "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+  },
+  "criteria": [
+    {
+      "id": "c1",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "navigation-markup",
+        "navigation-browser"
+      ],
+      "evidence_ids": [
+        "browser-incremental",
+        "php-current"
+      ]
+    },
+    {
+      "id": "c2",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "navigation-browser"
+      ],
+      "evidence_ids": [
+        "browser-incremental"
+      ]
+    },
+    {
+      "id": "c3",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "navigation-markup",
+        "navigation-browser",
+        "navigation-internal"
+      ],
+      "evidence_ids": [
+        "browser-incremental",
+        "php-current"
+      ]
+    },
+    {
+      "id": "c4",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "navigation-browser"
+      ],
+      "evidence_ids": [
+        "browser-incremental"
+      ]
+    },
+    {
+      "id": "c5",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "strict-tdd",
+        "configured-full-gate"
+      ],
+      "evidence_ids": [
+        "browser-incremental",
+        "gate-original",
+        "php-current",
+        "static-current",
+        "tdd"
+      ]
+    },
+    {
+      "id": "c6",
+      "source_ref": "quick.md",
+      "status": "COMPLIANT",
+      "check_ids": [
+        "lf-and-scope",
+        "review-budget",
+        "persistent-state"
+      ],
+      "evidence_ids": [
+        "lf-current",
+        "persistence",
+        "review-current"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "navigation-markup",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "php-current"
+      ]
+    },
+    {
+      "id": "navigation-browser",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "browser-incremental"
+      ]
+    },
+    {
+      "id": "strict-tdd",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "tdd"
+      ]
+    },
+    {
+      "id": "configured-full-gate",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "gate-original",
+        "php-current",
+        "browser-incremental",
+        "static-current"
+      ]
+    },
+    {
+      "id": "lf-and-scope",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "lf-current"
+      ]
+    },
+    {
+      "id": "review-budget",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "review-current"
+      ]
+    },
+    {
+      "id": "persistent-state",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "persistence"
+      ]
+    },
+    {
+      "id": "navigation-internal",
+      "required": true,
+      "result": "passed",
+      "reason": "Obligaci?n cubierta con evidencia ejecutada compatible; reuso incremental expl?cito cuando corresponde.",
+      "evidence_ids": [
+        "php-current",
+        "browser-incremental"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "php-current",
+      "method": "cli",
+      "command": "PHPUnit integration --filter test_selection_header_navigation; scripts/coverage.ps1",
+      "observed": "2 pruebas/20 aserciones focales; integraci?n 186/1993; cobertura 82.92%.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": "2026-10-10T13:28:04.025721-05:00",
+      "refs": [
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "Fuentes previas a correcci?n mec?nica; comentarios translators y placeholders numerados conservan salida, probado por PHP en cuatro combinaciones. Tests y dem?s fuentes coinciden con hashes actuales."
+    },
+    {
+      "id": "browser-incremental",
+      "method": "automated",
+      "command": "scripts/gate.ps1 -IncludeBrowser; Playwright focal verify-correctives; internas cuatro proyectos",
+      "observed": "Suite original 234 PASS, 9 FAIL, 1 skip; reemplazos focales 18 PASS/1 FAIL/1 skip y cierre final4 PASS cubren los fallos; efectivo243 PASS/1 skip m?s internas4 PASS. No es nueva suite completa PASS.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": "2026-10-10T13:28:04.025721-05:00",
+      "refs": [
+        "evidence/gate-browser-portable.log",
+        "evidence/focused-browser-first.txt",
+        "evidence/focused-browser-final.txt",
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/gate-browser-portable.log",
+        "evidence/focused-browser-first.txt",
+        "evidence/focused-browser-final.txt",
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "JS y escenarios previos permanecen compatibles; singular y estilo aria-current location a?adidos con ejecuci?n focal cuatro proyectos, ambas modalidades y querystring contrario. Correcci?n posterior PHP conserva salida."
+    },
+    {
+      "id": "tdd",
+      "method": "inspection",
+      "command": "Lectura de RED/GREEN y hashes de apply-progress.yaml",
+      "observed": "RED previo PHP/navegador e internas; GREEN posterior focal e integraci?n. Correcci?n PHPCS reutiliza RED fuente id?ntica y lint GREEN.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/red-php.txt",
+        "evidence/red-browser.txt",
+        "evidence/green-php.txt",
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/red-php.txt",
+        "evidence/red-browser.txt",
+        "evidence/green-php.txt",
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "Hashes actuales conciliados; evidencia ejecutada preservada. Tiempos de inicio/fin no conservados; no se inventan."
+    },
+    {
+      "id": "static-current",
+      "method": "cli",
+      "command": "composer analyse -- --no-progress; composer lint",
+      "observed": "PHPStan sin errores; PHPCS exit0 tras corregir exactamente cuatro errores anteriores.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "PHPStan previo a correcci?n mec?nica equivalente; PHPCS ejecutado con hash final1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce."
+    },
+    {
+      "id": "gate-original",
+      "method": "cli",
+      "command": "scripts/gate.ps1 -IncludeBrowser",
+      "observed": "UnitarioPASS; coberturaPASS; PHPCSFAIL y navegadorFAIL originales conservados. Reemplazos dirigidos actuales satisfacen obligaciones efectivas sin relabelar el run.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/gate-summary.json",
+        "evidence/gate-composer-lint.log",
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/gate-summary.json",
+        "evidence/gate-composer-lint.log",
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "Hashes actuales conciliados; evidencia ejecutada preservada. Tiempos de inicio/fin no conservados; no se inventan."
+    },
+    {
+      "id": "review-current",
+      "method": "inspection",
+      "command": "Conciliaci?n de autorizaci?n y fingerprint del diff",
+      "observed": "218 l?neas aprobadas m?s tres comentarios translators y placeholders numerados autorizados; final223 l?neas, l?mite0, rutas sensibles ninguna. Fingerprint final ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/review.diff",
+        "evidence/inputs.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/review.diff",
+        "evidence/inputs.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "review-budget-apply-001 conserva fingerprint324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce revisado y extensi?n mec?nica exacta autorizada por Ok hazlo. APPLY skill paso5 s?lo exige nueva decisi?n para cambios materiales fuera del alcance revisado; no hay tales cambios."
+    },
+    {
+      "id": "lf-current",
+      "method": "inspection",
+      "command": "git diff --check; lectura binaria de archivos modificados",
+      "observed": "Diff sin errores; archivos modificados sin CRLF; hashes de 16 inputs coinciden.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/lf-check.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/lf-check.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "Hashes actuales conciliados; evidencia ejecutada preservada. Tiempos de inicio/fin no conservados; no se inventan."
+    },
+    {
+      "id": "persistence",
+      "method": "cli",
+      "command": "scripts/content-sync.ps1 -Action Restore -Backup <backup oficial> -ConfirmReplace",
+      "observed": "Dos restorations oficiales documentadas; local/can?nica20261010T044329353Z-User; can?nico sin cambios, hash verificado y sin tablas usuarios. Prueba interna navegador s?lo lectura.",
+      "started_at": null,
+      "finished_at": null,
+      "recorded_at": null,
+      "refs": [
+        "evidence/persistent-state.json",
+        "evidence/internal-adjustment.json"
+      ],
+      "input_hashes": {
+        "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+        "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+        "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+        "wp-content/themes/labm/functions.php": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+        "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+        "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7",
+        "openspec/config.yaml": "c7943b8ae5c361f0fb6fd2a56167259d5c5606948eabde1b1f72a5bf3a72fd48",
+        "playwright.config.ts": "e9edc5d95495f83b92bd37f9b0578e9f06ab36cffbaf24aa75f1ba09b7bb60b0",
+        "package.json": "a5fefb94c08db129c35f3256413bb1ee85959d4dfcffd7ce366e6b2cc20b272d",
+        "pnpm-lock.yaml": "7d1c4fa23d47ff4a45840a6ad3f6941af89d55ff5b9021914fb0d28102d9425d",
+        "composer.json": "e64ec0e44e244b7dfddea85109dd0d091c6124cdf7f55c551c3ce46482652101",
+        "composer.lock": "1c3439eb7101a0f90ac5c74274a2c35378c3288d78589c21dc50dcc13cf258c3",
+        "compose.yaml": "794c1da6ce5299bfd4aad49f5f47a2e51b8a2095f16d92492c4ce60182b6a250",
+        "phpunit.integration.xml.dist": "091fb00bce0169393c063c30c4ae08b528d751e40262d9ee9f2f7c238d802fea",
+        "openspec/changes/seleccion-parent-menu-toggle/quick.md": "2112ad933e4182917eea387c5e2276884f26dfbe1e74177bd4c41cf867c6874c",
+        "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "a2fd541c517cc251da2ec10684ebac48e4d702dc28cd13ee1f7ba78b10d1cbd4"
+      },
+      "environment": "WordPress local PHP8.3; Docker; Playwright cuatro proyectos; URLs restauradas localhost:8080",
+      "reused_from": [
+        "evidence/persistent-state.json",
+        "evidence/internal-adjustment.json"
+      ],
+      "compatibility_checked_at": "2026-10-10T13:37:07.920785-05:00",
+      "compatibility": "Hashes actuales conciliados; evidencia ejecutada preservada. Tiempos de inicio/fin no conservados; no se inventan."
+    }
+  ],
+  "incomplete_tasks": [],
+  "findings": [
+    {
+      "id": "verify-advisory-001",
+      "category": "evidence",
+      "severity": "suggestion",
+      "blocking": false,
+      "resolution": "open",
+      "summary": "No se presenta una nueva suite completa final PASS: se conserva suite original fallida m?s reemplazos focales. Un skip de hover m?vil es no aplicable a puntero sin hover; clic/touch s? probado. Horas de ejecuci?n no conservadas se dejan null, con timestamps originales de registro.",
+      "criterion_ids": [
+        "c5"
+      ],
+      "artifact_refs": [
+        "evidence/gate-summary.json",
+        "evidence/internal-adjustment.json"
+      ]
+    }
+  ],
+  "approval_reconciliation": {
+    "approval_id": "review-budget-apply-001",
+    "reviewed_fingerprint": "324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce",
+    "final_fingerprint": "ec349f8a2dd3641c08a6fd2f160a1a9932c08e6eb604a7eb4fc547ee99ae13a8",
+    "final_diff_lines": 223,
+    "limit": 0,
+    "retained_reason": "Alcance revisado m?s correcci?n exacta autorizada; ninguna ampliaci?n material.",
+    "user_instruction": "Ok hazlo"
+  },
+  "verification_provenance": {
+    "checked_at": "2026-10-10T13:37:07.920785-05:00",
+    "mode": "incremental_reuse",
+    "original_failures_retained": true,
+    "fresh_full_run_claimed": false,
+    "strict_tdd": true,
+    "persistent_state_restored": true,
+    "original_change_path": "openspec/changes/seleccion-parent-menu-toggle",
+    "archived_change_path": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle",
+    "original_verify_report_sha256": "15c9da25c52af20c1d5dd80f2eec6f2dbbec71fd684c585973842396910f31ae",
+    "original_verify_backup_ref": ".archive-transaction/backups/verify-report.original.yaml",
+    "relocated_input_paths": {
+      "openspec/changes/seleccion-parent-menu-toggle/quick.md": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/quick.md",
+      "openspec/changes/seleccion-parent-menu-toggle/validation-plan.yaml": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle/validation-plan.yaml"
+    }
+  }
+}

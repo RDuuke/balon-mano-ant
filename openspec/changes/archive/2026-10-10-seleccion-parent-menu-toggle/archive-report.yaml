@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "kind": "archive_report",
+  "change": "seleccion-parent-menu-toggle",
+  "updated_at": "2026-10-10T18:39:56.785Z",
+  "status": "ok",
+  "summary": "Cambio QUICK archivado y navegacion consolidada; guard vigente validado, evidencia y aprobaciones preservadas.",
+  "artifact_refs": [
+    "verify-report.yaml",
+    ".archive-transaction.yaml",
+    ".status.yaml"
+  ],
+  "archive_path": "openspec/changes/archive/2026-10-10-seleccion-parent-menu-toggle",
+  "verification_ref": "verify-report.yaml",
+  "verification_sha256": "2b143709cad9fb0b9f24d7c13032c203d69acd521f18c0482ae18fa6a416e10a",
+  "original_verification_sha256": "15c9da25c52af20c1d5dd80f2eec6f2dbbec71fd684c585973842396910f31ae",
+  "archive_ready": true,
+  "domains": [
+    {
+      "domain": "experiencia-publica",
+      "base_ref": "../../../specs/experiencia-publica/spec.md",
+      "before_hash": "71f788d5c273998651b765ff047ecaa3a7be8e53e404901fe03f3c2ec4a678f3",
+      "after_hash": "7b627d6f457f2c0639d5600fb249ca48b83909504e5338fc649f1a670758db64",
+      "added": [],
+      "modified": [
+        "Sección principal",
+        "Disclosure accesible"
+      ],
+      "removed": [],
+      "unchanged_count": 25,
+      "status": "ok"
+    }
+  ],
+  "notes": [
+    "Sin pruebas de producto, commits, push ni despliegue durante ARCHIVE.",
+    "Estado WordPress restaurado oficialmente y canonico sin cambios; no procede Push content-sync.",
+    "Evidencia VERIFY incremental explicita, sin declarar nueva suite completa final."
+  ]
+}

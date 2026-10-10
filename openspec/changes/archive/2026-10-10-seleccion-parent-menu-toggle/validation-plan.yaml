@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "kind": "validation_plan",
+  "change": "seleccion-parent-menu-toggle",
+  "updated_at": "2026-10-10T13:22:08.001469-05:00",
+  "status": "ok",
+  "summary": "Validación del control de Selecciones con pruebas focales y gates vigentes.",
+  "artifact_refs": [
+    "quick.md"
+  ],
+  "impact": {
+    "areas": [
+      "navegación pública compartida"
+    ],
+    "shared_dependencies": [
+      "shortcode de header",
+      "navigation.js",
+      "style.css"
+    ],
+    "risk": "low",
+    "reason": "Un único control de submenú, sin cambios de arquitectura ni estado persistido de producto."
+  },
+  "checks": [
+    {
+      "id": "navigation-markup",
+      "criteria": [
+        "c1",
+        "c3"
+      ],
+      "method": "cli",
+      "required": true,
+      "scope": "Marcado de navegación y modalidad efectiva",
+      "command": "docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v \"${PWD}:/work:ro\" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist --filter \"test_selection_header_navigation\"",
+      "expected": "Botón padre sin href; clase activa en ambas modalidades; aria-current sólo en hijo efectivo.",
+      "capability": "WordPress PHPUnit; composer.json y phpunit.integration.xml.dist",
+      "reason": "Validación focal del contrato PHP compartido."
+    },
+    {
+      "id": "navigation-browser",
+      "criteria": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+      ],
+      "method": "automated",
+      "required": true,
+      "scope": "Pruebas focales de navegación en proyectos 320/768/1024/1440 y contexto touch/sin JS",
+      "command": "pnpm run test:e2e -- tests/e2e/verify-correctives.spec.ts tests/e2e/public-experience.spec.ts --grep \"navegacion|navegación|header|submen|Selecciones cubre\"",
+      "expected": "Clic sin navegación, hover estable, rutas hijas y padre activo, teclado/touch/sin JS, sin regresiones de header.",
+      "capability": "Playwright; package.json, playwright.config.ts",
+      "reason": "Interacción requiere navegador ejecutado; la inspección estática no prueba hover."
+    },
+    {
+      "id": "strict-tdd",
+      "criteria": [
+        "c5"
+      ],
+      "method": "inspection",
+      "required": true,
+      "scope": "Casos focales modificados de comportamiento",
+      "expected": "Evidencia RED previa al cambio y GREEN posterior con identidad de inputs y comandos.",
+      "capability": "gates.apply.tdd de openspec/config.yaml",
+      "reason": "Política strict vigente, sin excepción aprobada."
+    },
+    {
+      "id": "configured-full-gate",
+      "criteria": [
+        "c5"
+      ],
+      "method": "cli",
+      "required": true,
+      "scope": "Gate verify_pr configurado: PHPUnit, integración, cobertura >=80%, PHPCS, PHPStan y Playwright completo",
+      "command": "./scripts/gate.ps1 -IncludeBrowser",
+      "expected": "Todos los checks exigidos PASS, cobertura >=80%; NO EJECUTADA no satisface el gate aunque wrapper retorne cero.",
+      "capability": "scripts/gate.ps1, scripts/coverage.ps1, scripts/browser-gate.ps1; runtime debe comprobarse en APPLY/VERIFY",
+      "reason": "Mantiene gates existentes; no se rebajan por ser QUICK."
+    },
+    {
+      "id": "lf-and-scope",
+      "criteria": [
+        "c6"
+      ],
+      "method": "inspection",
+      "required": true,
+      "scope": "Todos los archivos de texto modificados dentro del cambio",
+      "command": "git diff --check",
+      "expected": "Sin errores de diff ni bytes CRLF; superficies autorizadas, sin cambios ajenos.",
+      "capability": "Git y lectura binaria",
+      "reason": "Regla obligatoria de AGENTS.md; git diff --check no reemplaza comprobación binaria LF."
+    },
+    {
+      "id": "review-budget",
+      "criteria": [
+        "c6"
+      ],
+      "method": "inspection",
+      "required": true,
+      "scope": "Diff concreto de APPLY",
+      "expected": "Aprobación review_budget ligada a tamaño, límite 0, rutas sensibles configuradas y fingerprint actual del diff.",
+      "capability": "gates.apply.review_budget de openspec/config.yaml",
+      "reason": "Gate explícito se resolverá con resultado concreto; no corresponde aprobar diff inexistente en QUICK."
+    },
+    {
+      "id": "persistent-state",
+      "criteria": [
+        "c6"
+      ],
+      "method": "inspection",
+      "required": true,
+      "scope": "Efectos de wrappers de pruebas sobre base de datos/uploads",
+      "expected": "Entorno aislado o estado restaurado sin residuos; si hay estado persistido modificado, paquete oficial actualizado, versión/hash verificados y sin tablas de usuarios.",
+      "capability": "scripts/content-sync.ps1 y docs/content-sync.md",
+      "reason": "El producto no requiere persistencia; wrappers de validación sí pueden afectarla."
+    },
+    {
+      "id": "navigation-internal",
+      "criteria": [
+        "c3"
+      ],
+      "method": "automated",
+      "required": true,
+      "scope": "Detalle individual Piso/Playa con querystring contrario, padre activo y hijo aria-current location; articulos existentes sin fixtures ni ajustes DB.",
+      "command": "Playwright verify-correctives --grep seleccionados en internas, cuatro proyectos; PHPUnit --filter test_selection_header_navigation",
+      "expected": "Modalidad derivada del articulo, no filtro GET; estilos activos con panel abierto/cerrado.",
+      "reason": "Aclaracion solicitada por usuario durante revision del diff."
+    }
+  ],
+  "exceptions": []
+}

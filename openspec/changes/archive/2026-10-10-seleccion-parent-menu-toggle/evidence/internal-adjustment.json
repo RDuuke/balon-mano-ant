@@ -1,0 +1,99 @@
+{
+  "recorded_at": "2026-10-10T13:28:04.025721-05:00",
+  "scope": "Detalle individual mantiene padre y modalidad del articulo activos; querystring contrario no cambia seleccion.",
+  "commands": {
+    "php": "PHPUnit integration --filter test_selection_header_navigation",
+    "browser": "Playwright verify-correctives --grep seleccionados en internas --workers=1 --retries=0",
+    "coverage": "scripts/coverage.ps1",
+    "phpstan": "composer analyse -- --no-progress",
+    "phpcs": "composer lint"
+  },
+  "red": {
+    "php": {
+      "exit_code": 1,
+      "observed": "Interna sin is-current-section."
+    },
+    "browser": {
+      "exit_code": 1,
+      "project": "desktop-1024",
+      "observed": "Interna Piso sin is-current-section."
+    }
+  },
+  "green": {
+    "php": {
+      "exit_code": 0,
+      "tests": 2,
+      "assertions": 20
+    },
+    "browser": {
+      "exit_code": 0,
+      "tests": 4,
+      "projects": [
+        "mobile-320",
+        "tablet-768",
+        "desktop-1024",
+        "wide-1440"
+      ],
+      "criteria": "Padre activo abierto/cerrado, hijo propio aria-current location y fondo seleccionado, ambas modalidades y querystring contrario."
+    },
+    "coverage": {
+      "exit_code": 0,
+      "tests": 186,
+      "assertions": 1993,
+      "covered_statements": 2573,
+      "statements": 3103,
+      "percent": 82.92
+    },
+    "phpstan": {
+      "exit_code": 0,
+      "observed": "No errors"
+    }
+  },
+  "phpcs": {
+    "exit_code": 1,
+    "observed": "Exactamente los mismos cuatro errores preexistentes en 1382, 1383, 1399; sin nuevos."
+  },
+  "input_hashes": {
+    "tests/php/PublicExperienceTest.php": "fd8530204c7f9074de5363ca2a22cee047b9b7bae03f5c32cd170028fd9ae51d",
+    "tests/e2e/verify-correctives.spec.ts": "e651e531eb2fb8ef9a53cae1123cbcbc9345c31a0d253579eeaafbe6e398fa66",
+    "tests/e2e/public-experience.spec.ts": "26eaf197a88780229abc76437170a2e45c79e619e8a8e2a0fe3946269ae185ef",
+    "wp-content/themes/labm/functions.php": "b9470a9faa5eb62008b40cb569d485be0c572900966823a066daefac2f659393",
+    "wp-content/themes/labm/assets/navigation.js": "666cbaca08133e4b69dfecb84f58ff98c12ad85cf993c406018798ef36cb5d2a",
+    "wp-content/themes/labm/style.css": "f086d5c1dd57af54e4b6a2d952c04faefb72ce1b2a3ec6c3e6a3a118a1d2dbe7"
+  },
+  "red_product_hashes": {
+    "wp-content/themes/labm/functions.php": "300b9c14b4841d1e19bbdddc701c7ee79a7a4f28eb3f764bdb34a8d9b0b433f9",
+    "wp-content/themes/labm/style.css": "497faca228a30e97de6769e389a8d6ca905959feeacbead4a8d4e19259f4b2f0"
+  },
+  "persistence": {
+    "browser": "Solo lectura, articulos existentes, assets interceptados sin modificar opciones.",
+    "integration": "Posts TDD eliminados finally; suite cobertura protegida y backup oficial restaurado exit0.",
+    "backup": ".content-sync/backups/backup-manual-20261010T182411545Z-rduuqe-RDUUQE.zip",
+    "local_version": "20261010T044329353Z-User",
+    "canonical_version": "20261010T044329353Z-User",
+    "canonical_changed": false
+  },
+  "review_diff_sha256": "324a86b9f2b27ea436ee41f2d0be7af9b2e441d64a6d0ab054bf09e0aeff66ce",
+  "review_diff_lines": 218,
+  "authorized_lint_correction": {
+    "approved_instruction": "Ok hazlo",
+    "red_reuse": {
+      "source_hash": "b9470a9faa5eb62008b40cb569d485be0c572900966823a066daefac2f659393",
+      "exit_code": 1,
+      "errors": 4,
+      "evidence": "prior PHPCS result in this artifact; source unchanged before correction"
+    },
+    "green": {
+      "command": "docker run --rm -v C:/Users/rduuqe/Documents/BalonManoAnt:/app -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint",
+      "exit_code": 0
+    },
+    "format_probe": {
+      "exit_code": 0,
+      "combinations": 4,
+      "result": "Piso/Playa and Evento/Festival preserve visible text and order"
+    },
+    "final_source_hash": "1f9d567d838d721b3a5860d76b0881a517367c1eee3f5da0578b2376eb0cd0ce",
+    "persistence_changes": false,
+    "compatibility": "Existing integration, coverage and PHPStan executed before this mechanical correction. Only translator comments and positional placeholders changed; PHP format probe proves output equivalence. Frontend assets and tests unchanged; browser evidence retained. No new full-suite run claimed."
+  }
+}

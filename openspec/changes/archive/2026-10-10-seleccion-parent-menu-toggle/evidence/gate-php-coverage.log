@@ -1,0 +1,47 @@
+PHPUnit 11.5.27 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.20 with PCOV 1.0.12
+Configuration: /app/phpunit.integration.xml.dist
+
+...............................................................  63 / 185 ( 34%)
+............................................................... 126 / 185 ( 68%)
+...........................................................     185 / 185 (100%)
+
+Time: 00:15.710, Memory: 70.50 MB
+
+OK (185 tests, 1985 assertions)
+
+Generating code coverage report in Clover XML format ... done [00:00.115]
+Cobertura PHP: 82.87% (2564/3094 lineas).
+PASS cobertura PHP >= 80%.
+
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 354B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/wordpress:cli-2.11.0-php8.3@sha256:8620869ecf48e0eda305b4ee466990fa318664c638b861ebd5ce443d9904abde
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/2] FROM docker.io/library/wordpress:cli-2.11.0-php8.3@sha256:8620869ecf48e0eda305b4ee466990fa318664c638b861ebd5ce443d9904abde
+#4 resolve docker.io/library/wordpress:cli-2.11.0-php8.3@sha256:8620869ecf48e0eda305b4ee466990fa318664c638b861ebd5ce443d9904abde 0.0s done
+#4 DONE 0.0s
+
+#5 [2/2] RUN apk add --no-cache --virtual .build-deps autoconf 		dpkg-dev dpkg 		file 		g++ 		gcc 		libc-dev 		make 		pkgconf 		re2c linux-headers     && pecl install pcov-1.0.12     && docker-php-ext-enable pcov     && apk del .build-deps     && rm -rf /tmp/pear
+#5 CACHED
+
+#6 exporting to image
+#6 exporting layers 0.0s done
+#6 exporting manifest sha256:71dd0934f15b3005a04fd574ad61f19cc6b0bf6840a4a0ac901740a95bb55bb3 done
+#6 exporting config sha256:497f98f575a396857116777093469bb13d82af749964d2519ce3d7c074ea7e95 done
+#6 exporting attestation manifest sha256:653c6a304bccff57aa5d9b0d7c3912dc2d7e30cd80da509a6815ebd755e01e5b done
+#6 exporting manifest list sha256:567a2e38f2b0bebb8ec836c0950ab9fab76e4c877a2c7a8ec1b233e7b3af6cbd done
+#6 naming to docker.io/library/labm-coverage:php8.3 done
+#6 unpacking to docker.io/library/labm-coverage:php8.3 0.0s done
+#6 DONE 0.1s
+

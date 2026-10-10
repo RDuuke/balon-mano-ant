@@ -1280,7 +1280,20 @@ add_action( 'pre_get_posts', 'labm_theme_prepare_selection_archive_query' );
 function labm_theme_selection_summary( $post ) {
 	$source = $post->post_excerpt ? $post->post_excerpt : $post->post_content;
 	$source = trim( wp_strip_all_tags( strip_shortcodes( (string) $source ) ) );
+	$source = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $source );
+	$source = is_string( $source ) ? trim( $source ) : '';
 	return wp_trim_words( $source, 32, '…' );
+}
+
+/**
+ * Devuelve un titulo publico sin el marcador editorial de las demos locales.
+ *
+ * @param WP_Post $post Publicacion de Selecciones.
+ * @return string
+ */
+function labm_theme_selection_title( $post ) {
+	$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
+	return is_string( $title ) ? $title : '';
 }
 
 /**
@@ -1319,6 +1332,12 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 	$selection_term = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
 	$introduction   = $selection_term instanceof WP_Term ? trim( wp_strip_all_tags( (string) $selection_term->description ) ) : '';
 	$introduction   = '' !== $introduction ? $introduction : __( 'Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.', 'labm' );
+	$listing_copy   = sprintf(
+		/* translators: %s is the selected modality name. */
+		__( 'Consulta los eventos en los que ha participado la selección de %s y recorre las fotografías oficiales compartidas por cada proceso deportivo.', 'labm' ),
+		strtolower( $state['modalidad'] )
+	);
+	$modality_index = 'Playa' === $state['modalidad'] ? '02' : '01';
 	$current_page   = (int) $query->get( 'labm_selection_effective_page' );
 	$pagination     = add_query_arg(
 		array(
@@ -1337,7 +1356,13 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 			<h1 id="labm-selecciones-title"><?php echo esc_html( $state['modalidad'] ); ?></h1>
 			<p><?php echo esc_html( $introduction ); ?></p>
 		</header>
-		<div class="labm-selecciones__intro">
+		<section class="labm-selecciones__intro" aria-labelledby="labm-selecciones-intro-title">
+			<div class="labm-selecciones__intro-inner">
+				<h2 id="labm-selecciones-intro-title"><?php esc_html_e( 'Participaciones y registro fotográfico', 'labm' ); ?></h2>
+				<p><?php echo esc_html( $listing_copy ); ?></p>
+			</div>
+		</section>
+		<div class="labm-selecciones__legacy-intro">
 			<?php /* translators: %d is the number of published selections. */ ?>
 			<p><?php printf( esc_html( _n( '%d selección publicada', '%d selecciones publicadas', (int) $query->found_posts, 'labm' ) ), (int) $query->found_posts ); ?></p>
 			<form class="labm-selecciones__selector" method="get" action="<?php echo esc_url( $archive_url ); ?>">
@@ -1351,29 +1376,51 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 			</form>
 		</div>
 		<?php if ( $query->have_posts() ) : ?>
+			<section class="labm-selecciones__collection" aria-labelledby="labm-selecciones-collection-title">
+				<header class="labm-selecciones__collection-header">
+					<div>
+						<?php /* translators: %s is the selection modality number. */ ?>
+						<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Modalidad %s', 'labm' ), 'Playa' === $state['modalidad'] ? '02' : '01' ) ); ?></p>
+						<?php /* translators: %s is the selection modality name. */ ?>
+						<h2 id="labm-selecciones-collection-title"><?php echo esc_html( sprintf( __( 'Balonmano de %s', 'labm' ), $state['modalidad'] ) ); ?></h2>
+					</div>
+					<?php /* translators: %d is the number of published selections. */ ?>
+					<p class="labm-selecciones__count"><?php printf( esc_html( _n( '%d participación registrada', '%d participaciones registradas', (int) $query->found_posts, 'labm' ) ), (int) $query->found_posts ); ?></p>
+				</header>
 			<div class="labm-selecciones__rows">
 				<?php foreach ( $query->posts as $post ) : ?>
+					<?php
+					$selection_categories = get_the_terms( $post->ID, 'labm_categoria' );
+					$selection_category   = is_array( $selection_categories ) && ! empty( $selection_categories ) ? (string) $selection_categories[0]->name : __( 'Evento', 'labm' );
+					$selection_category   = 'Eventos' === $selection_category ? __( 'Evento', 'labm' ) : $selection_category;
+					$selection_permalink  = get_permalink( $post );
+					?>
 					<article class="labm-selecciones__row" data-labm-seleccion-row data-labm-seleccion-id="<?php echo esc_attr( (string) $post->ID ); ?>">
 						<div class="labm-selecciones__media"><?php echo labm_theme_selection_media( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado por WordPress o helper seguro. ?></div>
 						<div class="labm-selecciones__content">
-							<p class="labm-selecciones__eyebrow"><?php echo esc_html( $state['modalidad'] ); ?></p>
-							<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
+							<?php /* translators: 1: selection modality name, 2: event category. */ ?>
+							<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Balonmano %1$s · %2$s', 'labm' ), $state['modalidad'], $selection_category ) ); ?></p>
+							<h3><?php echo esc_html( labm_theme_selection_title( $post ) ); ?></h3>
 							<?php $summary = labm_theme_selection_summary( $post ); ?>
 							<?php if ( '' !== $summary ) : ?>
 								<p><?php echo esc_html( $summary ); ?></p>
 							<?php endif; ?>
 							<?php $categories = get_the_terms( $post->ID, 'labm_categoria' ); ?>
 							<?php if ( is_array( $categories ) && ! empty( $categories ) ) : ?>
-								<p class="labm-selecciones__meta"><?php echo esc_html( implode( ', ', wp_list_pluck( $categories, 'name' ) ) ); ?></p>
+								<p class="labm-selecciones__meta labm-selecciones__category-meta"><?php echo esc_html( implode( ', ', wp_list_pluck( $categories, 'name' ) ) ); ?></p>
 							<?php endif; ?>
 							<?php $detail = trim( (string) get_post_meta( $post->ID, 'labm_modalidad_detalle', true ) ); ?>
 							<?php if ( '' !== $detail ) : ?>
 								<p class="labm-selecciones__meta"><?php echo esc_html( $detail ); ?></p>
 							<?php endif; ?>
+							<?php if ( $selection_permalink ) : ?>
+								<a class="labm-selecciones__publication-link" href="<?php echo esc_url( $selection_permalink ); ?>"><?php esc_html_e( 'Ver publicación', 'labm' ); ?> <span aria-hidden="true">→</span></a>
+							<?php endif; ?>
 						</div>
 					</article>
 				<?php endforeach; ?>
 			</div>
+			</section>
 		<?php else : ?>
 			<div class="labm-selecciones__empty" data-labm-selecciones-vacio role="status">
 				<?php /* translators: %s is the selected modality name. */ ?>
@@ -1639,6 +1686,8 @@ function labm_theme_header_navigation_shortcode() {
 	$archive_url  = $archive_url ? $archive_url : home_url( '/selecciones/' );
 	$archive_path = untrailingslashit( (string) wp_parse_url( $archive_url, PHP_URL_PATH ) );
 	$is_archive   = $current_path === $archive_path;
+	$is_section   = $is_archive || is_singular( 'labm_seleccion' );
+	$current_type = $is_archive ? 'page' : 'location';
 	if ( $is_archive ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- estado publico de solo lectura.
 		$state = labm_theme_selection_request_state( wp_unslash( $_GET ) );
@@ -1647,6 +1696,17 @@ function labm_theme_header_navigation_shortcode() {
 			'modalidad' => '',
 			'pagina'    => 1,
 		);
+		if ( $is_section ) {
+			$modalities = get_the_terms( get_queried_object_id(), 'labm_modalidad' );
+			if ( is_array( $modalities ) ) {
+				foreach ( $modalities as $modality ) {
+					if ( in_array( $modality->name, array( 'Piso', 'Playa' ), true ) ) {
+						$state['modalidad'] = $modality->name;
+						break;
+					}
+				}
+			}
+		}
 	}
 	$items = array(
 		'Inicio'      => home_url( '/' ),
@@ -1667,14 +1727,13 @@ function labm_theme_header_navigation_shortcode() {
 			<ul class="labm-site-navigation__list">
 				<?php foreach ( $items as $label => $url ) : ?>
 					<?php if ( 'Selecciones' === $label ) : ?>
-						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_archive ? ' is-current-section' : ''; ?>" data-labm-submenu>
+						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_section ? ' is-current-section' : ''; ?>" data-labm-submenu>
 							<div class="labm-site-navigation__parent">
-								<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Selecciones', 'labm' ); ?></a>
-								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true" aria-label="<?php esc_attr_e( 'Cerrar submenú de Selecciones', 'labm' ); ?>"><span aria-hidden="true">⌄</span></button>
+								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
 							</div>
 							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_archive && 'Piso' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_archive && 'Playa' === $state['modalidad'] ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_section && 'Piso' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
+								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_section && 'Playa' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
 							</ul>
 						</li>
 					<?php else : ?>

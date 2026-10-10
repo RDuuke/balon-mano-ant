@@ -1,0 +1,50 @@
+Comando: Playwright 20 casos afectados en cuatro proyectos, workers=1, retries=0.
+Primer segmento: Running 20 tests; caso 3.1 mobile-320 PASS; cierre de contexto mobile-320 FAIL.
+  ✓  3 [mobile-320] › tests/e2e/verify-correctives.spec.ts:28:5 › jerarquia de header permanece estable en Inicio y Actualidad (994ms)
+  -  4 [mobile-320] › tests/e2e/verify-correctives.spec.ts:86:5 › submenu Selecciones abre por hover y conserva cierre por clic y Escape
+  ✓  5 [mobile-320] › tests/e2e/verify-correctives.spec.ts:109:5 › submenu Selecciones conserva padre activo y teclado en ambas modalidades (1.0s)
+  ✓  6 [tablet-768] › tests/e2e/public-experience.spec.ts:349:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (965ms)
+  ✓  7 [tablet-768] › tests/e2e/verify-correctives.spec.ts:14:5 › submenú de Selecciones se cierra al abandonar su contexto (862ms)
+  ✓  8 [tablet-768] › tests/e2e/verify-correctives.spec.ts:28:5 › jerarquia de header permanece estable en Inicio y Actualidad (953ms)
+  ✓  9 [tablet-768] › tests/e2e/verify-correctives.spec.ts:86:5 › submenu Selecciones abre por hover y conserva cierre por clic y Escape (929ms)
+  ✓  10 [tablet-768] › tests/e2e/verify-correctives.spec.ts:109:5 › submenu Selecciones conserva padre activo y teclado en ambas modalidades (831ms)
+  ✓  11 [desktop-1024] › tests/e2e/public-experience.spec.ts:349:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (1.4s)
+  ✓  12 [desktop-1024] › tests/e2e/verify-correctives.spec.ts:14:5 › submenú de Selecciones se cierra al abandonar su contexto (929ms)
+  ✓  13 [desktop-1024] › tests/e2e/verify-correctives.spec.ts:28:5 › jerarquia de header permanece estable en Inicio y Actualidad (1.1s)
+  ✓  14 [desktop-1024] › tests/e2e/verify-correctives.spec.ts:86:5 › submenu Selecciones abre por hover y conserva cierre por clic y Escape (1.0s)
+  ✓  15 [desktop-1024] › tests/e2e/verify-correctives.spec.ts:109:5 › submenu Selecciones conserva padre activo y teclado en ambas modalidades (903ms)
+  ✓  16 [wide-1440] › tests/e2e/public-experience.spec.ts:349:5 › 3.1 navegación global, páginas institucionales, foco y ruta ausente (1.2s)
+  ✓  17 [wide-1440] › tests/e2e/verify-correctives.spec.ts:14:5 › submenú de Selecciones se cierra al abandonar su contexto (819ms)
+  ✓  18 [wide-1440] › tests/e2e/verify-correctives.spec.ts:28:5 › jerarquia de header permanece estable en Inicio y Actualidad (912ms)
+  ✓  19 [wide-1440] › tests/e2e/verify-correctives.spec.ts:86:5 › submenu Selecciones abre por hover y conserva cierre por clic y Escape (984ms)
+  ✓  20 [wide-1440] › tests/e2e/verify-correctives.spec.ts:109:5 › submenu Selecciones conserva padre activo y teclado en ambas modalidades (1.2s)
+
+
+  1) [mobile-320] › tests/e2e/verify-correctives.spec.ts:14:5 › submenú de Selecciones se cierra al abandonar su contexto 
+
+    Error: [31mTimed out 5000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoHaveAttribute[2m([22m[32mexpected[39m[2m)[22m
+
+    Locator: getByRole('button', { name: 'Selecciones', exact: true })
+    Expected string: [32m"false"[39m
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toHaveAttribute" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('button', { name: 'Selecciones', exact: true })[22m
+
+
+      23 |   await nav.getByRole('link', { name: 'Actualidad', exact: true }).click();
+      24 |   await expect(page).toHaveURL(/\/actualidad\/$/);
+    > 25 |   await expect(page.getByRole('button', { name: 'Selecciones', exact: true })).toHaveAttribute('aria-expanded', 'false');
+         |                                                                                ^
+      26 | });
+      27 |
+      28 | test('jerarquia de header permanece estable en Inicio y Actualidad', async ({ page }) => {
+        at /app/tests/e2e/verify-correctives.spec.ts:25:80
+
+    Error Context: artifacts/playwright/verify-correctives-submenú-b0485-ra-al-abandonar-su-contexto-mobile-320/error-context.md
+
+  1 failed
+    [mobile-320] › tests/e2e/verify-correctives.spec.ts:14:5 › submenú de Selecciones se cierra al abandonar su contexto 
+  1 skipped
+  18 passed (28.1s)
+

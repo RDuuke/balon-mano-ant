@@ -745,8 +745,8 @@ final class PublicExperienceTest extends TestCase {
 		}
 	}
 
-	/** Las filas muestran contenido editorial seguro, metadatos existentes y placeholder sin enlaces individuales. */
-	public function test_selection_rows_render_editorial_content_without_individual_links(): void {
+	/** Las filas muestran contenido editorial seguro, metadatos existentes, placeholder y enlace a la publicacion. */
+	public function test_selection_rows_render_editorial_content_with_publication_link(): void {
 		$term     = get_term_by( 'name', 'Piso', 'labm_modalidad' );
 		$category = get_term_by( 'name', 'Noticias', 'labm_categoria' );
 		self::assertNotFalse( $term );
@@ -773,8 +773,7 @@ final class PublicExperienceTest extends TestCase {
 			self::assertStringContainsString( 'Categoria adulta', $matches[0] );
 			self::assertStringContainsString( 'Noticias', $matches[0] );
 			self::assertStringContainsString( 'labm-selecciones__placeholder', $matches[0] );
-			self::assertStringNotContainsString( '<a ', $matches[0] );
-			self::assertStringNotContainsString( 'VER PUBLICACION', $html );
+			self::assertStringContainsString( 'labm-selecciones__publication-link', $matches[0] );
 		} finally {
 			wp_delete_post( $post_id, true );
 		}
@@ -822,10 +821,18 @@ final class PublicExperienceTest extends TestCase {
 			$_GET                  = array( 'modalidad' => 'Piso' );
 			$html                   = labm_theme_header_navigation_shortcode();
 			self::assertLessThan( strpos( $html, 'Documentos' ), strpos( $html, 'Selecciones' ) );
-			self::assertStringContainsString( '/selecciones/"', $html );
+			self::assertDoesNotMatchRegularExpression( '/<a[^>]*>Selecciones<\/a>/', $html );
+			self::assertMatchesRegularExpression( '/<button[^>]*data-labm-submenu-toggle[^>]*>\s*Selecciones/', $html );
+			self::assertStringContainsString( 'is-current-section', $html );
 			self::assertSame( 1, substr_count( $html, 'aria-current="page"' ) );
 			self::assertMatchesRegularExpression( '/Balonmano Piso<\/a>[^<]*<\/li>/', $html );
 			self::assertStringContainsString( '/selecciones/?modalidad=Playa', $html );
+			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Playa';
+			$_GET                  = array( 'modalidad' => 'Playa' );
+			$playa                  = labm_theme_header_navigation_shortcode();
+			self::assertStringContainsString( 'is-current-section', $playa );
+			self::assertSame( 1, substr_count( $playa, 'aria-current="page"' ) );
+			self::assertMatchesRegularExpression( '/<a[^>]*aria-current="page"[^>]*>Balonmano Playa<\/a>/', $playa );
 
 			$_SERVER['REQUEST_URI'] = '/actualidad/';
 			$_GET                  = array();
@@ -840,6 +847,36 @@ final class PublicExperienceTest extends TestCase {
 				$_SERVER['REQUEST_URI'] = $original_uri;
 			}
 			$_GET = $original_get;
+		}
+	}
+
+	/** El detalle conserva la seccion y modalidad del articulo, incluso con un filtro ajeno en la URL. */
+	public function test_selection_header_navigation_marks_single_selection_modality(): void {
+		$original_query = $GLOBALS['wp_query'];
+		$original_get   = $_GET;
+		$original_uri   = $_SERVER['REQUEST_URI'] ?? '/';
+		$post_ids       = array();
+		try {
+			foreach ( array( 'Piso', 'Playa' ) as $modality ) {
+				$post_id    = wp_insert_post( array( 'post_type' => 'labm_seleccion', 'post_status' => 'publish', 'post_title' => 'Navigation single TDD ' . $modality ) );
+				$post_ids[] = $post_id;
+				wp_set_object_terms( $post_id, $modality, 'labm_modalidad' );
+				$GLOBALS['wp_query']    = new WP_Query( array( 'p' => $post_id, 'post_type' => 'labm_seleccion' ) );
+				$_SERVER['REQUEST_URI'] = '/seleccion/navigation-single/?modalidad=' . ( 'Piso' === $modality ? 'Playa' : 'Piso' );
+				$_GET                  = array( 'modalidad' => 'Piso' === $modality ? 'Playa' : 'Piso' );
+				$html                  = labm_theme_header_navigation_shortcode();
+				self::assertStringContainsString( 'is-current-section', $html );
+				self::assertMatchesRegularExpression( '/<a[^>]*aria-current="location"[^>]*>Balonmano ' . $modality . '<\/a>/', $html );
+				self::assertSame( 1, substr_count( $html, 'aria-current="location"' ) );
+				self::assertSame( 0, substr_count( $html, 'aria-current="page"' ) );
+			}
+		} finally {
+			$GLOBALS['wp_query']    = $original_query;
+			$_GET                  = $original_get;
+			$_SERVER['REQUEST_URI'] = $original_uri;
+			foreach ( $post_ids as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
 		}
 	}
 
