@@ -745,8 +745,8 @@ final class PublicExperienceTest extends TestCase {
 		}
 	}
 
-	/** Las filas muestran contenido editorial seguro, metadatos existentes y placeholder sin enlaces individuales. */
-	public function test_selection_rows_render_editorial_content_without_individual_links(): void {
+	/** Las filas muestran contenido editorial seguro, metadatos existentes, placeholder y enlace a la publicacion. */
+	public function test_selection_rows_render_editorial_content_with_publication_link(): void {
 		$term     = get_term_by( 'name', 'Piso', 'labm_modalidad' );
 		$category = get_term_by( 'name', 'Noticias', 'labm_categoria' );
 		self::assertNotFalse( $term );
@@ -773,8 +773,7 @@ final class PublicExperienceTest extends TestCase {
 			self::assertStringContainsString( 'Categoria adulta', $matches[0] );
 			self::assertStringContainsString( 'Noticias', $matches[0] );
 			self::assertStringContainsString( 'labm-selecciones__placeholder', $matches[0] );
-			self::assertStringNotContainsString( '<a ', $matches[0] );
-			self::assertStringNotContainsString( 'VER PUBLICACION', $html );
+			self::assertStringContainsString( 'labm-selecciones__publication-link', $matches[0] );
 		} finally {
 			wp_delete_post( $post_id, true );
 		}

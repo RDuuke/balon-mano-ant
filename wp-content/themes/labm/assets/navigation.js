@@ -14,6 +14,7 @@
 	var submenuPanel = navigation.querySelector('[data-labm-submenu-panel]');
 	var mobileQuery = window.matchMedia('(max-width: 767px)');
 	var wasMobile = mobileQuery.matches;
+	var submenuDefaultOpen = !!(submenu && submenu.classList.contains('is-current-section'));
 
 	function setSubmenu(open, restoreFocus) {
 		if (!submenu || !submenuToggle || !submenuPanel) {
@@ -50,7 +51,7 @@
 		if (isMobile !== wasMobile) {
 			setMenu(!isMobile, false);
 			if (!isMobile) {
-				setSubmenu(true, false);
+				setSubmenu(submenuDefaultOpen, false);
 			}
 			wasMobile = isMobile;
 		}
@@ -65,6 +66,13 @@
 	});
 	submenuToggle.addEventListener('click', function () {
 		setSubmenu(submenuToggle.getAttribute('aria-expanded') !== 'true', false);
+	});
+	navigation.addEventListener('click', function (event) {
+		var link = event.target && event.target.closest ? event.target.closest('a') : null;
+		if (!link || !submenu || submenu.contains(link)) {
+			return;
+		}
+		setSubmenu(false, false);
 	});
 	navigation.addEventListener('keydown', function (event) {
 		if ('Escape' !== event.key) {
@@ -101,6 +109,6 @@
 	});
 	window.addEventListener('resize', syncViewport);
 
-	setSubmenu(!mobileQuery.matches, false);
+	setSubmenu(!mobileQuery.matches && submenuDefaultOpen, false);
 	setMenu(!mobileQuery.matches, false);
 }());

@@ -11,18 +11,29 @@ test('navegacion escritorio completa y ubicacion activa', async ({ page }) => {
   await expect(nav.getByRole('link', { name: 'Inicio', exact: true })).toHaveAttribute('aria-current', 'page');
 });
 
+test('submenú de Selecciones se cierra al abandonar su contexto', async ({ page }) => {
+  await page.goto('/');
+  const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
+  await submenuToggle.click();
+  await expect(submenuToggle).toHaveAttribute('aria-expanded', 'true');
+  const nav = page.getByRole('navigation', { name: /principal/i });
+  await nav.getByRole('link', { name: 'Actualidad', exact: true }).click();
+  await expect(page).toHaveURL(/\/actualidad\/$/);
+  await expect(page.getByRole('button', { name: /abrir submen[uú] de selecciones/i })).toHaveAttribute('aria-expanded', 'false');
+});
+
 test('jerarquia de header permanece estable en Inicio y Actualidad', async ({ page }) => {
   for (const route of ['/', '/actualidad/']) {
     await page.goto(route);
     const open = page.getByRole('button', { name: /open menu|abrir menú/i });
     if (await open.isVisible()) {
       await open.click();
-      const submenuToggle = page.getByRole('button', { name: /submen[uú] de selecciones/i });
-      if ('false' === await submenuToggle.getAttribute('aria-expanded')) {
-        await submenuToggle.click();
-      }
     }
     const nav = page.getByRole('navigation', { name: /principal/i });
+    const submenuToggle = nav.getByRole('button', { name: /submen[uú] de selecciones/i });
+    if ('false' === await submenuToggle.getAttribute('aria-expanded')) {
+      await submenuToggle.click();
+    }
     const parent = nav.getByRole('link', { name: 'Selecciones', exact: true });
     await expect(parent).toHaveAttribute('href', /\/selecciones\/$/);
     await expect(nav.getByRole('link', { name: 'Balonmano Piso', exact: true })).toHaveAttribute('href', /modalidad=Piso/);

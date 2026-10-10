@@ -427,7 +427,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
   await page.goto('/selecciones/?modalidad=Piso&pagina=999');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Piso');
   await expect(page.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
-  await expect(page.locator('[data-labm-seleccion-row] a')).toHaveCount(0);
+  await expect(page.locator('[data-labm-seleccion-row] a.labm-selecciones__publication-link')).not.toHaveCount(0);
 
   const pagination = page.locator('[data-labm-listado="selecciones"] .labm-selecciones__pagination');
   if (await pagination.count()) {
@@ -493,7 +493,7 @@ test('4.4 Selecciones conserva contraste y ausencia de desborde al 200% en cinco
     await page.goto('/selecciones/?modalidad=Piso');
     await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-    const focusTarget = page.locator('[data-labm-listado="selecciones"] select, [data-labm-listado="selecciones"] a').first();
+    const focusTarget = page.locator('[data-labm-listado="selecciones"] a.labm-selecciones__publication-link').first();
     await focusTarget.focus();
     await expect(page.locator(':focus-visible')).toHaveCount(1);
     expect(await focusTarget.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid');
