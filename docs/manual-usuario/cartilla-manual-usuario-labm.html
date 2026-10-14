@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Cartilla manual de usuario LABM</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    :root { --lime: #AECD25; --green: #789614; --ink: #000000; --body: #202020; --surface: #F3F6E8; --line: #d7dcc7; --focus: #3858e9; }
+    * { box-sizing: border-box; }
+    html { background: #e7e9e2; }
+    body { margin: 0; color: var(--body); background: #e7e9e2; font: 11pt/1.42 Inter, Arial, sans-serif; }
+    h1, h2, h3 { margin: 0 0 8pt; line-height: 1.05; }
+    h1, h2 { color: var(--ink); font-family: "Arial Narrow", Inter, Arial, sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -.04em; }
+    h1 { font-size: 30pt; }
+    h2 { font-size: 21pt; }
+    h3 { font-size: 13pt; color: var(--green); }
+    p { margin: 0 0 8pt; }
+    ul, ol { margin: 5pt 0 10pt 19pt; padding: 0; }
+    li { margin: 3pt 0; }
+    code { padding: 1px 4px; background: #f1f3eb; border-radius: 3px; font: 9.5pt Consolas, monospace; }
+    .page { width: 210mm; height: 297mm; min-height: 297mm; margin: 0 auto 14px; padding: 15mm 16mm 14mm; overflow: hidden; position: relative; background: #fff; box-shadow: 0 3px 18px rgba(32,32,32,.16); page-break-after: always; }
+    .page:last-child { page-break-after: auto; }
+    .cover { display: flex; flex-direction: column; justify-content: space-between; padding: 22mm 16mm 14mm; background: var(--lime); }
+    .cover .eyebrow { font-size: 13pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .cover .lead { max-width: 140mm; font-size: 17pt; }
+    .cover .note { max-width: 145mm; padding-top: 12pt; border-top: 2px solid var(--ink); }
+    .band { display: inline-block; margin-bottom: 10pt; padding: 5pt 8pt; background: var(--lime); color: var(--ink); font-size: 9pt; font-weight: 800; text-transform: uppercase; }
+    .intro { margin-bottom: 13pt; color: #404040; }
+    .callout { margin: 9pt 0 12pt; padding: 9pt 11pt; border-left: 4px solid var(--green); background: var(--surface); }
+    .step { display: grid; grid-template-columns: 25pt 1fr; gap: 6pt; align-items: start; margin: 5pt 0; }
+    .step > b { display: block; width: 22pt; height: 22pt; border-radius: 50%; background: var(--lime); color: var(--ink); text-align: center; line-height: 22pt; }
+    .screen { display: block; width: 100%; max-height: 92mm; object-fit: contain; object-position: top center; margin: 8pt 0; border: 1px solid #d6d8d4; background: #fafafa; }
+    .screen.tall { max-height: 112mm; }
+    .screen.short { max-height: 67mm; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9pt; align-items: start; }
+    .grid .screen { max-height: 74mm; }
+    .caption { margin-top: -4pt; color: #646970; font-size: 8.5pt; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5pt; margin: 8pt 0; }
+    .chip { padding: 4pt 7pt; border: 1px solid var(--line); background: #f8faef; font: 8.5pt Consolas, monospace; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8pt; font-size: 9.5pt; }
+    th, td { padding: 6pt; border: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--lime); color: var(--ink); }
+    .footer { position: absolute; right: 0; bottom: 0; color: #646970; font-size: 8pt; }
+    @media screen and (max-width: 900px) {
+      body { padding: 12px 0; }
+      .page { width: min(210mm, calc(100vw - 24px)); height: auto; min-height: 297mm; margin-bottom: 14px; }
+    }
+    @media print {
+      html, body { background: #fff; }
+      .page { margin: 0; box-shadow: none; }
+    }
+  </style>
+  <style>
+    /* Sistema visual tomado de design/labm-wordpress-mockup.pen. */
+    @page { size: 794px 1123px; margin: 0; }
+    :root { --lime: #AECD25; --lime-dark: #789614; --green-ink: #40500C; --ink: #11150A; --text: #202020; --muted: #686868; --soft: #F3F6E8; --line: #DDE3CC; }
+    html { background: #dfe2d8; }
+    body { background: #dfe2d8; color: var(--text); font: 18px/1.28 Inter, Arial, sans-serif; }
+    body > .page:nth-child(n+19) { display: none; }
+    .page { width: 794px; height: 1123px; margin: 0 auto 18px; padding: 48px; overflow: hidden; background: #fff; box-shadow: none; }
+    .cover { display: flex; flex-direction: column; justify-content: space-between; padding: 64px; background: var(--ink); color: #fff; }
+    .cover .institution { color: var(--lime); font: 700 28px/1.02 "Arial Narrow", Inter, Arial, sans-serif; letter-spacing: .02em; white-space: pre-line; }
+    .cover h1 { max-width: 670px; margin: 82px 0 26px; color: #fff; font: 700 94px/.88 "Arial Narrow", Inter, Arial, sans-serif; letter-spacing: -.045em; white-space: pre-line; }
+    .cover .subtitle { margin: 0; color: var(--lime); font-size: 28px; font-weight: 600; }
+    .cover .audience { max-width: 600px; margin: 22px 0 0; color: #E6EBD9; font-size: 20px; }
+    .cover .cover-footer { margin: 0; color: #E6EBD9; font-size: 14px; line-height: 1.35; letter-spacing: .03em; white-space: pre-line; }
+    .eyebrow { margin: 0 0 14px; color: var(--green-ink); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+    .identity-line { height: 4px; margin-bottom: 20px; background: var(--lime); }
+    .chapter { margin: 0 0 8px; color: var(--green-ink); font: 700 28px/1 "Arial Narrow", Inter, Arial, sans-serif; }
+    h2 { margin: 0 0 15px; color: var(--ink); font: 700 45px/.98 "Arial Narrow", Inter, Arial, sans-serif; letter-spacing: -.035em; }
+    .intro { margin: 0 0 20px; }
+    p { margin: 0 0 14px; }
+    code { padding: 1px 4px; color: var(--green-ink); background: var(--soft); font-family: Consolas, monospace; font-size: .88em; }
+    .screen { display: block; width: 100%; height: 360px; max-height: none; margin: 0 0 20px; border: 1px solid var(--line); background: #fafbf7; object-fit: contain; object-position: center; }
+    .screen.tall { height: 500px; }
+    .screen.short { height: 460px; }
+    .screen.field-real { height: 300px; }
+    .step { display: grid; grid-template-columns: 32px 1fr; align-items: start; gap: 16px; margin: 0 0 14px; }
+    .step > b { display: grid; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; color: var(--ink); background: var(--lime); font-size: 17px; line-height: 1; }
+    .note { margin-top: 20px; padding: 16px; color: #35400D; background: var(--soft); font-size: 16px; line-height: 1.35; }
+    .note code { color: #35400D; }
+    .index { margin: 5px 0 24px; border-top: 1px solid var(--line); }
+    .index-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-height: 47px; border-bottom: 1px solid var(--line); }
+    .index-row b { color: var(--green-ink); font: 700 24px/1 "Arial Narrow", Inter, Arial, sans-serif; }
+    .index-row span { font-size: 20px; }
+    .field-ref { display: block; margin: 8px 0 16px; }
+    .field-ref figure { margin: 0; }
+    .field-ref img { display: block; width: 100%; height: 190px; border: 1px solid var(--line); background: #fafbf7; object-fit: contain; }
+    .field-ref figcaption { margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .field-list { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 18px; margin: 12px 0 0; }
+    .field-list div { padding: 10px; border-left: 3px solid var(--lime); background: var(--soft); font-size: 14px; }
+    .checklist { margin-top: 28px; }
+    .checklist h3 { margin: 20px 0 7px; color: var(--green-ink); font-size: 18px; letter-spacing: .02em; }
+    .checklist p { margin: 0; font-size: 19px; white-space: pre-line; }
+    .footer { position: absolute; right: 48px; bottom: 26px; left: 48px; display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; letter-spacing: .02em; }
+    .footer b { color: var(--green-ink); font-size: 12px; }
+    @media screen and (max-width: 840px) { body { background: #fff; } .page { width: 100vw; height: auto; min-height: 1123px; margin-bottom: 12px; } }
+    @media print { html, body { background: #fff; } .page { margin: 0; box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div>
+      <p class="institution">LIGA ANTIOQUEÑA<br>DE BALONMANO</p>
+      <h1>PUBLICAR.<br>ACTUALIZAR.<br>CONECTAR.</h1>
+      <p class="subtitle">Cartilla de uso de la plataforma</p>
+      <p class="audience">Una guía para quienes administran y publican contenido en el sitio web de la Liga.</p>
+    </div>
+    <p class="cover-footer">MANUAL EDITORIAL  /  OCTUBRE 2026<br>WordPress · LABM</p>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">02</p><div class="identity-line"></div>
+    <h2>Encuentra cada tarea</h2>
+    <p class="intro">Esta cartilla es la guía breve. El archivo <code>docs/manual-usuario/manual-usuario.md</code> desarrolla los pasos, problemas frecuentes y límites reales del panel.</p>
+    <div class="index">
+      <div class="index-row"><b>03</b><span>Acceso y Escritorio</span></div><div class="index-row"><b>04</b><span>Crear, revisar y publicar</span></div><div class="index-row"><b>04A</b><span>Activar campos personalizados</span></div>
+      <div class="index-row"><b>05</b><span>Actualidad</span></div><div class="index-row"><b>06</b><span>Selecciones Piso / Playa</span></div>
+      <div class="index-row"><b>07–08</b><span>Documentos y PDF</span></div><div class="index-row"><b>09</b><span>Slides de Inicio</span></div>
+      <div class="index-row"><b>10</b><span>Aliados Oficiales</span></div><div class="index-row"><b>11</b><span>Integrantes de Nosotros</span></div>
+      <div class="index-row"><b>12</b><span>Textos institucionales</span></div><div class="index-row"><b>13</b><span>Contacto y pie de página</span></div>
+      <div class="index-row"><b>14</b><span>Medios y galerías</span></div><div class="index-row"><b>15</b><span>Clubes asociados</span></div>
+      <div class="index-row"><b>16</b><span>Retirar y recuperar</span></div><div class="index-row"><b>17</b><span>Lista de revisión</span></div>
+    </div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>02</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">03</p><div class="identity-line"></div>
+    <h2>Entra y ubícate</h2><p class="intro">Accede al administrador para gestionar contenido. Los menús disponibles dependen de los permisos de tu cuenta.</p>
+    <img class="screen short" src="imagenes/01-acceso-formulario.png" alt="Formulario de acceso a WordPress">
+    <div class="step"><b>1</b><span>Abre <code>https://balonmanoantioquia.com/wp-admin/</code>.</span></div>
+    <div class="step"><b>2</b><span>Escribe usuario y contraseña. Pulsa <b>Log In / Acceder</b>.</span></div>
+    <div class="step"><b>3</b><span>Busca la sección en el menú lateral del Escritorio. Para publicar noticias usa Actualidad; para PDF, Documentos.</span></div>
+    <div class="note">Las credenciales se entregan por el canal acordado. No se incluyen en este manual. Algunos controles de las capturas están en inglés.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>03</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">04</p><div class="identity-line"></div>
+    <h2>Una publicación, cuatro momentos</h2><p class="intro">Crear → guardar borrador → revisar → publicar. Usa el botón de alta de la colección exacta: Actualidad, Selecciones, Documentos, Integrantes u otra. Actualizar una publicación existente conserva su registro.</p>
+    <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
+    <div class="step"><b>1</b><span>En la sección correcta pulsa <b>Añadir… / Add Post</b>. Completa título y contenido con bloques.</span></div>
+    <div class="step"><b>2</b><span>Revisa el panel derecho: imagen destacada, extracto y clasificación. Selecciona una clasificación existente y guarda como borrador mientras revisas.</span></div>
+    <div class="step"><b>3</b><span>Usa <b>Preview / Vista previa</b> y comprueba imágenes, enlaces y lectura en móvil.</span></div>
+    <div class="step"><b>4</b><span>Pulsa <b>Publish / Publicar</b> y confirma. <b>Guardar / Borrador</b> conserva sin publicar; <b>Actualizar</b> guarda cambios ya existentes.</span></div>
+    <div class="note">Guardar no siempre publica. Comprueba <b>Status / Estado</b> y abre el sitio público para verificar el resultado.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">04A</p><div class="identity-line"></div>
+    <h2>Activa los campos personalizados</h2><p class="intro">Algunas secciones guardan datos adicionales con campos personalizados. La activación se realiza desde las preferencias del editor y queda guardada por usuario.</p>
+    <img class="screen field-real" src="imagenes/campos-personalizados-real.png" alt="Captura real del panel Custom Fields de WordPress">
+    <div class="step"><b>1</b><span>Abre una publicación nueva o existente en el editor de bloques.</span></div>
+    <div class="step"><b>2</b><span>Pulsa <b>⋮</b> en la esquina superior derecha y abre <b>Preferences / Preferencias</b>.</span></div>
+    <div class="step"><b>3</b><span>Entra en <b>Panels / Paneles</b> y activa <b>Custom fields / Campos personalizados</b>.</span></div>
+    <div class="step"><b>4</b><span>Si WordPress solicita recargar, confirma. En el panel usa <b>Name</b> para la clave, <b>Value</b> para el dato y <b>Add Custom Field</b>. Para un campo existente, edita el valor y pulsa <b>Update</b>.</span></div>
+    <div class="field-list"><div><code>labm_fecha_evento</code><br>Actualidad · requerido para evento destacado</div><div><code>labm_modalidad_detalle</code><br>Selecciones · complementario</div><div><code>labm_destino_url</code><br>Slides · necesario con el CTA</div><div><code>labm_cta_texto</code><br>Slides · necesario con el destino</div><div><code>labm_ciudad</code><br>Clubes · complementario</div><div><code>labm_cargo</code><br>Integrantes · requerido en la tarjeta</div></div>
+    <div class="note">La imagen es una captura real del panel después de activarlo; la activación ocurre en Preferences → Panels. Un campo correcto no basta por sí solo: también deben cumplirse título, imagen destacada, estado publicado y taxonomía de cada colección. No traduzcas ni cambies las claves. La clave <code>labm_...</code> debe conservarse exactamente; solo cambia el valor editorial.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04A</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05</p><div class="identity-line"></div>
+    <h2>Publica en Actualidad</h2><p class="intro">Noticias, eventos y contenido informativo se crean en Actualidad, no en las entradas institucionales.</p>
+    <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
+    <div class="step"><b>1</b><span>Entra en <b>Actualidad → Añadir Entrada de actualidad</b>. Escribe título y cuerpo.</span></div>
+    <div class="step"><b>2</b><span>Abre Categorías y elige una categoría existente que corresponda al contenido; luego añade imagen destacada y extracto.</span></div>
+    <div class="step"><b>3</b><span>Para varias fotografías, inserta el bloque Galería. Revisa, publica y abre el listado y el detalle.</span></div>
+
+    <div class="note">La fecha del evento es distinta de la fecha de publicación. Usa <code>labm_fecha_evento</code>. <code>labm_demo_image</code> sólo sirve como respaldo técnico para imágenes de demostración; <code>lamb_demo_fecha</code> no existe.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">06</p><div class="identity-line"></div>
+    <h2>Selecciones: Piso y Playa</h2><p class="intro">La modalidad de la publicación determina dónde aparece y qué opción del menú queda seleccionada.</p>
+    <img class="screen short" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
+    <div class="step"><b>1</b><span><b>Selecciones → Añadir Selección</b>. Completa título, relato de la participación e imagen destacada.</span></div>
+    <div class="step"><b>2</b><span>En <b>Modalidades</b> selecciona Piso o Playa. Completa Categorías y el extracto.</span></div>
+    <div class="step"><b>3</b><span>Publica y revisa el listado de esa modalidad. Abre la interna: Selecciones y la modalidad deben seguir activos.</span></div>
+
+    <div class="note">Modalidades no es lo mismo que Categorías. Selecciona una sola modalidad. <code>labm_modalidad_detalle</code> sólo complementa la tarjeta y no reemplaza la taxonomía. El padre Selecciones abre el submenú; los enlaces Piso y Playa llevan a sus listados.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>06</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">07</p><div class="identity-line"></div>
+    <h2>Documentos: asocia el PDF</h2><p class="intro">Este panel es real y específico de LABM. Se encuentra en la barra derecha del editor de Documentos.</p>
+    <img class="screen tall" src="imagenes/documentos-formulario.png" alt="Formulario de Documentos">
+    <div class="step"><b>1</b><span><b>Documentos → Añadir Documento</b>. Escribe el título.</span></div><div class="step"><b>2</b><span>En <b>Archivo y clasificación</b> pulsa <b>Seleccionar o subir PDF</b>.</span></div>
+    <div class="step"><b>3</b><span>Elige el archivo y confirma <b>Usar este PDF</b>. Comprueba nombre, tamaño y validez.</span></div><div class="step"><b>4</b><span>Completa fecha oficial si corresponde y un solo Tipo de documento.</span></div>
+    <div class="step"><b>5</b><span>Revisa, publica y abre Documentos. Comprueba <b>Ver PDF</b> y <b>Descargar</b>.</span></div>
+    <div class="note">Tipos iniciales: Documento general, Acta, Certificado, Circular, Resolución, Reglamento, Informe, Convocatoria u Otro. Límite efectivo: el menor entre 30 MB y el permitido por WordPress. La captura local muestra 2 MB. No uses Imagen destacada para asociar el PDF.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>07</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">08</p><div class="identity-line"></div>
+    <h2>Reemplaza y comprueba un PDF</h2><p class="intro">Actualizar un archivo requiere guardar la publicación y revisar el resultado en el catálogo público.</p>
+    <img class="screen short" src="imagenes/13-documentos-publico.png" alt="Catálogo público de Documentos">
+    <div class="step"><b>1</b><span>Abre el documento existente y pulsa <b>Reemplazar PDF</b>. Selecciona el nuevo archivo.</span></div><div class="step"><b>2</b><span>Revisa título, fecha y tipo. Guarda la publicación.</span></div>
+    <div class="step"><b>3</b><span>Busca el registro público y prueba <b>Ver PDF</b> y <b>Descargar</b>.</span></div><div class="step"><b>4</b><span>Para retirar el documento, pásalo a borrador o a la papelera.</span></div>
+    <div class="note"><b>Quitar PDF</b> desvincula el archivo, pero lo conserva en Medios. Para ocultar el documento usa Borrador o Papelera; no borres primero un PDF compartido porque puede dejar enlaces rotos.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>08</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">09</p><div class="identity-line"></div>
+    <h2>Inicio: crea una diapositiva</h2><p class="intro">Slides de Inicio alimenta el carrusel. Cada diapositiva se verifica en la portada, no en una página propia.</p>
+    <img class="screen short" src="imagenes/slides-editor.png" alt="Editor de Slides de Inicio">
+    <div class="step"><b>1</b><span><b>Slides de Inicio → Add Post / Añadir</b>. Escribe título y texto breve.</span></div><div class="step"><b>2</b><span>Asigna imagen destacada. Título e imagen son obligatorios para publicar.</span></div>
+    <div class="step"><b>3</b><span>Revisa el destino y la etiqueta del botón si la diapositiva lleva enlace. Publica o guarda.</span></div><div class="step"><b>4</b><span>Abre Inicio, recorre el carrusel y comprueba imagen, texto y botón.</span></div>
+
+    <div class="note">Destino y etiqueta del botón son campos personalizados. Completa <code>labm_destino_url</code> y <code>labm_cta_texto</code> juntos; si uno queda vacío, el botón puede faltar o quedar incompleto. Si no aparecen, activa el panel siguiendo la página 04A y prueba el resultado en Inicio.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>09</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">10</p><div class="identity-line"></div>
+    <h2>Inicio: aliados y clubes</h2><p class="intro">Aliados Oficiales usa un editor clásico. Clubes tiene su propia colección y aparece en la sección de clubes.</p>
+    <img class="screen short" src="imagenes/aliados-editor.png" alt="Editor de Aliados Oficiales">
+    <div class="step"><b>1</b><span><b>Aliados Oficiales → Add Post</b>. Escribe el nombre y selecciona el logo en Featured image / Imagen destacada.</span></div><div class="step"><b>2</b><span>Define <b>Order / Orden</b> en Post Attributes / Atributos o, si no aparece, desde <b>Quick Edit / Edición rápida</b> del listado. Publica y verifica la franja de aliados.</span></div>
+    <div class="step"><b>3</b><span>Para un club: <b>Clubes → Añadir Club</b>. Completa nombre, descripción, logo y modalidad; publica y revisa Inicio.</span></div>
+    <div class="note">Aliados Oficiales y Clubes son colecciones distintas. El aliado necesita título y logo. Inicio muestra una cantidad limitada de clubes publicados; no todos tienen que aparecer simultáneamente.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>10</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">11</p><div class="identity-line"></div>
+    <h2>Nosotros: publica integrantes</h2><p class="intro">Un integrante se muestra cuando tiene nombre, fotografía, cargo y grupo completos.</p>
+    <img class="screen short" src="imagenes/integrantes-editor.png" alt="Editor de Integrantes">
+    <div class="step"><b>1</b><span><b>Integrantes → Añadir Integrante</b>. Escribe el nombre y añade la fotografía destacada.</span></div><div class="step"><b>2</b><span>En <b>Grupos de integrantes</b> elige una opción existente: Comité, Entrenadores o Representantes; no escribas una variante nueva.</span></div>
+    <div class="step"><b>3</b><span>Completa el cargo en <code>labm_cargo</code>. Si no ves ese campo personalizado, actívalo siguiendo la página 04A.</span></div><div class="step"><b>4</b><span>Publica y revisa Nosotros. Comprueba la foto, el cargo y el filtro del grupo.</span></div>
+
+    <div class="note">El valor de <code>labm_cargo</code> aparece junto al nombre en la tarjeta pública. Los filtros de Nosotros reconocen los grupos configurados; no inventes otro grupo esperando que aparezca en esos filtros.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>11</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">12</p><div class="identity-line"></div>
+    <h2>Actualiza los textos institucionales</h2><p class="intro">Banner, Misión y Visión se alimentan de entradas específicas. No basta con editar cualquier página de Nosotros.</p>
+    <img class="screen short" src="imagenes/entradas-editor.png" alt="Listado de entradas institucionales">
+    <div class="step"><b>1</b><span>En <b>Posts / Entradas</b> localiza la entrada del bloque y confirma su Slug / Identificador.</span></div><div class="step"><b>2</b><span>Actualiza título y texto. Si existe extracto, actualízalo: tiene prioridad sobre el cuerpo.</span></div>
+    <div class="step"><b>3</b><span>Mantén el identificador. Guarda y comprueba Nosotros o Documentos en el sitio público.</span></div>
+    <div class="note">Identificadores: <code>banner-nosotros</code> → banner de Nosotros; <code>mision-nosotros</code> → Misión; <code>vision-nosotros</code> → Visión; <code>banner-documentos</code> → encabezado de Documentos. Comprueba el Slug en el panel derecho del editor. El banner de Nosotros también usa imagen destacada.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>12</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">13</p><div class="identity-line"></div>
+    <h2>Contacto y pie de página</h2><p class="intro">LABM abre Footer LABM. Esta pantalla gestiona los datos compartidos del pie de página.</p>
+    <img class="screen short" src="imagenes/10-footer.png" alt="Configuración de Footer LABM">
+    <div class="step"><b>1</b><span>Abre LABM. Revisa identidad, descripción, etiquetas y URLs de navegación y recursos.</span></div><div class="step"><b>2</b><span>Actualiza Correo, etiquetas y URLs de Facebook e Instagram, y la política de datos.</span></div>
+    <div class="step"><b>3</b><span>Baja al final y pulsa <b>Save Changes / Guardar cambios</b>. Revisa el footer y Contacto.</span></div>
+    <div class="note">El correo y las redes se comparten con Contacto. Teléfono, dirección y mapa requieren apoyo técnico. LABM → SMTP gestiona envío; Contacto no tiene una bandeja de mensajes en el panel.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>13</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">14</p><div class="identity-line"></div>
+    <h2>Imágenes, logos y galerías</h2><p class="intro">Medios conserva los archivos reutilizables. La imagen destacada y la galería del cuerpo son cosas diferentes.</p>
+    <img class="screen short" src="imagenes/09-medios.png" alt="Biblioteca de medios">
+    <div class="step"><b>1</b><span><b>Media / Medios</b>: busca un archivo existente antes de subir un duplicado.</span></div><div class="step"><b>2</b><span>Selecciona o carga la imagen. La persona que publica debe escribir un texto alternativo breve que describa lo visible, no repetir solo el nombre del archivo.</span></div>
+    <div class="step"><b>3</b><span>En la publicación usa Imagen destacada para su imagen principal. Para varias fotos, inserta un bloque Galería.</span></div><div class="step"><b>4</b><span>Ordena las imágenes y revisa pies de foto antes de publicar.</span></div>
+    <div class="note">No borres un archivo compartido sin comprobar dónde se utiliza. Eliminarlo desde Medios puede romper otras publicaciones.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>14</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">15</p><div class="identity-line"></div>
+    <h2>Publica un club asociado</h2><p class="intro">Clubes usa una colección distinta de Aliados Oficiales. Selecciona la modalidad y el logo de cada club.</p>
+    <img class="screen short" src="imagenes/clubes-editor.png" alt="Editor de Clubes">
+    <div class="step"><b>1</b><span><b>Clubes → Añadir Club</b>. Completa nombre y descripción.</span></div><div class="step"><b>2</b><span>Asigna el logo como Imagen destacada y escribe un extracto breve.</span></div>
+    <div class="step"><b>3</b><span>Abre Modalidades, clasifica el club y completa la ciudad en <code>labm_ciudad</code>.</span></div><div class="step"><b>4</b><span>Publica, comprueba Clubes asociados de Inicio y abre el detalle del club.</span></div>
+
+    <div class="note">La portada muestra una selección limitada de clubes. El dato adicional de ciudad es <code>labm_ciudad</code>; no reemplaza el nombre, el logo ni la modalidad. Si no está visible, activa el panel 04A.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>15</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">16</p><div class="identity-line"></div>
+    <h2>Retira y recupera contenido</h2><p class="intro">Usa borrador o papelera para retirar contenido sin perderlo definitivamente.</p>
+    <img class="screen short" src="imagenes/actualidad-listado.png" alt="Listado de publicaciones de Actualidad">
+    <div class="step"><b>1</b><span>Para retirar una publicación conservándola, abre el editor, cambia <b>Status / Estado</b> a <b>Draft / Borrador</b> y guarda.</span></div><div class="step"><b>2</b><span>Si necesitas moverla a la papelera, usa <b>Trash / Papelera</b> en su sección.</span></div>
+    <div class="step"><b>3</b><span>Para recuperarla, abre Trash, localiza el registro y pulsa <b>Restore / Restaurar</b>.</span></div><div class="step"><b>4</b><span>Revisa todos los datos y el estado antes de volver a publicar.</span></div>
+    <div class="note">La Papelera es propia de cada colección: entra en la sección del contenido y abre su vista de papelera. Borrar permanentemente es distinto de retirar. Conserva los campos, imágenes y PDF asociados mientras el registro pueda recuperarse.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>16</b></div>
+  </section>
+
+  <section class="page">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">17</p><div class="identity-line"></div>
+    <h2>Tu revisión antes de publicar</h2><p class="intro">Usa esta lista para entregar contenido claro, completo y fácil de consultar.</p>
+    <div class="checklist"><h3>CONTENIDO</h3><p>Título y texto revisados.<br>Sin datos de demostración usados como información oficial.<br>Fechas, nombres y enlaces correctos.</p><h3>IMÁGENES Y ARCHIVOS</h3><p>Imagen destacada o logo adecuados.<br>Texto alternativo y autorización de uso.<br>PDF válido, con título y clasificación.</p><h3>CLASIFICACIÓN</h3><p>Modalidad Piso/Playa correcta.<br>Grupo del integrante y cargo completos.<br>Extracto coherente con el contenido.<br>Campos personalizados visibles, con clave exacta y valor actualizado.</p><h3>RESULTADO PÚBLICO</h3><p>Vista previa revisada en móvil.<br>Listado y detalle comprobados.<br>Ver PDF / Descargar funcionan.<br>En la interna se resaltan el padre Selecciones y el enlace Piso o Playa correspondiente.</p></div>
+    <div class="note">Si no ves una sección o un campo, consulta los permisos y la configuración con el administrador. No cambies plantillas o plugins para resolver una publicación.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>17</b></div>
+  </section>
+
+  <section class="page cover">
+    <div>
+      <div class="eyebrow">Liga Antioqueña de Balonmano</div>
+      <h1>Cartilla de usuario</h1>
+      <p class="lead">Guía visual breve para crear, revisar y publicar contenido en WordPress.</p>
+    </div>
+    <div>
+      <p class="note"><b>Versión 1.2 · 13 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <span class="band">1 · Acceso y navegación</span>
+    <h2>Encuentra la sección correcta</h2>
+    <p class="intro">Entra a <b>/wp-admin/</b> con tu cuenta y usa el menú lateral. El panel de administración y el sitio público cumplen funciones distintas.</p>
+    <div class="grid">
+      <div><img class="screen short" src="imagenes/01-acceso.png" alt="Pantalla de acceso a WordPress"><p class="caption">Acceso al administrador.</p></div>
+      <div><img class="screen short" src="imagenes/02-escritorio.png" alt="Escritorio de WordPress"><p class="caption">Menús disponibles según el rol.</p></div>
+    </div>
+    <table>
+      <tr><th>Contenido</th><th>Menú</th><th>Resultado</th></tr>
+      <tr><td>Noticias y eventos</td><td>Actualidad</td><td>Actualidad y selecciones automáticas de Inicio.</td></tr>
+      <tr><td>Participaciones</td><td>Selecciones</td><td>Listados de Piso o Playa.</td></tr>
+      <tr><td>PDF públicos</td><td>Documentos</td><td>Catálogo de documentos.</td></tr>
+      <tr><td>Slides, aliados y clubes</td><td>Inicio</td><td>Carrusel, franja de aliados y clubes.</td></tr>
+      <tr><td>Personas</td><td>Integrantes</td><td>Equipo de Nosotros.</td></tr>
+    </table>
+    <div class="callout"><b>Importante:</b> los textos institucionales de Nosotros se alimentan de Entradas con identificadores concretos. No asumas que editar una página estructural cambia esos bloques.</div>
+    <div class="footer">LABM · Cartilla de usuario</div>
+  </section>
+
+  <section class="page">
+    <span class="band">2 · Campos personalizados</span>
+    <h2>Activa los campos una sola vez</h2>
+    <p class="intro">Algunas secciones guardan datos adicionales mediante campos personalizados. Cada usuario editor debe activar el panel en sus preferencias.</p>
+    <div class="step"><b>1</b><span>Abre una publicación nueva o existente en el editor de bloques.</span></div>
+    <div class="step"><b>2</b><span>Pulsa <b>⋮</b> en la esquina superior derecha y entra en <b>Preferences / Preferencias</b>.</span></div>
+    <div class="step"><b>3</b><span>Abre <b>Panels / Paneles</b> y activa <b>Custom fields / Campos personalizados</b>.</span></div>
+    <div class="step"><b>4</b><span>Si WordPress lo solicita, recarga. Luego baja al panel, pulsa <b>Add New / Añadir nuevo</b> y escribe la clave exacta.</span></div>
+    <p class="caption">La captura corresponde al panel real después de activarlo. La preferencia queda guardada por usuario, no por publicación.</p>
+    <div class="callout"><b>No traduzcas ni cambies las claves:</b> <code>labm_...</code> debe conservarse exactamente. El valor sí debe ser el dato editorial que corresponda.</div>
+    <div class="footer">LABM · Campos personalizados</div>
+  </section>
+
+  <section class="page">
+    <span class="band">3 · Publicaciones</span>
+    <h2>Crear, revisar y publicar</h2>
+    <ol>
+      <li>Abre la sección correcta y pulsa <b>Añadir</b>.</li>
+      <li>Escribe un título claro y el contenido completo.</li>
+      <li>Completa imagen destacada, extracto, categorías o taxonomías.</li>
+      <li>Guarda como borrador mientras revisas.</li>
+      <li>Usa Vista previa y comprueba también el móvil.</li>
+      <li>Publica sólo cuando el estado y los datos sean correctos.</li>
+      <li>Abre el resultado público y verifica enlaces, imágenes y texto.</li>
+    </ol>
+    <img class="screen" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
+    <div class="callout"><b>Guardar no siempre significa publicar.</b> Revisa <b>Status / Estado</b>. Un borrador o una publicación privada no aparece en los listados públicos.</div>
+    <h3>Datos de Actualidad</h3>
+    <p>Para el evento destacado de Inicio, usa <code>labm_fecha_evento</code> con formato <code>AAAA-MM-DD</code>.</p>
+    <div class="footer">LABM · Publicaciones</div>
+  </section>
+
+  <section class="page">
+    <span class="band">4 · Selecciones</span>
+    <h2>Piso y Playa</h2>
+    <p class="intro">Asigna la taxonomía correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre.</p>
+    <img class="screen" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
+    <p>El dato complementario <code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta, pero no determina el listado.</p>
+    <div class="callout">Comprueba el listado público de Piso o Playa y abre la interna: deben mantenerse activos el padre Selecciones y la modalidad correspondiente.</div>
+    <div class="footer">LABM · Selecciones</div>
+  </section>
+
+  <section class="page">
+    <span class="band">5 · Documentos</span>
+    <h2>Publica y sustituye un PDF</h2>
+    <ol>
+      <li>Entra en <b>Documentos → Añadir Documento</b>.</li>
+      <li>Escribe el título.</li>
+      <li>Abre <b>Archivo y clasificación</b>.</li>
+      <li>Selecciona o sube el PDF y comprueba nombre, tamaño y estado.</li>
+      <li>Completa fecha y tipo si corresponde.</li>
+      <li>Publica y verifica <b>Ver PDF</b> y <b>Descargar</b>.</li>
+    </ol>
+    <div class="grid">
+      <div><img class="screen" src="imagenes/documentos-editor.png" alt="Editor de Documentos"><p class="caption">Panel Archivo y clasificación.</p></div>
+      <div><img class="screen" src="imagenes/documentos-formulario.png" alt="Campos del formulario de Documentos"><p class="caption">Fecha y tipo de documento.</p></div>
+    </div>
+    <div class="callout">Para reemplazar un archivo usa <b>Reemplazar PDF</b>. <b>Quitar PDF</b> sólo desvincula el archivo; no lo borra de Medios.</div>
+    <div class="footer">LABM · Documentos</div>
+  </section>
+
+  <section class="page">
+    <span class="band">6 · Inicio</span>
+    <h2>Slides, aliados y clubes</h2>
+    <h3>Slides</h3>
+    <p>El título y la imagen destacada son obligatorios. Si hay botón, usa los campos <code>labm_destino_url</code> y <code>labm_cta_texto</code>.</p>
+    <h3>Aliados</h3>
+    <p>Usa el logo como imagen destacada, agrega texto alternativo y define el orden si tu rol lo permite.</p>
+    <h3>Clubes</h3>
+    <p>Asigna la modalidad, publica el club y, si corresponde, completa <code>labm_ciudad</code>. La portada muestra una selección limitada.</p>
+    <div class="footer">LABM · Inicio</div>
+  </section>
+
+  <section class="page">
+    <span class="band">7 · Nosotros</span>
+    <h2>Integrantes y textos institucionales</h2>
+    <p>Para un integrante completa nombre, fotografía, grupo y cargo. El cargo se guarda en <code>labm_cargo</code> y se muestra en la tarjeta pública.</p>
+    <div class="callout">Los grupos válidos para los filtros son <code>comite</code>, <code>entrenadores</code> y <code>representantes</code>. Un integrante incompleto no se muestra en Nosotros.</div>
+    <img class="screen" src="imagenes/14-nosotros-publico.png" alt="Vista pública de Nosotros">
+    <h3>Textos</h3>
+    <p>Banner, Misión, Visión y el encabezado de Documentos se alimentan de Entradas identificadas por sus slugs. Conserva esos identificadores al editar.</p>
+    <div class="footer">LABM · Nosotros</div>
+  </section>
+
+  <section class="page">
+    <span class="band">8 · Medios y Contacto</span>
+    <h2>Archivos, imágenes y pie</h2>
+    <div class="grid">
+      <div><img class="screen" src="imagenes/09-medios.png" alt="Biblioteca de medios"><p class="caption">Busca archivos antes de duplicarlos.</p></div>
+      <div><img class="screen" src="imagenes/10-footer.png" alt="Configuración del footer LABM"><p class="caption">Footer LABM y enlaces compartidos.</p></div>
+    </div>
+    <ul>
+      <li>Usa texto alternativo descriptivo en imágenes importantes.</li>
+      <li>La imagen destacada no es lo mismo que una galería del contenido.</li>
+      <li>No borres un archivo de Medios sin comprobar dónde se utiliza.</li>
+      <li>El correo visible y la configuración SMTP son datos distintos.</li>
+      <li>No pulses <b>Enviar prueba</b> durante una revisión: esa acción envía correo.</li>
+    </ul>
+    <div class="callout">Los cambios de usuarios, SMTP, plugins, plantillas y estructura requieren apoyo del administrador o del equipo técnico.</div>
+    <div class="footer">LABM · Medios y Contacto</div>
+  </section>
+
+  <section class="page">
+    <span class="band">9 · Revisión final</span>
+    <h2>Antes de publicar</h2>
+    <ul>
+      <li>La publicación pertenece a la sección correcta.</li>
+      <li>Título, texto, extracto e imagen están revisados.</li>
+      <li>La modalidad, categoría o grupo es correcto.</li>
+      <li>Los campos personalizados usan la clave exacta.</li>
+      <li>Los archivos tienen autorización de uso y texto alternativo cuando corresponde.</li>
+      <li>Se revisó la vista previa, el móvil y la página pública.</li>
+      <li>El estado final es el acordado: borrador, revisión o publicado.</li>
+    </ul>
+    <h3>Si algo no aparece</h3>
+    <table>
+      <tr><th>Problema</th><th>Primera comprobación</th></tr>
+      <tr><td>No aparece un dato adicional</td><td>Activa Campos personalizados en Preferencias → Paneles.</td></tr>
+      <tr><td>Un integrante no aparece</td><td>Nombre, cargo, foto destacada, grupo y estado publicado.</td></tr>
+      <tr><td>Un PDF no se guarda</td><td>Formato PDF válido, acceso, tamaño y estado del archivo.</td></tr>
+      <tr><td>El sitio muestra contenido anterior</td><td>Confirma que actualizaste la publicación correcta y recarga.</td></tr>
+    </table>
+    <p style="margin-top: 22pt"><b>Recuerda:</b> no compartas contraseñas ni incluyas usuarios en paquetes de contenido.</p>
+    <div class="footer">LABM · Versión 1.2</div>
+  </section>
+</body>
+</html>

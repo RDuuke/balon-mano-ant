@@ -1,10 +1,10 @@
 # Manual de usuario - Plataforma LABM
 
-Liga Antioqueña de Balonmano · Versión 1.0 · 10 de octubre de 2026
+Liga Antioqueña de Balonmano · Versión 1.2 · 13 de octubre de 2026
 
 Esta guía está dirigida a las personas que crean, revisan y publican contenido. La [cartilla visual en PDF](cartilla-manual-usuario-labm.pdf) complementa este documento con una explicación breve por sección.
 
-Las imágenes son capturas del WordPress local real del proyecto, realizadas el 10 de octubre de 2026. Contienen publicaciones de demostración, no certifican contenido institucional ni muestran el servidor de producción. Algunos controles están en inglés porque ese es el idioma del administrador capturado. Se indican las equivalencias en español. La disponibilidad de los menús depende de los permisos de cada cuenta.
+Las capturas reales del panel administrativo del proyecto se realizaron el 10 de octubre de 2026. Las imágenes de campos personalizados corresponden a una captura real del panel nativo **Custom Fields** (`Name`, `Value`, `Delete`, `Update` y `Add Custom Field`). No se usan composiciones ni ilustraciones para representar controles. Algunos controles están en inglés porque ese es el idioma del administrador capturado; se indican las equivalencias en español. La disponibilidad de los menús depende de los permisos de cada cuenta.
 
 ## Índice
 
@@ -28,7 +28,7 @@ Las imágenes son capturas del WordPress local real del proyecto, realizadas el 
 ![Pantalla real de acceso a WordPress](imagenes/01-acceso.png)
 
 1. Abre la dirección de tu plataforma seguida de `/wp-admin/`.
-2. En el entorno local del proyecto, la dirección es `http://localhost:8080/wp-admin/`. En producción utiliza el dominio institucional que te entregue la administración.
+2. La dirección del administrador es `https://balonmanoantioquia.com/wp-admin/`.
 3. Escribe tu usuario o correo en **Username or Email Address / Nombre de usuario o correo electrónico**.
 4. Escribe tu contraseña en **Password / Contraseña**.
 5. Pulsa **Log In / Acceder**.
@@ -63,6 +63,22 @@ El menú público y el menú del administrador tienen funciones distintas. Para 
 ## 3. Crear, revisar, publicar y actualizar
 
 ![Editor real con título, contenido y panel de publicación](imagenes/actualidad-editor.png)
+
+### Activar los campos personalizados
+
+Algunas secciones usan datos adicionales que WordPress guarda como **campos personalizados**. El panel está oculto por defecto y cada usuario editor debe activarlo una sola vez:
+
+1. Abre cualquier publicación nueva o existente en el editor de bloques.
+2. Pulsa los tres puntos **⋮** de la esquina superior derecha.
+3. Entra en **Preferences / Preferencias** y abre **Panels / Paneles**.
+4. Activa **Custom fields / Campos personalizados**.
+5. Si WordPress solicita recargar el editor, confirma la recarga.
+6. Desplázate hasta el panel **Custom fields / Campos personalizados**. Para crear un campo, escribe la clave en **Name**, el dato en **Value** y pulsa **Add Custom Field**. Si la clave ya existe, modifica **Value** y pulsa **Update**.
+7. Guarda o actualiza la publicación y comprueba el resultado en el sitio público cuando corresponda.
+
+![Panel real de campos personalizados](imagenes/campos-personalizados-real.png)
+
+La preferencia se guarda por usuario, no por publicación. La captura anterior muestra el panel real después de activarlo; no representa el menú **Preferences / Preferencias** usado para habilitarlo. La posición y el idioma pueden cambiar según la versión de WordPress. No cambies la clave técnica ni uses espacios adicionales.
 
 ### Crear una publicación
 
@@ -103,7 +119,9 @@ El menú público y el menú del administrador tienen funciones distintas. Para 
 
 La portada consulta las publicaciones de Actualidad automáticamente. La publicación destacada del bloque de noticias depende de su orden editorial; no existe en el código actual un interruptor general de “destacar esta noticia”.
 
-Para el evento destacado de Inicio existe el dato adicional `labm_fecha_evento`, con fecha en formato `AAAA-MM-DD`. El panel capturado no ofrece un formulario dedicado para este dato: si no tienes habilitados los campos personalizados, solicita apoyo al administrador. No confundas la fecha del evento con **Publish / Fecha de publicación**.
+Para el evento destacado de Inicio existe el dato adicional `labm_fecha_evento`, con fecha en formato `AAAA-MM-DD`. Si no ves el panel, sigue los pasos de **Activar los campos personalizados** al inicio de esta sección. No confundas la fecha del evento con **Publish / Fecha de publicación**.
+
+`labm_fecha_evento` es obligatorio para que el evento destacado pueda usar la fecha indicada y debe tener el formato válido `AAAA-MM-DD`. El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demostración: permite seleccionar una de las imágenes de respaldo permitidas cuando una noticia no tiene imagen destacada. No lo uses para registrar fechas. El campo `lamb_demo_fecha` no existe; para la fecha del evento utiliza `labm_fecha_evento`.
 
 ## 5. Selecciones: Piso y Playa
 
@@ -124,7 +142,7 @@ Para el evento destacado de Inicio existe el dato adicional `labm_fecha_evento`,
 
 ![Listado público real de Piso](imagenes/12-selecciones-publico.png)
 
-**Modalidad** y **Categorías** no son intercambiables. La modalidad determina el listado Piso/Playa y el estado activo del menú. El campo adicional `labm_modalidad_detalle` permite un texto breve de contexto de la tarjeta; no sustituye la taxonomía Modalidades. Si ese dato no está visible en tu editor, solicita su habilitación o edición al administrador.
+**Modalidad** y **Categorías** no son intercambiables. La modalidad determina el listado Piso/Playa y el estado activo del menú. El campo adicional `labm_modalidad_detalle` permite un texto breve de contexto de la tarjeta; no sustituye la taxonomía Modalidades. Si no está visible, activa el panel siguiendo la sección **Activar los campos personalizados**.
 
 El padre **Selecciones** abre el submenú por hover o clic; no lleva a una página. En móvil primero abre el menú general y luego Selecciones. Los enlaces de las modalidades sí navegan a sus listados.
 
@@ -175,7 +193,9 @@ El PDF debe existir en la biblioteca, ser accesible para tu cuenta y ser un PDF 
 7. Publica o guarda los cambios.
 8. Abre Inicio y recorre el carrusel hasta esa diapositiva. Comprueba que el texto sea legible y el botón lleve al destino correcto.
 
-El destino del botón se guarda en `labm_destino_url` y su etiqueta en `labm_cta_texto`. Son campos personalizados, no campos del panel de Documentos. Si no aparecen en tu editor, pide apoyo al administrador; no se incluye un botón ficticio para editarlos en esta guía. Sin destino, la diapositiva no muestra ese enlace.
+El destino del botón se guarda en `labm_destino_url` y su etiqueta en `labm_cta_texto`. Son campos personalizados, no campos del panel de Documentos. Si no aparecen en tu editor, activa el panel siguiendo la sección **Activar los campos personalizados**. Sin destino, la diapositiva no muestra ese enlace.
+
+Si completas uno de estos campos y dejas el otro vacío, el botón puede quedar incompleto o no mostrarse. Después de publicar, prueba la diapositiva directamente en **Inicio**.
 
 Las diapositivas publicadas se ordenan por orden editorial y luego por título. El tipo admite atributos de página; según la versión del editor el orden puede aparecer en **Post Attributes / Atributos** o en **Quick Edit / Edición rápida** del listado. Si el control no está disponible para tu cuenta, solicita el orden al administrador. No alteres fechas para ordenar el carrusel.
 
@@ -208,7 +228,9 @@ Título y logo son necesarios para publicar. Este editor es clásico en el entor
 5. Añade un extracto breve y publica.
 6. Revisa **Clubes asociados** en Inicio y el enlace al club.
 
-La sección de Inicio muestra una selección limitada de clubes publicados. Si hay más clubes que espacios, publicar uno no garantiza su presencia inmediata en la portada. El dato `labm_ciudad` está registrado como campo personalizado; no se debe prometer un campo visual específico si tu editor no lo muestra.
+La sección de Inicio muestra una selección limitada de clubes publicados. Si hay más clubes que espacios, publicar uno no garantiza su presencia inmediata en la portada. El dato `labm_ciudad` está registrado como campo personalizado; si no aparece, activa el panel siguiendo la sección **Activar los campos personalizados**.
+
+`labm_ciudad` sólo complementa la ficha del club; no reemplaza el nombre, la imagen destacada ni la modalidad requerida para que el club pueda aparecer.
 
 ## 9. Nosotros: presentación, misión, visión e integrantes
 
@@ -241,11 +263,13 @@ Conserva el identificador. Cambiarlo o crear otra entrada con un nombre parecido
 2. Escribe el nombre de la persona.
 3. Añade una fotografía como imagen destacada.
 4. En **Grupos de integrantes**, asigna el grupo correspondiente: Comité, Entrenadores o Representantes.
-5. Completa el cargo mediante el campo personalizado `labm_cargo`. Si no lo tienes visible, solicita apoyo al administrador.
+5. Completa el cargo mediante el campo personalizado `labm_cargo`. Si no lo tienes visible, activa el panel siguiendo la sección **Activar los campos personalizados**.
 6. Guarda y publica cuando todos los datos estén revisados.
 7. Abre Nosotros y comprueba el nombre, fotografía, cargo y filtro de grupo.
 
 Un integrante puede estar publicado y aun así no aparecer si falta el nombre, la foto, el cargo o el grupo. La sección reconoce los grupos con identificadores `comite`, `entrenadores` y `representantes`; crear un grupo con otro identificador requiere revisar su compatibilidad con los filtros.
+
+El valor de `labm_cargo` es el texto que se muestra junto al nombre en la tarjeta pública. El prefijo que pueda aparecer en el título administrativo, como `[DEMO LABM — FICTICIO]`, no forma parte del cargo ni se publica automáticamente en la vista de Nosotros.
 
 ![Página real de Nosotros](imagenes/14-nosotros-publico.png)
 
@@ -314,7 +338,7 @@ También puedes usar **Move to trash / Mover a la papelera**. No uses **Delete p
 | Un slide o aliado no se puede publicar | Título e imagen destacada o logo obligatorios. |
 | Un cambio de texto institucional no se ve | Identificador de la entrada y extracto existente; el extracto tiene prioridad sobre el cuerpo. |
 | No se guarda un PDF | Archivo realmente PDF, disponible, válido, bajo el límite efectivo y permitido para tu cuenta. |
-| No veo los datos adicionales de un slide o integrante | Son campos personalizados sin formulario dedicado; pide su habilitación o edición al administrador. |
+| No veo los datos adicionales de una sección | Activa **Custom fields / Campos personalizados** desde **⋮ → Preferences / Preferencias → Panels / Paneles**. Si el panel sigue sin aparecer, solicita revisión al administrador. |
 | El formulario Contacto falla al enviar | Reporta fecha, pantalla y mensaje al administrador SMTP; no compartas contraseñas. |
 | Guardé, pero sigo viendo lo anterior | Confirma que guardaste la publicación correcta, abre su página pública y recarga. Si continúa, solicita revisión de caché al administrador. |
 
