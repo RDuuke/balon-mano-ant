@@ -346,8 +346,34 @@ El título, cuerpo, extracto, imagen destacada, texto alternativo de Medios, est
 - No se ejecutaron pruebas E2E: el flujo E2E de Documentos crea contenido y sube archivos, acciones expresamente fuera del alcance permitido. Se usaron pruebas existentes mediante inspección de sus fuentes, no como ejecuciones de esta ampliación.
 - No se modificaron contenido, usuarios, opciones, uploads, manual, pruebas, configuración ni `content-sync`; sí se modificaron los archivos de código indicados en “Implementación de mejoras UX”.
 - Esta ampliación del informe conserva las conclusiones de la auditoría de limpieza anterior y documenta las correcciones administrativas de bajo riesgo aplicadas.
+
+### Cartilla manual de usuario — actualización 1.3 (2026-10-15)
+
+- Se retiró de la página 04A el listado general que mezclaba claves de distintas colecciones. La página ahora explica cómo activar el panel y dirige a cada sección para consultar el dato que le corresponde.
+- Se ajustaron las secciones de Actualidad (`labm_fecha_evento`: fecha del evento, formato `AAAA-MM-DD`; la nota de que `lamb_demo_fecha` no existe queda solo en Actualidad), Selecciones (`labm_modalidad_detalle`: explicación complementaria de la tarjeta), Slides (`labm_destino_url`: destino del botón; `labm_cta_texto`: etiqueta visible), Integrantes (`labm_cargo`: función mostrada junto al nombre) y Clubes (`labm_ciudad`: referencia editorial que actualmente no se muestra en la ficha pública).
+- Se aclaró que Documentos usa el panel dedicado Archivo y clasificación; Modalidades, Categorías y Grupos de integrantes son clasificaciones; Aliados usa el control estándar de orden; y Footer LABM tiene su pantalla de ajustes. No se presentan como campos personalizados.
+- Se actualizaron también los apartados equivalentes del bloque visual secundario de la fuente HTML para evitar descripciones divergentes si se reutiliza.
+- PDF regenerado desde `docs/manual-usuario/cartilla-manual-usuario-labm.html`. Se exportaron a PNG y revisaron visualmente las páginas 04A, 05, 06, 09, 10, 11 y 15; sin desbordamientos ni superposiciones. No se modificó contenido ni estado persistido de WordPress.
 ### Cartilla manual de usuario — sección 04A
 
 - Defecto: el bloque de nota sobre la captura real excedía el alto útil de la página fija y se superponía al pie `04A`.
 - Corrección: se compactaron de forma localizada la imagen, los espacios y la lista de campos de la página 04A, y se reservó margen inferior para el pie; se conservó el texto y el estilo visual.
 - Verificación: PDF regenerado y páginas 04A y adyacentes renderizadas a PNG e inspeccionadas visualmente; sin desbordamiento ni superposición. `git diff --check` limpio.
+
+### Cartilla manual de usuario — Actualidad (2026-10-15)
+
+- En la página 05 se reemplazó la indicación general de revisar listado y detalle por pasos concretos para abrir `/actualidad/` y la página individual `/actualidad/nombre-del-articulo/`, y comprobar los datos del artículo y sus enlaces para compartir.
+- PDF regenerado desde el HTML. La página 05 se renderizó y revisó visualmente para comprobar legibilidad y ausencia de desbordamientos. No se modificó contenido ni estado persistido de WordPress.
+
+### Fecha visible de Actualidad (2026-10-15)
+
+- Causa: la metadata compartida por el listado y el detalle formateaba siempre `post_date`, aunque el tema ya almacenaba `labm_fecha_evento` para la fecha del evento destacado.
+- Corrección: `labm_theme_home_news_date()` valida estrictamente `AAAA-MM-DD` y la fecha real del calendario. Una fecha válida tiene prioridad; si falta o es inválida, usa la fecha de publicación. El día se construye en UTC como referencia neutra de calendario y `datetime` se publica como `YYYY-MM-DD`, sin desplazamiento por zona horaria. Se conserva la presentación localizada `j M Y`.
+- Alcance: la metadata compartida mantiene coherentes listado y detalle. No se modificó contenido ni datos persistidos de WordPress; la regla y el fallback se añadieron a la cartilla HTML/PDF.
+- Verificación: `php -l wp-content/themes/labm/functions.php` sin errores; `git diff --check` limpio; archivos de texto modificados verificados con LF. PDF regenerado desde el HTML y página 05 revisada visualmente, sin desbordamientos ni superposiciones.
+
+### Aclaración de fecha del evento en la cartilla (2026-10-15)
+
+- Se precisó en el paso de Actualidad que una fecha válida `AAAA-MM-DD` en `labm_fecha_evento` prevalece y se muestra en el listado y el detalle del artículo; si falta o es inválida, el sitio muestra automáticamente la fecha de publicación.
+- Se retiró la repetición de esa regla en el bloque visual secundario y se conservó allí solo la referencia al evento destacado de Inicio.
+- PDF regenerado desde el HTML. Página de Actualidad revisada visualmente y sin desbordamientos; `git diff --check` y finales de línea LF verificados. No se modificó contenido ni datos persistidos de WordPress.

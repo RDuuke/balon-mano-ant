@@ -711,6 +711,32 @@ function labm_theme_news_fallback_path( $post ) {
 }
 
 /**
+ * Obtiene la fecha visible de una noticia: evento válido o publicación.
+ *
+ * La fecha del evento se interpreta como fecha de calendario, sin conversión
+ * de zona horaria.
+ *
+ * @param WP_Post $post Publicacion.
+ * @return DateTimeImmutable|false
+ */
+function labm_theme_home_news_date( $post ) {
+	$event_date = get_post_meta( $post->ID, 'labm_fecha_evento', true );
+	if ( is_string( $event_date ) && preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', $event_date, $matches ) ) {
+		$year  = (int) $matches[1];
+		$month = (int) $matches[2];
+		$day   = (int) $matches[3];
+		if ( checkdate( $month, $day, $year ) ) {
+			$date = DateTimeImmutable::createFromFormat( '!Y-m-d', $event_date, new DateTimeZone( 'UTC' ) );
+			if ( $date instanceof DateTimeImmutable && $date->format( 'Y-m-d' ) === $event_date ) {
+				return $date;
+			}
+		}
+	}
+
+	return get_post_datetime( $post );
+}
+
+/**
  * Compone categoria y fecha de una noticia.
  *
  * @param WP_Post $post Publicacion.
@@ -720,13 +746,13 @@ function labm_theme_home_news_meta( $post ) {
 
 	$terms    = wp_get_post_terms( $post->ID, 'labm_categoria', array( 'fields' => 'names' ) );
 	$category = ! is_wp_error( $terms ) && ! empty( $terms ) ? $terms[0] : '';
-	$date     = get_post_datetime( $post );
+	$date     = labm_theme_home_news_date( $post );
 	$parts    = array();
 	if ( $category ) {
 		$parts[] = '<span>' . esc_html( $category ) . '</span>';
 	}
 	if ( $date ) {
-		$parts[] = '<time datetime="' . esc_attr( $date->format( DATE_W3C ) ) . '">' . esc_html( wp_date( 'j M Y', $date->getTimestamp() ) ) . '</time>';
+		$parts[] = '<time datetime="' . esc_attr( $date->format( 'Y-m-d' ) ) . '">' . esc_html( wp_date( 'j M Y', $date->getTimestamp(), $date->getTimezone() ) ) . '</time>';
 	}
 	return implode( '<span aria-hidden="true"> · </span>', $parts );
 }

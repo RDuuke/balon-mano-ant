@@ -160,11 +160,10 @@
     <h2>Activa los campos personalizados</h2><p class="intro">Algunas secciones guardan datos adicionales con campos personalizados. La activación se realiza desde las preferencias del editor y queda guardada por usuario.</p>
     <img class="screen field-real" src="imagenes/campos-personalizados-real.png" alt="Captura real del panel Custom Fields de WordPress">
     <div class="step"><b>1</b><span>Abre una publicación nueva o existente en el editor de bloques.</span></div>
-    <div class="step"><b>2</b><span>Pulsa <b>⋮</b> en la esquina superior derecha y abre <b>Preferences / Preferencias</b>.</span></div>
+    <div class="step"><b>2</b><span>Abre el menú de opciones en la esquina superior derecha y entra en <b>Preferences / Preferencias</b>.</span></div>
     <div class="step"><b>3</b><span>Entra en <b>Panels / Paneles</b> y activa <b>Custom fields / Campos personalizados</b>.</span></div>
     <div class="step"><b>4</b><span>Si WordPress solicita recargar, confirma. En el panel usa <b>Name</b> para la clave, <b>Value</b> para el dato y <b>Add Custom Field</b>. Para un campo existente, edita el valor y pulsa <b>Update</b>.</span></div>
-    <div class="field-list"><div><code>labm_fecha_evento</code><br>Actualidad · requerido para evento destacado</div><div><code>labm_modalidad_detalle</code><br>Selecciones · complementario</div><div><code>labm_destino_url</code><br>Slides · necesario con el CTA</div><div><code>labm_cta_texto</code><br>Slides · necesario con el destino</div><div><code>labm_ciudad</code><br>Clubes · complementario</div><div><code>labm_cargo</code><br>Integrantes · requerido en la tarjeta</div></div>
-    <div class="note">La imagen es una captura real del panel después de activarlo; la activación ocurre en Preferences → Panels. Un campo correcto no basta por sí solo: también deben cumplirse título, imagen destacada, estado publicado y taxonomía de cada colección. No traduzcas ni cambies las claves. La clave <code>labm_...</code> debe conservarse exactamente; solo cambia el valor editorial.</div>
+    <div class="note">La imagen muestra el panel nativo después de activarlo. Esta página explica cómo abrirlo; consulta cada sección para conocer únicamente el dato adicional que allí se utiliza. No traduzcas ni cambies una clave: escríbela exactamente y modifica solo su valor. Documentos, Aliados Oficiales y Footer LABM usan controles propios del panel, no este mecanismo.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04A</b></div>
   </section>
 
@@ -174,9 +173,12 @@
     <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
     <div class="step"><b>1</b><span>Entra en <b>Actualidad → Añadir Entrada de actualidad</b>. Escribe título y cuerpo.</span></div>
     <div class="step"><b>2</b><span>Abre Categorías y elige una categoría existente que corresponda al contenido; luego añade imagen destacada y extracto.</span></div>
-    <div class="step"><b>3</b><span>Para varias fotografías, inserta el bloque Galería. Revisa, publica y abre el listado y el detalle.</span></div>
+    <div class="step"><b>3</b><span>Para varias fotografías, inserta el bloque Galería. Después de publicar, verifica dos vistas:
+      <ol><li><b>Listado:</b> abre la página general de Actualidad (<code>/actualidad/</code>), donde aparecen varias noticias.</li><li><b>Detalle:</b> haz clic en el título de la noticia para abrir su página individual (<code>/actualidad/nombre-del-articulo/</code>).</li></ol>
+      Confirma que el artículo aparece en el listado y que el detalle muestra correctamente título, imagen, contenido, fecha y enlaces para compartir.
+    </span></div>
 
-    <div class="note">La fecha del evento es distinta de la fecha de publicación. Usa <code>labm_fecha_evento</code>. <code>labm_demo_image</code> sólo sirve como respaldo técnico para imágenes de demostración; <code>lamb_demo_fecha</code> no existe.</div>
+    <div class="note"><b>Fecha del evento:</b> si <code>labm_fecha_evento</code> tiene una fecha válida en formato <code>AAAA-MM-DD</code>, esta fecha tiene prioridad y es la que se muestra en el listado y en el detalle del artículo. Si el campo está vacío o contiene un valor inválido, el sitio muestra automáticamente la fecha de publicación. La clave escrita como <code>lamb_demo_fecha</code> no existe.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
   </section>
 
@@ -188,7 +190,7 @@
     <div class="step"><b>2</b><span>En <b>Modalidades</b> selecciona Piso o Playa. Completa Categorías y el extracto.</span></div>
     <div class="step"><b>3</b><span>Publica y revisa el listado de esa modalidad. Abre la interna: Selecciones y la modalidad deben seguir activos.</span></div>
 
-    <div class="note">Modalidades no es lo mismo que Categorías. Selecciona una sola modalidad. <code>labm_modalidad_detalle</code> sólo complementa la tarjeta y no reemplaza la taxonomía. El padre Selecciones abre el submenú; los enlaces Piso y Playa llevan a sus listados.</div>
+    <div class="note"><code>labm_modalidad_detalle</code> sirve para añadir una breve explicación a la tarjeta; es complementario y no define la modalidad. Modalidades no es lo mismo que Categorías: selecciona una modalidad. El padre Selecciones abre el submenú; Piso y Playa llevan a sus listados.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>06</b></div>
   </section>
 
@@ -220,7 +222,7 @@
     <div class="step"><b>1</b><span><b>Slides de Inicio → Add Post / Añadir</b>. Escribe título y texto breve.</span></div><div class="step"><b>2</b><span>Asigna imagen destacada. Título e imagen son obligatorios para publicar.</span></div>
     <div class="step"><b>3</b><span>Revisa el destino y la etiqueta del botón si la diapositiva lleva enlace. Publica o guarda.</span></div><div class="step"><b>4</b><span>Abre Inicio, recorre el carrusel y comprueba imagen, texto y botón.</span></div>
 
-    <div class="note">Destino y etiqueta del botón son campos personalizados. Completa <code>labm_destino_url</code> y <code>labm_cta_texto</code> juntos; si uno queda vacío, el botón puede faltar o quedar incompleto. Si no aparecen, activa el panel siguiendo la página 04A y prueba el resultado en Inicio.</div>
+    <div class="note"><code>labm_destino_url</code> indica adónde lleva el botón y <code>labm_cta_texto</code> define el texto que muestra. Completa ambos juntos para que el botón tenga destino y etiqueta. Si no aparecen, activa el panel siguiendo la página 04A y comprueba el resultado en Inicio.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>09</b></div>
   </section>
 
@@ -230,7 +232,7 @@
     <img class="screen short" src="imagenes/aliados-editor.png" alt="Editor de Aliados Oficiales">
     <div class="step"><b>1</b><span><b>Aliados Oficiales → Add Post</b>. Escribe el nombre y selecciona el logo en Featured image / Imagen destacada.</span></div><div class="step"><b>2</b><span>Define <b>Order / Orden</b> en Post Attributes / Atributos o, si no aparece, desde <b>Quick Edit / Edición rápida</b> del listado. Publica y verifica la franja de aliados.</span></div>
     <div class="step"><b>3</b><span>Para un club: <b>Clubes → Añadir Club</b>. Completa nombre, descripción, logo y modalidad; publica y revisa Inicio.</span></div>
-    <div class="note">Aliados Oficiales y Clubes son colecciones distintas. El aliado necesita título y logo. Inicio muestra una cantidad limitada de clubes publicados; no todos tienen que aparecer simultáneamente.</div>
+    <div class="note">Aliados Oficiales y Clubes son colecciones distintas. El aliado necesita título y logo; el orden se define con el control estándar de atributos o edición rápida, no con un campo personalizado. Clubes clasifica la modalidad con su control de taxonomía. Inicio muestra una cantidad limitada de clubes publicados.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>10</b></div>
   </section>
 
@@ -239,9 +241,9 @@
     <h2>Nosotros: publica integrantes</h2><p class="intro">Un integrante se muestra cuando tiene nombre, fotografía, cargo y grupo completos.</p>
     <img class="screen short" src="imagenes/integrantes-editor.png" alt="Editor de Integrantes">
     <div class="step"><b>1</b><span><b>Integrantes → Añadir Integrante</b>. Escribe el nombre y añade la fotografía destacada.</span></div><div class="step"><b>2</b><span>En <b>Grupos de integrantes</b> elige una opción existente: Comité, Entrenadores o Representantes; no escribas una variante nueva.</span></div>
-    <div class="step"><b>3</b><span>Completa el cargo en <code>labm_cargo</code>. Si no ves ese campo personalizado, actívalo siguiendo la página 04A.</span></div><div class="step"><b>4</b><span>Publica y revisa Nosotros. Comprueba la foto, el cargo y el filtro del grupo.</span></div>
+    <div class="step"><b>3</b><span>Completa el cargo en <code>labm_cargo</code>, el campo personalizado que indica el cargo de la persona. Si no lo ves, actívalo siguiendo la página 04A.</span></div><div class="step"><b>4</b><span>Publica y revisa Nosotros. Comprueba la foto, el cargo y el filtro del grupo.</span></div>
 
-    <div class="note">El valor de <code>labm_cargo</code> aparece junto al nombre en la tarjeta pública. Los filtros de Nosotros reconocen los grupos configurados; no inventes otro grupo esperando que aparezca en esos filtros.</div>
+    <div class="note"><code>labm_cargo</code> indica la función o responsabilidad de la persona y aparece junto a su nombre en la tarjeta pública. Los filtros de Nosotros usan grupos configurados; no inventes otro grupo esperando que aparezca en esos filtros.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>11</b></div>
   </section>
 
@@ -280,9 +282,9 @@
     <h2>Publica un club asociado</h2><p class="intro">Clubes usa una colección distinta de Aliados Oficiales. Selecciona la modalidad y el logo de cada club.</p>
     <img class="screen short" src="imagenes/clubes-editor.png" alt="Editor de Clubes">
     <div class="step"><b>1</b><span><b>Clubes → Añadir Club</b>. Completa nombre y descripción.</span></div><div class="step"><b>2</b><span>Asigna el logo como Imagen destacada y escribe un extracto breve.</span></div>
-    <div class="step"><b>3</b><span>Abre Modalidades, clasifica el club y completa la ciudad en <code>labm_ciudad</code>.</span></div><div class="step"><b>4</b><span>Publica, comprueba Clubes asociados de Inicio y abre el detalle del club.</span></div>
+    <div class="step"><b>3</b><span>Abre Modalidades y clasifica el club. Si necesitas guardar la ciudad como referencia editorial, complétala en <code>labm_ciudad</code>.</span></div><div class="step"><b>4</b><span>Publica, comprueba Clubes asociados de Inicio y abre el detalle del club.</span></div>
 
-    <div class="note">La portada muestra una selección limitada de clubes. El dato adicional de ciudad es <code>labm_ciudad</code>; no reemplaza el nombre, el logo ni la modalidad. Si no está visible, activa el panel 04A.</div>
+    <div class="note"><code>labm_ciudad</code> guarda la ciudad como referencia editorial; actualmente no se muestra en la ficha pública. No reemplaza el nombre, el logo ni la modalidad. La portada muestra una selección limitada de clubes. Si el campo no está visible, activa el panel 04A.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>15</b></div>
   </section>
 
@@ -311,7 +313,7 @@
       <p class="lead">Guía visual breve para crear, revisar y publicar contenido en WordPress.</p>
     </div>
     <div>
-      <p class="note"><b>Versión 1.2 · 13 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
+      <p class="note"><b>Versión 1.3 · 15 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
     </div>
   </section>
 
@@ -363,7 +365,7 @@
     <img class="screen" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
     <div class="callout"><b>Guardar no siempre significa publicar.</b> Revisa <b>Status / Estado</b>. Un borrador o una publicación privada no aparece en los listados públicos.</div>
     <h3>Datos de Actualidad</h3>
-    <p>Para el evento destacado de Inicio, usa <code>labm_fecha_evento</code> con formato <code>AAAA-MM-DD</code>.</p>
+    <p>En el evento destacado de Inicio, <code>labm_fecha_evento</code> también indica la fecha del evento.</p>
     <div class="footer">LABM · Publicaciones</div>
   </section>
 
@@ -372,7 +374,7 @@
     <h2>Piso y Playa</h2>
     <p class="intro">Asigna la taxonomía correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre.</p>
     <img class="screen" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
-    <p>El dato complementario <code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta, pero no determina el listado.</p>
+    <p><code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta, pero no determina el listado; para eso usa la taxonomía Modalidades.</p>
     <div class="callout">Comprueba el listado público de Piso o Playa y abre la interna: deben mantenerse activos el padre Selecciones y la modalidad correspondiente.</div>
     <div class="footer">LABM · Selecciones</div>
   </section>
@@ -400,18 +402,18 @@
     <span class="band">6 · Inicio</span>
     <h2>Slides, aliados y clubes</h2>
     <h3>Slides</h3>
-    <p>El título y la imagen destacada son obligatorios. Si hay botón, usa los campos <code>labm_destino_url</code> y <code>labm_cta_texto</code>.</p>
+    <p>El título y la imagen destacada son obligatorios. Si hay botón, <code>labm_destino_url</code> indica el destino y <code>labm_cta_texto</code> su etiqueta visible; completa ambos.</p>
     <h3>Aliados</h3>
     <p>Usa el logo como imagen destacada, agrega texto alternativo y define el orden si tu rol lo permite.</p>
     <h3>Clubes</h3>
-    <p>Asigna la modalidad, publica el club y, si corresponde, completa <code>labm_ciudad</code>. La portada muestra una selección limitada.</p>
+    <p>Modalidades clasifica el club. <code>labm_ciudad</code> guarda la ciudad como referencia editorial, aunque hoy no se muestra en la ficha pública. La portada muestra una selección limitada.</p>
     <div class="footer">LABM · Inicio</div>
   </section>
 
   <section class="page">
     <span class="band">7 · Nosotros</span>
     <h2>Integrantes y textos institucionales</h2>
-    <p>Para un integrante completa nombre, fotografía, grupo y cargo. El cargo se guarda en <code>labm_cargo</code> y se muestra en la tarjeta pública.</p>
+    <p>Para un integrante completa nombre, fotografía, grupo y cargo. <code>labm_cargo</code> indica su función y aparece en la tarjeta pública.</p>
     <div class="callout">Los grupos válidos para los filtros son <code>comite</code>, <code>entrenadores</code> y <code>representantes</code>. Un integrante incompleto no se muestra en Nosotros.</div>
     <img class="screen" src="imagenes/14-nosotros-publico.png" alt="Vista pública de Nosotros">
     <h3>Textos</h3>
