@@ -543,7 +543,6 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 	.labm-about-banner--without-media { display: block; }
 	.labm-about-purpose { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	.labm-about-team__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-	.labm-about-team__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 	.labm-home-presentation { grid-template-columns: minmax(0, 1.5fr) minmax(14rem, .75fr); }
 	.labm-featured-event { grid-template-columns: repeat(2, minmax(0, 1fr)); height: clamp(32rem, 50vw, 700px); max-height: 700px; overflow: hidden; }
 	.labm-featured-event__media { min-height: 0; }
@@ -639,7 +638,7 @@ form.labm-filter[data-labm-actualidad-filtros] .labm-actualidad-filtro__submit {
 .labm-actualidad-detail__title { width: min(100%, var(--labm-content-max)); margin: 0 auto; color: #fff !important; font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700; letter-spacing: -.025em; line-height: .94; text-transform: uppercase; overflow-wrap: anywhere; }
 .labm-actualidad-detail { display: grid; gap: 1.25rem; min-width: 0; }
 .labm-actualidad-detail__media { min-height: 0; overflow: hidden; background: var(--labm-neutral); }
-.labm-actualidad-detail__media .labm-actualidad-detail__image { display: block; position: static; width: 100%; height: auto; max-height: 38rem; object-fit: cover; }
+.labm-actualidad-detail__media .labm-actualidad-detail__image { display: block; position: static; width: 100%; max-width: 100%; height: auto; object-fit: contain; }
 .labm-actualidad-detail__meta { margin: 0; color: #c7ee18 !important; font-size: .75rem; font-weight: 800; letter-spacing: .04em; line-height: 1.4; text-transform: uppercase; }
 .labm-actualidad-detail__share { display: grid; align-content: start; gap: 1rem; min-height: 16.5rem; padding: 1.5rem 1.25rem; background: var(--labm-neutral); }
 .labm-actualidad-detail__share h2 { margin: 0; font-family: var(--wp--preset--font-family--barlow-condensed), sans-serif; font-size: 1.25rem; line-height: 1; text-transform: uppercase; }

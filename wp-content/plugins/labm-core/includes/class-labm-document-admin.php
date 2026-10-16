@@ -426,11 +426,15 @@ function labm_core_document_admin_config() {
 			'replacePdf'       => __( 'Reemplazar PDF', 'labm-core' ),
 			'removePdf'        => __( 'Quitar PDF', 'labm-core' ),
 			'noPdf'            => __( 'Ningún PDF asociado.', 'labm-core' ),
-			'keptInLibrary'    => __( 'El archivo permanece en la biblioteca al quitarlo.', 'labm-core' ),
+			'mediaHelp'        => __( 'Busca un PDF existente o súbelo desde la biblioteca. No introduzcas manualmente el ID del archivo.', 'labm-core' ),
+			'keptInLibrary'    => __( 'Quitar PDF solo lo desvincula de esta publicación; el archivo permanece en la biblioteca.', 'labm-core' ),
 			'validPdf'         => __( 'PDF válido', 'labm-core' ),
 			'invalidPdf'       => __( 'El PDF necesita reparación.', 'labm-core' ),
 			'documentDate'     => __( 'Fecha del documento', 'labm-core' ),
 			'documentType'     => __( 'Tipo de documento', 'labm-core' ),
+			'dateHelp'         => __( 'Opcional. Usa la fecha que figura en el documento, no la fecha de publicación.', 'labm-core' ),
+			'typeHelp'         => __( 'Selecciona un solo tipo para clasificar el documento.', 'labm-core' ),
+			'confirmRemovePdf' => __( 'Quitar el PDF solo lo desvincula de esta publicación. El archivo seguirá en la biblioteca. ¿Deseas continuar?', 'labm-core' ),
 			'mediaTitle'       => __( 'Seleccionar un PDF', 'labm-core' ),
 			'usePdf'           => __( 'Usar este PDF', 'labm-core' ),
 			'mediaError'       => __( 'No se pudo completar la operación en la biblioteca. La selección anterior se conservó; intenta de nuevo.', 'labm-core' ),
@@ -513,21 +517,22 @@ function labm_core_document_admin_render_meta_box( $post ) {
 	?>
 	<div data-labm-document-admin data-labm-editor="classic">
 		<div data-labm-admin-alert role="alert" tabindex="-1"<?php echo empty( $failed['message'] ) ? ' hidden' : ''; ?>><?php echo esc_html( $failed['message'] ?? '' ); ?></div>
-		<fieldset aria-describedby="labm-pdf-help labm-pdf-limit">
+		<fieldset aria-describedby="labm-pdf-help labm-pdf-library-help labm-pdf-limit">
 			<legend><strong><?php esc_html_e( 'Archivo PDF', 'labm-core' ); ?></strong></legend>
 			<input type="hidden" name="labm_documento_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" data-labm-pdf-id>
 			<p data-labm-pdf-summary><?php echo $pdf_id ? esc_html( $attachment['name'] . ' · ' . $attachment['sizeLabel'] . ' · ' . ( $attachment['valid'] ? __( 'PDF válido', 'labm-core' ) : __( 'El PDF necesita reparación.', 'labm-core' ) ) ) : esc_html__( 'Ningún PDF asociado.', 'labm-core' ); ?></p>
 			<p>
 				<button type="button" class="button" data-labm-select-pdf><?php echo esc_html( $pdf_id ? __( 'Reemplazar PDF', 'labm-core' ) : __( 'Seleccionar o subir PDF', 'labm-core' ) ); ?></button>
-				<button type="button" class="button-link-delete" data-labm-remove-pdf<?php echo $pdf_id ? '' : ' hidden'; ?>><?php esc_html_e( 'Quitar PDF', 'labm-core' ); ?></button>
+				<button type="button" class="button-link-delete" data-labm-remove-pdf aria-describedby="labm-pdf-help"<?php echo $pdf_id ? '' : ' hidden'; ?>><?php esc_html_e( 'Quitar PDF', 'labm-core' ); ?></button>
 			</p>
-			<p id="labm-pdf-help" class="description"><?php esc_html_e( 'El archivo permanece en la biblioteca al quitarlo.', 'labm-core' ); ?></p>
+			<p id="labm-pdf-help" class="description"><?php esc_html_e( 'Quitar PDF solo lo desvincula de esta publicación; el archivo permanece en la biblioteca.', 'labm-core' ); ?></p>
+			<p id="labm-pdf-library-help" class="description"><?php esc_html_e( 'Busca un PDF existente o súbelo desde la biblioteca. No introduzcas manualmente el ID del archivo.', 'labm-core' ); ?></p>
 			<p id="labm-pdf-limit" class="description" data-labm-effective-max-bytes="<?php echo esc_attr( $limit ); ?>"><?php /* translators: %s: límite efectivo de carga. */ echo esc_html( sprintf( __( 'Límite efectivo: el menor entre 30 MB y el permitido por WordPress (%s).', 'labm-core' ), size_format( $limit ) ) ); ?></p>
 		</fieldset>
 		<p>
 			<label for="labm-documento-fecha"><strong><?php esc_html_e( 'Fecha del documento', 'labm-core' ); ?></strong></label><br>
 			<input type="date" id="labm-documento-fecha" name="labm_documento_fecha" value="<?php echo esc_attr( $date ); ?>" aria-describedby="labm-documento-fecha-help">
-			<span id="labm-documento-fecha-help" class="description"><?php esc_html_e( 'Opcional. Usa la fecha oficial del documento.', 'labm-core' ); ?></span>
+			<span id="labm-documento-fecha-help" class="description"><?php esc_html_e( 'Opcional. Usa la fecha que figura en el documento, no la fecha de publicación.', 'labm-core' ); ?></span>
 		</p>
 		<p>
 			<label for="labm-documento-tipo"><strong><?php esc_html_e( 'Tipo de documento', 'labm-core' ); ?></strong></label><br>
@@ -536,7 +541,7 @@ function labm_core_document_admin_render_meta_box( $post ) {
 					<option value="<?php echo esc_attr( (string) $term->term_id ); ?>" <?php selected( $type_id, $term->term_id ); ?>><?php echo esc_html( $term->name ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<span id="labm-documento-tipo-help" class="description"><?php esc_html_e( 'Selecciona un solo tipo.', 'labm-core' ); ?></span>
+			<span id="labm-documento-tipo-help" class="description"><?php esc_html_e( 'Selecciona un solo tipo para clasificar el documento.', 'labm-core' ); ?></span>
 		</p>
 		<p class="screen-reader-text" aria-live="polite" data-labm-admin-live></p>
 	</div>

@@ -128,6 +128,51 @@ function labm_core_register_content_types() {
 }
 add_action( 'init', 'labm_core_register_content_types', 5 );
 
+/** Oculta el editor genérico de metadatos en Documentos, que usa controles dedicados. */
+function labm_core_hide_document_custom_fields_meta_box() {
+	remove_meta_box( 'postcustom', 'labm_documento', 'normal' );
+}
+add_action( 'add_meta_boxes_labm_documento', 'labm_core_hide_document_custom_fields_meta_box', 100 );
+
+/** Muestra una ayuda contextual para los campos personalizados técnicos. */
+function labm_core_render_editor_guidance_notice() {
+	$screen = get_current_screen();
+	if ( ! $screen || ! in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+		return;
+	}
+
+	$guidance = array(
+		'labm_actualidad' => array(
+			__( 'Datos adicionales de Actualidad', 'labm-core' ),
+			__( 'Usa solo Fecha del evento (labm_fecha_evento) cuando la noticia anuncie una fecha. El campo es opcional y debe escribirse como fecha calendario.', 'labm-core' ),
+		),
+		'labm_seleccion' => array(
+			__( 'Datos adicionales de Selecciones', 'labm-core' ),
+			__( 'Usa solo Modalidad detallada (labm_modalidad_detalle) cuando necesites ampliar la clasificación. La modalidad principal se elige en la taxonomía Modalidades.', 'labm-core' ),
+		),
+		'labm_club' => array(
+			__( 'Datos adicionales de Clubes', 'labm-core' ),
+			__( 'Ciudad (labm_ciudad) está registrada, pero no tiene salida pública confirmada en esta versión. No dependas de este dato para completar la ficha visible del club.', 'labm-core' ),
+		),
+		'labm_integrante' => array(
+			__( 'Datos adicionales de Integrantes', 'labm-core' ),
+			__( 'Usa Cargo (labm_cargo) para el texto que acompaña al nombre. El grupo del integrante se selecciona en la taxonomía Grupos de integrantes.', 'labm-core' ),
+		),
+		'labm_horario' => array(
+			__( 'Datos adicionales de Horarios', 'labm-core' ),
+			__( 'Inicio (labm_inicio) está registrado, pero no tiene salida pública confirmada. Publicar un horario no crea por sí solo una sección en Inicio.', 'labm-core' ),
+		),
+	);
+
+	if ( empty( $guidance[ $screen->post_type ] ) ) {
+		return;
+	}
+
+	$notice = $guidance[ $screen->post_type ];
+	echo '<div class="notice notice-info inline"><p><strong>' . esc_html( $notice[0] ) . '</strong> ' . esc_html( $notice[1] ) . '</p></div>';
+}
+add_action( 'admin_notices', 'labm_core_render_editor_guidance_notice', 20 );
+
 /**
  * Valida una fecha ISO real.
  *

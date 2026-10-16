@@ -20,12 +20,24 @@ function labm_core_register_home_content_types() {
 		$supports = 'labm_aliado' === $post_type
 			? array( 'title', 'thumbnail', 'page-attributes' )
 			: array( 'title', 'editor', 'excerpt', 'thumbnail', 'page-attributes', 'custom-fields' );
+		$singular = $names[1];
 		register_post_type(
 			$post_type,
 			array(
 				'labels'             => array(
-					'name'          => $names[0],
-					'singular_name' => $names[1],
+					'name'              => $names[0],
+					'singular_name'     => $singular,
+					'add_new'           => __( 'Añadir', 'labm-core' ),
+					'add_new_item'      => sprintf( __( 'Añadir %s', 'labm-core' ), $singular ),
+					'edit_item'         => sprintf( __( 'Editar %s', 'labm-core' ), $singular ),
+					'new_item'          => sprintf( __( 'Nuevo %s', 'labm-core' ), $singular ),
+					'view_item'         => sprintf( __( 'Ver %s', 'labm-core' ), $singular ),
+					'search_items'      => sprintf( __( 'Buscar %s', 'labm-core' ), $names[0] ),
+					'not_found'         => sprintf( __( 'No se encontraron %s.', 'labm-core' ), strtolower( $names[0] ) ),
+					'not_found_in_trash' => sprintf( __( 'No se encontraron %s en la papelera.', 'labm-core' ), strtolower( $names[0] ) ),
+					'all_items'         => sprintf( __( 'Todos los %s', 'labm-core' ), $names[0] ),
+					'attributes'        => __( 'Atributos', 'labm-core' ),
+					'menu_name'         => $names[0],
 				),
 				'public'             => false,
 				'publicly_queryable' => false,
@@ -41,6 +53,26 @@ function labm_core_register_home_content_types() {
 	}
 }
 add_action( 'init', 'labm_core_register_home_content_types', 5 );
+
+/** Localiza etiquetas heredadas del editor clásico solo en Slides y Aliados. */
+function labm_core_translate_home_classic_labels( $translation, $text, $domain ) {
+	if ( 'default' !== $domain ) {
+		return $translation;
+	}
+	$screen = $GLOBALS['current_screen'] ?? null;
+	if ( ! $screen || ! in_array( $screen->post_type, array( 'labm_slide', 'labm_aliado' ), true ) ) {
+		return $translation;
+	}
+
+	$translations = array(
+		'Add Post'        => 'labm_slide' === $screen->post_type ? __( 'Añadir slide', 'labm-core' ) : __( 'Añadir aliado', 'labm-core' ),
+		'Featured image'  => __( 'Imagen destacada', 'labm-core' ),
+		'Post Attributes' => __( 'Atributos', 'labm-core' ),
+		'Order'           => __( 'Orden', 'labm-core' ),
+	);
+	return $translations[ $text ] ?? $translation;
+}
+add_filter( 'gettext', 'labm_core_translate_home_classic_labels', 10, 3 );
 
 /** Registra los campos REST saneados de portada. */
 function labm_core_register_home_meta() {
@@ -129,12 +161,20 @@ function labm_core_validate_home_rest_insert( $prepared_post, $request ) {
 add_filter( 'rest_pre_insert_labm_slide', 'labm_core_validate_home_rest_insert', 10, 2 );
 add_filter( 'rest_pre_insert_labm_aliado', 'labm_core_validate_home_rest_insert', 10, 2 );
 
-/** Incluye el nonce de validacion en la pantalla clasica de aliados. */
+/** Añade ayuda editorial y el nonce requerido por el editor clásico de Aliados. */
 function labm_core_render_home_content_nonce() {
 	global $post;
-	if ( $post instanceof WP_Post && 'labm_aliado' === $post->post_type ) {
+	if ( ! $post instanceof WP_Post || ! in_array( $post->post_type, array( 'labm_slide', 'labm_aliado' ), true ) ) {
+		return;
+	}
+	if ( 'labm_aliado' === $post->post_type ) {
 		wp_nonce_field( 'labm_save_home_content', '_labm_home_content_nonce' );
 	}
+	$title = 'labm_slide' === $post->post_type ? __( 'Cómo completar un slide', 'labm-core' ) : __( 'Cómo completar un aliado', 'labm-core' );
+	$help  = 'labm_slide' === $post->post_type
+		? __( 'La imagen destacada y el título son obligatorios. En Atributos > Orden, un número menor aparece antes. Si tu pantalla muestra Campos personalizados, usa solo Destino del enlace (labm_destino_url) y Texto del botón (labm_cta_texto).', 'labm-core' )
+		: __( 'La imagen destacada funciona como logo y el título identifica al aliado. Define el orden en Atributos > Orden. Esta versión no tiene un campo editorial para enlace externo.', 'labm-core' );
+	echo '<div class="notice notice-info inline"><p><strong>' . esc_html( $title ) . '</strong> ' . esc_html( $help ) . '</p></div>';
 }
 add_action( 'edit_form_after_title', 'labm_core_render_home_content_nonce' );
 

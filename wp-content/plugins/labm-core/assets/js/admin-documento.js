@@ -170,6 +170,9 @@
 		}
 
 		function removePdf() {
+			if (!window.confirm(strings.confirmRemovePdf)) {
+				return;
+			}
 			setAttachment({ id: 0, name: '', size: 0, sizeLabel: '', valid: false });
 			setMeta('labm_documento_pdf_id', 0);
 			setError('');
@@ -231,7 +234,8 @@
 						el(Button, { variant: 'secondary', onClick: choosePdf, ref: pdfButton }, pdfId ? strings.replacePdf : strings.selectPdf),
 						pdfId ? el(Button, { variant: 'tertiary', isDestructive: true, onClick: removePdf }, strings.removePdf) : null
 					),
-					el('p', { id: 'labm-block-pdf-help', className: 'components-base-control__help' }, strings.keptInLibrary),
+					el('p', { id: 'labm-block-pdf-help', className: 'components-base-control__help' }, strings.mediaHelp),
+					el('p', { className: 'components-base-control__help' }, strings.keptInLibrary),
 					el('p', { id: 'labm-block-pdf-limit', className: 'components-base-control__help', 'data-labm-effective-max-bytes': maxBytes }, strings.limitDescription)
 				)
 			),
@@ -239,7 +243,7 @@
 				label: strings.documentDate,
 				type: 'date',
 				value: date,
-				help: wp.i18n.__('Opcional. Usa la fecha oficial del documento.', 'labm-core'),
+				help: strings.dateHelp,
 				onChange: function (value) { setMeta('labm_documento_fecha', value); },
 				__nextHasNoMarginBottom: true,
 				'data-labm-document-date': ''
@@ -248,7 +252,7 @@
 				label: strings.documentType,
 				value: String(typeId),
 				options: (config.terms || []).map(function (term) { return { label: term.name, value: String(term.id) }; }),
-				help: wp.i18n.__('Selecciona un solo tipo.', 'labm-core'),
+				help: strings.typeHelp,
 				onChange: function (value) {
 					var change = {};
 					change.labm_documento_categoria = [Number(value)];
@@ -337,6 +341,9 @@
 			}, function (message) { showError(message, 'labm_documento_pdf_id'); });
 		});
 		removeButton.addEventListener('click', function () {
+			if (!window.confirm(strings.confirmRemovePdf)) {
+				return;
+			}
 			update({ id: 0 });
 			announce(strings.noPdf + ' ' + strings.keptInLibrary);
 			selectButton.focus();

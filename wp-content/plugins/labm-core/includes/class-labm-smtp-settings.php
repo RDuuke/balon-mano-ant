@@ -264,7 +264,9 @@ elseif ( 'failed' === $status ) :
 	<h2><?php esc_html_e( 'Vista previa del correo de Contacto', 'labm-core' ); ?></h2>
 	<p><?php esc_html_e( 'Muestra estática con datos ficticios. No envía correo ni usa la configuración SMTP.', 'labm-core' ); ?></p>
 	<iframe title="<?php esc_attr_e( 'Vista previa del correo de Contacto', 'labm-core' ); ?>" sandbox="" style="display:block;width:100%;max-width:640px;height:780px;border:1px solid #ccd0d4;background:#f3f6e8;" srcdoc="<?php echo esc_attr( labm_core_contact_email_preview() ); ?>"></iframe>
-	<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post"><input type="hidden" name="action" value="labm_smtp_test">
+	<div class="notice notice-warning inline"><p><strong><?php esc_html_e( 'Esta acción envía un correo real.', 'labm-core' ); ?></strong> <?php esc_html_e( 'Guarda primero la configuración si la has cambiado. El mensaje se enviará a:', 'labm-core' ); ?> <code><?php echo esc_html( implode( ', ', labm_core_smtp_recipients() ) ); ?></code></p></div>
+	<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" onsubmit="return window.confirm('<?php echo esc_js( __( 'Se enviará un correo de prueba a los destinatarios mostrados. ¿Deseas continuar?', 'labm-core' ) ); ?>');">
+	<input type="hidden" name="action" value="labm_smtp_test">
 	<?php
 	wp_nonce_field( 'labm_smtp_test' );
 	submit_button( __( 'Enviar prueba', 'labm-core' ), 'secondary', 'submit', false );
@@ -279,7 +281,6 @@ function labm_core_handle_smtp_test() {
 		wp_die( esc_html__( 'No tienes permiso para enviar una prueba SMTP.', 'labm-core' ), 403 );
 	}
 	check_admin_referer( 'labm_smtp_test' );
-	$settings = labm_core_get_smtp_settings();
 	$sent     = labm_core_smtp_is_configured() && wp_mail( labm_core_smtp_recipients(), __( 'Prueba SMTP LABM', 'labm-core' ), __( 'Mensaje de prueba generado desde el panel administrativo de LABM.', 'labm-core' ) );
 	wp_safe_redirect( add_query_arg( 'labm_smtp_test', $sent ? 'success' : 'failed', admin_url( 'admin.php?page=labm-smtp' ) ) );
 	exit;
