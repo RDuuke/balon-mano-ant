@@ -1344,6 +1344,71 @@ function labm_theme_selection_media( $post ) {
 }
 
 /**
+ * Renderiza el detalle publico de una participacion de Selecciones.
+ *
+ * @return string
+ */
+function labm_theme_render_selection_detail() {
+	$post = get_queried_object();
+	if ( ! $post instanceof WP_Post || 'labm_seleccion' !== $post->post_type ) {
+		return '';
+	}
+
+	$modalities = get_the_terms( $post->ID, 'labm_modalidad' );
+	$categories = get_the_terms( $post->ID, 'labm_categoria' );
+	$modality_names = is_array( $modalities ) ? wp_list_pluck( $modalities, 'name' ) : array();
+	$category_names = is_array( $categories ) ? wp_list_pluck( $categories, 'name' ) : array();
+	$detail = trim( (string) get_post_meta( $post->ID, 'labm_modalidad_detalle', true ) );
+	$summary = has_excerpt( $post ) ? trim( wp_strip_all_tags( get_the_excerpt( $post ) ) ) : labm_theme_selection_summary( $post );
+	$published = get_the_date( get_option( 'date_format' ), $post );
+
+	ob_start();
+	?>
+	<article class="labm-seleccion-detalle" aria-labelledby="labm-seleccion-title">
+		<header class="labm-seleccion-detalle__hero">
+			<div class="labm-seleccion-detalle__hero-inner">
+				<?php if ( ! empty( $modality_names ) ) : ?>
+					<p class="labm-seleccion-detalle__eyebrow"><?php echo esc_html( implode( ' · ', $modality_names ) ); ?></p>
+				<?php endif; ?>
+				<h1 id="labm-seleccion-title"><?php echo esc_html( labm_theme_selection_title( $post ) ); ?></h1>
+				<?php if ( '' !== $summary ) : ?>
+					<p class="labm-seleccion-detalle__summary"><?php echo esc_html( $summary ); ?></p>
+				<?php endif; ?>
+			</div>
+		</header>
+		<div class="labm-seleccion-detalle__layout">
+			<div class="labm-seleccion-detalle__main">
+				<div class="labm-seleccion-detalle__content"><?php echo apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenido procesado por filtros estándar de WordPress. ?></div>
+				<?php if ( has_post_thumbnail( $post ) ) : ?>
+					<figure class="labm-seleccion-detalle__image"><?php echo get_the_post_thumbnail( $post, 'large', array( 'alt' => wp_strip_all_tags( get_the_title( $post ) ), 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML de imagen generado por WordPress. ?></figure>
+				<?php endif; ?>
+				<a class="labm-seleccion-detalle__back" href="<?php echo esc_url( get_post_type_archive_link( 'labm_seleccion' ) ); ?>"><?php esc_html_e( '← Volver a Selecciones', 'labm' ); ?></a>
+			</div>
+			<aside class="labm-seleccion-detalle__aside" aria-labelledby="labm-seleccion-info-title">
+				<h2 id="labm-seleccion-info-title"><?php esc_html_e( 'Información de la participación', 'labm' ); ?></h2>
+				<dl>
+					<?php if ( ! empty( $modality_names ) ) : ?>
+						<div><dt><?php esc_html_e( 'Modalidad', 'labm' ); ?></dt><dd><?php echo esc_html( implode( ', ', $modality_names ) ); ?></dd></div>
+					<?php endif; ?>
+					<?php if ( ! empty( $category_names ) ) : ?>
+						<div><dt><?php esc_html_e( 'Categoría', 'labm' ); ?></dt><dd><?php echo esc_html( implode( ', ', $category_names ) ); ?></dd></div>
+					<?php endif; ?>
+					<?php if ( '' !== $detail ) : ?>
+						<div><dt><?php esc_html_e( 'Participación', 'labm' ); ?></dt><dd><?php echo esc_html( $detail ); ?></dd></div>
+					<?php endif; ?>
+					<?php if ( '' !== $published ) : ?>
+						<div><dt><?php esc_html_e( 'Fecha de publicación', 'labm' ); ?></dt><dd><time datetime="<?php echo esc_attr( get_the_date( 'c', $post ) ); ?>"><?php echo esc_html( $published ); ?></time></dd></div>
+					<?php endif; ?>
+				</dl>
+			</aside>
+		</div>
+	</article>
+	<?php
+	return (string) ob_get_clean();
+}
+add_shortcode( 'labm_seleccion_detalle', 'labm_theme_render_selection_detail' );
+
+/**
  * Renderiza el listado editorial publico de Selecciones.
  *
  * @param mixed $filters Filtros publicos de solo lectura.
@@ -1354,15 +1419,9 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 	$query          = labm_theme_selection_query( $state );
 	$archive_url    = get_post_type_archive_link( 'labm_seleccion' );
 	$archive_url    = $archive_url ? $archive_url : home_url( '/selecciones/' );
-	$terms          = labm_theme_selection_terms();
 	$selection_term = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
 	$introduction   = $selection_term instanceof WP_Term ? trim( wp_strip_all_tags( (string) $selection_term->description ) ) : '';
 	$introduction   = '' !== $introduction ? $introduction : __( 'Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.', 'labm' );
-	$listing_copy   = sprintf(
-		/* translators: %s is the selected modality name. */
-		__( 'Consulta los eventos en los que ha participado la selección de %s y recorre las fotografías oficiales compartidas por cada proceso deportivo.', 'labm' ),
-		strtolower( $state['modalidad'] )
-	);
 	$modality_index = 'Playa' === $state['modalidad'] ? '02' : '01';
 	$current_page   = (int) $query->get( 'labm_selection_effective_page' );
 	$pagination     = add_query_arg(
@@ -1378,29 +1437,12 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 	?>
 	<section class="labm-selecciones" data-labm-listado="selecciones" data-labm-modalidad="<?php echo esc_attr( $state['modalidad'] ); ?>" aria-labelledby="labm-selecciones-title">
 		<header class="labm-selecciones__hero">
-			<p class="labm-selecciones__eyebrow"><?php esc_html_e( 'Selecciones LABM', 'labm' ); ?></p>
-			<h1 id="labm-selecciones-title"><?php echo esc_html( $state['modalidad'] ); ?></h1>
-			<p><?php echo esc_html( $introduction ); ?></p>
-		</header>
-		<section class="labm-selecciones__intro" aria-labelledby="labm-selecciones-intro-title">
-			<div class="labm-selecciones__intro-inner">
-				<h2 id="labm-selecciones-intro-title"><?php esc_html_e( 'Participaciones y registro fotográfico', 'labm' ); ?></h2>
-				<p><?php echo esc_html( $listing_copy ); ?></p>
+			<div class="labm-selecciones__hero-copy">
+				<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Selección Antioquia · %s', 'labm' ), $state['modalidad'] ) ); ?></p>
+				<h1 id="labm-selecciones-title"><?php echo esc_html( sprintf( __( 'Selección Antioquia · %s', 'labm' ), $state['modalidad'] ) ); ?></h1>
+				<p><?php echo esc_html( $introduction ); ?></p>
 			</div>
-		</section>
-		<div class="labm-selecciones__legacy-intro">
-			<?php /* translators: %d is the number of published selections. */ ?>
-			<p><?php printf( esc_html( _n( '%d selección publicada', '%d selecciones publicadas', (int) $query->found_posts, 'labm' ) ), (int) $query->found_posts ); ?></p>
-			<form class="labm-selecciones__selector" method="get" action="<?php echo esc_url( $archive_url ); ?>">
-				<label for="labm-selecciones-modalidad"><?php esc_html_e( 'Modalidad', 'labm' ); ?></label>
-				<select id="labm-selecciones-modalidad" name="modalidad">
-					<?php foreach ( $terms as $term ) : ?>
-						<option value="<?php echo esc_attr( $term->name ); ?>" <?php selected( $state['modalidad'], $term->name ); ?>><?php echo esc_html( $term->name ); ?></option>
-					<?php endforeach; ?>
-				</select>
-				<button type="submit"><?php esc_html_e( 'Consultar', 'labm' ); ?></button>
-			</form>
-		</div>
+		</header>
 		<?php if ( $query->have_posts() ) : ?>
 			<section class="labm-selecciones__collection" aria-labelledby="labm-selecciones-collection-title">
 				<header class="labm-selecciones__collection-header">
@@ -1755,7 +1797,7 @@ function labm_theme_header_navigation_shortcode() {
 					<?php if ( 'Selecciones' === $label ) : ?>
 						<li class="labm-site-navigation__item labm-site-navigation__item--submenu<?php echo $is_section ? ' is-current-section' : ''; ?>" data-labm-submenu>
 							<div class="labm-site-navigation__parent">
-								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="true"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
+								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="false"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
 							</div>
 							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
 								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_section && 'Piso' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>

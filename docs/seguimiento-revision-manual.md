@@ -6,7 +6,7 @@ Organizar la revisión de los apartados del manual entre las dos personas respon
 
 ## Responsables
 
-- **Propietario de esta conversación:** revisará cuatro apartados consecutivos comenzando por «Actualidad».
+- **Daniel Carcamo:** revisará cuatro apartados consecutivos comenzando por «Actualidad».
 - **Juan Duque:** revisará cuatro apartados consecutivos comenzando por «Aliados Oficiales».
 
 La distribución sigue el orden de trabajo acordado y no implica cambiar la numeración global de la cartilla.
@@ -17,10 +17,10 @@ Los únicos estados permitidos son **no iniciada**, **en proceso** y **finalizad
 
 | Responsable | Apartado | Alcance | Estado |
 |---|---|---|---|
-| Propietario de esta conversación | Actualidad | Revisión del apartado | finalizada |
-| Propietario de esta conversación | Selecciones | Revisión del apartado | no iniciada |
-| Propietario de esta conversación | Documentos | Revisión del apartado | no iniciada |
-| Propietario de esta conversación | Slides de Inicio | Revisión del apartado | no iniciada |
+| Daniel Carcamo | Actualidad | Revisión del apartado | finalizada |
+| Daniel Carcamo | Selecciones | Revisión del apartado | finalizada |
+| Daniel Carcamo | Documentos | Revisión del apartado | no iniciada |
+| Daniel Carcamo | Slides de Inicio | Revisión del apartado | no iniciada |
 | Juan Duque | Aliados Oficiales | Revisión del apartado | no iniciada |
 | Juan Duque | Clubes | Revisión del apartado | no iniciada |
 | Juan Duque | Integrantes | Revisión del apartado | no iniciada |

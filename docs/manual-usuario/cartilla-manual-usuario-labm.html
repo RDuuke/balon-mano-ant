@@ -74,11 +74,26 @@
     .screen { display: block; width: 100%; height: 360px; max-height: none; margin: 0 0 20px; border: 1px solid var(--line); background: #fafbf7; object-fit: contain; object-position: center; }
     .screen.tall { height: 500px; }
     .screen.short { height: 460px; }
+    .manual-actualidad .screen.short { height: 430px; }
+    .manual-documentos-publicar .screen.tall { height: 400px; }
+    .manual-actualidad .screen.short { height: 330px; }
+    .manual-selecciones .screen.short { height: 340px; }
+    .manual-slides .screen.short { height: 340px; }
+    .manual-home-logos .screen.short { height: 300px; }
+    .manual-integrantes .screen.short { height: 340px; }
+    .manual-institucional .screen.short { height: 330px; }
+    .manual-contacto .screen.short { height: 300px; }
+    .manual-media .screen.short { height: 290px; }
+    .manual-clubes .screen.short { height: 320px; }
+    .manual-actualidad .admin-guide, .manual-actualidad .note, .manual-documentos-publicar .admin-guide, .manual-documentos-publicar .note { margin-top: 8px; padding: 9px 11px; font-size: 13px; line-height: 1.2; }
     .screen.field-real { height: 300px; }
     .step { display: grid; grid-template-columns: 32px 1fr; align-items: start; gap: 16px; margin: 0 0 14px; }
     .step > b { display: grid; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; color: var(--ink); background: var(--lime); font-size: 17px; line-height: 1; }
     .note { margin-top: 20px; padding: 16px; color: #35400D; background: var(--soft); font-size: 16px; line-height: 1.35; }
     .note code { color: #35400D; }
+    .admin-guide { margin: 12px 0 0; padding: 12px 14px; border-left: 4px solid var(--lime-dark); color: #35400D; background: var(--soft); font-size: 14px; line-height: 1.28; }
+    .image-guide { margin: 9px 0 0; padding: 10px 12px; border-left: 4px solid var(--lime); color: #35400D; background: #f8faef; font-size: 13px; line-height: 1.22; }
+    .image-guide b { color: var(--green-ink); }
     .index { margin: 5px 0 24px; border-top: 1px solid var(--line); }
     .index-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-height: 47px; border-bottom: 1px solid var(--line); }
     .index-row b { color: var(--green-ink); font: 700 24px/1 "Arial Narrow", Inter, Arial, sans-serif; }
@@ -167,7 +182,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04A</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-actualidad">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05</p><div class="identity-line"></div>
     <h2>Publica en Actualidad</h2><p class="intro">Noticias, eventos y contenido informativo se crean en Actualidad, no en las entradas institucionales.</p>
     <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
@@ -178,11 +193,13 @@
       Confirma que el artículo aparece en el listado y que el detalle muestra correctamente título, imagen, contenido, fecha y enlaces para compartir.
     </span></div>
 
-    <div class="note"><b>Fecha del evento:</b> si <code>labm_fecha_evento</code> tiene una fecha válida en formato <code>AAAA-MM-DD</code>, esta fecha tiene prioridad y es la que se muestra en el listado y en el detalle del artículo. Si el campo está vacío o contiene un valor inválido, el sitio muestra automáticamente la fecha de publicación. La clave escrita como <code>lamb_demo_fecha</code> no existe.</div>
+    <div class="admin-guide"><b>Títulos y resumen:</b> edita el título en <b>Título</b> de la entrada de Actualidad. Las tarjetas usan el <b>Extracto</b>; si está vacío, WordPress lo genera desde el contenido. “Actualidad” y sus encabezados son fijos.</div>
+    <div class="note"><b>Fecha del evento:</b> una fecha válida en <code>labm_fecha_evento</code> (<code>AAAA-MM-DD</code>) tiene prioridad en el listado y el detalle. Si está vacío o es inválido, se muestra la fecha de publicación. <code>lamb_demo_fecha</code> no existe.</div>
+    <div class="image-guide"><b>Imágenes:</b> usa una imagen destacada horizontal de <b>1600 × 900 px (16:9)</b>. El listado y los destacados de Inicio la adaptan con recorte; el detalle conserva la imagen completa. Para la galería del artículo, prepara cada foto en <b>1200 × 900 px (4:3)</b>; puede recortarse al marco. Deja el motivo principal cerca del centro y no incrustes texto pequeño. Recom.: JPG/WebP, hasta <b>500 KB</b> por foto. Esta sección no tiene tope propio; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-selecciones">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">06</p><div class="identity-line"></div>
     <h2>Selecciones: Piso y Playa</h2><p class="intro">La modalidad de la publicación determina dónde aparece y qué opción del menú queda seleccionada.</p>
     <img class="screen short" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
@@ -190,18 +207,21 @@
     <div class="step"><b>2</b><span>En <b>Modalidades</b> selecciona Piso o Playa. Completa Categorías y el extracto.</span></div>
     <div class="step"><b>3</b><span>Publica y revisa el listado de esa modalidad. Abre la interna: Selecciones y la modalidad deben seguir activos.</span></div>
 
-    <div class="note"><code>labm_modalidad_detalle</code> sirve para añadir una breve explicación a la tarjeta; es complementario y no define la modalidad. Modalidades no es lo mismo que Categorías: selecciona una modalidad. El padre Selecciones abre el submenú; Piso y Playa llevan a sus listados.</div>
+    <div class="admin-guide"><b>Título y descripción del listado:</b> “Piso” o “Playa” se cambia editando el término correspondiente en <b>Selecciones → Modalidades</b> (taxonomía <code>labm_modalidad</code>). En ese término, el campo <b>Description / Descripción</b> controla el texto bajo el hero. Si queda vacío, aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo <b>“SELECCIÓN ANTIOQUIA ·”</b> está definido en código y no se edita desde el panel. El filtro Piso/Playa está en el submenú de navegación <b>Selecciones</b>, no en el hero. “Balonmano de Piso/Playa” y el conteo de participaciones se generan automáticamente.</div>
+    <div class="note"><b>Cada publicación:</b> cambia su título desde el campo <b>Título</b> de WordPress en la entrada de Selecciones. <code>labm_modalidad_detalle</code> es un dato opcional para la tarjeta y el panel de participación; si está vacío, esa información se omite. La taxonomía Modalidades define el listado, no Categorías.</div>
+    <div class="image-guide"><b>Imagen destacada:</b> recomendada en <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>. La miniatura del listado se recorta para llenar un marco horizontal; la imagen de la interna mantiene su proporción y se muestra completa. Centra la acción principal. No hay un límite de carga exclusivo para Selecciones: aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>06</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-documentos-publicar">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">07</p><div class="identity-line"></div>
     <h2>Documentos: asocia el PDF</h2><p class="intro">Este panel es real y específico de LABM. Se encuentra en la barra derecha del editor de Documentos.</p>
     <img class="screen tall" src="imagenes/documentos-formulario.png" alt="Formulario de Documentos">
     <div class="step"><b>1</b><span><b>Documentos → Añadir Documento</b>. Escribe el título.</span></div><div class="step"><b>2</b><span>En <b>Archivo y clasificación</b> pulsa <b>Seleccionar o subir PDF</b>.</span></div>
     <div class="step"><b>3</b><span>Elige el archivo y confirma <b>Usar este PDF</b>. Comprueba nombre, tamaño y validez.</span></div><div class="step"><b>4</b><span>Completa fecha oficial si corresponde y un solo Tipo de documento.</span></div>
     <div class="step"><b>5</b><span>Revisa, publica y abre Documentos. Comprueba <b>Ver PDF</b> y <b>Descargar</b>.</span></div>
-    <div class="note">Tipos iniciales: Documento general, Acta, Certificado, Circular, Resolución, Reglamento, Informe, Convocatoria u Otro. Límite efectivo: el menor entre 30 MB y el permitido por WordPress. La captura local muestra 2 MB. No uses Imagen destacada para asociar el PDF.</div>
+    <div class="admin-guide"><b>Títulos y descripción:</b> el título del PDF se cambia en <b>Título</b>. El encabezado del catálogo viene de la entrada en <b>Posts / Entradas</b> con slug <code>banner-documentos</code>: edita Título y Extracto (si está vacío, se usa Contenido). Sin título o texto, el encabezado se oculta. Conserva el slug.</div>
+    <div class="note">Tipos iniciales: Documento general, Acta, Certificado, Circular, Resolución, Reglamento, Informe, Convocatoria u Otro. Límite PDF: el menor entre 30 MB y el permitido por WordPress (en este entorno local, 2 MB). Documentos no tiene una imagen administrable; el archivo se adjunta en <b>Archivo y clasificación</b>. No uses Imagen destacada para asociar el PDF.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>07</b></div>
   </section>
 
@@ -215,69 +235,75 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>08</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-slides">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">09</p><div class="identity-line"></div>
     <h2>Inicio: crea una diapositiva</h2><p class="intro">Slides de Inicio alimenta el carrusel. Cada diapositiva se verifica en la portada, no en una página propia.</p>
     <img class="screen short" src="imagenes/slides-editor.png" alt="Editor de Slides de Inicio">
     <div class="step"><b>1</b><span><b>Slides de Inicio → Add Post / Añadir</b>. Escribe título y texto breve.</span></div><div class="step"><b>2</b><span>Asigna imagen destacada. Título e imagen son obligatorios para publicar.</span></div>
     <div class="step"><b>3</b><span>Revisa el destino y la etiqueta del botón si la diapositiva lleva enlace. Publica o guarda.</span></div><div class="step"><b>4</b><span>Abre Inicio, recorre el carrusel y comprueba imagen, texto y botón.</span></div>
 
-    <div class="note"><code>labm_destino_url</code> indica adónde lleva el botón y <code>labm_cta_texto</code> define el texto que muestra. Completa ambos juntos para que el botón tenga destino y etiqueta. Si no aparecen, activa el panel siguiendo la página 04A y comprueba el resultado en Inicio.</div>
+    <div class="note"><b>Título y texto:</b> edita el título de cada slide en su campo <b>Título</b> de WordPress. El texto breve usa primero el <b>Extracto</b> y, si está vacío, las primeras palabras del Contenido. No hay un texto alternativo predeterminado si ambos están vacíos. <code>labm_destino_url</code> y <code>labm_cta_texto</code> controlan el enlace; si hay destino y falta la etiqueta, el botón dice “Conocer más”. Si no ves esos campos, activa el panel de Campos personalizados (página 04A).</div>
+    <div class="image-guide"><b>Imagen del slide:</b> prepara <b>1920 × 1080 px (16:9)</b>, JPG/WebP, hasta <b>700 KB</b>. El carrusel llena un marco ancho con <code>cover</code>, por lo que recorta partes de la imagen según el tamaño de pantalla. Mantén rostros y elementos importantes en la zona central y deja margen arriba y abajo. No hay límite propio para Slides; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>09</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-home-logos">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">10</p><div class="identity-line"></div>
     <h2>Inicio: aliados y clubes</h2><p class="intro">Aliados Oficiales usa un editor clásico. Clubes tiene su propia colección y aparece en la sección de clubes.</p>
     <img class="screen short" src="imagenes/aliados-editor.png" alt="Editor de Aliados Oficiales">
     <div class="step"><b>1</b><span><b>Aliados Oficiales → Add Post</b>. Escribe el nombre y selecciona el logo en Featured image / Imagen destacada.</span></div><div class="step"><b>2</b><span>Define <b>Order / Orden</b> en Post Attributes / Atributos o, si no aparece, desde <b>Quick Edit / Edición rápida</b> del listado. Publica y verifica la franja de aliados.</span></div>
     <div class="step"><b>3</b><span>Para un club: <b>Clubes → Añadir Club</b>. Completa nombre, descripción, logo y modalidad; publica y revisa Inicio.</span></div>
-    <div class="note">Aliados Oficiales y Clubes son colecciones distintas. El aliado necesita título y logo; el orden se define con el control estándar de atributos o edición rápida, no con un campo personalizado. Clubes clasifica la modalidad con su control de taxonomía. Inicio muestra una cantidad limitada de clubes publicados.</div>
+    <div class="note"><b>Aliados:</b> el campo <b>Título</b> identifica el nombre del aliado y su logo se muestra en Inicio. No hay descripción ni enlace externo editables; el encabezado fijo “Aliados Oficiales” no tiene control administrativo. <b>Clubes:</b> cambia el nombre en <b>Título</b>; la tarjeta usa el Extracto y, si falta, genera un resumen del Contenido. “Clubes asociados” es un encabezado fijo. El campo opcional <code>labm_ciudad</code> no se muestra como descripción. Inicio muestra una cantidad limitada de clubes.</div>
+    <div class="image-guide"><b>Logo de Aliados Oficiales:</b> lienzo horizontal <b>1200 × 600 px (2:1)</b>, PNG transparente, hasta <b>200 KB</b>. Se ajusta dentro de un marco sin recortar y conserva su proporción; deja aire alrededor del símbolo. <b>Logo de Clubes:</b> lienzo cuadrado <b>1000 × 1000 px (1:1)</b>, PNG transparente, hasta <b>200 KB</b>; también conserva proporción. SVG solo si la biblioteca de este WordPress permite cargarlo. Ninguna colección tiene tope propio: aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>10</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-integrantes">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">11</p><div class="identity-line"></div>
     <h2>Nosotros: publica integrantes</h2><p class="intro">Un integrante se muestra cuando tiene nombre, fotografía, cargo y grupo completos.</p>
     <img class="screen short" src="imagenes/integrantes-editor.png" alt="Editor de Integrantes">
     <div class="step"><b>1</b><span><b>Integrantes → Añadir Integrante</b>. Escribe el nombre y añade la fotografía destacada.</span></div><div class="step"><b>2</b><span>En <b>Grupos de integrantes</b> elige una opción existente: Comité, Entrenadores o Representantes; no escribas una variante nueva.</span></div>
     <div class="step"><b>3</b><span>Completa el cargo en <code>labm_cargo</code>, el campo personalizado que indica el cargo de la persona. Si no lo ves, actívalo siguiendo la página 04A.</span></div><div class="step"><b>4</b><span>Publica y revisa Nosotros. Comprueba la foto, el cargo y el filtro del grupo.</span></div>
 
-    <div class="note"><code>labm_cargo</code> indica la función o responsabilidad de la persona y aparece junto a su nombre en la tarjeta pública. Los filtros de Nosotros usan grupos configurados; no inventes otro grupo esperando que aparezca en esos filtros.</div>
+    <div class="note">El nombre de cada integrante se cambia en el campo <b>Título</b> de la publicación; <code>labm_cargo</code> controla el cargo visible. Los grupos y sus nombres de filtro (Comité, Entrenadores y Representantes), además de los encabezados de la sección, se generan desde opciones fijas: no hay un campo de título o descripción por grupo. No crees variantes esperando que aparezcan como filtros.</div>
+    <div class="image-guide"><b>Foto del integrante:</b> recomendada en <b>1200 × 1400 px (aprox. 6:7 vertical)</b>, JPG/WebP, hasta <b>350 KB</b>. La tarjeta usa un marco vertical de proporción cercana a 4:4,7 y recorta con <code>cover</code>. Centra el rostro y deja espacio sobre la cabeza. No hay un máximo de carga propio para Integrantes; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>11</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-institucional">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">12</p><div class="identity-line"></div>
     <h2>Actualiza los textos institucionales</h2><p class="intro">Banner, Misión y Visión se alimentan de entradas específicas. No basta con editar cualquier página de Nosotros.</p>
     <img class="screen short" src="imagenes/entradas-editor.png" alt="Listado de entradas institucionales">
     <div class="step"><b>1</b><span>En <b>Posts / Entradas</b> localiza la entrada del bloque y confirma su Slug / Identificador.</span></div><div class="step"><b>2</b><span>Actualiza título y texto. Si existe extracto, actualízalo: tiene prioridad sobre el cuerpo.</span></div>
     <div class="step"><b>3</b><span>Mantén el identificador. Guarda y comprueba Nosotros o Documentos en el sitio público.</span></div>
-    <div class="note">Identificadores: <code>banner-nosotros</code> → banner de Nosotros; <code>mision-nosotros</code> → Misión; <code>vision-nosotros</code> → Visión; <code>banner-documentos</code> → encabezado de Documentos. Comprueba el Slug en el panel derecho del editor. El banner de Nosotros también usa imagen destacada.</div>
+    <div class="note">Identificadores: <code>banner-nosotros</code> → banner de Nosotros; <code>mision-nosotros</code> → Misión; <code>vision-nosotros</code> → Visión; <code>banner-documentos</code> → encabezado de Documentos. En cada entrada, el campo <b>Título</b> cambia el título visible; el texto usa primero <b>Extracto</b> y luego <b>Contenido</b> si el extracto está vacío. No hay frase predeterminada: si falta el título o el texto, el bloque no se muestra. Conserva el slug. El banner de Nosotros también usa la imagen destacada.</div>
+    <div class="image-guide"><b>Banner de Nosotros:</b> usa <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>, como imagen destacada de <code>banner-nosotros</code>. En escritorio llena una columna y se recorta con <code>cover</code>; el recorte varía con la pantalla. Mantén el sujeto principal centrado. Las entradas de Misión, Visión y el banner de Documentos no tienen imagen pública administrable en esta versión. Sin límite específico de sección; aplica el global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>12</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-contacto">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">13</p><div class="identity-line"></div>
     <h2>Contacto y pie de página</h2><p class="intro">LABM abre Footer LABM. Esta pantalla gestiona los datos compartidos del pie de página.</p>
     <img class="screen short" src="imagenes/10-footer.png" alt="Configuración de Footer LABM">
-    <div class="step"><b>1</b><span>Abre LABM. Revisa identidad, descripción, etiquetas y URLs de navegación y recursos.</span></div><div class="step"><b>2</b><span>Actualiza Correo, etiquetas y URLs de Facebook e Instagram, y la política de datos.</span></div>
+    <div class="step"><b>1</b><span>Abre LABM. En Footer LABM edita la identidad, la descripción y los encabezados/etiquetas de navegación, recursos y contacto, además de sus URLs.</span></div><div class="step"><b>2</b><span>Actualiza Correo, etiquetas y URLs de Facebook e Instagram, y la política de datos.</span></div>
     <div class="step"><b>3</b><span>Baja al final y pulsa <b>Save Changes / Guardar cambios</b>. Revisa el footer y Contacto.</span></div>
-    <div class="note">El correo y las redes se comparten con Contacto. Teléfono, dirección y mapa requieren apoyo técnico. LABM → SMTP gestiona envío; Contacto no tiene una bandeja de mensajes en el panel.</div>
+    <div class="note">El correo y las redes se comparten con Contacto. Si aún no hay configuración guardada, Footer LABM usa sus valores iniciales; si borras un campo ya guardado, no aparece un texto de reemplazo. El rótulo general “Contacto”, el teléfono, la dirección y el mapa no tienen edición en esta pantalla y requieren apoyo técnico. LABM → SMTP gestiona el envío; Contacto no tiene una bandeja de mensajes.</div>
+    <div class="image-guide"><b>Imágenes:</b> Contacto y Footer LABM no ofrecen un campo para subir fotografías. El nombre de marca del pie se presenta como texto. El mapa y los iconos sociales son elementos del tema, no imágenes que se carguen en esta pantalla.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>13</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-media">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">14</p><div class="identity-line"></div>
     <h2>Imágenes, logos y galerías</h2><p class="intro">Medios conserva los archivos reutilizables. La imagen destacada y la galería del cuerpo son cosas diferentes.</p>
     <img class="screen short" src="imagenes/09-medios.png" alt="Biblioteca de medios">
     <div class="step"><b>1</b><span><b>Media / Medios</b>: busca un archivo existente antes de subir un duplicado.</span></div><div class="step"><b>2</b><span>Selecciona o carga la imagen. La persona que publica debe escribir un texto alternativo breve que describa lo visible, no repetir solo el nombre del archivo.</span></div>
     <div class="step"><b>3</b><span>En la publicación usa Imagen destacada para su imagen principal. Para varias fotos, inserta un bloque Galería.</span></div><div class="step"><b>4</b><span>Ordena las imágenes y revisa pies de foto antes de publicar.</span></div>
     <div class="note">No borres un archivo compartido sin comprobar dónde se utiliza. Eliminarlo desde Medios puede romper otras publicaciones.</div>
+    <div class="image-guide"><b>Límite técnico de imágenes:</b> el tema y el plugin no añaden un máximo de peso ni de dimensiones por sección. La carga depende del límite global de WordPress y PHP. En este WordPress local comprobé un máximo efectivo actual de <b>2 MB por archivo</b> (PHP <code>upload_max_filesize=2M</code>); en el servidor publicado puede ser distinto y debe confirmarse en la biblioteca o con el administrador del hosting. Las cifras por sección de esta cartilla son recomendaciones, no bloqueos del sistema. Para buena velocidad: JPG/WebP para fotografías y PNG transparente para logos; optimiza los archivos antes de subirlos. SVG solo cuando esté habilitado por el administrador. En todos los casos usa texto alternativo descriptivo y evita capturas con texto pequeño o ilegible.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>14</b></div>
   </section>
 
-  <section class="page">
+  <section class="page manual-clubes">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">15</p><div class="identity-line"></div>
     <h2>Publica un club asociado</h2><p class="intro">Clubes usa una colección distinta de Aliados Oficiales. Selecciona la modalidad y el logo de cada club.</p>
     <img class="screen short" src="imagenes/clubes-editor.png" alt="Editor de Clubes">
@@ -285,6 +311,7 @@
     <div class="step"><b>3</b><span>Abre Modalidades y clasifica el club. Si necesitas guardar la ciudad como referencia editorial, complétala en <code>labm_ciudad</code>.</span></div><div class="step"><b>4</b><span>Publica, comprueba Clubes asociados de Inicio y abre el detalle del club.</span></div>
 
     <div class="note"><code>labm_ciudad</code> guarda la ciudad como referencia editorial; actualmente no se muestra en la ficha pública. No reemplaza el nombre, el logo ni la modalidad. La portada muestra una selección limitada de clubes. Si el campo no está visible, activa el panel 04A.</div>
+    <div class="image-guide"><b>Logo del club:</b> lienzo recomendado <b>1000 × 1000 px (1:1)</b>, PNG transparente, hasta <b>200 KB</b>. La tarjeta lo acomoda en un marco cuadrado con <code>contain</code>: no lo recorta y conserva su proporción. Centra el logo y deja margen. No existe un límite por colección; rige el máximo global de Medios descrito en la página 14.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>15</b></div>
   </section>
 
@@ -313,7 +340,7 @@
       <p class="lead">Guía visual breve para crear, revisar y publicar contenido en WordPress.</p>
     </div>
     <div>
-      <p class="note"><b>Versión 1.3 · 15 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
+    <p class="note"><b>Versión 1.4 · 18 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
     </div>
   </section>
 
@@ -365,16 +392,17 @@
     <img class="screen" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
     <div class="callout"><b>Guardar no siempre significa publicar.</b> Revisa <b>Status / Estado</b>. Un borrador o una publicación privada no aparece en los listados públicos.</div>
     <h3>Datos de Actualidad</h3>
-    <p>En el evento destacado de Inicio, <code>labm_fecha_evento</code> también indica la fecha del evento.</p>
+    <p>En el evento destacado de Inicio, <code>labm_fecha_evento</code> también indica la fecha del evento. El resumen usa el Extracto; si está vacío, se genera con el Contenido.</p>
     <div class="footer">LABM · Publicaciones</div>
   </section>
 
   <section class="page">
     <span class="band">4 · Selecciones</span>
     <h2>Piso y Playa</h2>
-    <p class="intro">Asigna la taxonomía correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre.</p>
+    <p class="intro">Asigna la taxonomía correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre. El título de cada participación se edita en el campo <b>Título</b> de WordPress.</p>
     <img class="screen" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
-    <p><code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta, pero no determina el listado; para eso usa la taxonomía Modalidades.</p>
+    <p>Para cambiar el título y descripción del listado, edita el término correspondiente en <b>Selecciones → Modalidades</b> (<code>labm_modalidad</code>): el campo Nombre define Piso/Playa y <b>Description / Descripción</b> cambia el texto bajo el hero. Cuando Description está vacía aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo “SELECCIÓN ANTIOQUIA ·” es fijo y no editable. El filtro está en el submenú de navegación Selecciones. El título “Balonmano de Piso/Playa” y el conteo son automáticos.</p>
+    <p><code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta; si queda vacío no aparece ese dato. No determina el listado: para eso usa la taxonomía Modalidades.</p>
     <div class="callout">Comprueba el listado público de Piso o Playa y abre la interna: deben mantenerse activos el padre Selecciones y la modalidad correspondiente.</div>
     <div class="footer">LABM · Selecciones</div>
   </section>
@@ -382,6 +410,7 @@
   <section class="page">
     <span class="band">5 · Documentos</span>
     <h2>Publica y sustituye un PDF</h2>
+    <p class="intro">El título de un documento se edita en el campo Título de su publicación. El encabezado y la descripción del catálogo vienen de la entrada institucional con slug <code>banner-documentos</code>: se modifica en Posts / Entradas, usando Título y Extracto (o Contenido si Extracto está vacío). Sin título o texto, el encabezado se oculta.</p>
     <ol>
       <li>Entra en <b>Documentos → Añadir Documento</b>.</li>
       <li>Escribe el título.</li>
@@ -402,22 +431,22 @@
     <span class="band">6 · Inicio</span>
     <h2>Slides, aliados y clubes</h2>
     <h3>Slides</h3>
-    <p>El título y la imagen destacada son obligatorios. Si hay botón, <code>labm_destino_url</code> indica el destino y <code>labm_cta_texto</code> su etiqueta visible; completa ambos.</p>
+    <p>El título y la imagen destacada son obligatorios. El título se cambia en el campo Título; el resumen usa Extracto o, si está vacío, Contenido. Si ambos están vacíos, no hay texto de reemplazo. Si hay botón, <code>labm_destino_url</code> indica el destino y <code>labm_cta_texto</code> su etiqueta visible; si falta la etiqueta, aparece “Conocer más”.</p>
     <h3>Aliados</h3>
-    <p>Usa el logo como imagen destacada, agrega texto alternativo y define el orden si tu rol lo permite.</p>
+    <p>El campo Título identifica el aliado y el logo es su imagen destacada. La franja no muestra una descripción ni tiene enlace externo editable. El encabezado “Aliados Oficiales” es fijo. Define el orden si tu rol lo permite.</p>
     <h3>Clubes</h3>
-    <p>Modalidades clasifica el club. <code>labm_ciudad</code> guarda la ciudad como referencia editorial, aunque hoy no se muestra en la ficha pública. La portada muestra una selección limitada.</p>
+    <p>El nombre del club se cambia en Título. La tarjeta muestra el Extracto o genera un resumen del Contenido cuando el extracto está vacío. “Clubes asociados” es un encabezado fijo; <code>labm_ciudad</code> guarda una referencia editorial, pero no se muestra en la ficha pública. La portada muestra una selección limitada.</p>
     <div class="footer">LABM · Inicio</div>
   </section>
 
   <section class="page">
     <span class="band">7 · Nosotros</span>
     <h2>Integrantes y textos institucionales</h2>
-    <p>Para un integrante completa nombre, fotografía, grupo y cargo. <code>labm_cargo</code> indica su función y aparece en la tarjeta pública.</p>
+    <p>El nombre de cada integrante se edita en el campo Título de su publicación; <code>labm_cargo</code> indica su función y aparece en la tarjeta pública.</p>
     <div class="callout">Los grupos válidos para los filtros son <code>comite</code>, <code>entrenadores</code> y <code>representantes</code>. Un integrante incompleto no se muestra en Nosotros.</div>
     <img class="screen" src="imagenes/14-nosotros-publico.png" alt="Vista pública de Nosotros">
     <h3>Textos</h3>
-    <p>Banner, Misión, Visión y el encabezado de Documentos se alimentan de Entradas identificadas por sus slugs. Conserva esos identificadores al editar.</p>
+    <p>Banner, Misión, Visión y el encabezado de Documentos se alimentan de Entradas identificadas por sus slugs. Edita Título y Extracto; cuando Extracto está vacío, se usa Contenido. Sin título o texto, el bloque no aparece. Conserva los identificadores. El encabezado general de Integrantes y los nombres de filtro se generan con etiquetas fijas.</p>
     <div class="footer">LABM · Nosotros</div>
   </section>
 
@@ -460,7 +489,7 @@
       <tr><td>El sitio muestra contenido anterior</td><td>Confirma que actualizaste la publicación correcta y recarga.</td></tr>
     </table>
     <p style="margin-top: 22pt"><b>Recuerda:</b> no compartas contraseñas ni incluyas usuarios en paquetes de contenido.</p>
-    <div class="footer">LABM · Versión 1.2</div>
+    <div class="footer">LABM · Versión 1.4</div>
   </section>
 </body>
 </html>

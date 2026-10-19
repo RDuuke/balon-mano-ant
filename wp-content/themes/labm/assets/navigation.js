@@ -71,6 +71,9 @@
 			setSubmenu(true, false);
 		}
 	});
+	submenu.addEventListener('focusin', function () {
+		setSubmenu(true, false);
+	});
 	submenu.addEventListener('pointerleave', function () {
 		if (!submenu.contains(document.activeElement)) {
 			setSubmenu(false, false);
