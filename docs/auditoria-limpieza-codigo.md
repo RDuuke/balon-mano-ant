@@ -3,6 +3,8 @@
 Fecha: 2026-10-15
 Alcance: tema y plugin LABM, recorridos públicos y recursos que los soportan.
 
+Última actualización documental registrada: 2026-10-19, manual y cartilla versión 1.5. Este informe conserva revisiones sucesivas: los límites de ejecución y la reversión descritos en cada entrada corresponden a esa intervención. La actualización 1.5 se detalla al final y no implica una nueva validación funcional de WordPress ni el cierre de las revisiones personales.
+
 ## Metodología
 
 Se inspeccionaron plantillas del tema, partes globales, patrones, CSS, JavaScript, funciones PHP, pruebas PHP y Playwright, scripts y configuraciones de calidad, documentación operativa y referencias de CI. Se contrastó la revisión con los casos de experiencia pública existentes. Se consideró eliminable un elemento solo cuando la redundancia o falta de necesidad era demostrable sin depender de contenido persistido o referencias dinámicas.
@@ -377,3 +379,36 @@ El título, cuerpo, extracto, imagen destacada, texto alternativo de Medios, est
 - Se precisó en el paso de Actualidad que una fecha válida `AAAA-MM-DD` en `labm_fecha_evento` prevalece y se muestra en el listado y el detalle del artículo; si falta o es inválida, el sitio muestra automáticamente la fecha de publicación.
 - Se retiró la repetición de esa regla en el bloque visual secundario y se conservó allí solo la referencia al evento destacado de Inicio.
 - PDF regenerado desde el HTML. Página de Actualidad revisada visualmente y sin desbordamientos; `git diff --check` y finales de línea LF verificados. No se modificó contenido ni datos persistidos de WordPress.
+
+## Manual y cartilla — adaptación para personal no técnico, versión 1.5 (2026-10-19)
+
+### Alcance y cambios realizados
+
+Se compararon el historial del manual, la cartilla y las secciones asignadas a Daniel y Juan. Las mejoras se concentraron en Aliados Oficiales, Clubes, Integrantes y Nosotros, con correcciones de coherencia en las reglas compartidas de Actualidad, Selecciones y Slides. Se actualizaron conjuntamente `docs/manual-usuario/manual-usuario.md`, `docs/manual-usuario/cartilla-manual-usuario-labm.html` y `docs/manual-usuario/cartilla-manual-usuario-labm.pdf`, identificados como versión 1.5 del 19 de octubre de 2026.
+
+| Apartado | Resultado documental | Referencia en la cartilla |
+|---|---|---|
+| Aliados Oficiales | Se separó de Clubes. Se explican preparación del logo, creación, orden con el ejemplo 10 antes de 20, reemplazo, retiro y comprobación en Inicio. Se aclaran el límite de 12 aliados completos y la ausencia de enlace externo editable. | 10 y 10A |
+| Clubes | Se detallan descripción y extracto, logo, modalidad, modificación y comprobación pública. Se documentan hasta seis clubes en Inicio, por orden y nombre. Se corrigió el manual escrito: `labm_ciudad` es opcional y no se muestra en la ficha pública. | 15 y 15A |
+| Integrantes | Se añadió el ejemplo ficticio Ana Pérez / Entrenadora / Entrenadores y el recorrido para crear o actualizar `labm_cargo`, confirmar el campo y guardar también la publicación. Se explican requisitos de la tarjeta, filtros, retiro y comprobaciones si no aparece. | 11 y 11A |
+| Nosotros | Se explica cómo reconocer la entrada correcta por su identificador sin modificarlo. Presentación y Misión/Visión tienen instrucciones separadas. Se muestra por qué el extracto tiene prioridad sobre el contenido y cómo comprobar el bloque público. | 12, 12A y 12B |
+
+Se incorporaron acercamientos mediante HTML/CSS de capturas reales ya existentes, con señales numeradas; no se simularon pantallas ni guardados. Los ejemplos editoriales están identificados como ficticios. Las recomendaciones de dimensiones y peso de imágenes se distinguen del límite efectivo de carga. Se sustituyeron términos técnicos por explicaciones de las acciones y sus resultados cuando no era necesario conservar una clave exacta.
+
+Se agregaron cinco páginas de apoyo, conservando las referencias de las secciones revisadas mediante las etiquetas 10A, 11A, 12A, 12B y 15A. El índice enlaza a las secciones. Se reemplazó la regla que ocultaba páginas a partir de la posición 19 por una clase explícita para el bloque secundario histórico, evitando que se oculten las páginas nuevas. La revisión de maquetación detectó una nota de Documentos demasiado próxima al pie; se ajustó el espacio de su captura.
+
+### Validación y evidencia
+
+- Exportación con Chromium desde la fuente HTML: 23 páginas visibles, sin destinos de enlace ausentes ni identificadores duplicados. La comprobación geométrica no detectó contenido invadiendo la zona del pie.
+- PDF final: 23 páginas con texto, renderizadas a PNG; 25 enlaces internos con destinos dentro del documento. Se inspeccionaron visualmente las páginas ampliadas, las demás páginas modificadas y sus adyacentes, sin recortes de contenido ni superposiciones.
+- Coherencia documental: versión y fecha alineadas; aclaraciones compartidas sobre fecha de Actualidad, modalidad de Selecciones y texto/enlace de Slides; lista de comprobación ajustada a las secciones que no tienen página individual.
+- `git diff --check` y comprobación de LF sin CRLF en los textos modificados. Las verificaciones y los PNG de esta intervención se conservaron como evidencia local en `artifacts/manual-review-v15/` (directorio ignorado por Git); no son un requisito para consultar los documentos entregables.
+- No se ejecutaron pruebas PHP ni E2E de la aplicación: esta intervención es documental. La revisión de capturas y código no demuestra que una edición se guarde o publique correctamente en el WordPress desplegado.
+
+### Seguimiento y trabajo pendiente
+
+Las mejoras documentales están implementadas. La revisión personal de Juan de Aliados Oficiales, Clubes, Integrantes y Nosotros sigue **no iniciada** en [el seguimiento del manual](seguimiento-revision-manual.md). No se modificaron los estados de Daniel. Preparar la guía y verificar su PDF no equivale a finalizar el recorrido de sus responsables.
+
+Esta intervención no implementa controles dedicados para metadatos, una salida pública para `labm_ciudad`, un rediseño del Footer ni una política de medios. Esos pendientes funcionales o editoriales de las entradas anteriores siguen abiertos; la guía aclara su comportamiento actual.
+
+No se guardó ni publicó contenido, no se modificaron opciones, usuarios o uploads y no se envió correo. No aplica `scripts/content-sync.ps1` ni actualizar el paquete canónico. Para revertir únicamente esta adaptación se deben revisar los cambios de esta intervención en el manual, HTML, PDF y sus dos documentos de seguimiento; la instrucción histórica de revertir solo una declaración CSS no corresponde a esta actualización.

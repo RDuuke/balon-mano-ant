@@ -56,7 +56,7 @@
     :root { --lime: #AECD25; --lime-dark: #789614; --green-ink: #40500C; --ink: #11150A; --text: #202020; --muted: #686868; --soft: #F3F6E8; --line: #DDE3CC; }
     html { background: #dfe2d8; }
     body { background: #dfe2d8; color: var(--text); font: 18px/1.28 Inter, Arial, sans-serif; }
-    body > .page:nth-child(n+19) { display: none; }
+    .page.secondary-reference { display: none; }
     .page { width: 794px; height: 1123px; margin: 0 auto 18px; padding: 48px; overflow: hidden; background: #fff; box-shadow: none; }
     .cover { display: flex; flex-direction: column; justify-content: space-between; padding: 64px; background: var(--ink); color: #fff; }
     .cover .institution { color: var(--lime); font: 700 28px/1.02 "Arial Narrow", Inter, Arial, sans-serif; letter-spacing: .02em; white-space: pre-line; }
@@ -75,16 +75,12 @@
     .screen.tall { height: 500px; }
     .screen.short { height: 460px; }
     .manual-actualidad .screen.short { height: 430px; }
-    .manual-documentos-publicar .screen.tall { height: 400px; }
+    .manual-documentos-publicar .screen.tall { height: 380px; }
     .manual-actualidad .screen.short { height: 330px; }
     .manual-selecciones .screen.short { height: 340px; }
     .manual-slides .screen.short { height: 340px; }
-    .manual-home-logos .screen.short { height: 300px; }
-    .manual-integrantes .screen.short { height: 340px; }
-    .manual-institucional .screen.short { height: 330px; }
     .manual-contacto .screen.short { height: 300px; }
     .manual-media .screen.short { height: 290px; }
-    .manual-clubes .screen.short { height: 320px; }
     .manual-actualidad .admin-guide, .manual-actualidad .note, .manual-documentos-publicar .admin-guide, .manual-documentos-publicar .note { margin-top: 8px; padding: 9px 11px; font-size: 13px; line-height: 1.2; }
     .screen.field-real { height: 300px; }
     .step { display: grid; grid-template-columns: 32px 1fr; align-items: start; gap: 16px; margin: 0 0 14px; }
@@ -95,7 +91,7 @@
     .image-guide { margin: 9px 0 0; padding: 10px 12px; border-left: 4px solid var(--lime); color: #35400D; background: #f8faef; font-size: 13px; line-height: 1.22; }
     .image-guide b { color: var(--green-ink); }
     .index { margin: 5px 0 24px; border-top: 1px solid var(--line); }
-    .index-row { display: grid; grid-template-columns: 82px 1fr; align-items: center; min-height: 47px; border-bottom: 1px solid var(--line); }
+    .index-row { display: grid; grid-template-columns: 110px 1fr; align-items: center; min-height: 47px; border-bottom: 1px solid var(--line); }
     .index-row b { color: var(--green-ink); font: 700 24px/1 "Arial Narrow", Inter, Arial, sans-serif; }
     .index-row span { font-size: 20px; }
     .field-ref { display: block; margin: 8px 0 16px; }
@@ -118,6 +114,25 @@
     .footer b { color: var(--green-ink); font-size: 12px; }
     @media screen and (max-width: 840px) { body { background: #fff; } .page { width: 100vw; height: auto; min-height: 1123px; margin-bottom: 12px; } }
     @media print { html, body { background: #fff; } .page { margin: 0; box-shadow: none; } }
+
+    /* Páginas de acompañamiento: controles reales ampliados, sin simular pantallas. */
+    .guided h2 { font-size: 40px; }
+    .guided h3 { margin: 18px 0 10px; color: var(--green-ink); font-size: 21px; }
+    .guided .intro { font-size: 18px; }
+    .guided .note, .guided .image-guide { font-size: 17px; line-height: 1.3; padding: 13px; }
+    .guided .step { margin-bottom: 13px; }
+    .guided table { font-size: 17px; line-height: 1.3; }
+    .guided td, .guided th { padding: 10px; }
+    .guided .caption { font-size: 14px; line-height: 1.3; margin: 7px 0 14px; }
+    .shot-row { display: flex; justify-content: center; align-items: start; gap: 22px; margin: 14px 0; }
+    .detail-shot { margin: 0; flex: none; }
+    .detail-shot .crop { overflow: hidden; position: relative; border: 1px solid var(--line); background: #fff; }
+    .detail-shot img { position: absolute; max-width: none; }
+    .detail-shot figcaption { max-width: 340px; margin-top: 8px; font-size: 15px; }
+    .shot-label { display: inline-grid; place-items: center; width: 25px; height: 25px; margin-right: 6px; background: var(--lime); color: var(--ink); border-radius: 50%; font-weight: 700; }
+    .crop .shot-label { position: absolute; right: 4px; top: 4px; border: 2px solid #fff; }
+    .example { padding: 14px 16px; border-left: 4px solid var(--lime-dark); background: var(--soft); margin: 12px 0 16px; font-size: 18px; }
+    .index-row a { color: inherit; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -128,26 +143,26 @@
       <p class="subtitle">Cartilla de uso de la plataforma</p>
       <p class="audience">Una guía para quienes administran y publican contenido en el sitio web de la Liga.</p>
     </div>
-    <p class="cover-footer">MANUAL EDITORIAL  /  OCTUBRE 2026<br>WordPress · LABM</p>
+    <p class="cover-footer">VERSIÓN 1.5  /  19 DE OCTUBRE DE 2026<br>WordPress · LABM</p>
   </section>
 
-  <section class="page">
+  <section class="page" id="pagina-02">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">02</p><div class="identity-line"></div>
     <h2>Encuentra cada tarea</h2>
-    <p class="intro">Esta cartilla es la guía breve. El archivo <code>docs/manual-usuario/manual-usuario.md</code> desarrolla los pasos, problemas frecuentes y límites reales del panel.</p>
+    <p class="intro">Busca la tarea y pulsa su nombre. Las páginas con letra continúan la misma sección. El manual escrito complementario amplía los pasos y las soluciones a problemas frecuentes.</p>
     <div class="index">
-      <div class="index-row"><b>03</b><span>Acceso y Escritorio</span></div><div class="index-row"><b>04</b><span>Crear, revisar y publicar</span></div><div class="index-row"><b>04A</b><span>Activar campos personalizados</span></div>
-      <div class="index-row"><b>05</b><span>Actualidad</span></div><div class="index-row"><b>06</b><span>Selecciones Piso / Playa</span></div>
-      <div class="index-row"><b>07–08</b><span>Documentos y PDF</span></div><div class="index-row"><b>09</b><span>Slides de Inicio</span></div>
-      <div class="index-row"><b>10</b><span>Aliados Oficiales</span></div><div class="index-row"><b>11</b><span>Integrantes de Nosotros</span></div>
-      <div class="index-row"><b>12</b><span>Textos institucionales</span></div><div class="index-row"><b>13</b><span>Contacto y pie de página</span></div>
-      <div class="index-row"><b>14</b><span>Medios y galerías</span></div><div class="index-row"><b>15</b><span>Clubes asociados</span></div>
-      <div class="index-row"><b>16</b><span>Retirar y recuperar</span></div><div class="index-row"><b>17</b><span>Lista de revisión</span></div>
+      <div class="index-row"><b>03</b><span><a href="#pagina-03">Acceso y Escritorio</a></span></div><div class="index-row"><b>04</b><span><a href="#pagina-04">Crear, revisar y publicar</a></span></div><div class="index-row"><b>04A</b><span><a href="#pagina-04a">Activar campos personalizados</a></span></div>
+      <div class="index-row"><b>05</b><span><a href="#pagina-05">Actualidad</a></span></div><div class="index-row"><b>06</b><span><a href="#pagina-06">Selecciones Piso / Playa</a></span></div>
+      <div class="index-row"><b>07–08</b><span><a href="#pagina-07">Documentos y PDF</a></span></div><div class="index-row"><b>09</b><span><a href="#pagina-09">Slides de Inicio</a></span></div>
+      <div class="index-row"><b>10-10A</b><span><a href="#pagina-10">Aliados Oficiales</a></span></div><div class="index-row"><b>11-11A</b><span><a href="#pagina-11">Integrantes de Nosotros</a></span></div>
+      <div class="index-row"><b>12-12B</b><span><a href="#pagina-12">Textos institucionales</a></span></div><div class="index-row"><b>13</b><span><a href="#pagina-13">Contacto y pie de página</a></span></div>
+      <div class="index-row"><b>14</b><span><a href="#pagina-14">Medios y galerías</a></span></div><div class="index-row"><b>15-15A</b><span><a href="#pagina-15">Clubes asociados</a></span></div>
+      <div class="index-row"><b>16</b><span><a href="#pagina-16">Retirar y recuperar</a></span></div><div class="index-row"><b>17</b><span><a href="#pagina-17">Lista de revisión</a></span></div>
     </div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>02</b></div>
   </section>
 
-  <section class="page">
+  <section class="page" id="pagina-03">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">03</p><div class="identity-line"></div>
     <h2>Entra y ubícate</h2><p class="intro">Accede al administrador para gestionar contenido. Los menús disponibles dependen de los permisos de tu cuenta.</p>
     <img class="screen short" src="imagenes/01-acceso-formulario.png" alt="Formulario de acceso a WordPress">
@@ -158,7 +173,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>03</b></div>
   </section>
 
-  <section class="page">
+  <section class="page" id="pagina-04">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">04</p><div class="identity-line"></div>
     <h2>Una publicación, cuatro momentos</h2><p class="intro">Crear → guardar borrador → revisar → publicar. Usa el botón de alta de la colección exacta: Actualidad, Selecciones, Documentos, Integrantes u otra. Actualizar una publicación existente conserva su registro.</p>
     <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
@@ -170,7 +185,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04</b></div>
   </section>
 
-  <section class="page fields-activation">
+  <section class="page fields-activation" id="pagina-04a">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">04A</p><div class="identity-line"></div>
     <h2>Activa los campos personalizados</h2><p class="intro">Algunas secciones guardan datos adicionales con campos personalizados. La activación se realiza desde las preferencias del editor y queda guardada por usuario.</p>
     <img class="screen field-real" src="imagenes/campos-personalizados-real.png" alt="Captura real del panel Custom Fields de WordPress">
@@ -182,7 +197,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>04A</b></div>
   </section>
 
-  <section class="page manual-actualidad">
+  <section class="page manual-actualidad" id="pagina-05">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05</p><div class="identity-line"></div>
     <h2>Publica en Actualidad</h2><p class="intro">Noticias, eventos y contenido informativo se crean en Actualidad, no en las entradas institucionales.</p>
     <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
@@ -199,7 +214,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
   </section>
 
-  <section class="page manual-selecciones">
+  <section class="page manual-selecciones" id="pagina-06">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">06</p><div class="identity-line"></div>
     <h2>Selecciones: Piso y Playa</h2><p class="intro">La modalidad de la publicación determina dónde aparece y qué opción del menú queda seleccionada.</p>
     <img class="screen short" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
@@ -207,13 +222,13 @@
     <div class="step"><b>2</b><span>En <b>Modalidades</b> selecciona Piso o Playa. Completa Categorías y el extracto.</span></div>
     <div class="step"><b>3</b><span>Publica y revisa el listado de esa modalidad. Abre la interna: Selecciones y la modalidad deben seguir activos.</span></div>
 
-    <div class="admin-guide"><b>Título y descripción del listado:</b> “Piso” o “Playa” se cambia editando el término correspondiente en <b>Selecciones → Modalidades</b> (taxonomía <code>labm_modalidad</code>). En ese término, el campo <b>Description / Descripción</b> controla el texto bajo el hero. Si queda vacío, aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo <b>“SELECCIÓN ANTIOQUIA ·”</b> está definido en código y no se edita desde el panel. El filtro Piso/Playa está en el submenú de navegación <b>Selecciones</b>, no en el hero. “Balonmano de Piso/Playa” y el conteo de participaciones se generan automáticamente.</div>
-    <div class="note"><b>Cada publicación:</b> cambia su título desde el campo <b>Título</b> de WordPress en la entrada de Selecciones. <code>labm_modalidad_detalle</code> es un dato opcional para la tarjeta y el panel de participación; si está vacío, esa información se omite. La taxonomía Modalidades define el listado, no Categorías.</div>
+    <div class="admin-guide"><b>Título y descripción del listado:</b> “Piso” o “Playa” se cambia editando la modalidad correspondiente en <b>Selecciones → Modalidades</b>. Allí, el campo <b>Description / Descripción</b> controla el texto bajo la cabecera. Si queda vacío, aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo <b>“SELECCIÓN ANTIOQUIA ·”</b> es fijo y requiere apoyo del administrador para cambiarlo. El filtro Piso/Playa está en el submenú de navegación <b>Selecciones</b>, no en la cabecera. “Balonmano de Piso/Playa” y el conteo de participaciones se generan automáticamente.</div>
+    <div class="note"><b>Cada publicación:</b> cambia su título desde el campo <b>Título</b> de WordPress en la entrada de Selecciones. <code>labm_modalidad_detalle</code> es un dato opcional para la tarjeta y el panel de participación; si está vacío, esa información se omite. La clasificación Modalidades define el listado, no Categorías.</div>
     <div class="image-guide"><b>Imagen destacada:</b> recomendada en <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>. La miniatura del listado se recorta para llenar un marco horizontal; la imagen de la interna mantiene su proporción y se muestra completa. Centra la acción principal. No hay un límite de carga exclusivo para Selecciones: aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>06</b></div>
   </section>
 
-  <section class="page manual-documentos-publicar">
+  <section class="page manual-documentos-publicar" id="pagina-07">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">07</p><div class="identity-line"></div>
     <h2>Documentos: asocia el PDF</h2><p class="intro">Este panel es real y específico de LABM. Se encuentra en la barra derecha del editor de Documentos.</p>
     <img class="screen tall" src="imagenes/documentos-formulario.png" alt="Formulario de Documentos">
@@ -225,7 +240,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>07</b></div>
   </section>
 
-  <section class="page">
+  <section class="page" id="pagina-08">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">08</p><div class="identity-line"></div>
     <h2>Reemplaza y comprueba un PDF</h2><p class="intro">Actualizar un archivo requiere guardar la publicación y revisar el resultado en el catálogo público.</p>
     <img class="screen short" src="imagenes/13-documentos-publico.png" alt="Catálogo público de Documentos">
@@ -235,7 +250,7 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>08</b></div>
   </section>
 
-  <section class="page manual-slides">
+  <section class="page manual-slides" id="pagina-09">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">09</p><div class="identity-line"></div>
     <h2>Inicio: crea una diapositiva</h2><p class="intro">Slides de Inicio alimenta el carrusel. Cada diapositiva se verifica en la portada, no en una página propia.</p>
     <img class="screen short" src="imagenes/slides-editor.png" alt="Editor de Slides de Inicio">
@@ -243,45 +258,119 @@
     <div class="step"><b>3</b><span>Revisa el destino y la etiqueta del botón si la diapositiva lleva enlace. Publica o guarda.</span></div><div class="step"><b>4</b><span>Abre Inicio, recorre el carrusel y comprueba imagen, texto y botón.</span></div>
 
     <div class="note"><b>Título y texto:</b> edita el título de cada slide en su campo <b>Título</b> de WordPress. El texto breve usa primero el <b>Extracto</b> y, si está vacío, las primeras palabras del Contenido. No hay un texto alternativo predeterminado si ambos están vacíos. <code>labm_destino_url</code> y <code>labm_cta_texto</code> controlan el enlace; si hay destino y falta la etiqueta, el botón dice “Conocer más”. Si no ves esos campos, activa el panel de Campos personalizados (página 04A).</div>
-    <div class="image-guide"><b>Imagen del slide:</b> prepara <b>1920 × 1080 px (16:9)</b>, JPG/WebP, hasta <b>700 KB</b>. El carrusel llena un marco ancho con <code>cover</code>, por lo que recorta partes de la imagen según el tamaño de pantalla. Mantén rostros y elementos importantes en la zona central y deja margen arriba y abajo. No hay límite propio para Slides; aplica el límite global de Medios.</div>
+    <div class="image-guide"><b>Imagen del slide:</b> prepara <b>1920 × 1080 px (16:9)</b>, JPG/WebP, hasta <b>700 KB</b>. El carrusel llena un marco ancho y puede recortar partes de la imagen según el tamaño de pantalla. Mantén rostros y elementos importantes en la zona central y deja margen arriba y abajo. No hay límite propio para Slides; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>09</b></div>
   </section>
 
-  <section class="page manual-home-logos">
-    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">10</p><div class="identity-line"></div>
-    <h2>Inicio: aliados y clubes</h2><p class="intro">Aliados Oficiales usa un editor clásico. Clubes tiene su propia colección y aparece en la sección de clubes.</p>
-    <img class="screen short" src="imagenes/aliados-editor.png" alt="Editor de Aliados Oficiales">
-    <div class="step"><b>1</b><span><b>Aliados Oficiales → Add Post</b>. Escribe el nombre y selecciona el logo en Featured image / Imagen destacada.</span></div><div class="step"><b>2</b><span>Define <b>Order / Orden</b> en Post Attributes / Atributos o, si no aparece, desde <b>Quick Edit / Edición rápida</b> del listado. Publica y verifica la franja de aliados.</span></div>
-    <div class="step"><b>3</b><span>Para un club: <b>Clubes → Añadir Club</b>. Completa nombre, descripción, logo y modalidad; publica y revisa Inicio.</span></div>
-    <div class="note"><b>Aliados:</b> el campo <b>Título</b> identifica el nombre del aliado y su logo se muestra en Inicio. No hay descripción ni enlace externo editables; el encabezado fijo “Aliados Oficiales” no tiene control administrativo. <b>Clubes:</b> cambia el nombre en <b>Título</b>; la tarjeta usa el Extracto y, si falta, genera un resumen del Contenido. “Clubes asociados” es un encabezado fijo. El campo opcional <code>labm_ciudad</code> no se muestra como descripción. Inicio muestra una cantidad limitada de clubes.</div>
-    <div class="image-guide"><b>Logo de Aliados Oficiales:</b> lienzo horizontal <b>1200 × 600 px (2:1)</b>, PNG transparente, hasta <b>200 KB</b>. Se ajusta dentro de un marco sin recortar y conserva su proporción; deja aire alrededor del símbolo. <b>Logo de Clubes:</b> lienzo cuadrado <b>1000 × 1000 px (1:1)</b>, PNG transparente, hasta <b>200 KB</b>; también conserva proporción. SVG solo si la biblioteca de este WordPress permite cargarlo. Ninguna colección tiene tope propio: aplica el límite global de Medios.</div>
-    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>10</b></div>
+  <section class="page guided" id="pagina-10">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">10</p>
+    <div class="identity-line"></div>
+    <h2>Publica un aliado oficial</h2><p class="intro">Su logo aparecerá en Aliados Oficiales de Inicio. Prepara el nombre aprobado y el logo oficial.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:280px;height:130px"><img src="imagenes/aliados-editor.png" alt="Order / Orden: un número menor aparece antes." style="width:1440px;left:-1140px;top:-333px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Order / Orden: un número menor aparece antes.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:280px;height:270px"><img src="imagenes/aliados-editor.png" alt="Featured image / Imagen destacada: aquí eliges el logo." style="width:1440px;left:-1140px;top:-482px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Featured image / Imagen destacada: aquí eliges el logo.</figcaption></figure></div>
+    <div class="step"><b>1</b><span>Abre <b>Aliados Oficiales → Add Post / Añadir</b>. Escribe el nombre del aliado en el campo de título. No copies el prefijo de demostración.</span></div>
+    <div class="step"><b>2</b><span>En <b>Featured image / Imagen destacada</b>, pulsa <b>Set featured image / Establecer imagen destacada</b>. Selecciona o sube el logo y confirma. Añade un texto alternativo como «Logo de Aliado Ejemplo».</span></div>
+    <div class="step"><b>3</b><span>En <b>Post Attributes → Order / Atributos → Orden</b> escribe el número acordado: <b>10 aparece antes que 20</b>. Con el mismo número, se ordenan por nombre.</span></div>
+    <div class="step"><b>4</b><span>Revisa nombre y logo. Guarda como borrador si falta aprobación; cuando esté listo pulsa <b>Publish / Publicar</b>.</span></div>
+    <div class="note"><b>Prepara el logo:</b> recomendamos PNG transparente, 1200 × 600 píxeles y hasta 200 KB. Deja margen y no estires el símbolo. Son recomendaciones: el límite real aparece en Medios.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>10</b></div>
   </section>
 
-  <section class="page manual-integrantes">
-    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">11</p><div class="identity-line"></div>
-    <h2>Nosotros: publica integrantes</h2><p class="intro">Un integrante se muestra cuando tiene nombre, fotografía, cargo y grupo completos.</p>
-    <img class="screen short" src="imagenes/integrantes-editor.png" alt="Editor de Integrantes">
-    <div class="step"><b>1</b><span><b>Integrantes → Añadir Integrante</b>. Escribe el nombre y añade la fotografía destacada.</span></div><div class="step"><b>2</b><span>En <b>Grupos de integrantes</b> elige una opción existente: Comité, Entrenadores o Representantes; no escribas una variante nueva.</span></div>
-    <div class="step"><b>3</b><span>Completa el cargo en <code>labm_cargo</code>, el campo personalizado que indica el cargo de la persona. Si no lo ves, actívalo siguiendo la página 04A.</span></div><div class="step"><b>4</b><span>Publica y revisa Nosotros. Comprueba la foto, el cargo y el filtro del grupo.</span></div>
-
-    <div class="note">El nombre de cada integrante se cambia en el campo <b>Título</b> de la publicación; <code>labm_cargo</code> controla el cargo visible. Los grupos y sus nombres de filtro (Comité, Entrenadores y Representantes), además de los encabezados de la sección, se generan desde opciones fijas: no hay un campo de título o descripción por grupo. No crees variantes esperando que aparezcan como filtros.</div>
-    <div class="image-guide"><b>Foto del integrante:</b> recomendada en <b>1200 × 1400 px (aprox. 6:7 vertical)</b>, JPG/WebP, hasta <b>350 KB</b>. La tarjeta usa un marco vertical de proporción cercana a 4:4,7 y recorta con <code>cover</code>. Centra el rostro y deja espacio sobre la cabeza. No hay un máximo de carga propio para Integrantes; aplica el límite global de Medios.</div>
-    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>11</b></div>
+  <section class="page guided" id="pagina-10a">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">10A</p>
+    <div class="identity-line"></div>
+    <h2>Comprueba y modifica el aliado</h2><p class="intro">La comprobación se hace en Inicio; un aliado no tiene una página pública individual.</p>
+    <div class="step"><b>1</b><span>Abre el sitio público y entra en <b>Inicio</b>. Baja hasta la franja <b>Aliados Oficiales</b>. Revisa el logo completo, sus proporciones y el orden. Compruébalo también en un teléfono.</span></div>
+    <h3>Para cambiar el logo, el nombre o el orden</h3>
+    <div class="step"><b>2</b><span>En el administrador abre <b>Aliados Oficiales</b>, busca el nombre y pulsa <b>Edit / Editar</b>. Pulsa la imagen actual si quieres reemplazarla.</span></div>
+    <div class="step"><b>3</b><span>Haz los cambios, pulsa <b>Update / Actualizar</b> y vuelve a comprobar Inicio. Para retirarlo temporalmente, cambia <b>Status / Estado</b> a <b>Draft / Borrador</b> y guarda.</span></div>
+    <h3>Si algo no sale como esperas</h3>
+    <table><tr><th>Problema</th><th>Qué hacer</th></tr><tr><td>No veo el logo.</td><td>Revisa nombre, imagen destacada y estado publicado. La franja muestra hasta 12 aliados completos según orden y nombre.</td></tr><tr><td>No encuentro Orden.</td><td>Busca <b>Quick Edit / Edición rápida</b> bajo el nombre en el listado; si no está, pide ayuda al administrador.</td></tr><tr><td>Quiero enlazar otra web.</td><td>No hay un enlace externo editable para cada aliado. Solicita el cambio al administrador.</td></tr></table>
+    <div class="note">El encabezado «Aliados Oficiales» es fijo. No cambies fechas para ordenar ni borres el logo anterior desde Medios: podría utilizarse en otro lugar. Para retirar y recuperar contenido, consulta la <a href="#pagina-16">página 16</a>.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>10A</b></div>
   </section>
 
-  <section class="page manual-institucional">
-    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">12</p><div class="identity-line"></div>
-    <h2>Actualiza los textos institucionales</h2><p class="intro">Banner, Misión y Visión se alimentan de entradas específicas. No basta con editar cualquier página de Nosotros.</p>
-    <img class="screen short" src="imagenes/entradas-editor.png" alt="Listado de entradas institucionales">
-    <div class="step"><b>1</b><span>En <b>Posts / Entradas</b> localiza la entrada del bloque y confirma su Slug / Identificador.</span></div><div class="step"><b>2</b><span>Actualiza título y texto. Si existe extracto, actualízalo: tiene prioridad sobre el cuerpo.</span></div>
-    <div class="step"><b>3</b><span>Mantén el identificador. Guarda y comprueba Nosotros o Documentos en el sitio público.</span></div>
-    <div class="note">Identificadores: <code>banner-nosotros</code> → banner de Nosotros; <code>mision-nosotros</code> → Misión; <code>vision-nosotros</code> → Visión; <code>banner-documentos</code> → encabezado de Documentos. En cada entrada, el campo <b>Título</b> cambia el título visible; el texto usa primero <b>Extracto</b> y luego <b>Contenido</b> si el extracto está vacío. No hay frase predeterminada: si falta el título o el texto, el bloque no se muestra. Conserva el slug. El banner de Nosotros también usa la imagen destacada.</div>
-    <div class="image-guide"><b>Banner de Nosotros:</b> usa <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>, como imagen destacada de <code>banner-nosotros</code>. En escritorio llena una columna y se recorta con <code>cover</code>; el recorte varía con la pantalla. Mantén el sujeto principal centrado. Las entradas de Misión, Visión y el banner de Documentos no tienen imagen pública administrable en esta versión. Sin límite específico de sección; aplica el global de Medios.</div>
-    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>12</b></div>
+
+
+  <section class="page guided" id="pagina-11">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">11</p>
+    <div class="identity-line"></div>
+    <h2>Crea un integrante</h2><p class="intro">Prepara el nombre, la fotografía autorizada, el cargo y un grupo existente: Comité, Entrenadores o Representantes.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:280px;height:325px"><img src="imagenes/integrantes-editor.png" alt="Pestaña Integrante: foto y datos de la persona." style="width:1440px;left:-1160px;top:-96px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Pestaña Integrante: foto y datos de la persona.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:280px;height:50px"><img src="imagenes/integrantes-editor.png" alt="Abre Grupos de integrantes para elegir el grupo existente." style="width:1440px;left:-1160px;top:-710px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Abre Grupos de integrantes para elegir el grupo existente.</figcaption></figure></div>
+    <div class="example"><b>Ejemplo ficticio:</b> Ana Pérez · Entrenadora · Entrenadores.</div>
+    <div class="step"><b>1</b><span>Entra en <b>Integrantes → Añadir Integrante</b>. En <b>Título</b> escribe el nombre completo, por ejemplo «Ana Pérez».</span></div>
+    <div class="step"><b>2</b><span>En el panel derecho abre la pestaña <b>Integrante</b>. Selecciona la fotografía en <b>Set featured image / Establecer imagen destacada</b> y confirma. Añade un texto alternativo como «Retrato de Ana Pérez».</span></div>
+    <div class="step"><b>3</b><span>Abre <b>Grupos de integrantes</b> y selecciona, para el ejemplo, <b>Entrenadores</b>. No crees una variante nueva. Continúa con el cargo en la <a href="#pagina-11a">página 11A</a> antes de publicar.</span></div>
+    <div class="note"><b>Fotografía recomendada:</b> JPG/WebP de 1200 × 1400 píxeles y hasta 350 KB. Centra el rostro y deja espacio sobre la cabeza: la tarjeta recorta la imagen. El límite de carga real aparece en Medios.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>11</b></div>
   </section>
 
-  <section class="page manual-contacto">
+  <section class="page guided" id="pagina-11a">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">11A</p>
+    <div class="identity-line"></div>
+    <h2>Registra el cargo y comprueba</h2><p class="intro">El cargo debe guardarse en el campo exacto labm_cargo. Después debes guardar también la publicación.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:327.7px;height:118.9px"><img src="imagenes/campos-personalizados-real.png" alt="Name / Nombre y Add Custom Field para añadir." style="width:882.76px;left:0px;top:-252.3px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Name / Nombre y Add Custom Field para añadir.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:327.7px;height:84.1px"><img src="imagenes/campos-personalizados-real.png" alt="Value / Valor: escribe aquí el cargo de la persona." style="width:882.76px;left:-339.3px;top:-252.3px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Value / Valor: escribe aquí el cargo de la persona.</figcaption></figure></div>
+    <p class="caption">Captura de un club para reconocer los controles. No copies su ciudad: aquí registrarás el cargo de un integrante. El ejemplo siguiente no representa un guardado real.</p>
+    <div class="step"><b>1</b><span>Si no ves <b>Custom Fields / Campos personalizados</b>, actívalo según la <a href="#pagina-04a">página 04A</a>. Baja hasta ese panel.</span></div>
+    <div class="step"><b>2</b><span>Si ya existe <code>labm_cargo</code>, cambia <b>Value / Valor</b> por «Entrenadora» y pulsa <b>Update / Actualizar</b> junto al campo. No crees otro igual.</span></div>
+    <div class="step"><b>3</b><span>Si no existe, selecciónalo en <b>Name / Nombre</b>. Si no está en la lista, pulsa <b>Enter new / Introducir nuevo</b> y escribe <code>labm_cargo</code>. En <b>Value / Valor</b> escribe «Entrenadora» y pulsa <b>Add Custom Field / Añadir campo personalizado</b>.</span></div>
+    <div class="step"><b>4</b><span>Revisa nombre, foto, cargo y grupo. Guarda la publicación y pulsa <b>Publicar</b> cuando esté aprobada; confirma si se solicita.</span></div>
+    <div class="step"><b>5</b><span>Abre <b>Nosotros → Quiénes hacen posible la Liga</b>. Revisa la tarjeta y prueba <b>Todos</b> y <b>Entrenadores</b>. Comprueba la foto en un teléfono.</span></div>
+    <div class="note"><b>Para modificar:</b> abre el integrante, cambia sus datos, actualiza el campo del cargo y guarda también la publicación. <b>Si no aparece:</b> revisa los cuatro datos y el estado publicado; prueba Todos. Se consultan hasta 20 registros publicados por orden y nombre. Si persiste, pide ayuda; no dupliques la persona. Para retirarla, guarda como borrador y conserva su foto.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>11A</b></div>
+  </section>
+
+
+
+  <section class="page guided" id="pagina-12">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">12</p>
+    <div class="identity-line"></div>
+    <h2>Encuentra el texto de Nosotros</h2><p class="intro">La presentación, Misión y Visión se editan en Posts / Entradas, no en Pages / Páginas → Nosotros.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:680px;height:174.08px"><img src="imagenes/entradas-listado.png" alt="Listado real: presentación, Misión y Visión; los títulos pueden cambiar." style="width:979.2px;left:-122.4px;top:-119.68px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Listado real: presentación, Misión y Visión; los títulos pueden cambiar.</figcaption></figure></div>
+    <div class="step"><b>1</b><span>Entra en <b>Posts / Entradas</b>. Busca «Misión», «Visión» o el título de la presentación, por ejemplo «Somos la Liga». Abre la entrada candidata.</span></div>
+    <div class="step"><b>2</b><span>En el panel derecho abre <b>Post / Entrada</b> y busca <b>Slug / Identificador</b>. Es el nombre interno que conecta ese texto con la página. Compruébalo sin cambiarlo.</span></div>
+    <table><tr><th>Qué quieres editar</th><th>Identificador exacto</th></tr><tr><td>Presentación de Nosotros</td><td><code>banner-nosotros</code></td></tr><tr><td>Misión</td><td><code>mision-nosotros</code></td></tr><tr><td>Visión</td><td><code>vision-nosotros</code></td></tr><tr><td>Encabezado de Documentos</td><td><code>banner-documentos</code></td></tr></table>
+    <div class="note">Si no encuentras la entrada o el identificador, solicita ayuda. No crees un duplicado ni cambies el identificador de otra entrada. Para la presentación sigue la <a href="#pagina-12a">página 12A</a>; para Misión y Visión, la <a href="#pagina-12b">12B</a>.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>12</b></div>
+  </section>
+
+  <section class="page guided" id="pagina-12a">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">12A</p>
+    <div class="identity-line"></div>
+    <h2>Cambia la presentación</h2><p class="intro">Usa el texto institucional aprobado. La fotografía principal es opcional; puedes conservar la existente.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:280px;height:110px"><img src="imagenes/entradas-editor.png" alt="Edit excerpt / Editar extracto: cambia el texto breve." style="width:1440px;left:-1160px;top:-345px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Edit excerpt / Editar extracto: cambia el texto breve.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:280px;height:105px"><img src="imagenes/entradas-editor.png" alt="Slug / Identificador: comprueba banner-nosotros sin cambiarlo." style="width:1440px;left:-1160px;top:-519px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Slug / Identificador: comprueba banner-nosotros sin cambiarlo.</figcaption></figure></div>
+    <div class="step"><b>1</b><span>Abre en <b>Posts / Entradas</b> la entrada con identificador <code>banner-nosotros</code>. Cambia <b>Título</b> para modificar el encabezado visible.</span></div>
+    <div class="step"><b>2</b><span>En la columna derecha pulsa <b>Edit excerpt / Editar extracto</b> o <b>Add an excerpt / Añadir un extracto</b>. Escribe el texto breve aprobado y revisa también el contenido del editor.</span></div>
+    <div class="example"><b>¿Por qué no cambia el texto?</b> Si Extracto dice «Versión anterior», cambiar solo el cuerpo a «Versión nueva» no cambia Nosotros. Actualiza el extracto: tiene prioridad. Si está vacío, se muestra el contenido.</div>
+    <div class="step"><b>3</b><span>Para reemplazar la foto, pulsa la imagen destacada y elige la nueva. Mantén el identificador y el estado publicado. Pulsa <b>Save / Guardar</b> o <b>Update / Actualizar</b>.</span></div>
+    <div class="step"><b>4</b><span>Abre <b>Nosotros</b> en el sitio público. Comprueba el título, el texto y la fotografía en computador y teléfono.</span></div>
+    <div class="note"><b>Foto recomendada:</b> horizontal de 1600 × 900 píxeles, JPG/WebP y hasta 500 KB. Centra el motivo principal porque el recorte cambia según la pantalla. El máximo de carga se consulta en Medios.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>12A</b></div>
+  </section>
+
+  <section class="page guided" id="pagina-12b">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">12B</p>
+    <div class="identity-line"></div>
+    <h2>Actualiza Misión o Visión</h2><p class="intro">Prepara el texto aprobado de la sección que vas a cambiar. No necesitas subir una imagen.</p>
+    <div class="step"><b>1</b><span>En <b>Posts / Entradas</b>, abre la entrada correspondiente. Comprueba <code>mision-nosotros</code> para Misión o <code>vision-nosotros</code> para Visión, según la <a href="#pagina-12">página 12</a>.</span></div>
+    <div class="step"><b>2</b><span>Revisa el <b>Título</b>. En <b>Extracto</b> escribe el texto aprobado. Revisa también el contenido para que no contradiga ese resumen: si hay extracto, el sitio muestra ese texto.</span></div>
+    <div class="step"><b>3</b><span>Conserva el identificador y el estado publicado. Pulsa <b>Save / Guardar</b> o <b>Update / Actualizar</b>.</span></div>
+    <div class="step"><b>4</b><span>Abre <b>Nosotros</b> y baja hasta Misión o Visión. Comprueba el texto modificado y que el otro bloque conserve su información.</span></div>
+    <h3>Si no ves el resultado esperado</h3>
+    <table><tr><th>Qué ocurre</th><th>Primera comprobación</th></tr><tr><td>Sigue el texto anterior.</td><td>Revisa que guardaste la entrada correcta y actualizaste el Extracto. Recarga la página pública.</td></tr><tr><td>Desaparece el bloque.</td><td>Comprueba que la entrada esté publicada y tenga título y texto. Conserva su identificador.</td></tr><tr><td>No encuentro dónde editar.</td><td>Pide ayuda al administrador. Indica si es presentación, Misión o Visión y qué control no aparece.</td></tr></table>
+    <div class="note">No vacíes ni envíes estas entradas a la papelera para ocultarlas sin coordinarlo: puede desaparecer el bloque. Misión y Visión no tienen una imagen pública editable en esta versión.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>12B</b></div>
+  </section>
+
+
+
+  <section class="page manual-contacto" id="pagina-13">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">13</p><div class="identity-line"></div>
     <h2>Contacto y pie de página</h2><p class="intro">LABM abre Footer LABM. Esta pantalla gestiona los datos compartidos del pie de página.</p>
     <img class="screen short" src="imagenes/10-footer.png" alt="Configuración de Footer LABM">
@@ -292,30 +381,51 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>13</b></div>
   </section>
 
-  <section class="page manual-media">
+  <section class="page manual-media" id="pagina-14">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">14</p><div class="identity-line"></div>
     <h2>Imágenes, logos y galerías</h2><p class="intro">Medios conserva los archivos reutilizables. La imagen destacada y la galería del cuerpo son cosas diferentes.</p>
     <img class="screen short" src="imagenes/09-medios.png" alt="Biblioteca de medios">
     <div class="step"><b>1</b><span><b>Media / Medios</b>: busca un archivo existente antes de subir un duplicado.</span></div><div class="step"><b>2</b><span>Selecciona o carga la imagen. La persona que publica debe escribir un texto alternativo breve que describa lo visible, no repetir solo el nombre del archivo.</span></div>
     <div class="step"><b>3</b><span>En la publicación usa Imagen destacada para su imagen principal. Para varias fotos, inserta un bloque Galería.</span></div><div class="step"><b>4</b><span>Ordena las imágenes y revisa pies de foto antes de publicar.</span></div>
     <div class="note">No borres un archivo compartido sin comprobar dónde se utiliza. Eliminarlo desde Medios puede romper otras publicaciones.</div>
-    <div class="image-guide"><b>Límite técnico de imágenes:</b> el tema y el plugin no añaden un máximo de peso ni de dimensiones por sección. La carga depende del límite global de WordPress y PHP. En este WordPress local comprobé un máximo efectivo actual de <b>2 MB por archivo</b> (PHP <code>upload_max_filesize=2M</code>); en el servidor publicado puede ser distinto y debe confirmarse en la biblioteca o con el administrador del hosting. Las cifras por sección de esta cartilla son recomendaciones, no bloqueos del sistema. Para buena velocidad: JPG/WebP para fotografías y PNG transparente para logos; optimiza los archivos antes de subirlos. SVG solo cuando esté habilitado por el administrador. En todos los casos usa texto alternativo descriptivo y evita capturas con texto pequeño o ilegible.</div>
+    <div class="image-guide"><b>Límite técnico de imágenes:</b> el tema y el plugin no añaden un máximo de peso ni de dimensiones por sección. La carga depende del límite global de WordPress y PHP. En el entorno de las capturas se documentó un máximo efectivo de <b>2 MB por archivo</b> (límite de carga del servidor); en el servidor publicado puede ser distinto y debe confirmarse en la biblioteca o con el administrador del hosting. Las cifras por sección de esta cartilla son recomendaciones, no bloqueos del sistema. Para buena velocidad: JPG/WebP para fotografías y PNG transparente para logos; optimiza los archivos antes de subirlos. SVG solo cuando esté habilitado por el administrador. En todos los casos usa texto alternativo descriptivo y evita capturas con texto pequeño o ilegible.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>14</b></div>
   </section>
 
-  <section class="page manual-clubes">
-    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">15</p><div class="identity-line"></div>
-    <h2>Publica un club asociado</h2><p class="intro">Clubes usa una colección distinta de Aliados Oficiales. Selecciona la modalidad y el logo de cada club.</p>
-    <img class="screen short" src="imagenes/clubes-editor.png" alt="Editor de Clubes">
-    <div class="step"><b>1</b><span><b>Clubes → Añadir Club</b>. Completa nombre y descripción.</span></div><div class="step"><b>2</b><span>Asigna el logo como Imagen destacada y escribe un extracto breve.</span></div>
-    <div class="step"><b>3</b><span>Abre Modalidades y clasifica el club. Si necesitas guardar la ciudad como referencia editorial, complétala en <code>labm_ciudad</code>.</span></div><div class="step"><b>4</b><span>Publica, comprueba Clubes asociados de Inicio y abre el detalle del club.</span></div>
-
-    <div class="note"><code>labm_ciudad</code> guarda la ciudad como referencia editorial; actualmente no se muestra en la ficha pública. No reemplaza el nombre, el logo ni la modalidad. La portada muestra una selección limitada de clubes. Si el campo no está visible, activa el panel 04A.</div>
-    <div class="image-guide"><b>Logo del club:</b> lienzo recomendado <b>1000 × 1000 px (1:1)</b>, PNG transparente, hasta <b>200 KB</b>. La tarjeta lo acomoda en un marco cuadrado con <code>contain</code>: no lo recorta y conserva su proporción. Centra el logo y deja margen. No existe un límite por colección; rige el máximo global de Medios descrito en la página 14.</div>
-    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>15</b></div>
+  <section class="page guided" id="pagina-15">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">15</p>
+    <div class="identity-line"></div>
+    <h2>Publica un club asociado</h2><p class="intro">Prepara nombre oficial, descripción, resumen breve y logo. Clubes es una sección distinta de Aliados Oficiales.</p>
+    <div class="shot-row"><figure class="detail-shot"><div class="crop" style="width:280px;height:80px"><img src="imagenes/clubes-editor.png" alt="Imagen destacada para el logo y Extracto para el resumen." style="width:1440px;left:-1160px;top:-220px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Imagen destacada para el logo y Extracto para el resumen.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:280px;height:167px"><img src="imagenes/clubes-editor.png" alt="Modalidades: selecciona Piso o Playa según corresponda." style="width:1440px;left:-1160px;top:-604px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Modalidades: selecciona Piso o Playa según corresponda.</figcaption></figure></div>
+    <div class="step"><b>1</b><span>Abre <b>Clubes → Añadir Club</b>. Escribe el nombre en <b>Título</b> y la descripción en el cuerpo de la publicación.</span></div>
+    <div class="step"><b>2</b><span>En la pestaña <b>Club</b> del panel derecho, pulsa <b>Set featured image / Establecer imagen destacada</b>. Selecciona o sube el logo y confirma; añade un texto alternativo con el nombre del club.</span></div>
+    <div class="step"><b>3</b><span>Pulsa <b>Add an excerpt / Añadir un extracto</b>. Escribe una o dos frases para la tarjeta de Inicio. Si lo dejas vacío, el sitio genera un resumen desde la descripción.</span></div>
+    <div class="example"><b>Resumen ficticio:</b> «Club Ejemplo promueve el balonmano de piso para jóvenes del municipio».</div>
+    <div class="step"><b>4</b><span>En <b>Modalidades</b> marca la opción existente que corresponda. Revisa el borrador y pulsa <b>Publish / Publicar</b> cuando esté aprobado; confirma si se solicita.</span></div>
+    <div class="note"><b>Logo recomendado:</b> PNG transparente de 1000 × 1000 píxeles y hasta 200 KB. Deja margen: el logo se muestra completo, sin estirarse. No es un límite obligatorio; consulta el máximo real en Medios.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>15</b></div>
   </section>
 
-  <section class="page">
+  <section class="page guided" id="pagina-15a">
+    <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
+    <p class="chapter">15A</p>
+    <div class="identity-line"></div>
+    <h2>Comprueba y modifica el club</h2><p class="intro">Inicio muestra hasta seis clubes. Publicar uno no garantiza su presencia inmediata en la portada.</p>
+    <div class="step"><b>1</b><span>Abre <b>Inicio → Clubes asociados</b>. Si aparece tu club, revisa nombre, logo y resumen. Pulsa su nombre o logo para abrir la página individual.</span></div>
+    <div class="step"><b>2</b><span>Si no está entre los seis, abre <b>Clubes</b> en el administrador y usa <b>View / Ver</b> desde el listado o el editor para comprobar su página publicada.</span></div>
+    <div class="step"><b>3</b><span>Para modificarlo, busca el nombre en <b>Clubes</b> y pulsa <b>Edit / Editar</b>. Cambia los datos y revisa también <b>Extracto</b> si corriges la descripción: ese resumen tiene prioridad en Inicio.</span></div>
+    <div class="step"><b>4</b><span>Pulsa <b>Save / Guardar</b> o <b>Update / Actualizar</b>. Revisa Inicio y la página del club, también en un teléfono.</span></div>
+    <h3>Si no aparece o falta información</h3>
+    <p>Comprueba el estado publicado. La portada elige hasta seis clubes por <b>Orden</b> de menor a mayor y luego por nombre. Si necesitas cambiar el orden y no encuentras el control, pide ayuda. No alteres fechas ni dupliques el club.</p>
+    <div class="note"><b>Ciudad: dato opcional interno.</b> <code>labm_ciudad</code> no aparece en la ficha pública y no hace falta completarlo en este recorrido. Si debes guardarlo, activa el panel según la <a href="#pagina-04a">página 04A</a>, usa ese nombre exacto, escribe la ciudad en <b>Value / Valor</b>, confirma el campo y guarda también la publicación.</div>
+    <div class="note"><b>Para retirarlo:</b> cambia a <b>Draft / Borrador</b>, guarda y comprueba la página pública. No borres el logo desde Medios. Consulta la <a href="#pagina-16">página 16</a> para retirar y recuperar. El encabezado «Clubes asociados» se cambia con apoyo del administrador.</div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>15A</b></div>
+  </section>
+
+
+
+  <section class="page" id="pagina-16">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">16</p><div class="identity-line"></div>
     <h2>Retira y recupera contenido</h2><p class="intro">Usa borrador o papelera para retirar contenido sin perderlo definitivamente.</p>
     <img class="screen short" src="imagenes/actualidad-listado.png" alt="Listado de publicaciones de Actualidad">
@@ -325,26 +435,26 @@
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>16</b></div>
   </section>
 
-  <section class="page">
+  <section class="page" id="pagina-17">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">17</p><div class="identity-line"></div>
     <h2>Tu revisión antes de publicar</h2><p class="intro">Usa esta lista para entregar contenido claro, completo y fácil de consultar.</p>
-    <div class="checklist"><h3>CONTENIDO</h3><p>Título y texto revisados.<br>Sin datos de demostración usados como información oficial.<br>Fechas, nombres y enlaces correctos.</p><h3>IMÁGENES Y ARCHIVOS</h3><p>Imagen destacada o logo adecuados.<br>Texto alternativo y autorización de uso.<br>PDF válido, con título y clasificación.</p><h3>CLASIFICACIÓN</h3><p>Modalidad Piso/Playa correcta.<br>Grupo del integrante y cargo completos.<br>Extracto coherente con el contenido.<br>Campos personalizados visibles, con clave exacta y valor actualizado.</p><h3>RESULTADO PÚBLICO</h3><p>Vista previa revisada en móvil.<br>Listado y detalle comprobados.<br>Ver PDF / Descargar funcionan.<br>En la interna se resaltan el padre Selecciones y el enlace Piso o Playa correspondiente.</p></div>
+    <div class="checklist"><h3>CONTENIDO</h3><p>Título y texto revisados.<br>Sin datos de demostración usados como información oficial.<br>Fechas, nombres y enlaces correctos.</p><h3>IMÁGENES Y ARCHIVOS</h3><p>Imagen destacada o logo adecuados.<br>Texto alternativo y autorización de uso.<br>PDF válido, con título y clasificación.</p><h3>CLASIFICACIÓN</h3><p>Modalidad Piso/Playa correcta.<br>Grupo del integrante y cargo completos.<br>Extracto coherente con el contenido.<br>Campos personalizados visibles, con clave exacta y valor actualizado.</p><h3>RESULTADO PÚBLICO</h3><p>Vista previa revisada en móvil.<br>Sección pública comprobada; detalle cuando exista.<br>Ver PDF / Descargar funcionan.<br>En la interna se resaltan el padre Selecciones y el enlace Piso o Playa correspondiente.</p></div>
     <div class="note">Si no ves una sección o un campo, consulta los permisos y la configuración con el administrador. No cambies plantillas o plugins para resolver una publicación.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>17</b></div>
   </section>
 
-  <section class="page cover">
+  <section class="page secondary-reference cover">
     <div>
       <div class="eyebrow">Liga Antioqueña de Balonmano</div>
       <h1>Cartilla de usuario</h1>
       <p class="lead">Guía visual breve para crear, revisar y publicar contenido en WordPress.</p>
     </div>
     <div>
-    <p class="note"><b>Versión 1.4 · 18 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
+    <p class="note"><b>Versión 1.5 · 19 de octubre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
     </div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">1 · Acceso y navegación</span>
     <h2>Encuentra la sección correcta</h2>
     <p class="intro">Entra a <b>/wp-admin/</b> con tu cuenta y usa el menú lateral. El panel de administración y el sitio público cumplen funciones distintas.</p>
@@ -364,7 +474,7 @@
     <div class="footer">LABM · Cartilla de usuario</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">2 · Campos personalizados</span>
     <h2>Activa los campos una sola vez</h2>
     <p class="intro">Algunas secciones guardan datos adicionales mediante campos personalizados. Cada usuario editor debe activar el panel en sus preferencias.</p>
@@ -377,13 +487,13 @@
     <div class="footer">LABM · Campos personalizados</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">3 · Publicaciones</span>
     <h2>Crear, revisar y publicar</h2>
     <ol>
       <li>Abre la sección correcta y pulsa <b>Añadir</b>.</li>
       <li>Escribe un título claro y el contenido completo.</li>
-      <li>Completa imagen destacada, extracto, categorías o taxonomías.</li>
+      <li>Completa imagen destacada, extracto, categorías o clasificaciones.</li>
       <li>Guarda como borrador mientras revisas.</li>
       <li>Usa Vista previa y comprueba también el móvil.</li>
       <li>Publica sólo cuando el estado y los datos sean correctos.</li>
@@ -396,18 +506,18 @@
     <div class="footer">LABM · Publicaciones</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">4 · Selecciones</span>
     <h2>Piso y Playa</h2>
-    <p class="intro">Asigna la taxonomía correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre. El título de cada participación se edita en el campo <b>Título</b> de WordPress.</p>
+    <p class="intro">Asigna la modalidad correcta en <b>Modalidades</b>. Selecciona <b>Piso</b> o <b>Playa</b>; no la sustituyas por texto libre. El título de cada participación se edita en el campo <b>Título</b> de WordPress.</p>
     <img class="screen" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
-    <p>Para cambiar el título y descripción del listado, edita el término correspondiente en <b>Selecciones → Modalidades</b> (<code>labm_modalidad</code>): el campo Nombre define Piso/Playa y <b>Description / Descripción</b> cambia el texto bajo el hero. Cuando Description está vacía aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo “SELECCIÓN ANTIOQUIA ·” es fijo y no editable. El filtro está en el submenú de navegación Selecciones. El título “Balonmano de Piso/Playa” y el conteo son automáticos.</p>
-    <p><code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta; si queda vacío no aparece ese dato. No determina el listado: para eso usa la taxonomía Modalidades.</p>
+    <p>Para cambiar el título y descripción del listado, edita el término correspondiente en <b>Selecciones → Modalidades</b> (<code>labm_modalidad</code>): el campo Nombre define Piso/Playa y <b>Description / Descripción</b> cambia el texto bajo la cabecera. Cuando Description está vacía aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo “SELECCIÓN ANTIOQUIA ·” es fijo y no editable. El filtro está en el submenú de navegación Selecciones. El título “Balonmano de Piso/Playa” y el conteo son automáticos.</p>
+    <p><code>labm_modalidad_detalle</code> permite explicar brevemente la tarjeta; si queda vacío no aparece ese dato. No determina el listado: para eso usa la clasificación Modalidades.</p>
     <div class="callout">Comprueba el listado público de Piso o Playa y abre la interna: deben mantenerse activos el padre Selecciones y la modalidad correspondiente.</div>
     <div class="footer">LABM · Selecciones</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">5 · Documentos</span>
     <h2>Publica y sustituye un PDF</h2>
     <p class="intro">El título de un documento se edita en el campo Título de su publicación. El encabezado y la descripción del catálogo vienen de la entrada institucional con slug <code>banner-documentos</code>: se modifica en Posts / Entradas, usando Título y Extracto (o Contenido si Extracto está vacío). Sin título o texto, el encabezado se oculta.</p>
@@ -427,7 +537,7 @@
     <div class="footer">LABM · Documentos</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">6 · Inicio</span>
     <h2>Slides, aliados y clubes</h2>
     <h3>Slides</h3>
@@ -435,11 +545,11 @@
     <h3>Aliados</h3>
     <p>El campo Título identifica el aliado y el logo es su imagen destacada. La franja no muestra una descripción ni tiene enlace externo editable. El encabezado “Aliados Oficiales” es fijo. Define el orden si tu rol lo permite.</p>
     <h3>Clubes</h3>
-    <p>El nombre del club se cambia en Título. La tarjeta muestra el Extracto o genera un resumen del Contenido cuando el extracto está vacío. “Clubes asociados” es un encabezado fijo; <code>labm_ciudad</code> guarda una referencia editorial, pero no se muestra en la ficha pública. La portada muestra una selección limitada.</p>
+    <p>El nombre del club se cambia en Título. La tarjeta muestra el Extracto o genera un resumen del Contenido cuando el extracto está vacío. “Clubes asociados” es un encabezado fijo; <code>labm_ciudad</code> guarda una referencia editorial, pero no se muestra en la ficha pública. La portada muestra hasta seis clubes por orden y nombre.</p>
     <div class="footer">LABM · Inicio</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">7 · Nosotros</span>
     <h2>Integrantes y textos institucionales</h2>
     <p>El nombre de cada integrante se edita en el campo Título de su publicación; <code>labm_cargo</code> indica su función y aparece en la tarjeta pública.</p>
@@ -450,7 +560,7 @@
     <div class="footer">LABM · Nosotros</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">8 · Medios y Contacto</span>
     <h2>Archivos, imágenes y pie</h2>
     <div class="grid">
@@ -468,7 +578,7 @@
     <div class="footer">LABM · Medios y Contacto</div>
   </section>
 
-  <section class="page">
+  <section class="page secondary-reference">
     <span class="band">9 · Revisión final</span>
     <h2>Antes de publicar</h2>
     <ul>
@@ -489,7 +599,7 @@
       <tr><td>El sitio muestra contenido anterior</td><td>Confirma que actualizaste la publicación correcta y recarga.</td></tr>
     </table>
     <p style="margin-top: 22pt"><b>Recuerda:</b> no compartas contraseñas ni incluyas usuarios en paquetes de contenido.</p>
-    <div class="footer">LABM · Versión 1.4</div>
+    <div class="footer">LABM · Versión 1.5</div>
   </section>
 </body>
 </html>
