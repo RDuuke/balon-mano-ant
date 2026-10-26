@@ -116,6 +116,14 @@ function labm_core_validate_home_publishable( $post_type, $data ) {
 
 	$thumbnail_id = absint( $data['thumbnail_id'] ?? 0 );
 	$is_image     = $thumbnail_id && 'attachment' === get_post_type( $thumbnail_id ) && str_starts_with( (string) get_post_mime_type( $thumbnail_id ), 'image/' );
+	if ( 'labm_slide' === $post_type && ! $is_image ) {
+		return new WP_Error(
+			'labm_slide_image_required',
+			__( 'La imagen destacada es obligatoria para publicar este slide.', 'labm-core' ),
+			array( 'status' => 400 )
+		);
+	}
+
 	if ( '' === trim( (string) ( $data['post_title'] ?? '' ) ) || ! $is_image ) {
 		return new WP_Error(
 			'labm_incomplete_home_content',
@@ -167,9 +175,7 @@ function labm_core_render_home_content_nonce() {
 	if ( ! $post instanceof WP_Post || ! in_array( $post->post_type, array( 'labm_slide', 'labm_aliado' ), true ) ) {
 		return;
 	}
-	if ( 'labm_aliado' === $post->post_type ) {
-		wp_nonce_field( 'labm_save_home_content', '_labm_home_content_nonce' );
-	}
+	wp_nonce_field( 'labm_save_home_content', '_labm_home_content_nonce' );
 	$title = 'labm_slide' === $post->post_type ? __( 'Cómo completar un slide', 'labm-core' ) : __( 'Cómo completar un aliado', 'labm-core' );
 	$help  = 'labm_slide' === $post->post_type
 		? __( 'La imagen destacada y el título son obligatorios. En Atributos > Orden, un número menor aparece antes. Si tu pantalla muestra Campos personalizados, usa solo Destino del enlace (labm_destino_url) y Texto del botón (labm_cta_texto).', 'labm-core' )
@@ -179,20 +185,22 @@ function labm_core_render_home_content_nonce() {
 add_action( 'edit_form_after_title', 'labm_core_render_home_content_nonce' );
 
 /**
- * Conserva como borrador un aliado incompleto enviado desde wp-admin.
+ * Conserva como borrador un slide o aliado incompleto enviado desde wp-admin.
  *
  * @param array $data Datos saneados del post.
  * @param array $postarr Datos originales del formulario.
  * @return array
  */
 function labm_core_validate_home_admin_insert( $data, $postarr ) {
-	if ( 'labm_aliado' !== ( $data['post_type'] ?? '' ) || 'publish' !== ( $data['post_status'] ?? '' ) ) {
+	$post_type = $data['post_type'] ?? '';
+	if ( ! in_array( $post_type, array( 'labm_slide', 'labm_aliado' ), true ) || 'publish' !== ( $data['post_status'] ?? '' ) ) {
 		return $data;
 	}
 
 	$nonce = (string) ( $postarr['_labm_home_content_nonce'] ?? '' );
-	// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Capacidad registrada por labm_core_ensure_capabilities().
-	if ( ! wp_verify_nonce( $nonce, 'labm_save_home_content' ) || ! current_user_can( 'publish_labm_aliados' ) ) {
+	$capability = 'labm_slide' === $post_type ? 'publish_labm_slides' : 'publish_labm_aliados';
+	// phpcs:ignore WordPress.WP.Capabilities.Unknown -- Capacidades registradas por labm_core_ensure_capabilities().
+	if ( ! wp_verify_nonce( $nonce, 'labm_save_home_content' ) || ! current_user_can( $capability ) ) {
 		return $data;
 	}
 
@@ -200,17 +208,21 @@ function labm_core_validate_home_admin_insert( $data, $postarr ) {
 	$thumbnail_id = array_key_exists( '_thumbnail_id', $postarr )
 		? absint( $postarr['_thumbnail_id'] )
 		: get_post_thumbnail_id( $post_id );
+	$has_thumbnail = $thumbnail_id && wp_attachment_is_image( $thumbnail_id );
 	$validation   = labm_core_validate_home_publishable(
-		'labm_aliado',
+		$post_type,
 		array(
-			'post_title'   => $data['post_title'] ?? '',
-			'thumbnail_id' => $thumbnail_id,
+			'post_title'       => $data['post_title'] ?? '',
+			'labm_destino_url' => $postarr['labm_destino_url'] ?? '',
+			'thumbnail_id'     => $thumbnail_id,
 		)
 	);
 
 	if ( is_wp_error( $validation ) ) {
 		$data['post_status']                      = 'draft';
-		$GLOBALS['labm_home_content_admin_error'] = 'incomplete';
+		$GLOBALS['labm_home_content_admin_error'] = 'labm_slide' === $post_type
+			? ( ! $has_thumbnail ? 'slide_image' : 'slide_title' )
+			: 'incomplete';
 	}
 
 	return $data;
@@ -234,13 +246,20 @@ function labm_core_home_content_redirect_location( $location ) {
 }
 add_filter( 'redirect_post_location', 'labm_core_home_content_redirect_location' );
 
-/** Muestra el motivo por el que el aliado no se publico. */
+/** Muestra el motivo por el que el contenido de portada no se publico. */
 function labm_core_home_content_admin_notice() {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- El parametro solo selecciona un aviso de solo lectura.
-	if ( 'incomplete' !== sanitize_key( wp_unslash( $_GET['labm_home_error'] ?? '' ) ) ) {
+	$error = sanitize_key( wp_unslash( $_GET['labm_home_error'] ?? '' ) );
+	if ( ! in_array( $error, array( 'incomplete', 'slide_image', 'slide_title' ), true ) ) {
 		return;
 	}
 
-	echo '<div class="notice notice-error"><p>' . esc_html__( 'El titulo y el logo son obligatorios antes de publicar.', 'labm-core' ) . '</p></div>';
+	$messages = array(
+		'incomplete'  => __( 'El titulo y el logo son obligatorios antes de publicar.', 'labm-core' ),
+		'slide_image' => __( 'La imagen destacada es obligatoria para publicar este slide.', 'labm-core' ),
+		'slide_title' => __( 'El título es obligatorio antes de publicar este slide.', 'labm-core' ),
+	);
+	$message = $messages[ $error ];
+	echo '<div class="notice notice-error"><p>' . esc_html( $message ) . '</p></div>';
 }
 add_action( 'admin_notices', 'labm_core_home_content_admin_notice' );

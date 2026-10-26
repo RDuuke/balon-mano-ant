@@ -79,8 +79,16 @@
     .manual-actualidad .screen.short { height: 330px; }
     .manual-selecciones .screen.short { height: 340px; }
     .manual-slides .screen.short { height: 340px; }
+    .manual-slides .note { margin-top: 12px; padding: 11px 13px; font-size: 14px; line-height: 1.25; }
+    .manual-slides .image-guide { margin-top: 8px; padding: 9px 11px; font-size: 12px; line-height: 1.18; }
     .manual-contacto .screen.short { height: 300px; }
     .manual-media .screen.short { height: 290px; }
+    .manual-documentos-publicar .shot-row { gap: 8px; }
+    .manual-documentos-publicar .detail-shot figcaption { max-width: 205px; font-size: 13px; line-height: 1.22; }
+    .manual-documentos-publicar .note { margin-top: 9px; padding: 10px 12px; font-size: 13px; line-height: 1.22; }
+    .manual-documentos-publicar .shot-row figure:nth-child(2) .crop .shot-label { top: auto; bottom: 4px; }
+    .manual-documentos-reemplazo .screen.short { height: 200px; }
+    .manual-documentos-reemplazo .detail-shot .crop { height: 185px !important; }
     .manual-actualidad .admin-guide, .manual-actualidad .note, .manual-documentos-publicar .admin-guide, .manual-documentos-publicar .note { margin-top: 8px; padding: 9px 11px; font-size: 13px; line-height: 1.2; }
     .screen.field-real { height: 300px; }
     .step { display: grid; grid-template-columns: 32px 1fr; align-items: start; gap: 16px; margin: 0 0 14px; }
@@ -176,7 +184,10 @@
   <section class="page" id="pagina-04">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">04</p><div class="identity-line"></div>
     <h2>Una publicación, cuatro momentos</h2><p class="intro">Crear → guardar borrador → revisar → publicar. Usa el botón de alta de la colección exacta: Actualidad, Selecciones, Documentos, Integrantes u otra. Actualizar una publicación existente conserva su registro.</p>
-    <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:395px;height:138px"><img src="imagenes/actualidad-editor.png" alt="Título y contenido de una publicación real de Actualidad." style="width:800px;left:-122px;top:-86px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Título y cuerpo del artículo.</figcaption></figure>
+      <figure class="detail-shot"><div class="crop" style="width:280px;height:180px"><img src="imagenes/actualidad-editor.png" alt="Categorías asignadas en el panel de edición real." style="width:1440px;left:-1160px;top:-785px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Selecciona la categoría que corresponda.</figcaption></figure>
+    </div>
     <div class="step"><b>1</b><span>En la sección correcta pulsa <b>Añadir… / Add Post</b>. Completa título y contenido con bloques.</span></div>
     <div class="step"><b>2</b><span>Revisa el panel derecho: imagen destacada, extracto y clasificación. Selecciona una clasificación existente y guarda como borrador mientras revisas.</span></div>
     <div class="step"><b>3</b><span>Usa <b>Preview / Vista previa</b> y comprueba imágenes, enlaces y lectura en móvil.</span></div>
@@ -200,49 +211,61 @@
   <section class="page manual-actualidad" id="pagina-05">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05</p><div class="identity-line"></div>
     <h2>Publica en Actualidad</h2><p class="intro">Noticias, eventos y contenido informativo se crean en Actualidad, no en las entradas institucionales.</p>
-    <img class="screen short" src="imagenes/actualidad-editor.png" alt="Editor de una publicación de Actualidad">
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:400px;height:138px"><img src="imagenes/actualidad-editor.png" alt="Título y contenido de una publicación real de Actualidad." style="width:740px;left:-113px;top:-80px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Título y cuerpo del artículo.</figcaption></figure>
+      <figure class="detail-shot"><div class="crop" style="width:265px;height:180px"><img src="imagenes/actualidad-editor.png" alt="Categorías asignadas en el panel de edición real." style="width:1440px;left:-1160px;top:-785px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Selecciona la categoría que corresponda.</figcaption></figure>
+    </div>
     <div class="step"><b>1</b><span>Entra en <b>Actualidad → Añadir Entrada de actualidad</b>. Escribe título y cuerpo.</span></div>
     <div class="step"><b>2</b><span>Abre Categorías y elige una categoría existente que corresponda al contenido; luego añade imagen destacada y extracto.</span></div>
     <div class="step"><b>3</b><span>Para varias fotografías, inserta el bloque Galería. Después de publicar, verifica dos vistas:
       <ol><li><b>Listado:</b> abre la página general de Actualidad (<code>/actualidad/</code>), donde aparecen varias noticias.</li><li><b>Detalle:</b> haz clic en el título de la noticia para abrir su página individual (<code>/actualidad/nombre-del-articulo/</code>).</li></ol>
-      Confirma que el artículo aparece en el listado y que el detalle muestra correctamente título, imagen, contenido, fecha y enlaces para compartir.
+      Confirma que el artículo aparece en el listado y que el detalle muestra correctamente título, imágenes insertadas en el contenido, fecha y enlaces para compartir.
     </span></div>
 
     <div class="admin-guide"><b>Títulos y resumen:</b> edita el título en <b>Título</b> de la entrada de Actualidad. Las tarjetas usan el <b>Extracto</b>; si está vacío, WordPress lo genera desde el contenido. “Actualidad” y sus encabezados son fijos.</div>
     <div class="note"><b>Fecha del evento:</b> una fecha válida en <code>labm_fecha_evento</code> (<code>AAAA-MM-DD</code>) tiene prioridad en el listado y el detalle. Si está vacío o es inválido, se muestra la fecha de publicación. <code>lamb_demo_fecha</code> no existe.</div>
-    <div class="image-guide"><b>Imágenes:</b> usa una imagen destacada horizontal de <b>1600 × 900 px (16:9)</b>. El listado y los destacados de Inicio la adaptan con recorte; el detalle conserva la imagen completa. Para la galería del artículo, prepara cada foto en <b>1200 × 900 px (4:3)</b>; puede recortarse al marco. Deja el motivo principal cerca del centro y no incrustes texto pequeño. Recom.: JPG/WebP, hasta <b>500 KB</b> por foto. Esta sección no tiene tope propio; aplica el límite global de Medios.</div>
+    <div class="image-guide"><b>Imágenes:</b> usa una imagen destacada horizontal de <b>1600 × 900 px (16:9)</b>; se utiliza como vista previa en el listado y en Inicio. Para mostrar fotografías dentro del artículo, insértalas en el cuerpo o en un bloque Galería; prepara cada foto en <b>1200 × 900 px (4:3)</b>. Las tarjetas pueden recortar la imagen. Deja el motivo principal cerca del centro y no incrustes texto pequeño. Recom.: JPG/WebP, hasta <b>500 KB</b> por foto. Esta sección no tiene tope propio; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
   </section>
 
   <section class="page manual-selecciones" id="pagina-06">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">06</p><div class="identity-line"></div>
     <h2>Selecciones: Piso y Playa</h2><p class="intro">La modalidad de la publicación determina dónde aparece y qué opción del menú queda seleccionada.</p>
-    <img class="screen short" src="imagenes/selecciones-editor.png" alt="Editor de Selecciones con Modalidades">
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:400px;height:160px"><img src="imagenes/selecciones-editor.png" alt="Título y contenido de una Selección en el editor real." style="width:740px;left:-113px;top:-80px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Título y relato de la participación.</figcaption></figure>
+      <figure class="detail-shot"><div class="crop" style="width:265px;height:176px"><img src="imagenes/selecciones-editor.png" alt="Modalidades Piso, Modalidad correctiva y Playa en el panel real." style="width:1440px;left:-1175px;top:-711px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Asigna la modalidad Piso o Playa.</figcaption></figure>
+    </div>
     <div class="step"><b>1</b><span><b>Selecciones → Añadir Selección</b>. Completa título, relato de la participación e imagen destacada.</span></div>
     <div class="step"><b>2</b><span>En <b>Modalidades</b> selecciona Piso o Playa. Completa Categorías y el extracto.</span></div>
     <div class="step"><b>3</b><span>Publica y revisa el listado de esa modalidad. Abre la interna: Selecciones y la modalidad deben seguir activos.</span></div>
 
     <div class="admin-guide"><b>Título y descripción del listado:</b> “Piso” o “Playa” se cambia editando la modalidad correspondiente en <b>Selecciones → Modalidades</b>. Allí, el campo <b>Description / Descripción</b> controla el texto bajo la cabecera. Si queda vacío, aparece “Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.” El prefijo <b>“SELECCIÓN ANTIOQUIA ·”</b> es fijo y requiere apoyo del administrador para cambiarlo. El filtro Piso/Playa está en el submenú de navegación <b>Selecciones</b>, no en la cabecera. “Balonmano de Piso/Playa” y el conteo de participaciones se generan automáticamente.</div>
     <div class="note"><b>Cada publicación:</b> cambia su título desde el campo <b>Título</b> de WordPress en la entrada de Selecciones. <code>labm_modalidad_detalle</code> es un dato opcional para la tarjeta y el panel de participación; si está vacío, esa información se omite. La clasificación Modalidades define el listado, no Categorías.</div>
-    <div class="image-guide"><b>Imagen destacada:</b> recomendada en <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>. La miniatura del listado se recorta para llenar un marco horizontal; la imagen de la interna mantiene su proporción y se muestra completa. Centra la acción principal. No hay un límite de carga exclusivo para Selecciones: aplica el límite global de Medios.</div>
+    <div class="image-guide"><b>Imágenes:</b> usa la imagen destacada como vista previa en el listado, recomendada en <b>1600 × 900 px (16:9)</b>, JPG/WebP, hasta <b>500 KB</b>. Para mostrar fotografías en la participación, insértalas en el cuerpo del artículo. La miniatura del listado se recorta para llenar un marco horizontal. Centra la acción principal. No hay un límite de carga exclusivo para Selecciones: aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>06</b></div>
   </section>
 
   <section class="page manual-documentos-publicar" id="pagina-07">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">07</p><div class="identity-line"></div>
     <h2>Documentos: asocia el PDF</h2><p class="intro">Este panel es real y específico de LABM. Se encuentra en la barra derecha del editor de Documentos.</p>
-    <img class="screen tall" src="imagenes/documentos-formulario.png" alt="Formulario de Documentos">
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:280px;height:100px"><img src="imagenes/documentos-listado.png" alt="Listado administrativo real de Documentos con el acceso para añadir un registro." style="width:1440px;left:-175px;top:-30px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>En Documentos, inicia el alta con «Añadir Documento».</figcaption></figure>
+      <figure class="detail-shot"><div class="crop" style="width:220px;height:75px"><img src="imagenes/documentos-editor.png" alt="Campo Título visible en el editor real de un documento existente." style="width:660px;left:-136px;top:-75px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>El campo Título se completa después de iniciar el alta.</figcaption></figure>
+      <figure class="detail-shot"><div class="crop" style="width:190px;height:205px"><img src="imagenes/documentos-formulario.png" alt="Campos reales de fecha y tipo en un documento existente." style="width:248px;left:0;top:-210px"><span class="shot-label">3</span></div><figcaption><span class="shot-label">3</span>Fecha y tipo opcionales, en un registro existente.</figcaption></figure>
+    </div>
     <div class="step"><b>1</b><span><b>Documentos → Añadir Documento</b>. Escribe el título.</span></div><div class="step"><b>2</b><span>En <b>Archivo y clasificación</b> pulsa <b>Seleccionar o subir PDF</b>.</span></div>
     <div class="step"><b>3</b><span>Elige el archivo y confirma <b>Usar este PDF</b>. Comprueba nombre, tamaño y validez.</span></div><div class="step"><b>4</b><span>Completa fecha oficial si corresponde y un solo Tipo de documento.</span></div>
     <div class="step"><b>5</b><span>Revisa, publica y abre Documentos. Comprueba <b>Ver PDF</b> y <b>Descargar</b>.</span></div>
     <div class="admin-guide"><b>Títulos y descripción:</b> el título del PDF se cambia en <b>Título</b>. El encabezado del catálogo viene de la entrada en <b>Posts / Entradas</b> con slug <code>banner-documentos</code>: edita Título y Extracto (si está vacío, se usa Contenido). Sin título o texto, el encabezado se oculta. Conserva el slug.</div>
-    <div class="note">Tipos iniciales: Documento general, Acta, Certificado, Circular, Resolución, Reglamento, Informe, Convocatoria u Otro. Límite PDF: el menor entre 30 MB y el permitido por WordPress (en este entorno local, 2 MB). Documentos no tiene una imagen administrable; el archivo se adjunta en <b>Archivo y clasificación</b>. No uses Imagen destacada para asociar el PDF.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>07</b></div>
   </section>
 
-  <section class="page" id="pagina-08">
+  <section class="page manual-documentos-reemplazo" id="pagina-08">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">08</p><div class="identity-line"></div>
     <h2>Reemplaza y comprueba un PDF</h2><p class="intro">Actualizar un archivo requiere guardar la publicación y revisar el resultado en el catálogo público.</p>
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:248px;height:220px"><img src="imagenes/documentos-formulario.png" alt="Captura real del panel Archivo PDF y el botón Reemplazar PDF en un documento existente." style="width:248px;left:0;top:0"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Panel real de un documento existente: aquí se reemplaza el PDF asociado.</figcaption></figure>
+    </div>
     <img class="screen short" src="imagenes/13-documentos-publico.png" alt="Catálogo público de Documentos">
     <div class="step"><b>1</b><span>Abre el documento existente y pulsa <b>Reemplazar PDF</b>. Selecciona el nuevo archivo.</span></div><div class="step"><b>2</b><span>Revisa título, fecha y tipo. Guarda la publicación.</span></div>
     <div class="step"><b>3</b><span>Busca el registro público y prueba <b>Ver PDF</b> y <b>Descargar</b>.</span></div><div class="step"><b>4</b><span>Para retirar el documento, pásalo a borrador o a la papelera.</span></div>
@@ -253,9 +276,14 @@
   <section class="page manual-slides" id="pagina-09">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">09</p><div class="identity-line"></div>
     <h2>Inicio: crea una diapositiva</h2><p class="intro">Slides de Inicio alimenta el carrusel. Cada diapositiva se verifica en la portada, no en una página propia.</p>
-    <img class="screen short" src="imagenes/slides-editor.png" alt="Editor de Slides de Inicio">
-    <div class="step"><b>1</b><span><b>Slides de Inicio → Add Post / Añadir</b>. Escribe título y texto breve.</span></div><div class="step"><b>2</b><span>Asigna imagen destacada. Título e imagen son obligatorios para publicar.</span></div>
+    <div class="shot-row">
+      <figure class="detail-shot"><div class="crop" style="width:395px;height:145px"><img src="imagenes/slides-editor.png" alt="Título y texto de una diapositiva real de Inicio." style="width:800px;left:-167px;top:-86px"><span class="shot-label">1</span></div><figcaption><span class="shot-label">1</span>Título y texto visibles en la diapositiva.</figcaption></figure><figure class="detail-shot"><div class="crop" style="width:280px;height:130px"><img src="imagenes/aliados-editor.png" alt="Referencia del panel Post Attributes con el campo Order para ordenar contenidos de portada." style="width:1440px;left:-1140px;top:-333px"><span class="shot-label">2</span></div><figcaption><span class="shot-label">2</span>Referencia del panel compartido: en Slides el control aparece en la misma ubicación.</figcaption></figure>
+    </div>
+    <div class="step"><b>1</b><span><b>Slides de Inicio → Add Post / Añadir</b>. Escribe título y texto breve.</span></div><div class="step"><b>2</b><span>Asigna imagen destacada: es obligatoria para publicar. Puedes guardar sin imagen como borrador.</span></div>
     <div class="step"><b>3</b><span>Revisa el destino y la etiqueta del botón si la diapositiva lleva enlace. Publica o guarda.</span></div><div class="step"><b>4</b><span>Abre Inicio, recorre el carrusel y comprueba imagen, texto y botón.</span></div>
+    <div class="note"><b>Publicación:</b> si intentas publicar sin imagen destacada, el panel muestra un aviso y conserva el contenido como borrador. En la portada solo aparecen slides publicados con imagen válida.</div>
+
+    <div class="note"><b>Orden:</b> en <b>Post Attributes / Atributos → Order / Orden</b>, o en <b>Quick Edit / Edición rápida</b> desde el listado, un número menor aparece antes. Si dos slides tienen el mismo número, se ordenan alfabéticamente por título. Usa números distintos para controlar la posición de forma predecible; la fecha de publicación no se utiliza.</div>
 
     <div class="note"><b>Título y texto:</b> edita el título de cada slide en su campo <b>Título</b> de WordPress. El texto breve usa primero el <b>Extracto</b> y, si está vacío, las primeras palabras del Contenido. No hay un texto alternativo predeterminado si ambos están vacíos. <code>labm_destino_url</code> y <code>labm_cta_texto</code> controlan el enlace; si hay destino y falta la etiqueta, el botón dice “Conocer más”. Si no ves esos campos, activa el panel de Campos personalizados (página 04A).</div>
     <div class="image-guide"><b>Imagen del slide:</b> prepara <b>1920 × 1080 px (16:9)</b>, JPG/WebP, hasta <b>700 KB</b>. El carrusel llena un marco ancho y puede recortar partes de la imagen según el tamaño de pantalla. Mantén rostros y elementos importantes en la zona central y deja margen arriba y abajo. No hay límite propio para Slides; aplica el límite global de Medios.</div>
@@ -530,8 +558,8 @@
       <li>Publica y verifica <b>Ver PDF</b> y <b>Descargar</b>.</li>
     </ol>
     <div class="grid">
-      <div><img class="screen" src="imagenes/documentos-editor.png" alt="Editor de Documentos"><p class="caption">Panel Archivo y clasificación.</p></div>
-      <div><img class="screen" src="imagenes/documentos-formulario.png" alt="Campos del formulario de Documentos"><p class="caption">Fecha y tipo de documento.</p></div>
+      <div><img class="screen" src="imagenes/documentos-editor.png" alt="Editor de Documentos"><p class="caption">Controles reales del panel Archivo y clasificación en un documento existente.</p></div>
+      <div><img class="screen" src="imagenes/documentos-campos.png" alt="Controles de fecha y tipo de Documentos"><p class="caption">Fecha y tipo, si corresponden.</p></div>
     </div>
     <div class="callout">Para reemplazar un archivo usa <b>Reemplazar PDF</b>. <b>Quitar PDF</b> sólo desvincula el archivo; no lo borra de Medios.</div>
     <div class="footer">LABM · Documentos</div>

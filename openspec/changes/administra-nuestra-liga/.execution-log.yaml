@@ -1,0 +1,42 @@
+schema_version: "1.0"
+kind: execution_log
+change: administra-nuestra-liga
+updated_at: "2026-10-26T00:21:51-05:00"
+status: ok
+summary: "SPEC completada para los tres dominios afectados con validación estructural y de finales de línea."
+artifact_refs:
+  - specs/arquitectura-cms/spec.md
+  - specs/experiencia-publica/spec.md
+  - specs/calidad-seguridad/spec.md
+  - design.md
+  - validation-plan.yaml
+events:
+  - id: "spec-administra-nuestra-liga-20261026T001525-05:00"
+    phase: SPEC
+    started_at: "2026-10-26T00:13:00-05:00"
+    finished_at: "2026-10-26T00:15:25-05:00"
+    status: ok
+    summary: "Se escribieron y validaron seis requisitos y veintiún escenarios en español; la aprobación de alcance se conservó."
+    artifact_refs:
+      - specs/arquitectura-cms/spec.md
+      - specs/experiencia-publica/spec.md
+      - specs/calidad-seguridad/spec.md
+    risks:
+      - "Los valores finales de interfaz y la estrategia técnica quedan para DESIGN y no se han iniciado."
+    attempt: 1
+    retried: false
+  - id: "design-administra-nuestra-liga-20261026T002151-05:00"
+    phase: DESIGN
+    started_at: "2026-10-26T00:21:13-05:00"
+    finished_at: "2026-10-26T00:21:51-05:00"
+    status: ok
+    summary: "Diseño técnico y plan de validación persistidos; PROPOSE y SPEC verificadas, aprobación y hashes conservados, sin cambios en WordPress ni contenido persistido."
+    artifact_refs:
+      - design.md
+      - validation-plan.yaml
+      - .status.yaml
+    risks:
+      - "La herramienta concreta para regenerar el PDF del manual debe confirmarse durante APPLY; la pregunta no bloquea el diseño."
+      - "La opción labm_home_settings requerirá content-sync si APPLY o VERIFY guarda valores en la base local."
+    attempt: 1
+    retried: false

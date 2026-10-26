@@ -362,7 +362,6 @@ final class FixturesDomainTest extends TestCase {
 			'demo-labm-seleccion-privada'   => array( 'labm_seleccion', 'private' ),
 			'demo-labm-club-frontera'        => array( 'labm_club', 'publish' ),
 			'demo-labm-integrante-vacante'   => array( 'labm_integrante', 'draft' ),
-			'demo-labm-horario-limite'       => array( 'labm_horario', 'publish' ),
 		);
 
 		foreach ( $expected as $slug => $definition ) {
@@ -406,7 +405,6 @@ final class FixturesDomainTest extends TestCase {
 			'labm_seleccion'  => array( 'demo-labm-seleccion-privada' ),
 			'labm_club'       => array( 'demo-labm-club-frontera' ),
 			'labm_integrante' => array( 'demo-labm-integrante-vacante' ),
-			'labm_horario'    => array( 'demo-labm-horario-limite' ),
 		);
 		foreach ( $fixtures as $post_type => $slugs ) {
 			foreach ( $slugs as $slug ) {

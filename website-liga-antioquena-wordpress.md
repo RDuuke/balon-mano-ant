@@ -83,7 +83,7 @@ La portada DEBE permitir administrar las siguientes secciones:
 - Clubes asociados con logo, nombre y enlace opcional.
 - Evento o logro destacado.
 - Últimas noticias/eventos.
-- Horarios de entrenamiento separados por modalidad.
+- Horarios de entrenamiento separados por modalidad (idea de la propuesta inicial; retirados del alcance vigente el 2026-10-25).
 - Ubicación o escenarios deportivos, con enlace a mapa.
 - Llamada a la acción de contacto o vinculación.
 
@@ -195,7 +195,7 @@ El agente DEBE reutilizar capacidades nativas de WordPress cuando sea razonable 
 | Selecciones/participaciones | CPT `seleccion` o `participacion` | Modalidad, periodo, lugar, galería |
 | Clubes | CPT `club` | Nombre, logo, URL, descripción |
 | Integrantes | CPT `integrante` | Rol, grupo, foto, contacto, orden |
-| Horarios | Bloque repetible u opciones | Modalidad, día, hora, categoría, escenario |
+| Horarios | Retirado del administrador y de los datos locales el 2026-10-25 | Sin contenido vigente |
 
 Si el repositorio ya define otro modelo equivalente, adaptarlo sin duplicar datos.
 

@@ -60,7 +60,6 @@ function labm_theme_setup_public_experience() {
 	add_shortcode( 'labm_selecciones_listado', 'labm_theme_selecciones_shortcode' );
 	add_shortcode( 'labm_header_navigation', 'labm_theme_header_navigation_shortcode' );
 	add_shortcode( 'labm_actualidad_hero', 'labm_theme_actualidad_hero_shortcode' );
-	add_shortcode( 'labm_actualidad_media', 'labm_theme_actualidad_media_shortcode' );
 	add_shortcode( 'labm_actualidad_detalle', 'labm_theme_actualidad_detail_shortcode' );
 	add_shortcode( 'labm_actualidad_body', 'labm_theme_actualidad_body_shortcode' );
 }
@@ -448,13 +447,18 @@ function labm_theme_home_posts( $post_type, $limit ) {
 function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
 
 	$posts = labm_theme_home_posts( $post_type, 5 );
+	$posts = array_values(
+		array_filter(
+			$posts,
+			static function ( $post ) {
+				$thumbnail_id = get_post_thumbnail_id( $post );
+				return $thumbnail_id && wp_attachment_is_image( $thumbnail_id );
+			}
+		)
+	);
 	if ( empty( $posts ) ) {
 		return '';
 	}
-	$fallback_images = array(
-		'assets/images/hero-balonmano-antioquia-v1.png',
-		'assets/images/hero-balonmano-seleccion-v1.png',
-	);
 	ob_start();
 	?>
 	<section class="labm-home-slider" data-labm-section="slider" data-labm-slider aria-label="<?php esc_attr_e( 'Destacados', 'labm' ); ?>">
@@ -462,16 +466,6 @@ function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
 			<?php
 			foreach ( $posts as $index => $post ) :
 				$thumbnail = get_the_post_thumbnail( $post, 'full', array( 'loading' => 0 === $index ? 'eager' : 'lazy' ) );
-				if ( '' === $thumbnail ) {
-					$fallback  = $fallback_images[ $index % count( $fallback_images ) ];
-					$thumbnail = sprintf(
-						'<img src="%1$s" alt="" loading="%2$s" width="%3$d" height="%4$d">',
-						esc_url( get_theme_file_uri( $fallback ) ),
-						0 === $index ? 'eager' : 'lazy',
-						0 === $index ? 1536 : 1366,
-						0 === $index ? 864 : 768
-					);
-				}
 				?>
 				<article class="labm-home-slider__slide" data-labm-slide tabindex="0" <?php echo 0 === $index ? '' : 'hidden'; ?>>
 					<?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera o sanea el marcado. ?>
@@ -813,36 +807,6 @@ function labm_theme_render_actualidad_hero( $post ) {
 }
 
 /**
- * Renderiza el medio destacado o su fallback seguro.
- *
- * @param WP_Post $post Publicacion que se eval?a o representa.
- */
-function labm_theme_render_actualidad_media( $post ) {
-
-	if ( ! labm_theme_is_public_actualidad( $post ) ) {
-		return '';
-	}
-
-	$thumbnail = get_the_post_thumbnail(
-		$post,
-		'full',
-		array(
-			'class'   => 'labm-actualidad-detail__image',
-			'loading' => 'eager',
-		)
-	);
-	if ( '' === $thumbnail ) {
-		$path      = labm_theme_news_fallback_path( $post );
-		$thumbnail = sprintf(
-			'<img class="labm-actualidad-detail__image" src="%1$s" alt="" loading="eager" width="1536" height="864">',
-			esc_url( get_theme_file_uri( $path ) )
-		);
-	}
-
-	return '<div class="labm-actualidad-detail__media" data-labm-actualidad-media>' . wp_kses_post( $thumbnail ) . '</div>';
-}
-
-/**
  * Renderiza los controles de compartir del detalle editorial.
  *
  * @param WP_Post $post Publicacion que se eval?a o representa.
@@ -884,13 +848,6 @@ function labm_theme_actualidad_hero_shortcode() {
 
 	$post = get_queried_object();
 	return $post instanceof WP_Post ? labm_theme_render_actualidad_hero( $post ) : '';
-}
-
-/** Resuelve el medio desde la publicación consultada por la plantilla individual. */
-function labm_theme_actualidad_media_shortcode() {
-
-	$post = get_queried_object();
-	return $post instanceof WP_Post ? labm_theme_render_actualidad_media( $post ) : '';
 }
 
 /** Resuelve el detalle desde la publicación consultada por la plantilla individual. */
@@ -1379,9 +1336,6 @@ function labm_theme_render_selection_detail() {
 		<div class="labm-seleccion-detalle__layout">
 			<div class="labm-seleccion-detalle__main">
 				<div class="labm-seleccion-detalle__content"><?php echo apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenido procesado por filtros estándar de WordPress. ?></div>
-				<?php if ( has_post_thumbnail( $post ) ) : ?>
-					<figure class="labm-seleccion-detalle__image"><?php echo get_the_post_thumbnail( $post, 'large', array( 'alt' => wp_strip_all_tags( get_the_title( $post ) ), 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML de imagen generado por WordPress. ?></figure>
-				<?php endif; ?>
 				<a class="labm-seleccion-detalle__back" href="<?php echo esc_url( get_post_type_archive_link( 'labm_seleccion' ) ); ?>"><?php esc_html_e( '← Volver a Selecciones', 'labm' ); ?></a>
 			</div>
 			<aside class="labm-seleccion-detalle__aside" aria-labelledby="labm-seleccion-info-title">

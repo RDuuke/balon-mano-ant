@@ -32,7 +32,7 @@ final class ClosingCoverageTest extends TestCase {
 		for ( $attempt = 0; $attempt < 2; ++$attempt ) {
 			labm_core_register_content_types();
 			labm_core_register_meta();
-			foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento' ) as $type ) {
+			foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_documento' ) as $type ) {
 				$object = get_post_type_object( $type );
 				self::assertTrue( $object->public );
 				self::assertTrue( $object->show_in_rest );

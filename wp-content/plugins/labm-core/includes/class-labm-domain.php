@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Version del esquema de capacidades. */
-const LABM_CORE_CAPABILITIES_VERSION = '6';
+const LABM_CORE_CAPABILITIES_VERSION = '7';
 /** Version del vocabulario administrativo de documentos. */
 const LABM_CORE_DOCUMENT_TYPES_VERSION = '1';
 /** Version de las rutas publicas del dominio. */
@@ -29,7 +29,6 @@ function labm_core_register_content_types() {
 		'labm_seleccion'  => array( __( 'Selecciones', 'labm-core' ), __( 'Selección', 'labm-core' ), 'labm_seleccion', 'labm_selecciones' ),
 		'labm_club'       => array( __( 'Clubes', 'labm-core' ), __( 'Club', 'labm-core' ), 'labm_club', 'labm_clubes' ),
 		'labm_integrante' => array( __( 'Integrantes', 'labm-core' ), __( 'Integrante', 'labm-core' ), 'labm_integrante', 'labm_integrantes' ),
-		'labm_horario'    => array( __( 'Horarios', 'labm-core' ), __( 'Horario', 'labm-core' ), 'labm_horario', 'labm_horarios' ),
 		'labm_documento'  => array( __( 'Documentos', 'labm-core' ), __( 'Documento', 'labm-core' ), 'labm_documento', 'labm_documentos' ),
 	);
 
@@ -158,10 +157,6 @@ function labm_core_render_editor_guidance_notice() {
 			__( 'Datos adicionales de Integrantes', 'labm-core' ),
 			__( 'Usa Cargo (labm_cargo) para el texto que acompaña al nombre. El grupo del integrante se selecciona en la taxonomía Grupos de integrantes.', 'labm-core' ),
 		),
-		'labm_horario' => array(
-			__( 'Datos adicionales de Horarios', 'labm-core' ),
-			__( 'Inicio (labm_inicio) está registrado, pero no tiene salida pública confirmada. Publicar un horario no crea por sí solo una sección en Inicio.', 'labm-core' ),
-		),
 	);
 
 	if ( empty( $guidance[ $screen->post_type ] ) ) {
@@ -266,7 +261,6 @@ function labm_core_register_meta() {
 		'labm_seleccion'  => array( 'labm_modalidad_detalle' => 'sanitize_text_field' ),
 		'labm_club'       => array( 'labm_ciudad' => 'sanitize_text_field' ),
 		'labm_integrante' => array( 'labm_cargo' => 'sanitize_text_field' ),
-		'labm_horario'    => array( 'labm_inicio' => 'sanitize_text_field' ),
 		'labm_documento'  => array(),
 	);
 
@@ -411,7 +405,26 @@ function labm_core_ensure_capabilities() {
 		if ( ! $role ) {
 			continue;
 		}
-		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_horario', 'labm_documento', 'labm_slide', 'labm_aliado' ) as $post_type ) {
+		foreach (
+			array(
+				'edit_labm_horario',
+				'read_labm_horario',
+				'delete_labm_horario',
+				'edit_labm_horarios',
+				'edit_others_labm_horarios',
+				'delete_labm_horarios',
+				'publish_labm_horarios',
+				'read_private_labm_horarios',
+				'delete_private_labm_horarios',
+				'delete_published_labm_horarios',
+				'delete_others_labm_horarios',
+				'edit_private_labm_horarios',
+				'edit_published_labm_horarios',
+			) as $retired_capability
+		) {
+			$role->remove_cap( $retired_capability );
+		}
+		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_documento', 'labm_slide', 'labm_aliado' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			if ( $object ) {
 				foreach ( array_unique( (array) $object->cap ) as $capability ) {

@@ -1,0 +1,63 @@
+schema_version: "2.0"
+change: administra-nuestra-liga
+revision: 4
+path: normal
+phase: DESIGN
+phase_status: ok
+completed_phases:
+  - PROPOSE
+  - SPEC
+  - DESIGN
+completed: false
+pending_tasks: []
+modified_artifacts:
+  - openspec/changes/administra-nuestra-liga/proposal.md
+  - openspec/changes/administra-nuestra-liga/specs/arquitectura-cms/spec.md
+  - openspec/changes/administra-nuestra-liga/specs/experiencia-publica/spec.md
+  - openspec/changes/administra-nuestra-liga/specs/calidad-seguridad/spec.md
+  - openspec/changes/administra-nuestra-liga/design.md
+  - openspec/changes/administra-nuestra-liga/validation-plan.yaml
+  - openspec/changes/administra-nuestra-liga/.execution-log.yaml
+artifact_hashes:
+  openspec/changes/administra-nuestra-liga/proposal.md: C8289AE4F22FA184FE28692ED3003D0A515903342271FEAA55F8BFAD5C208388
+  openspec/config.yaml: C7943B8AE5C361F0FB6FD2A56167259D5C5606948EABDE1B1F72A5BF3A72FD48
+  openspec/specs/arquitectura-cms/spec.md: 61C109FADE3D3ADF6ABB9ABD6D2E1A698D1AD22BD11900FDD2F891E133F7D6BE
+  openspec/specs/experiencia-publica/spec.md: 7B627D6F457F2C0639D5600FB249CA48B83909504E5338FC649F1A670758DB64
+  openspec/specs/calidad-seguridad/spec.md: 05CEF666724EA40FD967A60659CB8F54FCAC9C8FAB0CB2607F18426D5697A3FC
+  openspec/changes/administra-nuestra-liga/specs/arquitectura-cms/spec.md: A26D2E2A84956C403C54A18AA69321971C843D9C8B80B0FBED15BEF3D2B4F031
+  openspec/changes/administra-nuestra-liga/specs/experiencia-publica/spec.md: 3C84C9CE69C691DE26C4847148FC59333AEBE4E69188B3137E3E5C102F5E7322
+  openspec/changes/administra-nuestra-liga/specs/calidad-seguridad/spec.md: A55CE92C7EC806CCB50C1538A9F224CA83066DA0A9A93E801EE9A5C51251D8B6
+  openspec/changes/administra-nuestra-liga/design.md: EA73240CAD20A41A091397C79923C67A7E95A38ABBE442E3882BC0E9AD9AEC80
+  wp-content/plugins/labm-core/includes/class-labm-home-content.php: E19941CE85B563EE2487D69A0E96CF6EE95CE76418B519B19DA96F9CFC7941EA
+  wp-content/plugins/labm-core/includes/class-labm-footer-settings.php: 446BA3AAEB464FE775ACCDD4BFACE5342B8F88528F83437992D466CAD7F54453
+  wp-content/plugins/labm-core/labm-core.php: C7D0B56AFF9BF9318162189891DA1CDCA85F1600F4B1FDEBF74F215052AB65E8
+  wp-content/themes/labm/patterns/inicio.php: 98D753CDC8078DCFD797F99A51540B225EB8AEF73AB0FB14993FA7090662BE59
+  wp-content/themes/labm/style.css: B8591F56D8C5F2EF5D71530A8B9EB8A100A85AC17360944D3FA764280F389D0E
+  tests/php/HomeContentTest.php: 6234FE0DCDD88E8FB32598C885F6627B105DE48A9C8D8A70FEFB41E95E818DBD
+  tests/php/HomePresentationTest.php: B16E153F8ABBD5CD568541879BDEA0023EA4D87DEDC3D6C9D6093AF06A840CB0
+  tests/php/PublicExperienceTest.php: FD8530204C7F9074DE5363CA2A22CEE047B9B7BAE03F5C32CD170028FD9AE51D
+  tests/e2e/home.spec.ts: E1434667D036A3543E2293B82D56352C0DA3F9E16D51A740D41D76899090BD25
+  tests/e2e/public-experience.spec.ts: 26EAF197A88780229ABC76437170A2E45C79E619E8A8E2A0FE3946269AE185EF
+  docs/manual-usuario/manual-usuario.md: EDE0A6E5B932DB3EF9CC83972F88FEE4A9D0DD31DD4B7DBF58C32553E62C0A30
+  docs/manual-usuario/cartilla-manual-usuario-labm.html: FC6E196E9167A9F42B515ACF62814E75D0E5172EF065EA8516EF8FD2931FE3CE
+  composer.json: E64EC0E44E244B7DFDDEA85109DD0D091C6124CDF7F55C551C3CE46482652101
+  package.json: A5FEFB94C08DB129C35F3256413BB1EE85959D4DFCFFD7CE366E6B2CC20B272D
+  scripts/gate.ps1: C77854121FC3C8A1D0452F9EC4A785002A7CADD0864FA0C78C11B8FED8E1F739
+  docs/content-sync.md: 08FFDE0D41BBF26FD97E3D1E85E8F56EB81B08DA78301617D6C8D1B9328F2AEF
+  openspec/changes/administra-nuestra-liga/validation-plan.yaml: 4ABDFB8DCE281D1647A2FC122CD419333307A57BDAA1AA51CDDDAA50DB2927DD
+approvals:
+  - id: scope-administra-nuestra-liga
+    kind: scope
+    status: approved
+    artifact_refs:
+      - proposal.md
+    input_hashes:
+      proposal.md: C8289AE4F22FA184FE28692ED3003D0A515903342271FEAA55F8BFAD5C208388
+    user_instruction: "Quiero aprobar la propuesta definida en openspec\\changes\\administra-nuestra-liga\\proposal.md."
+    approved_at: "2026-10-25T23:53:32-05:00"
+    scope: "Hacer administrable el bloque Nuestra Liga de Inicio mediante una pantalla LABM → Inicio, manteniendo el diseño y los fallbacks actuales."
+    reason: "La implementación modifica configuración persistida, plugin, tema, pruebas y documentación."
+blockers: []
+fix_attempts: 0
+archive_path: null
+notes: "Propuesta creada con alcance inicial limitado al bloque Nuestra Liga; otras secciones de Inicio quedan fuera. DESIGN documenta el contrato de Settings API, fallback público, validación y rollback; queda una pregunta no bloqueante sobre la herramienta de exportación del PDF."

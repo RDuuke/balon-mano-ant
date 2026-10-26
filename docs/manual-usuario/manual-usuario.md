@@ -58,7 +58,7 @@ El menú público y el menú del administrador tienen funciones distintas. Para 
 | Archivos e imágenes | **Media / Medios** | Biblioteca usada por las publicaciones |
 | Contenedores institucionales | **Pages / Páginas** | Páginas estructurales del sitio |
 
-**Horarios** existe como tipo de contenido en el administrador, pero no se muestra como sección de Inicio en la implementación actual. No publiques un horario esperando que aparezca automáticamente en la portada.
+**Horarios fue retirado del administrador y del sitio el 25 de octubre de 2026.** Ya no se pueden crear ni editar horarios; sus registros locales fueron eliminados.
 
 ## 3. Crear, revisar, publicar y actualizar
 
@@ -188,11 +188,13 @@ El PDF debe existir en la biblioteca, ser accesible para tu cuenta y ser un PDF 
 
 ![Editor real de una diapositiva de Inicio](imagenes/slides-editor.png)
 
+![Referencia real del panel Post Attributes con el campo Order](imagenes/aliados-editor.png)
+
 1. Abre **Slides de Inicio**.
 2. Pulsa **Add Post / Añadir** o edita una diapositiva existente.
 3. Escribe el título que se mostrará en el carrusel.
 4. Añade el texto breve al contenido o al extracto según el texto editorial existente.
-5. Asigna una **imagen destacada**. Título e imagen son obligatorios para publicar.
+5. Asigna una **imagen destacada**. Es obligatoria para publicar, pero puedes guardar un borrador sin imagen. Si intentas publicar sin ella, el panel muestra un aviso y conserva el contenido como borrador.
 6. Revisa el enlace de destino y el texto del botón si la diapositiva debe tener una llamada a la acción.
 7. Publica o guarda los cambios.
 8. Abre Inicio y recorre el carrusel hasta esa diapositiva. Comprueba que el texto sea legible y el botón lleve al destino correcto.
@@ -201,7 +203,11 @@ El destino del botón se guarda en `labm_destino_url` y su etiqueta en `labm_cta
 
 Completa ambos datos para que el botón tenga el destino y el texto previstos. Si hay destino y falta el texto, aparece «Conocer más»; si falta el destino, no se muestra el enlace. Después de publicar, prueba la diapositiva directamente en **Inicio**.
 
+En la portada solo aparecen las diapositivas publicadas que tienen una imagen destacada válida. Las diapositivas sin imagen pueden conservarse como borradores; al intentar publicarlas, el panel avisa y mantiene el contenido como borrador.
+
 Las diapositivas publicadas se ordenan por orden editorial y luego por título. El tipo admite atributos de página; según la versión del editor el orden puede aparecer en **Post Attributes / Atributos** o en **Quick Edit / Edición rápida** del listado. Si el control no está disponible para tu cuenta, solicita el orden al administrador. No alteres fechas para ordenar el carrusel.
+
+En **Post Attributes / Atributos**, escribe un número de orden: un número menor aparece antes. Si dos slides tienen el mismo número, el título define el desempate en orden alfabético. Usa números distintos cuando necesites controlar la posición de forma predecible. La captura anterior muestra el panel estándar compartido por Slides y Aliados; en Slides el control aparece en la misma ubicación.
 
 Las diapositivas no tienen una página pública individual. Se verifican en Inicio.
 

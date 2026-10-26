@@ -191,7 +191,6 @@ final class DomainModelTest extends TestCase {
 			'seleccion'  => array( 'labm_seleccion' ),
 			'club'       => array( 'labm_club' ),
 			'integrante' => array( 'labm_integrante' ),
-			'horario'    => array( 'labm_horario' ),
 		);
 	}
 
@@ -226,7 +225,6 @@ final class DomainModelTest extends TestCase {
 			'labm_seleccion'  => 'labm_modalidad_detalle',
 			'labm_club'       => 'labm_ciudad',
 			'labm_integrante' => 'labm_cargo',
-			'labm_horario'    => 'labm_inicio',
 		);
 		foreach ( $fields as $post_type => $meta_key ) {
 			self::assertTrue( registered_meta_key_exists( 'post', $meta_key, $post_type ), $meta_key );

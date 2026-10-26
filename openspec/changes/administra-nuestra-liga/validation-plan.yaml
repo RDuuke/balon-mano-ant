@@ -1,0 +1,158 @@
+schema_version: "1.0"
+kind: validation_plan
+change: administra-nuestra-liga
+updated_at: "2026-10-26T00:21:22-05:00"
+status: ok
+summary: "Plan de validación para la configuración editorial de Nuestra Liga, su presentación pública, seguridad, documentación y estado persistido."
+artifact_refs:
+  - proposal.md
+  - specs/arquitectura-cms/spec.md
+  - specs/experiencia-publica/spec.md
+  - specs/calidad-seguridad/spec.md
+  - design.md
+impact:
+  areas:
+    - "configuración editorial de WordPress"
+    - "patrón público labm/inicio"
+    - "accesibilidad y composición responsive de Inicio"
+    - "manual de usuario y cartilla visual"
+    - "estado persistido de la opción labm_home_settings"
+  shared_dependencies:
+    - "Settings API y options.php"
+    - "menú superior LABM con slug labm-footer"
+    - "class-labm-home-content.php"
+    - "patrón labm/inicio"
+    - "tests/php/bootstrap.php e integración WordPress"
+    - "Playwright y Axe"
+    - "scripts/content-sync.ps1"
+  risk: medium
+  reason: "El cambio introduce una opción persistida y una pantalla administrativa, y modifica una sección pública compartida; el layout y los fallbacks actuales deben mantenerse."
+checks:
+  - id: home-settings-php
+    criteria:
+      - c1-admin-authorized
+      - c2-admin-unauthorized
+      - c3-closed-schema
+      - c4-sanitization-and-url
+    method: cli
+    required: true
+    scope: "Contrato de opción, defaults, Settings API, capacidad y saneamiento de Nuestra Liga."
+    command: "docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v \"${PWD}:/work:ro\" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist --filter \"HomeContentTest\""
+    expected: "Los siete campos se registran con esquema cerrado; solo edit_theme_options administra; entradas no permitidas no alteran la configuración válida; defaults y URLs seguras son reproducibles."
+    capability: "PHPUnit WordPress; phpunit.integration.xml.dist y tests/php/HomeContentTest.php"
+    reason: "La administración y el saneamiento dependen de funciones WordPress que no se prueban con el bootstrap unitario mínimo."
+  - id: home-presentation-php
+    criteria:
+      - c3-closed-schema
+      - c4-public-render
+      - c5-plugin-fallback
+    method: cli
+    required: true
+    scope: "Render del patrón de Inicio con valores personalizados, defaults, marcado introducido y destino inválido."
+    command: "docker compose run --rm -T --user 33:33 -e WP_TESTS_RUNTIME_ROOT=/var/www/html -v \"${PWD}:/work:ro\" -v labm_composer_vendor:/work/vendor -w /work wordpress php vendor/bin/phpunit -c phpunit.integration.xml.dist --filter \"HomePresentationTest|PublicExperienceTest\""
+    expected: "Nuestra Liga conserva ubicación, jerarquía y clases; los textos se escapan; los fallbacks son utilizables; el CTA solo aparece con URL válida; la ausencia del plugin no produce error fatal."
+    capability: "PHPUnit WordPress; tests/php/HomePresentationTest.php y tests/php/PublicExperienceTest.php"
+    reason: "Cubre la frontera entre el contrato de datos del plugin y el patrón público del tema."
+  - id: home-browser
+    criteria:
+      - c4-public-render
+      - c5-responsive-accessibility
+      - c6-public-regression
+    method: automated
+    required: true
+    scope: "Inicio público en 320, 768, 1024 y 1440 píxeles, teclado, foco visible, CTA y Axe."
+    command: "pnpm run test:e2e -- tests/e2e/home.spec.ts tests/e2e/public-experience.spec.ts"
+    expected: "Los valores administrados y de fallback son visibles, el botón mantiene nombre y destino seguros, no hay desborde horizontal, se conserva el foco y Axe no reporta violaciones."
+    capability: "Playwright y @axe-core/playwright; package.json y playwright.config.ts"
+    reason: "La interacción de teclado y la geometría responsive solo se pueden comprobar con el navegador."
+  - id: admin-screen-manual
+    criteria:
+      - c1-admin-authorized
+      - c2-admin-unauthorized
+    method: manual
+    required: true
+    scope: "Pantalla LABM → Inicio y rechazo de acceso con un usuario sin edit_theme_options."
+    steps:
+      - "Iniciar sesión en un entorno de prueba con un usuario que tenga edit_theme_options."
+      - "Abrir LABM → Inicio y comprobar que aparecen los siete campos con sus etiquetas y ayudas."
+      - "Guardar valores de prueba en los siete campos, volver a abrir la pantalla y verificar que se conservan."
+      - "Abrir Inicio y comprobar que los siete valores aparecen en Nuestra Liga sin cambiar su composición."
+      - "Repetir la consulta y el envío con un usuario sin edit_theme_options; confirmar que la pantalla no aparece y el envío es rechazado sin alterar la opción."
+    expected: "La pantalla solo es visible y modificable para edit_theme_options; el guardado autorizado es persistente y el acceso no autorizado no modifica ni revela la configuración."
+    capability: "Entorno WordPress local y sesión administrativa de prueba"
+    reason: "La visibilidad real del submenú y el flujo de options.php requieren una comprobación autenticada."
+  - id: strict-tdd
+    criteria:
+      - c1-admin-authorized
+      - c2-admin-unauthorized
+      - c3-closed-schema
+      - c4-public-render
+    method: inspection
+    required: true
+    scope: "Pruebas focales nuevas o modificadas y sus evidencias RED/GREEN."
+    expected: "La evidencia identifica la ejecución RED previa al cambio y la ejecución GREEN posterior, con hashes de entradas compatibles; no se presenta una prueba no ejecutada como aprobada."
+    capability: "gates.apply.tdd=strict en openspec/config.yaml"
+    reason: "La política del proyecto exige TDD estricto para el comportamiento de administración y presentación."
+  - id: documentation-coherence
+    criteria:
+      - c6-documentation
+    method: inspection
+    required: true
+    scope: "manual-usuario.md, cartilla HTML y PDF regenerado."
+    expected: "Los tres artefactos describen la misma ruta LABM → Inicio, los siete campos, defaults, campo vacío, URL y procedimiento de comprobación pública; el PDF no tiene recortes ni superposiciones."
+    capability: "Lectura Markdown/HTML/PDF y renderizador visual disponible en el entorno"
+    reason: "La coherencia documental y la calidad visual no quedan cubiertas por PHPUnit."
+  - id: static-quality
+    criteria:
+      - c7-quality-gates
+    method: cli
+    required: true
+    scope: "PHP del plugin, PHP del tema, pruebas y archivos de planificación modificados."
+    command: "docker run --rm -v \"${PWD}:/app\" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 lint; docker run --rm -v \"${PWD}:/app\" -v labm_composer_vendor:/app/vendor -w /app composer:2.8 analyse -- --no-progress"
+    expected: "PHPCS/WPCS y PHPStan terminan sin errores introducidos por el cambio."
+    capability: "composer.json, phpcs.xml.dist y phpstan.neon.dist"
+    reason: "El proyecto mantiene gates estáticos obligatorios para el plugin y el tema."
+  - id: configured-full-gate
+    criteria:
+      - c4-public-render
+      - c5-responsive-accessibility
+      - c7-quality-gates
+    method: cli
+    required: true
+    scope: "Gate verify_pr completo con cobertura, PHPUnit, PHPCS, PHPStan y navegador."
+    command: "./scripts/gate.ps1 -IncludeBrowser"
+    expected: "Todos los checks obligatorios terminan en PASS, se ejecuta la suite Playwright y la cobertura PHP es al menos 80 por ciento; NO EJECUTADA no satisface el gate."
+    capability: "scripts/gate.ps1, scripts/coverage.ps1 y scripts/browser-gate.ps1"
+    reason: "La configuración del proyecto exige este gate para VERIFY y no autoriza rebajarlo por ser un cambio focal."
+  - id: lf-and-scope
+    criteria:
+      - c7-quality-gates
+    method: inspection
+    required: true
+    scope: "Archivos realmente modificados por APPLY y artefactos del cambio."
+    command: >-
+      git diff --check; $paths = git diff --name-only; foreach ($path in $paths) { if (Test-Path -LiteralPath $path -PathType Leaf) { $bytes = [IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $path)); if ([Array]::IndexOf($bytes, [byte]13) -ge 0) { throw "CRLF detectado: $path" } } }
+    expected: "No hay errores de diff, bytes CRLF ni escrituras fuera de las superficies autorizadas; todos los archivos de texto modificados usan LF."
+    capability: "Git y lectura binaria de archivos"
+    reason: "AGENTS.md exige LF y limita la corrección a los archivos modificados."
+  - id: persistent-state
+    criteria:
+      - c1-admin-authorized
+      - c7-quality-gates
+    method: cli
+    required: true
+    scope: "Opción labm_home_settings y cualquier estado WordPress producido por pruebas o validación."
+    command: "./scripts/content-sync.ps1 -Action Push"
+    expected: "content-sync/canonical.zip y content-sync/latest.json se actualizan con versión y SHA-256 coherentes; el paquete excluye wp_users y wp_usermeta. Si no se guardó estado, se registra explícitamente la no aplicabilidad con evidencia de que no hubo mutación."
+    capability: "scripts/content-sync.ps1 y docs/content-sync.md; servicios Docker activos"
+    reason: "El cambio introduce una opción persistida; la regla del proyecto exige sincronizarla antes de cerrar VERIFY."
+  - id: rollback-review
+    criteria:
+      - c7-quality-gates
+    method: inspection
+    required: true
+    scope: "Rollback de código, documentación y opción persistida."
+    expected: "El rollback restaura los archivos previos, deja la opción inerte si el código se retira y conserva un respaldo antes de eliminar o reemplazar estado persistido."
+    capability: "Design.md, content-sync y diff de APPLY"
+    reason: "La opción afecta estado global y debe poder retirarse sin borrar publicaciones, medios ni usuarios."
+exceptions: []
