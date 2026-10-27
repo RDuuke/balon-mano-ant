@@ -223,13 +223,13 @@ final class DomainModelTest extends TestCase {
 		$fields = array(
 			'labm_actualidad' => 'labm_fecha_evento',
 			'labm_seleccion'  => 'labm_modalidad_detalle',
-			'labm_club'       => 'labm_ciudad',
 			'labm_integrante' => 'labm_cargo',
 		);
 		foreach ( $fields as $post_type => $meta_key ) {
 			self::assertTrue( registered_meta_key_exists( 'post', $meta_key, $post_type ), $meta_key );
 		}
-		self::assertSame( 'Medellin', sanitize_meta( 'labm_ciudad', ' <b>Medellin</b> ', 'post', 'labm_club' ) );
+		self::assertFalse( registered_meta_key_exists( 'post', 'labm_ciudad', 'labm_club' ) );
+		self::assertFalse( post_type_supports( 'labm_club', 'custom-fields' ) );
 		self::assertTrue( labm_core_validate_iso_date( '2026-02-28' ) );
 		self::assertFalse( labm_core_validate_iso_date( '2026-02-30' ) );
 		self::assertFalse( labm_core_validate_iso_date( 'no-es-fecha' ) );

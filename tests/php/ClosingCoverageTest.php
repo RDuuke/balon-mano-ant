@@ -37,7 +37,7 @@ final class ClosingCoverageTest extends TestCase {
 				self::assertTrue( $object->public );
 				self::assertTrue( $object->show_in_rest );
 				self::assertTrue( $object->map_meta_cap );
-				self::assertTrue( post_type_supports( $type, 'custom-fields' ) );
+				self::assertSame( 'labm_club' !== $type, post_type_supports( $type, 'custom-fields' ) );
 			}
 			self::assertSame( 'selecciones', get_post_type_object( 'labm_seleccion' )->rewrite['slug'] );
 			foreach ( array( 'labm_modalidad', 'labm_categoria', 'labm_documento_categoria', 'labm_grupo_integrante' ) as $taxonomy ) {

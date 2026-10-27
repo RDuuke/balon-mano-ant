@@ -438,3 +438,44 @@ En la validación del navegador, el Footer mostró el enlace **“Política de t
 **Impacto para la persona visitante:** al seguir el enlace desde el Footer o el consentimiento de Contacto, no puede acceder a la política de privacidad; esto deja sin resolver una consulta importante antes de enviar sus datos personales.
 
 **Corrección pendiente:** crear y publicar la página con el slug `privacidad`, o cambiar `policy_url` y `resources_3_url` en **LABM → Footer LABM** para que apunten a una URL válida. Después, comprobar los dos enlaces desde el sitio público. No se realizaron cambios de configuración ni de contenido al registrar este hallazgo.
+
+## Inventario actual de campos personalizados y retiro de Ciudad en Clubes (2026-10-26)
+
+### Alcance y método
+
+Se contrastaron las llamadas de registro y lectura de metadatos en el plugin y el tema, las pruebas PHP y de humo, los fixtures, los manuales y las claves `labm_%` que existen en `wp_postmeta` de la base local. La versión local de WordPress coincidía con `content-sync/latest.json` al iniciar la revisión. Los conteos siguientes son filas de metadatos y publicaciones distintas observadas en esa base; no se inspeccionaron ni exportaron usuarios o credenciales.
+
+La clasificación **funcional visible** exige evidencia de que el valor modifica contenido público. **Funcional técnico/administrativo** identifica metadatos que sostienen una operación editorial, una importación o pruebas. **Registrado pero sin efecto confirmado** indica que había registro o persistencia, pero no se encontró un consumidor funcional probado; no es una conclusión basada únicamente en ausencia en una plantilla.
+
+### Inventario
+
+| Campo | Clase y evidencia observada | Conteo local | Recomendación |
+|---|---|---:|---|
+| `labm_fecha_evento` | Funcional visible. Registrado en `class-labm-domain.php`; `wp-content/themes/labm/functions.php` lo usa para elegir el Evento Destacado y para mostrar la fecha en Actualidad. Cubierto por pruebas de presentación y documentado en las secciones 05/05A. | 3 filas / 3 publicaciones | Conservar. Completar solo con una fecha real `AAAA-MM-DD`. |
+| `labm_modalidad_detalle` | Funcional visible. Registrado para Selecciones y leído por los renderizadores de tarjetas y detalle; hay cobertura en pruebas de dominio y experiencia pública. | 6 / 6 | Conservar como dato complementario opcional; la taxonomía Modalidades sigue controlando la clasificación. |
+| `labm_cargo` | Funcional visible. Registrado para Integrantes y leído para mostrar la función junto al nombre en Nosotros; cubierto por pruebas y por la guía de Integrantes. | 5 / 5 | Conservar y editar desde el mecanismo documentado para Integrantes. |
+| `labm_destino_url` | Funcional visible. Registrado para Slides; controla el destino del botón de cada diapositiva y tiene pruebas de validación y renderizado. | 6 / 6 | Conservar. Mantener URL segura; si está vacío, no aparece el botón. |
+| `labm_cta_texto` | Funcional visible. Registrado para Slides; define la etiqueta del botón cuando existe destino. Las pruebas cubren saneamiento y texto alternativo predeterminado. | 3 / 3 | Conservar. Si se deja vacío con destino, se muestra “Conocer más”. |
+| `labm_documento_pdf_id` | Funcional visible. Registrado para Documentos y usado por su control administrativo, catálogo y descarga pública. Las pruebas de `DocumentContactTest` cubren asociación y descarga. | 164 / 164 | Conservar y gestionar desde **Archivo y clasificación**, no desde Campos personalizados. |
+| `labm_documento_fecha` | Funcional visible. Registrado para Documentos; el panel dedicado la guarda y el catálogo la presenta y usa para filtrar/ordenar. Cubierto por pruebas de Documentos. | 31 / 31 | Conservar y gestionar desde el panel dedicado. |
+| `labm_demo_image` | Funcional visible con propósito técnico de demostración. El tema la consulta como imagen alternativa permitida para noticias demo sin imagen destacada; fixtures y pruebas cubren la resolución de la ruta. | 6 / 6 | Conservar mientras se utilicen contenidos demo; no presentarla como campo editorial habitual. |
+| `labm_document_source_key` | Funcional técnico/administrativo. El comando de fixtures usa la clave estable para conciliar documentos y sus adjuntos de origen; hay pruebas del importador. No es un dato para editar manualmente. | 74 / 74 | Conservar y mantener bajo control del importador; no ofrecerlo en la guía de edición. |
+| `labm_test_fixture` | Funcional técnico/administrativo de pruebas. Aparece como marca de registros de prueba en la suite PHP, no se registra como campo REST ni alimenta la interfaz pública. | 41 / 41 | Mantener separado del contenido editorial; revisar su limpieza solo dentro del ciclo de datos de pruebas. |
+| `labm_ciudad` | **Registrado pero sin efecto confirmado; registro retirado en esta actualización.** En el código previo solo se registraba/saneaba y se sembraba en un fixture; no se encontró lectura funcional. Se eliminaron el registro, la ayuda de Clubes, la escritura del fixture y las instrucciones del manual. Clubes ya no expone el panel genérico de campos personalizados. | 6 / 6 | Los valores de ciudad se conservan en base de datos hasta acordar migración o descarte explícito. |
+
+Los conteos de la última columna son del contenido local observado, que compartía versión con el paquete canónico antes de la revisión. El inventario incluye todas las claves `labm_%` presentes en `wp_postmeta`; metadatos nativos de WordPress, opciones, marcadores de flujo y nombres que solo son funciones o taxonomías no se clasifican como campos editoriales.
+
+Fuera del inventario actual: `labm_inicio` corresponde a un metadato retirado el 2026-10-25 y no apareció en la base consultada; `lamb_demo_fecha` es una clave mal escrita que no está implementada; `labm_ubicacion` aparece únicamente en una aserción negativa de una prueba, no como campo registrado; `lamb_ciudad` no aparece en el repositorio. Las menciones a la ciudad en las matrices anteriores documentan el estado y la inspección visual del 2026-10-15; esta sección registra el estado vigente tras el retiro.
+
+### Decisión sobre los valores de ciudad
+
+Una consulta acotada encontró seis filas con la clave de ciudad, todas asociadas a publicaciones de tipo Clubes publicadas: cinco clubes con ciudades o regiones editoriales y un club de demostración. Como eliminar las cinco ubicaciones reales perdería información potencialmente reutilizable, se detuvo esa eliminación. **Se borraron cero filas de metadatos y no se modificó ninguna publicación.** El código ya no registra ni muestra el campo; la información queda preservada en la base local y en el paquete canónico existente, fuera del flujo de edición ordinario. Si más adelante se decide descartarla, primero deberá identificarse un destino de migración o aprobar expresamente su pérdida.
+
+Como la base no se modificó, no se ejecutó `scripts/content-sync.ps1 -Action Push` ni se produjo una versión nueva del paquete. El proceso oficial sigue excluyendo las tablas de usuarios y metadatos de usuario. La sincronización se debe realizar cuando se autorice y complete una modificación de contenido persistido.
+
+### Validación documental y pruebas
+
+- Se retiraron las referencias editoriales vigentes al campo de ciudad del manual Markdown y de la cartilla; la captura genérica de Campos personalizados se recortó en la cartilla para mostrar los controles vacíos y evitar que el ejemplo de un valor antiguo se interprete como un paso que debe seguirse.
+- El mockup y las notas de revisión ya no recomiendan registrar una ciudad para Clubes. La auditoría conserva esta sección como evidencia del retiro y de los valores que se preservaron.
+- Las pruebas de dominio comprueban que la clave ya no se registra y que Clubes no habilita el panel genérico. La prueba de persistencia entre temas sigue verificando que las publicaciones ajenas se conservan, sin depender del dato retirado.
+- Las demás claves no se marcaron como inútiles por no aparecer en una plantilla: se identificó un consumidor visible o un propósito técnico concreto para cada una.

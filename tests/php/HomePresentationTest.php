@@ -460,6 +460,64 @@ final class HomePresentationTest extends TestCase {
 		self::assertSame( 'ASC', $query->query_vars['order'] );
 	}
 
+	/** Inicio muestra hasta ocho clubes publicados y conserva Orden/nombre. */
+	public function test_home_clubs_show_up_to_eight_published_in_menu_order_then_title(): void {
+		$created = array();
+		$restrict_club_query = static function ( $query ) use ( &$created ) {
+			if ( $query instanceof WP_Query && 'labm_club' === $query->get( 'post_type' ) ) {
+				$query->set( 'post__in', $created );
+			}
+		};
+
+		try {
+			$clubs = array(
+				array( 'Club Zeta', 1, 'publish' ),
+				array( 'Club Alfa', 1, 'publish' ),
+				array( 'Club Centro', 0, 'publish' ),
+				array( 'Club 03', 2, 'publish' ),
+				array( 'Club 04', 2, 'publish' ),
+				array( 'Club 05', 2, 'publish' ),
+				array( 'Club 06', 2, 'publish' ),
+				array( 'Club 07', 2, 'publish' ),
+				array( 'Club 08', 2, 'publish' ),
+				array( 'Club 09', 2, 'publish' ),
+				array( 'Club borrador', -1, 'draft' ),
+			);
+			foreach ( $clubs as [ $title, $menu_order, $status ] ) {
+				$created[] = wp_insert_post(
+					array(
+						'post_type'   => 'labm_club',
+						'post_status' => $status,
+						'post_title'  => $title,
+						'menu_order'  => $menu_order,
+					)
+				);
+			}
+
+			add_action( 'pre_get_posts', $restrict_club_query );
+			$html = labm_theme_render_home_clubs();
+			self::assertSame( 8, preg_match_all( '/<article class="labm-card labm-card--club">/', $html ) );
+			self::assertSame(
+				array( 'Club Centro', 'Club Alfa', 'Club Zeta', 'Club 03', 'Club 04', 'Club 05', 'Club 06', 'Club 07' ),
+				array_map(
+					'html_entity_decode',
+					array_map(
+						'strip_tags',
+						preg_match_all( '/<h3><a\b[^>]*>(.*?)<\/a><\/h3>/s', $html, $matches ) ? $matches[1] : array()
+					)
+				)
+			);
+			self::assertStringNotContainsString( 'Club 08', $html );
+			self::assertStringNotContainsString( 'Club 09', $html );
+			self::assertStringNotContainsString( 'Club borrador', $html );
+		} finally {
+			remove_action( 'pre_get_posts', $restrict_club_query );
+			foreach ( $created as $post_id ) {
+				wp_delete_post( $post_id, true );
+			}
+		}
+	}
+
 	/** Los renderizadores omiten tipos ausentes de forma segura. */
 	public function test_renderizadores_de_portada_tienen_fallback_y_salida_segura(): void {
 		foreach ( array( 'labm_theme_render_home_slider', 'labm_theme_render_home_clubs', 'labm_theme_render_home_event', 'labm_theme_render_home_news', 'labm_theme_render_home_allies' ) as $function ) {

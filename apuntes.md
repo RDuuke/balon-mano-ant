@@ -110,8 +110,7 @@
 
 ### 15 — Publica un club asociado
 
-- **Observación:** Se solicita clasificar el club en `Modalidades`, pero no se repite que la ciudad se registra aparte en `labm_ciudad`.
-  **Por qué:** El usuario puede escribir la ciudad solo en la descripción y no completar el dato que consume la tarjeta pública.
+- **Cambio realizado (2026-10-26):** se retiró el dato de ciudad del flujo editorial de Clubes porque no intervenía en la clasificación, el orden ni la presentación pública. Los valores guardados quedan preservados hasta decidir su migración o eliminación.
 - **Observación:** Se indica que la portada muestra una selección limitada, pero no se aclara que publicar correctamente no garantiza aparecer de inmediato.
   **Por qué:** El usuario puede interpretar que la publicación falló cuando el club queda fuera del cupo visible de la portada.
 

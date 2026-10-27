@@ -76,9 +76,7 @@ Algunas secciones usan datos adicionales que WordPress guarda como **campos pers
 6. Desplázate hasta el panel **Custom fields / Campos personalizados**. Para crear un campo, escribe la clave en **Name**, el dato en **Value** y pulsa **Add Custom Field**. Si la clave ya existe, modifica **Value** y pulsa **Update**.
 7. Guarda o actualiza la publicación y comprueba el resultado en el sitio público cuando corresponda.
 
-![Panel real de campos personalizados](imagenes/campos-personalizados-real.png)
-
-La preferencia se guarda por usuario, no por publicación. La captura anterior muestra el panel real después de activarlo; no representa el menú **Preferences / Preferencias** usado para habilitarlo. La posición y el idioma pueden cambiar según la versión de WordPress. No cambies la clave técnica ni uses espacios adicionales.
+La preferencia se guarda por usuario, no por publicación. La posición y el idioma pueden cambiar según la versión de WordPress. No cambies la clave técnica ni uses espacios adicionales.
 
 ### Crear una publicación
 
@@ -119,9 +117,13 @@ La preferencia se guarda por usuario, no por publicación. La captura anterior m
 
 La portada consulta las publicaciones de Actualidad automáticamente. La publicación destacada del bloque de noticias depende de su orden editorial; no existe en el código actual un interruptor general de “destacar esta noticia”.
 
-Para el evento destacado de Inicio existe el dato adicional `labm_fecha_evento`, con fecha en formato `AAAA-MM-DD`. Si no ves el panel, sigue los pasos de **Activar los campos personalizados** en la sección 3. No confundas la fecha del evento con **Publish / Fecha de publicación**.
+### Evento Destacado en Inicio
 
-En el listado y el detalle de Actualidad, una fecha válida en `labm_fecha_evento` tiene prioridad. Si falta o es inválida, se muestra la fecha de publicación. Para que el evento destacado de Inicio use la fecha indicada, completa ese mismo dato en formato válido `AAAA-MM-DD`. El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demostración: permite seleccionar una de las imágenes de respaldo permitidas cuando una noticia no tiene imagen destacada. No lo uses para registrar fechas. El campo `lamb_demo_fecha` no existe; para la fecha del evento utiliza `labm_fecha_evento`.
+El bloque **Evento Destacado** se alimenta automáticamente de las publicaciones **publicadas** de **Actualidad** (`labm_actualidad`) que tengan el campo personalizado `labm_fecha_evento`. Para asignar ese campo, abre el editor de la publicación, pulsa **⋮ > Preferences / Preferencias > Panels / Paneles**, activa **Custom fields / Campos personalizados** y, si WordPress lo solicita, recarga el editor. En el panel que aparece, usa `labm_fecha_evento` como nombre del campo y escribe la fecha en formato `AAAA-MM-DD` (por ejemplo, `2026-10-12`); pulsa **Add Custom Field / Añadir campo personalizado** o **Update / Actualizar** y guarda o actualiza la publicación. La preferencia de visibilidad se guarda por usuario; puedes consultar los pasos ilustrados en **Activar los campos personalizados**, sección 3.
+
+El sitio elige la fecha de evento más antigua, en orden ascendente; si varias publicaciones tienen la misma fecha, gana la de ID menor. No hay un selector manual de evento ni se exige una categoría específica. El bloque muestra la imagen destacada si existe, la fecha del evento, el título, el extracto o un resumen del contenido y el enlace **Ver evento**. Si ninguna publicación publicada tiene `labm_fecha_evento`, el bloque no se muestra. Esta fecha corresponde al evento y es distinta de la fecha de publicación. En el listado y el detalle de Actualidad, una fecha válida en `labm_fecha_evento` también tiene prioridad; si falta o es inválida, se muestra la fecha de publicación.
+
+El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demostración: permite seleccionar una de las imágenes de respaldo permitidas cuando una noticia no tiene imagen destacada. No lo uses para registrar fechas.
 
 ## 5. Selecciones: Piso y Playa
 
@@ -272,9 +274,7 @@ El encabezado «Aliados Oficiales» es fijo. Para cambiarlo, solicita apoyo al a
 3. Pulsa **Save / Guardar** o **Update / Actualizar**, según tu editor.
 4. Revisa Inicio y la página individual. Si no está en Inicio, usa **View / Ver** desde el listado o el editor para comprobar su página publicada.
 
-**Si no aparece en Inicio:** comprueba que esté publicado. Inicio muestra hasta seis clubes, ordenados por **Orden** de menor a mayor y después por nombre. Estar publicado no garantiza entrar en esos seis. Si necesitas cambiar el orden y no encuentras el control, solicita ayuda al administrador; no cambies fechas ni dupliques el club.
-
-**Ciudad, solo si la necesitas como referencia interna:** `labm_ciudad` es opcional y actualmente no aparece en la ficha pública. No es necesario completarlo para seguir esta guía. Si debes registrarlo, activa Campos personalizados según la sección 3, selecciona o escribe exactamente `labm_ciudad` en **Name / Nombre**, escribe la ciudad en **Value / Valor**, pulsa **Add Custom Field / Añadir campo personalizado** —o **Update / Actualizar** si existe— y guarda la publicación.
+**Si no aparece en Inicio:** comprueba que esté publicado. Inicio muestra únicamente clubes publicados y admite hasta ocho elementos, ordenados por **Orden** de menor a mayor y después por nombre. Si hay más de ocho clubes publicados, solo aparecen los primeros ocho según ese orden. Si necesitas cambiar el orden y no encuentras el control, solicita ayuda al administrador; no cambies fechas ni dupliques el club.
 
 Para retirar el club, guárdalo como borrador y comprueba el resultado público; consulta la sección 12. El encabezado «Clubes asociados» requiere apoyo del administrador para cambiarse.
 
@@ -345,9 +345,7 @@ Misión y Visión no tienen una imagen pública editable en esta versión. No ne
 8. Guarda la publicación como borrador mientras revisas. Cuando nombre, foto, cargo y grupo estén correctos, publica y confirma si WordPress lo solicita.
 9. Abre **Nosotros**, baja hasta **Quiénes hacen posible la Liga** y comprueba la tarjeta. Pulsa **Entrenadores**: la persona debe verse en ese grupo. Revisa también **Todos** y la fotografía desde un teléfono.
 
-![Panel real de campos personalizados: Name, Value y Add Custom Field](imagenes/campos-personalizados-real.png)
-
-La captura anterior pertenece a un club y muestra `labm_ciudad`: sirve para reconocer los controles, no para copiar ese dato. En Integrantes usa **únicamente `labm_cargo`** para el cargo. El ejemplo «Ana Pérez / Entrenadora» es una explicación, no una captura de un guardado real.
+En Integrantes usa **únicamente `labm_cargo`** para el cargo. El ejemplo «Ana Pérez / Entrenadora» es una explicación, no una captura de un guardado real.
 
 #### Modificar o retirar un integrante
 

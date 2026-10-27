@@ -544,7 +544,7 @@ function labm_theme_render_home_cards( $post_type, $limit, $section, $heading ) 
 /** Renderiza clubes publicados. */
 function labm_theme_render_home_clubs() {
 
-	return labm_theme_render_home_cards( 'labm_club', 6, 'clubes', __( 'Clubes asociados', 'labm' ) );
+	return labm_theme_render_home_cards( 'labm_club', 8, 'clubes', __( 'Clubes asociados', 'labm' ) );
 }
 
 /** Renderiza el evento editorial destacado. */

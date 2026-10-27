@@ -35,7 +35,10 @@ function labm_core_register_content_types() {
 	foreach ( $types as $post_type => $names ) {
 		$singular = $names[2];
 		$plural   = $names[3];
-		$supports = array( 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' );
+		$supports = array( 'title', 'editor', 'excerpt', 'thumbnail' );
+		if ( 'labm_club' !== $post_type ) {
+			$supports[] = 'custom-fields';
+		}
 		register_post_type(
 			$post_type,
 			array(
@@ -149,10 +152,6 @@ function labm_core_render_editor_guidance_notice() {
 			__( 'Datos adicionales de Selecciones', 'labm-core' ),
 			__( 'Usa solo Modalidad detallada (labm_modalidad_detalle) cuando necesites ampliar la clasificación. La modalidad principal se elige en la taxonomía Modalidades.', 'labm-core' ),
 		),
-		'labm_club' => array(
-			__( 'Datos adicionales de Clubes', 'labm-core' ),
-			__( 'Ciudad (labm_ciudad) está registrada, pero no tiene salida pública confirmada en esta versión. No dependas de este dato para completar la ficha visible del club.', 'labm-core' ),
-		),
 		'labm_integrante' => array(
 			__( 'Datos adicionales de Integrantes', 'labm-core' ),
 			__( 'Usa Cargo (labm_cargo) para el texto que acompaña al nombre. El grupo del integrante se selecciona en la taxonomía Grupos de integrantes.', 'labm-core' ),
@@ -259,7 +258,6 @@ function labm_core_register_meta() {
 	$fields = array(
 		'labm_actualidad' => array( 'labm_fecha_evento' => 'labm_core_sanitize_iso_date' ),
 		'labm_seleccion'  => array( 'labm_modalidad_detalle' => 'sanitize_text_field' ),
-		'labm_club'       => array( 'labm_ciudad' => 'sanitize_text_field' ),
 		'labm_integrante' => array( 'labm_cargo' => 'sanitize_text_field' ),
 		'labm_documento'  => array(),
 	);

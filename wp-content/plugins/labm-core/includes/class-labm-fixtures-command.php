@@ -581,7 +581,6 @@ class LABM_Fixtures_Command {
 					'post_content' => '<p>' . self::MARKER . ' Club completamente ficticio.</p>',
 					'post_type'    => 'labm_club',
 					'post_status'  => 'publish',
-					'meta'         => array( 'labm_ciudad' => 'Medellin ficticio' ),
 				),
 				array(
 					'post_name'    => 'demo-labm-seleccion-piso',

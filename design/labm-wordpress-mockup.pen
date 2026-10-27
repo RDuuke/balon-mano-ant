@@ -15394,7 +15394,7 @@
               "fill": "#35400D",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "La portada muestra una selección limitada de clubes. El dato adicional de ciudad es labm_ciudad; si no está visible, solicita apoyo del administrador.",
+              "content": "La portada muestra hasta ocho clubes. La posición depende del orden asignado y, como desempate, del nombre; no hace falta registrar datos adicionales para que aparezcan.",
               "lineHeight": 1.4,
               "fontFamily": "Inter",
               "fontSize": 16

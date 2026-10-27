@@ -110,7 +110,7 @@
     .field-list div { padding: 10px; border-left: 3px solid var(--lime); background: var(--soft); font-size: 14px; }
     .page.fields-activation { padding-bottom: 76px; }
     .fields-activation .intro { margin-bottom: 12px; }
-    .fields-activation .screen.field-real { height: 220px; margin-bottom: 12px; }
+    .fields-activation .screen.field-real { height: 110px; margin-bottom: 12px; object-fit: cover; object-position: bottom center; }
     .fields-activation .step { margin-bottom: 8px; }
     .fields-activation .field-list { gap: 7px 14px; margin-top: 8px; }
     .fields-activation .field-list div { padding: 7px 9px; font-size: 13px; }
@@ -223,9 +223,24 @@
     </span></div>
 
     <div class="admin-guide"><b>Títulos y resumen:</b> edita el título en <b>Título</b> de la entrada de Actualidad. Las tarjetas usan el <b>Extracto</b>; si está vacío, WordPress lo genera desde el contenido. “Actualidad” y sus encabezados son fijos.</div>
-    <div class="note"><b>Fecha del evento:</b> una fecha válida en <code>labm_fecha_evento</code> (<code>AAAA-MM-DD</code>) tiene prioridad en el listado y el detalle. Si está vacío o es inválido, se muestra la fecha de publicación. <code>lamb_demo_fecha</code> no existe.</div>
+    <div class="note"><b>Evento Destacado de Inicio:</b> se genera automáticamente. Consulta en la página <a href="#pagina-05a">05A</a> cómo se elige y cómo asignar su fecha. Para el campo <code>labm_fecha_evento</code>, activa Campos personalizados según la página <a href="#pagina-04a">04A</a>.</div>
     <div class="image-guide"><b>Imágenes:</b> usa una imagen destacada horizontal de <b>1600 × 900 px (16:9)</b>; se utiliza como vista previa en el listado y en Inicio. Para mostrar fotografías dentro del artículo, insértalas en el cuerpo o en un bloque Galería; prepara cada foto en <b>1200 × 900 px (4:3)</b>. Las tarjetas pueden recortar la imagen. Deja el motivo principal cerca del centro y no incrustes texto pequeño. Recom.: JPG/WebP, hasta <b>500 KB</b> por foto. Esta sección no tiene tope propio; aplica el límite global de Medios.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05</b></div>
+  </section>
+
+  <section class="page manual-actualidad-evento" id="pagina-05a">
+    <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05A</p><div class="identity-line"></div>
+    <h2>Cómo se elige el Evento Destacado</h2>
+    <p class="intro">El bloque de Inicio se alimenta automáticamente de publicaciones publicadas de Actualidad (<code>labm_actualidad</code>) que tengan el campo <code>labm_fecha_evento</code>.</p>
+
+    <div class="step"><b>1</b><span>Abre una publicación de Actualidad nueva o existente. En el editor pulsa <b>⋮ → Preferences / Preferencias → Panels / Paneles</b> y activa <b>Custom fields / Campos personalizados</b>. Confirma la recarga si WordPress la solicita.</span></div>
+    <div class="step"><b>2</b><span>En el panel de campos, crea o actualiza el campo <code>labm_fecha_evento</code>. Escribe la fecha del evento en formato <code>AAAA-MM-DD</code>, por ejemplo <code>2026-10-12</code>, y pulsa <b>Add Custom Field / Añadir campo personalizado</b> o <b>Update / Actualizar</b>.</span></div>
+    <div class="step"><b>3</b><span>Guarda o actualiza la publicación. La preferencia de visibilidad de Campos personalizados queda guardada por usuario; consulta los pasos ilustrados en la página <a href="#pagina-04a">04A</a>.</span></div>
+
+    <div class="admin-guide"><b>Regla de selección:</b> entre las publicaciones publicadas que tengan una fecha válida, se elige la fecha de evento más antigua (orden ascendente). Si varias comparten la fecha, se elige el ID menor. No hay selector manual y no se exige una categoría específica.</div>
+    <div class="note"><b>Qué aparece:</b> imagen destacada si existe, fecha del evento, título, extracto o resumen del contenido y enlace <b>Ver evento</b>. Si ninguna publicación cumple los requisitos, el bloque no se muestra.</div>
+    <div class="note"><b>Fechas distintas:</b> <code>labm_fecha_evento</code> es la fecha del evento; no cambia la fecha de publicación. En el listado y el detalle de Actualidad, si el campo contiene una fecha válida, se muestra esa fecha; si falta o es inválida, se muestra la fecha de publicación.</div>
+    <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05A</b></div>
   </section>
 
   <section class="page manual-selecciones" id="pagina-06">
@@ -439,14 +454,13 @@
     <p class="eyebrow">LABM / MANUAL DE USUARIO</p>
     <p class="chapter">15A</p>
     <div class="identity-line"></div>
-    <h2>Comprueba y modifica el club</h2><p class="intro">Inicio muestra hasta seis clubes. Publicar uno no garantiza su presencia inmediata en la portada.</p>
+    <h2>Comprueba y modifica el club</h2><p class="intro">Inicio muestra únicamente clubes publicados y admite hasta ocho elementos. Publicar un club no garantiza su presencia inmediata en la portada.</p>
     <div class="step"><b>1</b><span>Abre <b>Inicio → Clubes asociados</b>. Si aparece tu club, revisa nombre, logo y resumen. Pulsa su nombre o logo para abrir la página individual.</span></div>
-    <div class="step"><b>2</b><span>Si no está entre los seis, abre <b>Clubes</b> en el administrador y usa <b>View / Ver</b> desde el listado o el editor para comprobar su página publicada.</span></div>
+    <div class="step"><b>2</b><span>Si no está entre los ocho, abre <b>Clubes</b> en el administrador y usa <b>View / Ver</b> desde el listado o el editor para comprobar su página publicada.</span></div>
     <div class="step"><b>3</b><span>Para modificarlo, busca el nombre en <b>Clubes</b> y pulsa <b>Edit / Editar</b>. Cambia los datos y revisa también <b>Extracto</b> si corriges la descripción: ese resumen tiene prioridad en Inicio.</span></div>
     <div class="step"><b>4</b><span>Pulsa <b>Save / Guardar</b> o <b>Update / Actualizar</b>. Revisa Inicio y la página del club, también en un teléfono.</span></div>
     <h3>Si no aparece o falta información</h3>
-    <p>Comprueba el estado publicado. La portada elige hasta seis clubes por <b>Orden</b> de menor a mayor y luego por nombre. Si necesitas cambiar el orden y no encuentras el control, pide ayuda. No alteres fechas ni dupliques el club.</p>
-    <div class="note"><b>Ciudad: dato opcional interno.</b> <code>labm_ciudad</code> no aparece en la ficha pública y no hace falta completarlo en este recorrido. Si debes guardarlo, activa el panel según la <a href="#pagina-04a">página 04A</a>, usa ese nombre exacto, escribe la ciudad en <b>Value / Valor</b>, confirma el campo y guarda también la publicación.</div>
+    <p>Comprueba el estado publicado. La portada muestra solo clubes publicados y, como máximo, ocho. Si hay más, elige los primeros por <b>Orden</b> de menor a mayor y luego por nombre. Si necesitas cambiar el orden y no encuentras el control, pide ayuda. No alteres fechas ni dupliques el club.</p>
     <div class="note"><b>Para retirarlo:</b> cambia a <b>Draft / Borrador</b>, guarda y comprueba la página pública. No borres el logo desde Medios. Consulta la <a href="#pagina-16">página 16</a> para retirar y recuperar. El encabezado «Clubes asociados» se cambia con apoyo del administrador.</div>
     <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.5</span><b>15A</b></div>
   </section>
@@ -573,7 +587,7 @@
     <h3>Aliados</h3>
     <p>El campo Título identifica el aliado y el logo es su imagen destacada. La franja no muestra una descripción ni tiene enlace externo editable. El encabezado “Aliados Oficiales” es fijo. Define el orden si tu rol lo permite.</p>
     <h3>Clubes</h3>
-    <p>El nombre del club se cambia en Título. La tarjeta muestra el Extracto o genera un resumen del Contenido cuando el extracto está vacío. “Clubes asociados” es un encabezado fijo; <code>labm_ciudad</code> guarda una referencia editorial, pero no se muestra en la ficha pública. La portada muestra hasta seis clubes por orden y nombre.</p>
+    <p>El nombre del club se cambia en Título. La tarjeta muestra el Extracto o genera un resumen del Contenido cuando el extracto está vacío. “Clubes asociados” es un encabezado fijo. La portada muestra únicamente clubes publicados, hasta un máximo de ocho, por Orden y luego por nombre.</p>
     <div class="footer">LABM · Inicio</div>
   </section>
 
