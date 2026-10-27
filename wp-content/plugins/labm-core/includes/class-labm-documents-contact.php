@@ -434,7 +434,8 @@ function labm_core_process_contact_legacy( $data ) {
 function labm_core_get_contact_settings() {
 	$footer  = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
 	$email   = sanitize_email( $footer['contact_email'] ?? '' );
-	$address = 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia';
+	$phone   = sanitize_text_field( $footer['contact_phone'] ?? '3233212981' );
+	$address = sanitize_text_field( $footer['contact_address'] ?? 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia' );
 	$socials = array();
 	foreach ( array( 'facebook', 'instagram' ) as $network ) {
 		$url   = esc_url_raw( $footer[ $network . '_url' ] ?? '', array( 'http', 'https' ) );
@@ -448,9 +449,9 @@ function labm_core_get_contact_settings() {
 	}
 	return array(
 		'email'   => is_email( $email ) ? $email : 'info@balonmanoantioquia.com',
-		'phone'   => '3233212981',
+		'phone'   => $phone,
 		'address' => $address,
-		'map_url' => esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ), array( 'https' ) ),
+		'map_url' => '' !== $address ? esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ), array( 'https' ) ) : '',
 		'socials' => $socials,
 	);
 }

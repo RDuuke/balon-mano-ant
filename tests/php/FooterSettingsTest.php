@@ -21,10 +21,39 @@ final class FooterSettingsTest extends TestCase {
 		self::assertSame( 'LABM', $defaults['brand_name'] );
 		self::assertSame( "Liga Antioqueña de Balonmano\nInformación institucional administrable.", $defaults['description'] );
 		self::assertSame( 'info@balonmanoantioquia.com', $defaults['contact_email'] );
+		self::assertSame( '3233212981', $defaults['contact_phone'] );
+		self::assertSame( 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia', $defaults['contact_address'] );
 		self::assertSame( '© 2026 Liga Antioqueña de Balonmano · Año dinámico', $defaults['copyright'] );
 		foreach ( labm_core_footer_field_schema() as $key => $field ) {
 			self::assertArrayHasKey( $key, $defaults );
 			self::assertContains( $field['type'], array( 'text', 'textarea', 'email', 'url', 'internal_url' ) );
+		}
+	}
+
+	/** El contacto recupera los defaults exactos con una opcion ausente o parcial. */
+	public function test_contact_settings_fallback_is_deterministic_for_missing_or_partial_footer_option(): void {
+		$expected_phone   = '3233212981';
+		$expected_address = 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia';
+		$footer_option    = array();
+		$filter           = static function () use ( &$footer_option ) {
+			return $footer_option;
+		};
+		add_filter( 'pre_option_labm_footer_settings', $filter );
+
+		try {
+			$fixtures = array(
+				'ausente'  => array(),
+				'parcial'  => array( 'contact_email' => 'parcial@example.test' ),
+			);
+			foreach ( $fixtures as $fixture_name => $fixture ) {
+				$footer_option = $fixture;
+				$settings      = labm_core_get_contact_settings();
+
+				self::assertSame( $expected_phone, $settings['phone'], $fixture_name );
+				self::assertSame( $expected_address, $settings['address'], $fixture_name );
+			}
+		} finally {
+			remove_filter( 'pre_option_labm_footer_settings', $filter );
 		}
 	}
 
@@ -41,6 +70,8 @@ final class FooterSettingsTest extends TestCase {
 				'brand_name'       => '<b>LABM</b>',
 				'description'      => "Texto <b>visible</b>\nsegunda línea",
 				'contact_email'    => 'correo-invalido',
+				'contact_phone'    => '<b>3233212981</b>',
+				'contact_address'  => '<script>Dirección</script>, Medellín',
 				'facebook_url'     => 'javascript:alert(1)',
 				'navigation_1_url' => '/nosotros/',
 			)
@@ -48,6 +79,8 @@ final class FooterSettingsTest extends TestCase {
 		self::assertSame( 'LABM', $clean['brand_name'] );
 		self::assertSame( "Texto visible\nsegunda línea", $clean['description'] );
 		self::assertSame( '', $clean['contact_email'] );
+		self::assertSame( '3233212981', $clean['contact_phone'] );
+		self::assertSame( 'Dirección, Medellín', $clean['contact_address'] );
 		self::assertSame( '', $clean['facebook_url'] );
 		self::assertSame( '/nosotros/', $clean['navigation_1_url'] );
 	}

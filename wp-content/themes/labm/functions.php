@@ -187,8 +187,17 @@ function labm_theme_render_contact() {
 		<header class="labm-contact__hero"><p class="labm-contact__eyebrow"><?php esc_html_e( 'Hablemos', 'labm' ); ?></p><h1 id="labm-contact-title"><?php esc_html_e( 'Contacto', 'labm' ); ?></h1><p><?php esc_html_e( 'Estamos disponibles para acompañar tus procesos deportivos e institucionales.', 'labm' ); ?></p></header>
 		<div class="labm-contact__grid">
 			<section class="labm-contact__details" aria-labelledby="labm-contact-details-title"><h2 id="labm-contact-details-title"><?php esc_html_e( 'Datos de contacto', 'labm' ); ?></h2>
-				<dl><div><dt><?php esc_html_e( 'Correo', 'labm' ); ?></dt><dd><a href="mailto:<?php echo esc_attr( $settings['email'] ); ?>"><?php echo esc_html( $settings['email'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Teléfono', 'labm' ); ?></dt><dd><a href="tel:<?php echo esc_attr( $settings['phone'] ); ?>"><?php echo esc_html( $settings['phone'] ); ?></a></dd></div><div><dt><?php esc_html_e( 'Dirección', 'labm' ); ?></dt><dd><?php echo esc_html( $settings['address'] ); ?></dd></div></dl>
+				<dl><div><dt><?php esc_html_e( 'Correo', 'labm' ); ?></dt><dd><a href="mailto:<?php echo esc_attr( $settings['email'] ); ?>"><?php echo esc_html( $settings['email'] ); ?></a></dd></div>
+				<?php if ( ! empty( $settings['phone'] ) ) : ?>
+				<div><dt><?php esc_html_e( 'Teléfono', 'labm' ); ?></dt><dd><a href="tel:<?php echo esc_attr( $settings['phone'] ); ?>"><?php echo esc_html( $settings['phone'] ); ?></a></dd></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['address'] ) ) : ?>
+				<div><dt><?php esc_html_e( 'Dirección', 'labm' ); ?></dt><dd><?php echo esc_html( $settings['address'] ); ?></dd></div>
+				<?php endif; ?>
+				</dl>
+				<?php if ( ! empty( $settings['map_url'] ) ) : ?>
 				<p><a class="labm-contact__map" href="<?php echo esc_url( $settings['map_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Abrir ubicación en Google Maps', 'labm' ); ?></a></p>
+				<?php endif; ?>
 				<?php
 				if ( $settings['socials'] ) :
 					?>

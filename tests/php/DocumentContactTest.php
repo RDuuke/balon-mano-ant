@@ -76,6 +76,9 @@ final class DocumentContactTest extends TestCase {
 	/** @var mixed */
 	private $smtp_migration_option;
 
+	/** @var mixed */
+	private $footer_settings_option;
+
 	/** @var int[] */
 	private array $document_admin_users = array();
 
@@ -89,6 +92,7 @@ final class DocumentContactTest extends TestCase {
 		parent::setUp();
 		$this->smtp_settings_option  = get_option( 'labm_smtp_settings', null );
 		$this->smtp_migration_option = get_option( 'labm_smtp_recipients_migrated', null );
+		$this->footer_settings_option = get_option( 'labm_footer_settings', null );
 		update_option( 'labm_smtp_settings', labm_core_smtp_defaults(), false );
 		update_option( 'labm_smtp_recipients_migrated', 1, false );
 		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
@@ -121,6 +125,11 @@ final class DocumentContactTest extends TestCase {
 			delete_option( 'labm_smtp_recipients_migrated' );
 		} else {
 			update_option( 'labm_smtp_recipients_migrated', $this->smtp_migration_option, false );
+		}
+		if ( null === $this->footer_settings_option ) {
+			delete_option( 'labm_footer_settings' );
+		} else {
+			update_option( 'labm_footer_settings', $this->footer_settings_option, false );
 		}
 		foreach ( array( 'contacto-prueba-unico', 'contacto-fallo-reintento' ) as $token ) {
 			$key = 'labm_contact_' . hash( 'sha256', $token );
@@ -1105,6 +1114,35 @@ final class DocumentContactTest extends TestCase {
 		self::assertArrayHasKey( 'facebook', $settings['socials'] );
 		self::assertArrayHasKey( 'instagram', $settings['socials'] );
 		self::assertArrayNotHasKey( 'recipients', $settings );
+	}
+
+	/** Contacto lee teléfono y dirección editados y genera Maps desde la dirección. */
+	public function test_contact_settings_read_editable_phone_and_address(): void {
+		$footer                   = labm_core_footer_defaults();
+		$footer['contact_phone']   = '604 555 0101';
+		$footer['contact_address'] = 'Calle 10 # 20-30, Medellín';
+		update_option( 'labm_footer_settings', $footer, false );
+
+		$settings = labm_core_get_contact_settings();
+
+		self::assertSame( '604 555 0101', $settings['phone'] );
+		self::assertSame( 'Calle 10 # 20-30, Medellín', $settings['address'] );
+		self::assertStringContainsString( rawurlencode( $settings['address'] ), $settings['map_url'] );
+	}
+
+	/** Contacto omite teléfono, dirección y mapa cuando esos valores se vacían. */
+	public function test_contact_render_omits_empty_phone_address_and_map(): void {
+		$footer                   = labm_core_footer_defaults();
+		$footer['contact_phone']   = '';
+		$footer['contact_address'] = '';
+		update_option( 'labm_footer_settings', $footer, false );
+
+		$html = labm_theme_render_contact();
+
+		self::assertStringNotContainsString( 'href="tel:', $html );
+		self::assertStringNotContainsString( '3233212981', $html );
+		self::assertStringNotContainsString( 'Carrera 70', $html );
+		self::assertStringNotContainsString( 'labm-contact__map', $html );
 	}
 
 	/** El consentimiento es obligatorio y los destinatarios privados no pasan al contrato pÃºblico. */

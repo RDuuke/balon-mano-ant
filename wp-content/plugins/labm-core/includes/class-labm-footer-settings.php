@@ -97,6 +97,14 @@ function labm_core_footer_field_schema() {
 			'label' => 'Correo',
 			'type'  => 'email',
 		),
+		'contact_phone'      => array(
+			'label' => 'Teléfono',
+			'type'  => 'text',
+		),
+		'contact_address'    => array(
+			'label' => 'Dirección',
+			'type'  => 'text',
+		),
 		'facebook_label'     => array(
 			'label' => 'Facebook: etiqueta',
 			'type'  => 'text',
@@ -151,6 +159,8 @@ function labm_core_footer_defaults() {
 		'resources_3_url'    => '/privacidad/',
 		'contact_heading'    => 'CONTACTO DEMO',
 		'contact_email'      => 'info@balonmanoantioquia.com',
+		'contact_phone'      => '3233212981',
+		'contact_address'    => 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia',
 		'facebook_label'     => 'Facebook',
 		'facebook_url'       => 'https://www.facebook.com/balonmanoantioquia',
 		'instagram_label'    => 'Instagram',

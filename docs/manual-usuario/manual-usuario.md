@@ -368,12 +368,12 @@ El nombre visible se cambia en **Título** y el cargo en `labm_cargo`. Los encab
 
 1. Abre **LABM**, que muestra **Footer LABM**. Si no aparece, solicita acceso al administrador.
 2. Revisa identidad, descripción, encabezados, etiquetas y URLs de navegación y recursos.
-3. Modifica **Correo** y los campos de etiqueta/URL de Facebook e Instagram cuando corresponda.
+3. Modifica **Correo**, **Teléfono** y **Dirección**. Los valores iniciales son `info@balonmanoantioquia.com`, `3233212981` y `Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia`.
 4. Revisa la etiqueta y URL de la política de datos.
 5. Baja al final y pulsa **Save Changes / Guardar cambios**.
 6. Comprueba el footer en varias páginas y la sección pública Contacto.
 
-Correo y redes se reutilizan en Contacto. Las etiquetas y URLs del footer no cambian el menú principal. El teléfono, dirección, mapa y algunos textos de Contacto están definidos en el tema/plugin actual y no tienen campos editables en esta pantalla: solicita esos cambios al responsable técnico.
+Correo, teléfono, dirección y redes se reutilizan en Contacto. El mapa de Google Maps se genera automáticamente desde la dirección guardada. Si teléfono o dirección quedan vacíos, Contacto omite el dato correspondiente y no muestra el enlace del mapa cuando la dirección está vacía. Las etiquetas y URLs del footer no cambian el menú principal.
 
 ### Entrega de mensajes
 
