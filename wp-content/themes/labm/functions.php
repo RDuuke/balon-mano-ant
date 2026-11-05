@@ -191,13 +191,16 @@ function labm_theme_render_contact() {
 				<?php if ( ! empty( $settings['phone'] ) ) : ?>
 				<div><dt><?php esc_html_e( 'Teléfono', 'labm' ); ?></dt><dd><a href="tel:<?php echo esc_attr( $settings['phone'] ); ?>"><?php echo esc_html( $settings['phone'] ); ?></a></dd></div>
 				<?php endif; ?>
-				<?php if ( ! empty( $settings['address'] ) ) : ?>
-				<div><dt><?php esc_html_e( 'Dirección', 'labm' ); ?></dt><dd><?php echo esc_html( $settings['address'] ); ?></dd></div>
-				<?php endif; ?>
 				</dl>
-				<?php if ( ! empty( $settings['map_url'] ) ) : ?>
-				<p><a class="labm-contact__map" href="<?php echo esc_url( $settings['map_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Abrir ubicación en Google Maps', 'labm' ); ?></a></p>
-				<?php endif; ?>
+				<?php foreach ( $settings['locations'] as $location ) : ?>
+					<section class="labm-contact__location" aria-labelledby="labm-contact-location-<?php echo esc_attr( sanitize_title( $location['label'] ) ); ?>">
+						<h3 id="labm-contact-location-<?php echo esc_attr( sanitize_title( $location['label'] ) ); ?>"><?php echo esc_html( $location['label'] ); ?></h3>
+						<p><?php echo nl2br( esc_html( $location['address'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenido escapado antes de insertar saltos de línea. ?></p>
+						<?php if ( ! empty( $location['map_url'] ) ) : ?>
+							<p><a class="labm-contact__map" href="<?php echo esc_url( $location['map_url'] ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Abrir ubicación en Google Maps', 'labm' ); ?></a></p>
+						<?php endif; ?>
+					</section>
+				<?php endforeach; ?>
 				<?php
 				if ( $settings['socials'] ) :
 					?>
@@ -1142,6 +1145,32 @@ function labm_theme_selection_terms() {
 }
 
 /**
+ * Devuelve las selecciones que deben aparecer en el submenu global.
+ *
+ * @return WP_Term[]
+ */
+function labm_theme_selection_header_terms() {
+	$names = array(
+		'Mayores Femenina',
+		'Mayores Masculina',
+		'Juvenil Femenina',
+		'Juvenil Masculina',
+		'Cadetes Femenina',
+		'Cadetes Masculina',
+	);
+	$terms = array();
+
+	foreach ( $names as $name ) {
+		$term = get_term_by( 'name', $name, 'labm_modalidad' );
+		if ( $term instanceof WP_Term ) {
+			$terms[] = $term;
+		}
+	}
+
+	return $terms;
+}
+
+/**
  * Normaliza la modalidad y la pagina solicitadas por el listado publico.
  *
  * @param mixed $filters Filtros de solo lectura.
@@ -1385,7 +1414,6 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 	$selection_term = get_term_by( 'name', $state['modalidad'], 'labm_modalidad' );
 	$introduction   = $selection_term instanceof WP_Term ? trim( wp_strip_all_tags( (string) $selection_term->description ) ) : '';
 	$introduction   = '' !== $introduction ? $introduction : __( 'Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano.', 'labm' );
-	$modality_index = 'Playa' === $state['modalidad'] ? '02' : '01';
 	$current_page   = (int) $query->get( 'labm_selection_effective_page' );
 	$pagination     = add_query_arg(
 		array(
@@ -1401,8 +1429,8 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 	<section class="labm-selecciones" data-labm-listado="selecciones" data-labm-modalidad="<?php echo esc_attr( $state['modalidad'] ); ?>" aria-labelledby="labm-selecciones-title">
 		<header class="labm-selecciones__hero">
 			<div class="labm-selecciones__hero-copy">
-				<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Selección Antioquia · %s', 'labm' ), $state['modalidad'] ) ); ?></p>
-				<h1 id="labm-selecciones-title"><?php echo esc_html( sprintf( __( 'Selección Antioquia · %s', 'labm' ), $state['modalidad'] ) ); ?></h1>
+				<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Selección · %s', 'labm' ), $state['modalidad'] ) ); ?></p>
+				<h1 id="labm-selecciones-title"><?php echo esc_html( sprintf( __( 'Selección · %s', 'labm' ), $state['modalidad'] ) ); ?></h1>
 				<p><?php echo esc_html( $introduction ); ?></p>
 			</div>
 		</header>
@@ -1410,10 +1438,8 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 			<section class="labm-selecciones__collection" aria-labelledby="labm-selecciones-collection-title">
 				<header class="labm-selecciones__collection-header">
 					<div>
-						<?php /* translators: %s is the selection modality number. */ ?>
-						<p class="labm-selecciones__eyebrow"><?php echo esc_html( sprintf( __( 'Modalidad %s', 'labm' ), 'Playa' === $state['modalidad'] ? '02' : '01' ) ); ?></p>
-						<?php /* translators: %s is the selection modality name. */ ?>
-						<h2 id="labm-selecciones-collection-title"><?php echo esc_html( sprintf( __( 'Balonmano de %s', 'labm' ), $state['modalidad'] ) ); ?></h2>
+					<p class="labm-selecciones__eyebrow"><?php esc_html_e( 'Selección', 'labm' ); ?></p>
+					<h2 id="labm-selecciones-collection-title"><?php echo esc_html( $state['modalidad'] ); ?></h2>
 					</div>
 					<?php /* translators: %d is the number of published selections. */ ?>
 					<p class="labm-selecciones__count"><?php printf( esc_html( _n( '%d participación registrada', '%d participaciones registradas', (int) $query->found_posts, 'labm' ) ), (int) $query->found_posts ); ?></p>
@@ -1731,7 +1757,8 @@ function labm_theme_header_navigation_shortcode() {
 			$modalities = get_the_terms( get_queried_object_id(), 'labm_modalidad' );
 			if ( is_array( $modalities ) ) {
 				foreach ( $modalities as $modality ) {
-					if ( in_array( $modality->name, array( 'Piso', 'Playa' ), true ) ) {
+					$header_terms = labm_theme_selection_header_terms();
+					if ( in_array( $modality->term_id, wp_list_pluck( $header_terms, 'term_id' ), true ) ) {
 						$state['modalidad'] = $modality->name;
 						break;
 					}
@@ -1763,8 +1790,9 @@ function labm_theme_header_navigation_shortcode() {
 								<button type="button" class="labm-site-navigation__submenu-toggle" data-labm-submenu-toggle aria-controls="labm-selecciones-submenu" aria-expanded="false"><?php esc_html_e( 'Selecciones', 'labm' ); ?><svg aria-hidden="true" viewBox="0 0 16 16" focusable="false"><path d="m3 6 5 5 5-5" /></svg></button>
 							</div>
 							<ul id="labm-selecciones-submenu" class="labm-site-navigation__submenu" data-labm-submenu-panel>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"<?php echo $is_section && 'Piso' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Piso', 'labm' ); ?></a></li>
-								<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"<?php echo $is_section && 'Playa' === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php esc_html_e( 'Balonmano Playa', 'labm' ); ?></a></li>
+								<?php foreach ( labm_theme_selection_header_terms() as $header_term ) : ?>
+									<li><a href="<?php echo esc_url( add_query_arg( 'modalidad', $header_term->name, $archive_url ) ); ?>"<?php echo $is_section && $header_term->name === $state['modalidad'] ? ' aria-current="' . esc_attr( $current_type ) . '"' : ''; ?>><?php echo esc_html( sprintf( __( 'Selección %s', 'labm' ), $header_term->name ) ); ?></a></li>
+								<?php endforeach; ?>
 							</ul>
 						</li>
 					<?php else : ?>

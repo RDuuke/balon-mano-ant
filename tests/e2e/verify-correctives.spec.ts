@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
 
+const selectionLabels = [
+  'Selección Mayores Femenina',
+  'Selección Mayores Masculina',
+  'Selección Juvenil Femenina',
+  'Selección Juvenil Masculina',
+  'Selección Cadetes Femenina',
+  'Selección Cadetes Masculina',
+];
+
 test('navegacion escritorio completa y ubicacion activa', async ({ page }) => {
   await page.goto('/');
   const open = page.getByRole('button', { name: /open menu|abrir menú/i });
@@ -41,8 +50,10 @@ test('jerarquia de header permanece estable en Inicio y Actualidad', async ({ pa
     const parent = submenuToggle;
     await expect(nav.getByRole('link', { name: 'Selecciones', exact: true })).toHaveCount(0);
     await expect(parent).not.toHaveAttribute('href');
-    await expect(nav.getByRole('link', { name: 'Balonmano Piso', exact: true })).toHaveAttribute('href', /modalidad=Piso/);
-    await expect(nav.getByRole('link', { name: 'Balonmano Playa', exact: true })).toHaveAttribute('href', /modalidad=Playa/);
+    await expect(nav.getByRole('link', { name: selectionLabels[0], exact: true })).toHaveAttribute('href', /modalidad=Mayores\+Femenina/);
+    await expect(nav.getByRole('link', { name: selectionLabels[5], exact: true })).toHaveAttribute('href', /modalidad=Cadetes\+Masculina/);
+    await expect(nav.getByRole('link', { name: 'Balonmano Piso', exact: true })).toHaveCount(0);
+    await expect(nav.getByRole('link', { name: 'Balonmano Playa', exact: true })).toHaveCount(0);
     await expect(nav.getByRole('link', { name: route === '/' ? 'Inicio' : 'Actualidad', exact: true })).toHaveAttribute('aria-current', 'page');
     await expect(parent).not.toHaveAttribute('aria-current', 'page');
 
@@ -64,7 +75,7 @@ test('navegacion movil conserva foco visible y recorrido predecible', async ({ p
   const submenuToggle = page.getByRole('button', { name: 'Selecciones', exact: true });
   await submenuToggle.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: selectionLabels[0], exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(submenuToggle).toHaveAttribute('aria-expanded', 'false');
   await expect(submenuToggle).toBeFocused();
@@ -90,7 +101,7 @@ test('submenu Selecciones abre por hover y conserva cierre por clic y Escape', a
   const group = page.locator('[data-labm-submenu]');
   await toggle.hover();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await page.getByRole('link', { name: 'Balonmano Piso', exact: true }).hover();
+  await page.getByRole('link', { name: selectionLabels[0], exact: true }).hover();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await page.getByRole('navigation', { name: /principal/i }).getByRole('link', { name: 'Inicio', exact: true }).hover();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -106,8 +117,8 @@ test('submenu Selecciones abre por hover y conserva cierre por clic y Escape', a
   await expect(group).not.toHaveClass(/is-current-section/);
 });
 
-test('submenu Selecciones conserva padre activo y teclado en ambas modalidades', async ({ page }) => {
-  for (const modalidad of ['Piso', 'Playa']) {
+test('submenu Selecciones conserva padre activo y teclado en las nuevas categorías', async ({ page }) => {
+  for (const [modalidad, nextModalidad] of [['Mayores Femenina', 'Mayores Masculina'], ['Cadetes Femenina', 'Cadetes Masculina']]) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);
     const menu = page.getByRole('button', { name: /abrir men/i });
     if (await menu.isVisible()) await menu.click();
@@ -123,14 +134,14 @@ test('submenu Selecciones conserva padre activo y teclado en ambas modalidades',
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     expect(await toggle.evaluate(el => getComputedStyle(el).color)).toBe(activeColor);
     await page.keyboard.press('Tab');
-    await expect(page.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeFocused();
+    await expect(page.getByRole('link', { name: selectionLabels[0], exact: true })).toBeFocused();
     await expect(group.locator('[aria-current="page"]')).toHaveCount(1);
-    await expect(page.getByRole('link', { name: `Balonmano ${modalidad}`, exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('link', { name: `Selección ${modalidad}`, exact: true })).toHaveAttribute('aria-current', 'page');
     await page.keyboard.press('Escape');
     await expect(toggle).toBeFocused();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await page.keyboard.press('Enter');
-    await page.getByRole('link', { name: `Balonmano ${modalidad === 'Piso' ? 'Playa' : 'Piso'}`, exact: true }).click();
+    await page.getByRole('link', { name: `Selección ${nextModalidad}`, exact: true }).click();
     await expect(group).toHaveClass(/is-current-section/);
   }
 });
@@ -140,12 +151,12 @@ test('header Selecciones mantiene padre y modalidad seleccionados en internas', 
   await page.route('http://localhost:8080/**', route => route.continue({
     url: route.request().url().replace('http://localhost:8080', 'http://host.docker.internal:8080')
   }));
-  for (const modalidad of ['Piso', 'Playa']) {
+  for (const [modalidad, otherModalidad] of [['Mayores Femenina', 'Mayores Masculina'], ['Cadetes Femenina', 'Cadetes Masculina']]) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);
     const publication = page.locator('[data-labm-seleccion-row] a.labm-selecciones__publication-link').first();
     await expect(publication).toBeVisible();
     const target = new URL((await publication.getAttribute('href'))!);
-    await page.goto(`${target.pathname}?modalidad=${modalidad === 'Piso' ? 'Playa' : 'Piso'}`);
+    await page.goto(`${target.pathname}?modalidad=${otherModalidad}`);
     const menu = page.getByRole('button', { name: /abrir men/i });
     if (await menu.isVisible()) await menu.click();
     const group = page.locator('[data-labm-submenu]');
@@ -154,11 +165,11 @@ test('header Selecciones mantiene padre y modalidad seleccionados en internas', 
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await toggle.focus();
     await page.keyboard.press('Enter');
-    const selected = group.getByRole('link', { name: `Balonmano ${modalidad}`, exact: true });
+    const selected = group.getByRole('link', { name: `Selección ${modalidad}`, exact: true });
     await expect(selected).toHaveAttribute('aria-current', 'location');
     await expect(group.locator('[aria-current]')).toHaveCount(1);
     const selectedBackground = await selected.evaluate(el => getComputedStyle(el).backgroundColor);
-    const other = group.getByRole('link', { name: `Balonmano ${modalidad === 'Piso' ? 'Playa' : 'Piso'}`, exact: true });
+    const other = group.getByRole('link', { name: `Selección ${otherModalidad}`, exact: true });
     expect(await other.evaluate(el => getComputedStyle(el).backgroundColor)).not.toBe(selectedBackground);
     await page.keyboard.press('Escape');
     await expect(group).toHaveClass(/is-current-section/);

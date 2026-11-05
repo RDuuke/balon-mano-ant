@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 1,
-  "version": "20261026T030713069Z-User-DESKTOP-UOCJQQ8",
-  "baseVersion": "20261025T171659162Z-User-DESKTOP-UOCJQQ8",
-  "package": "canonical.zip",
-  "sha256": "f0062f4f1f5077c2c809c10392d84765c26e3e426b0af4160d43672ed98b0713",
-  "publishedAtUtc": "2026-10-26T03:07:36.0348219Z",
-  "publishedBy": "User@DESKTOP-UOCJQQ8"
+    "schemaVersion":  1,
+    "version":  "20261105T060453138Z-User-DESKTOP-UOCJQQ8",
+    "baseVersion":  "20261105T054640362Z-User-DESKTOP-UOCJQQ8",
+    "package":  "canonical.zip",
+    "sha256":  "50a81d869d8975ce3e0ae1ef6ec5c3923cc4b4dffb968b1ffad1a66ed13873c1",
+    "publishedAtUtc":  "2026-11-05T06:05:32.7885797Z",
+    "publishedBy":  "User@DESKTOP-UOCJQQ8"
 }

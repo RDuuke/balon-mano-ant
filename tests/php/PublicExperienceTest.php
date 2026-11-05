@@ -329,11 +329,11 @@ final class PublicExperienceTest extends TestCase {
 			self::assertTrue( has_term( 'Noticias', 'labm_categoria', $post ) );
 		}
 
-		$piso  = labm_theme_public_query( 'labm_seleccion', array( 'modalidad' => 'Piso' ), 1, 20 );
-		$playa = labm_theme_public_query( 'labm_seleccion', array( 'modalidad' => 'Playa' ), 1, 20 );
-		self::assertGreaterThanOrEqual( 1, $piso->post_count );
-		self::assertGreaterThanOrEqual( 1, $playa->post_count );
-		self::assertStringNotContainsString( 'privada', strtolower( wp_json_encode( $piso->posts ) ) );
+		$femenina = labm_theme_public_query( 'labm_seleccion', array( 'modalidad' => 'Mayores Femenina' ), 1, 20 );
+		$masculina = labm_theme_public_query( 'labm_seleccion', array( 'modalidad' => 'Mayores Masculina' ), 1, 20 );
+		self::assertGreaterThanOrEqual( 1, $femenina->post_count );
+		self::assertGreaterThanOrEqual( 1, $masculina->post_count );
+		self::assertStringNotContainsString( 'privada', strtolower( wp_json_encode( $femenina->posts ) ) );
 	}
 
 	/** Actualidad combina texto y categoria, pagina cuatro publicadas y separa una destacada de tres tarjetas. */
@@ -811,28 +811,28 @@ final class PublicExperienceTest extends TestCase {
 		}
 	}
 
-	/** El header ordena Selecciones antes de Documentos y marca solo la modalidad efectiva. */
+	/** El header ordena Selecciones antes de Documentos y marca solo la nueva selección efectiva. */
 	public function test_selection_header_navigation_orders_parent_and_marks_effective_child(): void {
 		$original_uri = $_SERVER['REQUEST_URI'] ?? null;
 		$original_get = $_GET;
 
 		try {
-			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Piso';
-			$_GET                  = array( 'modalidad' => 'Piso' );
+			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Mayores+Femenina';
+			$_GET                  = array( 'modalidad' => 'Mayores Femenina' );
 			$html                   = labm_theme_header_navigation_shortcode();
 			self::assertLessThan( strpos( $html, 'Documentos' ), strpos( $html, 'Selecciones' ) );
 			self::assertDoesNotMatchRegularExpression( '/<a[^>]*>Selecciones<\/a>/', $html );
 			self::assertMatchesRegularExpression( '/<button[^>]*data-labm-submenu-toggle[^>]*>\s*Selecciones/', $html );
 			self::assertStringContainsString( 'is-current-section', $html );
 			self::assertSame( 1, substr_count( $html, 'aria-current="page"' ) );
-			self::assertMatchesRegularExpression( '/Balonmano Piso<\/a>[^<]*<\/li>/', $html );
-			self::assertStringContainsString( '/selecciones/?modalidad=Playa', $html );
-			$_SERVER['REQUEST_URI'] = '/selecciones/?modalidad=Playa';
-			$_GET                  = array( 'modalidad' => 'Playa' );
-			$playa                  = labm_theme_header_navigation_shortcode();
-			self::assertStringContainsString( 'is-current-section', $playa );
-			self::assertSame( 1, substr_count( $playa, 'aria-current="page"' ) );
-			self::assertMatchesRegularExpression( '/<a[^>]*aria-current="page"[^>]*>Balonmano Playa<\/a>/', $playa );
+			self::assertMatchesRegularExpression( '/<a[^>]*aria-current="page"[^>]*>Selección Mayores Femenina<\/a>/', $html );
+			self::assertStringContainsString( 'Selección Mayores Masculina', $html );
+			self::assertStringContainsString( 'Selección Juvenil Femenina', $html );
+			self::assertStringContainsString( 'Selección Juvenil Masculina', $html );
+			self::assertStringContainsString( 'Selección Cadetes Femenina', $html );
+			self::assertStringContainsString( 'Selección Cadetes Masculina', $html );
+			self::assertStringNotContainsString( 'Balonmano Piso', $html );
+			self::assertStringNotContainsString( 'Balonmano Playa', $html );
 
 			$_SERVER['REQUEST_URI'] = '/actualidad/';
 			$_GET                  = array();
@@ -850,23 +850,23 @@ final class PublicExperienceTest extends TestCase {
 		}
 	}
 
-	/** El detalle conserva la seccion y modalidad del articulo, incluso con un filtro ajeno en la URL. */
+	/** El detalle conserva la seccion y seleccion del articulo, incluso con un filtro ajeno en la URL. */
 	public function test_selection_header_navigation_marks_single_selection_modality(): void {
 		$original_query = $GLOBALS['wp_query'];
 		$original_get   = $_GET;
 		$original_uri   = $_SERVER['REQUEST_URI'] ?? '/';
 		$post_ids       = array();
 		try {
-			foreach ( array( 'Piso', 'Playa' ) as $modality ) {
+			foreach ( array( 'Mayores Femenina', 'Cadetes Masculina' ) as $modality ) {
 				$post_id    = wp_insert_post( array( 'post_type' => 'labm_seleccion', 'post_status' => 'publish', 'post_title' => 'Navigation single TDD ' . $modality ) );
 				$post_ids[] = $post_id;
 				wp_set_object_terms( $post_id, $modality, 'labm_modalidad' );
 				$GLOBALS['wp_query']    = new WP_Query( array( 'p' => $post_id, 'post_type' => 'labm_seleccion' ) );
-				$_SERVER['REQUEST_URI'] = '/seleccion/navigation-single/?modalidad=' . ( 'Piso' === $modality ? 'Playa' : 'Piso' );
-				$_GET                  = array( 'modalidad' => 'Piso' === $modality ? 'Playa' : 'Piso' );
+				$_SERVER['REQUEST_URI'] = '/seleccion/navigation-single/?modalidad=Mayores+Femenina';
+				$_GET                  = array( 'modalidad' => 'Mayores Femenina' );
 				$html                  = labm_theme_header_navigation_shortcode();
 				self::assertStringContainsString( 'is-current-section', $html );
-				self::assertMatchesRegularExpression( '/<a[^>]*aria-current="location"[^>]*>Balonmano ' . $modality . '<\/a>/', $html );
+				self::assertMatchesRegularExpression( '/<a[^>]*aria-current="location"[^>]*>Selección ' . $modality . '<\/a>/', $html );
 				self::assertSame( 1, substr_count( $html, 'aria-current="location"' ) );
 				self::assertSame( 0, substr_count( $html, 'aria-current="page"' ) );
 			}

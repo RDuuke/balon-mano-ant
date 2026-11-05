@@ -413,8 +413,8 @@ test('3.4 documentos ofrece filtros, estado vacío y composición responsive', a
   await expect(page.locator(':focus-visible')).toBeVisible();
 });
 
-test('3.2 selecciones filtra Piso y Playa sin exponer privados', async ({ page }) => {
-  for (const modalidad of ['Piso', 'Playa']) {
+test('3.2 selecciones filtra las nuevas categorías sin exponer privados', async ({ page }) => {
+  for (const modalidad of ['Mayores Femenina', 'Mayores Masculina', 'Juvenil Femenina', 'Juvenil Masculina', 'Cadetes Femenina', 'Cadetes Masculina']) {
     await page.goto(`/selecciones/?modalidad=${modalidad}`);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(modalidad);
     await expect(page.locator('[data-labm-listado="selecciones"] article')).not.toHaveCount(0);
@@ -424,8 +424,8 @@ test('3.2 selecciones filtra Piso y Playa sin exponer privados', async ({ page }
 });
 
 test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin JavaScript', async ({ page, browser }) => {
-  await page.goto('/selecciones/?modalidad=Piso&pagina=999');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Piso');
+  await page.goto('/selecciones/?modalidad=Mayores+Masculina&pagina=999');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mayores Masculina');
   await expect(page.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
   await expect(page.locator('[data-labm-seleccion-row] a.labm-selecciones__publication-link')).not.toHaveCount(0);
 
@@ -451,10 +451,10 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
   await expect(submenuToggle).toHaveAttribute('aria-expanded', 'false');
   await expect(submenuToggle).toBeFocused();
 
-  await page.goto('/selecciones/?modalidad=Playa&pagina=999');
+  await page.goto('/selecciones/?modalidad=Cadetes+Femenina&pagina=999');
   const empty = page.locator('[data-labm-selecciones-vacio]');
   if (await empty.count()) {
-    await expect(empty).toContainText(/Consultar Piso|Consultar Playa/);
+    await expect(empty).toContainText(/Mayores Femenina|Mayores Masculina|Juvenil Femenina|Juvenil Masculina|Cadetes Femenina|Cadetes Masculina/);
     await expect(page.locator('.labm-selecciones__pagination')).toHaveCount(0);
   }
 
@@ -479,10 +479,13 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
   const noJavaScript = await browser.newContext({ javaScriptEnabled: false });
   const noJavaScriptPage = await noJavaScript.newPage();
   try {
-    await noJavaScriptPage.goto('/selecciones/?modalidad=Piso&pagina=999');
-    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Piso', exact: true })).toBeVisible();
-    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Playa', exact: true })).toBeVisible();
-    await expect(noJavaScriptPage.getByRole('heading', { level: 1 })).toHaveText('Piso');
+    await noJavaScriptPage.goto('/selecciones/?modalidad=Mayores+Masculina&pagina=999');
+    for (const label of ['Selección Mayores Femenina', 'Selección Mayores Masculina', 'Selección Juvenil Femenina', 'Selección Juvenil Masculina', 'Selección Cadetes Femenina', 'Selección Cadetes Masculina']) {
+      await expect(noJavaScriptPage.getByRole('link', { name: label, exact: true })).toBeVisible();
+    }
+    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Piso', exact: true })).toHaveCount(0);
+    await expect(noJavaScriptPage.getByRole('link', { name: 'Balonmano Playa', exact: true })).toHaveCount(0);
+    await expect(noJavaScriptPage.getByRole('heading', { level: 1 })).toHaveText('Mayores Masculina');
     await expect(noJavaScriptPage.locator('[data-labm-selecciones-vacio], [data-labm-seleccion-row]')).not.toHaveCount(0);
   } finally {
     await noJavaScript.close();
@@ -492,7 +495,7 @@ test('4.2 Selecciones cubre filas, vacio, ultima pagina, teclado, touch y sin Ja
 test('4.4 Selecciones conserva contraste y ausencia de desborde al 200% en cinco anchos', async ({ page }) => {
   for (const width of targetWidths) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/selecciones/?modalidad=Piso');
+    await page.goto('/selecciones/?modalidad=Mayores+Femenina');
     await page.addStyleTag({ content: 'html { font-size: 200%; }' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
     const focusTarget = page.locator('[data-labm-listado="selecciones"] a.labm-selecciones__publication-link').first();
@@ -613,7 +616,7 @@ test('6.2 Documentos conserva composición y texto largo sin desborde', async ({
 test('portada y Selecciones conservan contenido en los anchos objetivo', async ({ page }) => {
   for (const width of targetWidths) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ['/', '/selecciones/?modalidad=Piso', '/selecciones/?modalidad=Playa']) {
+    for (const route of ['/', '/selecciones/?modalidad=Mayores+Femenina', '/selecciones/?modalidad=Cadetes+Masculina']) {
       await page.goto(route);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
       expect(overflow, `desborde en ${route} a ${width}px`).toBe(false);

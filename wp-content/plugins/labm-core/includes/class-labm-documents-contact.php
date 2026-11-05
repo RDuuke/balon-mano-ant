@@ -435,7 +435,18 @@ function labm_core_get_contact_settings() {
 	$footer  = function_exists( 'labm_core_get_footer_settings' ) ? labm_core_get_footer_settings() : array();
 	$email   = sanitize_email( $footer['contact_email'] ?? '' );
 	$phone   = sanitize_text_field( $footer['contact_phone'] ?? '3233212981' );
-	$address = sanitize_text_field( $footer['contact_address'] ?? 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia' );
+	$address          = sanitize_textarea_field( $footer['contact_address'] ?? 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia' );
+	$admin_label      = sanitize_text_field( $footer['contact_admin_label'] ?? 'Sede administrativa' );
+	$sports_label     = sanitize_text_field( $footer['contact_sports_label'] ?? 'Sede deportiva' );
+	$sports_address   = sanitize_textarea_field( $footer['contact_sports_address'] ?? '' );
+	$admin_map_url    = esc_url_raw( $footer['contact_admin_map_url'] ?? '', array( 'http', 'https' ) );
+	$sports_map_url   = esc_url_raw( $footer['contact_sports_map_url'] ?? '', array( 'http', 'https' ) );
+	if ( '' === $admin_map_url && '' !== $address ) {
+		$admin_map_url = esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ), array( 'https' ) );
+	}
+	if ( '' === $sports_map_url && '' !== $sports_address ) {
+		$sports_map_url = esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $sports_address ), array( 'https' ) );
+	}
 	$socials = array();
 	foreach ( array( 'facebook', 'instagram' ) as $network ) {
 		$url   = esc_url_raw( $footer[ $network . '_url' ] ?? '', array( 'http', 'https' ) );
@@ -451,7 +462,24 @@ function labm_core_get_contact_settings() {
 		'email'   => is_email( $email ) ? $email : 'info@balonmanoantioquia.com',
 		'phone'   => $phone,
 		'address' => $address,
-		'map_url' => '' !== $address ? esc_url_raw( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address ), array( 'https' ) ) : '',
+		'map_url' => $admin_map_url,
+		'locations' => array_filter(
+			array(
+				array(
+					'label'   => $admin_label,
+					'address' => $address,
+					'map_url' => $admin_map_url,
+				),
+				array(
+					'label'   => $sports_label,
+					'address' => $sports_address,
+					'map_url' => $sports_map_url,
+				),
+			),
+			static function ( $location ) {
+				return '' !== $location['address'];
+			}
+		),
 		'socials' => $socials,
 	);
 }

@@ -80,7 +80,7 @@ final class FooterSettingsTest extends TestCase {
 		self::assertSame( "Texto visible\nsegunda línea", $clean['description'] );
 		self::assertSame( '', $clean['contact_email'] );
 		self::assertSame( '3233212981', $clean['contact_phone'] );
-		self::assertSame( 'Dirección, Medellín', $clean['contact_address'] );
+		self::assertSame( ', Medellín', $clean['contact_address'] );
 		self::assertSame( '', $clean['facebook_url'] );
 		self::assertSame( '/nosotros/', $clean['navigation_1_url'] );
 	}

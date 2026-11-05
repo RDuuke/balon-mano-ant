@@ -1121,6 +1121,7 @@ final class DocumentContactTest extends TestCase {
 		$footer                   = labm_core_footer_defaults();
 		$footer['contact_phone']   = '604 555 0101';
 		$footer['contact_address'] = 'Calle 10 # 20-30, Medellín';
+		$footer['contact_sports_address'] = 'Calle 48A No. 70-80, Medellín';
 		update_option( 'labm_footer_settings', $footer, false );
 
 		$settings = labm_core_get_contact_settings();
@@ -1128,6 +1129,10 @@ final class DocumentContactTest extends TestCase {
 		self::assertSame( '604 555 0101', $settings['phone'] );
 		self::assertSame( 'Calle 10 # 20-30, Medellín', $settings['address'] );
 		self::assertStringContainsString( rawurlencode( $settings['address'] ), $settings['map_url'] );
+		self::assertCount( 2, $settings['locations'] );
+		self::assertSame( 'Sede administrativa', $settings['locations'][0]['label'] );
+		self::assertSame( 'Sede deportiva', $settings['locations'][1]['label'] );
+		self::assertStringContainsString( rawurlencode( $settings['locations'][1]['address'] ), $settings['locations'][1]['map_url'] );
 	}
 
 	/** Contacto omite teléfono, dirección y mapa cuando esos valores se vacían. */
@@ -1135,6 +1140,7 @@ final class DocumentContactTest extends TestCase {
 		$footer                   = labm_core_footer_defaults();
 		$footer['contact_phone']   = '';
 		$footer['contact_address'] = '';
+		$footer['contact_sports_address'] = '';
 		update_option( 'labm_footer_settings', $footer, false );
 
 		$html = labm_theme_render_contact();

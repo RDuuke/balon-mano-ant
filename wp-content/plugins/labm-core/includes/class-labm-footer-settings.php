@@ -102,8 +102,28 @@ function labm_core_footer_field_schema() {
 			'type'  => 'text',
 		),
 		'contact_address'    => array(
-			'label' => 'Dirección',
+			'label' => 'Sede administrativa: dirección',
+			'type'  => 'textarea',
+		),
+		'contact_admin_label' => array(
+			'label' => 'Sede administrativa: nombre',
 			'type'  => 'text',
+		),
+		'contact_admin_map_url' => array(
+			'label' => 'Sede administrativa: URL de mapa',
+			'type'  => 'url',
+		),
+		'contact_sports_label' => array(
+			'label' => 'Sede deportiva: nombre',
+			'type'  => 'text',
+		),
+		'contact_sports_address' => array(
+			'label' => 'Sede deportiva: dirección',
+			'type'  => 'textarea',
+		),
+		'contact_sports_map_url' => array(
+			'label' => 'Sede deportiva: URL de mapa',
+			'type'  => 'url',
 		),
 		'facebook_label'     => array(
 			'label' => 'Facebook: etiqueta',
@@ -160,7 +180,12 @@ function labm_core_footer_defaults() {
 		'contact_heading'    => 'CONTACTO DEMO',
 		'contact_email'      => 'info@balonmanoantioquia.com',
 		'contact_phone'      => '3233212981',
+		'contact_admin_label' => 'Sede administrativa',
 		'contact_address'    => 'Carrera 70 N.48-273 Int. 106 Coliseo Yesid Santos, Medellín, Colombia',
+		'contact_admin_map_url' => '',
+		'contact_sports_label' => 'Sede deportiva',
+		'contact_sports_address' => 'Coliseo Jorge Valderrama - Unidad Deportiva Atanasio Girardot.\nCalle 48A No. 70-80, Medellín, Colombia',
+		'contact_sports_map_url' => '',
 		'facebook_label'     => 'Facebook',
 		'facebook_url'       => 'https://www.facebook.com/balonmanoantioquia',
 		'instagram_label'    => 'Instagram',
@@ -197,11 +222,12 @@ function labm_core_sanitize_footer_settings( $input ) {
 
 /** Obtiene la configuración efectiva. */
 function labm_core_get_footer_settings() {
-	$saved = get_option( 'labm_footer_settings', array() );
+	$saved   = get_option( 'labm_footer_settings', array() );
+	$defaults = labm_core_footer_defaults();
 	if ( ! is_array( $saved ) || array() === $saved ) {
-		return labm_core_footer_defaults();
+		return $defaults;
 	}
-	return wp_parse_args( labm_core_sanitize_footer_settings( $saved ), labm_core_footer_defaults() );
+	return labm_core_sanitize_footer_settings( wp_parse_args( $saved, $defaults ) );
 }
 
 /** Registra la opción del footer. */
