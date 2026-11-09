@@ -657,7 +657,12 @@ final class HomePresentationTest extends TestCase {
 
 			$slider = labm_theme_render_home_slider();
 			self::assertStringContainsString( 'data-labm-slider-next', $slider );
-			self::assertStringContainsString( 'Conocer la Liga', $slider );
+			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $slider );
+			self::assertStringNotContainsString( 'Slide Uno', $slider );
+			self::assertStringNotContainsString( 'Conocer la Liga', $slider );
+			self::assertStringNotContainsString( '<h2', $slider );
+			self::assertStringNotContainsString( '<p>', $slider );
+			self::assertStringNotContainsString( '<a ', $slider );
 			self::assertStringNotContainsString( 'javascript:', $slider );
 
 			$allies = labm_theme_render_home_allies();
@@ -677,8 +682,8 @@ final class HomePresentationTest extends TestCase {
 		}
 	}
 
-	/** El slider limita texto extremo y conserva una caja identificable sin imagen editorial. */
-	public function test_slider_presenta_contenido_extremo_sin_medio_editorial(): void {
+	/** El slider omite slides sin imagen destacada publicable. */
+	public function test_slider_omite_contenido_sin_imagen_destacada(): void {
 		register_post_type( 'labm_slide_test', array( 'public' => true ) );
 		$post_id = wp_insert_post(
 			array(
@@ -692,10 +697,7 @@ final class HomePresentationTest extends TestCase {
 
 		try {
 			$html = labm_theme_render_home_slider( 'labm_slide_test' );
-			self::assertStringContainsString( 'class="labm-home-slider__slide"', $html );
-			self::assertStringContainsString( 'tabindex="0"', $html );
-			self::assertStringContainsString( 'hero-balonmano-antioquia-v1.png', $html );
-			self::assertLessThanOrEqual( 35, str_word_count( wp_strip_all_tags( $html ) ) );
+			self::assertSame( '', $html );
 		} finally {
 			wp_delete_post( $post_id, true );
 			unregister_post_type( 'labm_slide_test' );

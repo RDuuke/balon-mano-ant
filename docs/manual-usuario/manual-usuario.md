@@ -12,7 +12,7 @@ Las capturas reales del panel administrativo del proyecto se realizaron el 10 de
 2. [Encontrar la sección correcta](#2-encontrar-la-sección-correcta)
 3. [Crear, revisar, publicar y actualizar](#3-crear-revisar-publicar-y-actualizar)
 4. [Actualidad: noticias y eventos](#4-actualidad-noticias-y-eventos)
-5. [Selecciones: Piso y Playa](#5-selecciones-piso-y-playa)
+5. [Selecciones](#5-selecciones)
 6. [Documentos: publicar y sustituir PDF](#6-documentos-publicar-y-sustituir-pdf)
 7. [Inicio: slides](#7-inicio-slides)
 8. [Inicio: aliados y clubes](#8-inicio-aliados-y-clubes)
@@ -47,7 +47,7 @@ El menú público y el menú del administrador tienen funciones distintas. Para 
 | Qué quieres actualizar | Menú del administrador | Dónde se refleja |
 | --- | --- | --- |
 | Una noticia o un evento | **Actualidad** | Actualidad y selecciones automáticas de contenido en Inicio |
-| Una participación, convocatoria o logro de Piso/Playa | **Selecciones** | Listado de la modalidad y detalle individual |
+| Una participación, convocatoria o logro | **Selecciones** | Listado de la selección y detalle individual |
 | Un archivo público PDF | **Documentos** | Catálogo público de Documentos |
 | Una diapositiva de portada | **Slides de Inicio** | Carrusel de Inicio |
 | Un logo de aliado | **Aliados Oficiales** | Franja de aliados de Inicio |
@@ -125,7 +125,9 @@ El sitio elige la fecha de evento más antigua, en orden ascendente; si varias p
 
 El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demostración: permite seleccionar una de las imágenes de respaldo permitidas cuando una noticia no tiene imagen destacada. No lo uses para registrar fechas.
 
-## 5. Selecciones: Piso y Playa
+## 5. Selecciones
+
+La clasificación de la publicación determina la selección en la que aparece y qué opción del menú queda activa. Las selecciones oficiales disponibles son **Mayores Femenina**, **Mayores Masculina**, **Juvenil Femenina**, **Juvenil Masculina**, **Cadetes Femenina** y **Cadetes Masculina**.
 
 ![Editor real de Selecciones](imagenes/selecciones-editor.png)
 
@@ -134,21 +136,21 @@ El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demost
 1. Entra en **Selecciones > Añadir Selección**.
 2. Escribe el nombre de la participación, torneo, convocatoria o logro.
 3. Describe el proceso en el cuerpo. Incluye categoría deportiva, ciudad, año, resultados y contexto cuando corresponda.
-4. Abre **Modalidades** en el panel derecho y selecciona **Piso** o **Playa**. Para una publicación que pertenece a una sola modalidad, asigna solamente esa modalidad.
+4. Abre **Modalidades** en el panel derecho y selecciona una de las seis selecciones oficiales: **Mayores Femenina**, **Mayores Masculina**, **Juvenil Femenina**, **Juvenil Masculina**, **Cadetes Femenina** o **Cadetes Masculina**.
 5. Completa **Categorías** con el tipo de publicación correspondiente.
 6. Establece una imagen destacada y agrega una galería al cuerpo si necesitas varias fotos.
 7. Escribe un extracto que permita entender el contenido antes de abrirlo.
 8. Revisa y publica.
-9. En el menú público abre **Selecciones > Balonmano Piso** o **Balonmano Playa** y comprueba que el registro aparezca en el listado adecuado.
-10. Abre la interna: deben mantenerse resaltados el padre **Selecciones** y la modalidad del artículo.
+9. En el menú público abre **Selecciones** y elige la selección correspondiente. Comprueba que el registro aparezca en el listado adecuado.
+10. Abre la interna: deben mantenerse resaltados el padre **Selecciones** y la selección del artículo.
 
-![Listado público real de Piso](imagenes/12-selecciones-publico.png)
+![Listado público real de Selecciones (captura histórica)](imagenes/12-selecciones-publico.png)
 
-**Modalidad** y **Categorías** no son intercambiables. La modalidad determina el listado Piso/Playa y el estado activo del menú. El campo adicional `labm_modalidad_detalle` permite un texto breve de contexto de la tarjeta; no sustituye la clasificación **Modalidades**. Si no está visible, activa el panel siguiendo la sección **Activar los campos personalizados**.
+**Modalidades** y **Categorías** no son intercambiables. La selección oficial asignada en **Modalidades** determina el listado y el estado activo del menú. El campo adicional `labm_modalidad_detalle` permite un texto breve de contexto de la tarjeta; no sustituye la clasificación **Modalidades**. Si no está visible, activa el panel siguiendo la sección **Activar los campos personalizados**.
 
-El padre **Selecciones** abre el submenú por hover o clic; no lleva a una página. En móvil primero abre el menú general y luego Selecciones. Los enlaces de las modalidades sí navegan a sus listados.
+El padre **Selecciones** abre el submenú por hover o clic; no lleva a una página. En móvil primero abre el menú general y luego Selecciones. Los enlaces de las seis selecciones oficiales sí navegan a sus listados.
 
-Para cambiar el nombre o el texto introductorio del listado, abre **Selecciones > Modalidades** y edita la modalidad correspondiente. **Nombre** controla Piso/Playa y **Description / Descripción** controla el texto bajo la cabecera. Si la descripción está vacía, se muestra «Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano». El prefijo «SELECCIÓN ANTIOQUIA ·», el título «Balonmano de Piso/Playa» y el conteo se presentan automáticamente. El título de cada publicación se cambia en su propio campo **Título**; `labm_modalidad_detalle` es opcional y se omite si está vacío.
+Para cambiar el nombre o el texto introductorio del listado, abre **Selecciones > Modalidades** y edita la selección correspondiente. **Nombre** controla la etiqueta de la selección y **Description / Descripción** controla el texto bajo la cabecera. Si la descripción está vacía, se muestra «Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano». El prefijo «SELECCIÓN ANTIOQUIA ·» y el conteo se presentan automáticamente. El título de cada publicación se cambia en su propio campo **Título**; `labm_modalidad_detalle` es opcional y se omite si está vacío.
 
 Para Actualidad y Selecciones, la cartilla recomienda una imagen destacada horizontal de 1600 × 900 píxeles, JPG/WebP y hasta 500 KB. Las tarjetas pueden recortarla; la página individual muestra la imagen completa. En las galerías de Actualidad se recomiendan 1200 × 900 píxeles. Son recomendaciones: el máximo real se consulta en Medios.
 
@@ -188,22 +190,22 @@ El PDF debe existir en la biblioteca, ser accesible para tu cuenta y ser un PDF 
 
 ## 7. Inicio: slides
 
+Inicio muestra hasta 5 diapositivas publicadas con imagen destacada válida. El carrusel presenta únicamente la imagen y conserva los controles de navegación, pausa e indicadores. Si hay más, se muestran primero según el orden editorial y luego por título; conserva las diapositivas adicionales publicadas para poder incorporarlas cuando se libere un cupo.
+
 ![Editor real de una diapositiva de Inicio](imagenes/slides-editor.png)
 
 ![Referencia real del panel Post Attributes con el campo Order](imagenes/aliados-editor.png)
 
 1. Abre **Slides de Inicio**.
 2. Pulsa **Add Post / Añadir** o edita una diapositiva existente.
-3. Escribe el título que se mostrará en el carrusel.
-4. Añade el texto breve al contenido o al extracto según el texto editorial existente.
+3. Escribe un título para identificar la diapositiva en el panel administrativo; no se muestra como texto en el carrusel.
+4. El contenido y el extracto pueden conservarse como referencia editorial, pero no se muestran en el carrusel.
 5. Asigna una **imagen destacada**. Es obligatoria para publicar, pero puedes guardar un borrador sin imagen. Si intentas publicar sin ella, el panel muestra un aviso y conserva el contenido como borrador.
-6. Revisa el enlace de destino y el texto del botón si la diapositiva debe tener una llamada a la acción.
+6. No es necesario configurar un enlace ni un texto de botón: el carrusel muestra únicamente la imagen.
 7. Publica o guarda los cambios.
-8. Abre Inicio y recorre el carrusel hasta esa diapositiva. Comprueba que el texto sea legible y el botón lleve al destino correcto.
+8. Abre Inicio y recorre el carrusel hasta esa diapositiva. Comprueba que la imagen se recorte correctamente y que los controles funcionen.
 
-El destino del botón se guarda en `labm_destino_url` y su etiqueta en `labm_cta_texto`. Son campos personalizados, no campos del panel de Documentos. Si no aparecen en tu editor, activa el panel siguiendo la sección **Activar los campos personalizados**. Sin destino, la diapositiva no muestra ese enlace.
-
-Completa ambos datos para que el botón tenga el destino y el texto previstos. Si hay destino y falta el texto, aparece «Conocer más»; si falta el destino, no se muestra el enlace. Después de publicar, prueba la diapositiva directamente en **Inicio**.
+Los campos de texto y enlace pueden conservarse como referencia administrativa, pero no se renderizan en el carrusel. Después de publicar, prueba la diapositiva directamente en **Inicio**.
 
 En la portada solo aparecen las diapositivas publicadas que tienen una imagen destacada válida. Las diapositivas sin imagen pueden conservarse como borradores; al intentar publicarlas, el panel avisa y mantiene el contenido como borrador.
 
@@ -213,7 +215,7 @@ En **Post Attributes / Atributos**, escribe un número de orden: un número meno
 
 Las diapositivas no tienen una página pública individual. Se verifican en Inicio.
 
-El texto breve usa primero el **Extracto** y, si está vacío, el contenido. Si ambos están vacíos, no aparece un texto de reemplazo. La cartilla recomienda una imagen horizontal de 1920 × 1080 píxeles, JPG/WebP y hasta 700 KB; deja lo importante en el centro porque la imagen se recorta según la pantalla. El límite real de carga se consulta en Medios.
+La imagen del slide usa `object-fit: cover`: llena el marco horizontal y puede recortar partes según la pantalla. La cartilla recomienda una imagen de 1920 × 1080 píxeles, JPG/WebP y hasta 700 KB; deja lo importante en el centro. El límite real de carga se consulta en Medios.
 
 ## 8. Inicio: aliados y clubes
 

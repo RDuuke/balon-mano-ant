@@ -164,9 +164,9 @@ body { margin: 0; overflow-x: clip; overflow-wrap: anywhere; color: var(--labm-b
 .wp-block-navigation .wp-block-navigation-item__content[aria-current="page"],
 body.single-labm_actualidad .wp-block-navigation .wp-block-navigation-item__content[href="/actualidad/"] { color: var(--labm-green-dark); }
 @media (hover: hover) { .wp-block-navigation .wp-block-navigation-item__content:hover { color: var(--labm-green-dark); } }
-:is(.wp-element-button, .labm-contact__map, .labm-contact__form button, .labm-documents-filters button, .labm-documents-empty__clear, .labm-main > .labm-empty a, .labm-home-slider__items article > a, .labm-documents-catalog__actions a, form.labm-filter[data-labm-actualidad-filtros] button) { transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+:is(.wp-element-button, .labm-contact__map, .labm-contact__form button, .labm-documents-filters button, .labm-documents-empty__clear, .labm-main > .labm-empty a, .labm-documents-catalog__actions a, form.labm-filter[data-labm-actualidad-filtros] button) { transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease; }
 @media (hover: hover) {
-	:is(.wp-element-button, .labm-contact__map, .labm-contact__form button, .labm-documents-filters button, .labm-documents-empty__clear, .labm-main > .labm-empty a, .labm-home-slider__items article > a, .labm-documents-catalog__actions a, form.labm-filter[data-labm-actualidad-filtros] button):hover { background-color: #c7ee18; box-shadow: 0 .375rem .875rem rgb(32 32 32 / 22%); transform: translateY(-.125rem); }
+	:is(.wp-element-button, .labm-contact__map, .labm-contact__form button, .labm-documents-filters button, .labm-documents-empty__clear, .labm-main > .labm-empty a, .labm-documents-catalog__actions a, form.labm-filter[data-labm-actualidad-filtros] button):hover { background-color: #c7ee18; box-shadow: 0 .375rem .875rem rgb(32 32 32 / 22%); transform: translateY(-.125rem); }
 }
 .labm-section, [data-labm-section]:not([data-labm-section="slider"]) { padding: clamp(2.5rem, 7vw, 6rem) max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); }
 .labm-about-banner[data-labm-section="nosotros-banner"] { padding: 0; }
@@ -176,22 +176,18 @@ body.single-labm_actualidad .wp-block-navigation .wp-block-navigation-item__cont
 .labm-hero a { color: var(--labm-black); }
 .labm-slider, .labm-home-slider { position: relative; overflow: hidden; }
 .labm-home-slider__items, .labm-home-slider__slide { block-size: var(--labm-slider-height); }
-.labm-home-slider__slide { position: relative; overflow-y: auto; overscroll-behavior: auto; padding: clamp(2rem, 8vw, 7rem) max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)) 6rem; color: #fff; isolation: isolate; }
-.labm-home-slider__items article::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 78%) 0%, rgb(0 0 0 / 42%) 50%, rgb(0 0 0 / 18%) 100%); }
+.labm-home-slider__slide { position: relative; overflow: hidden; padding: 0; isolation: isolate; }
 .labm-home-slider__items article > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
-.labm-home-slider__items :where(h2, p) { max-width: 38rem; }
-.labm-home-slider__items h2 { margin-top: 0; font-size: clamp(2.25rem, 4.5vw, 4rem); line-height: .95; }
-.labm-home-slider__items article > a { display: inline-block; padding: .85rem 1.15rem; background: var(--labm-green); color: var(--labm-black); font-weight: 800; text-decoration: none; }
 .labm-slider__controls, .labm-home-slider__controls { display: flex; align-items: center; gap: .5rem; position: absolute; z-index: 2; right: max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); bottom: var(--labm-gutter); min-height: 2.75rem; }
 .labm-slider button, .labm-home-slider button { min-width: 2.75rem; min-height: 2.75rem; border: 2px solid var(--labm-black); background: #fff; color: var(--labm-black); }
-.labm-home-slider__controls button { display: grid; width: 2.75rem; min-width: 2.75rem; height: 2.75rem; min-height: 2.75rem; place-items: center; padding: 0; border: 1px solid rgb(255 255 255 / 55%); border-radius: 0; background: rgb(0 0 0 / 42%); color: #fff; cursor: pointer; }
+.labm-home-slider__controls button { display: grid; width: 2.75rem; min-width: 2.75rem; height: 2.75rem; min-height: 2.75rem; place-items: center; padding: 0; border: 2px solid #fff; border-radius: 0; background: rgb(0 0 0 / 72%); color: #fff; cursor: pointer; }
 .labm-home-slider__controls button:hover { border-color: var(--labm-green); background: var(--labm-green); color: var(--labm-black); }
 .labm-home-slider__controls button::before { content: ""; display: block; width: .65rem; height: .65rem; }
 .labm-home-slider__controls [data-labm-slider-prev]::before { border-bottom: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg); }
 .labm-home-slider__controls [data-labm-slider-next]::before { border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
 .labm-home-slider__controls [data-labm-slider-pause]::before { width: .6rem; height: .85rem; background: linear-gradient(90deg, currentColor 0 2px, transparent 2px calc(100% - 2px), currentColor calc(100% - 2px)); }
 .labm-home-slider__controls [data-labm-slider-pause][aria-pressed="true"]::before { width: .75rem; height: .85rem; background: currentColor; clip-path: polygon(10% 0, 100% 50%, 10% 100%); }
-.labm-home-slider__indicators { display: flex; align-items: center; gap: .625rem; position: absolute; z-index: 2; bottom: var(--labm-gutter); left: max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); min-height: 2.75rem; }
+.labm-home-slider__indicators { display: flex; align-items: center; gap: .625rem; position: absolute; z-index: 2; bottom: var(--labm-gutter); left: max(var(--labm-gutter), calc((100% - var(--labm-content-max)) / 2)); min-height: 2.75rem; padding-inline: .25rem; background: rgb(0 0 0 / 72%); }
 .labm-home-slider__indicators button { display: grid; width: 2.75rem; min-width: 2.75rem; height: 2.75rem; min-height: 2.75rem; place-items: center; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: pointer; }
 .labm-home-slider__indicators button::before { content: ""; width: .625rem; height: .625rem; border-radius: 50%; background: rgb(255 255 255 / 60%); }
 .labm-home-slider__indicators button[aria-current="true"]::before { background: var(--labm-green); }

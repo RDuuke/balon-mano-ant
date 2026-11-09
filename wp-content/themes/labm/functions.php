@@ -481,13 +481,6 @@ function labm_theme_render_home_slider( $post_type = 'labm_slide' ) {
 				?>
 				<article class="labm-home-slider__slide" data-labm-slide tabindex="0" <?php echo 0 === $index ? '' : 'hidden'; ?>>
 					<?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera o sanea el marcado. ?>
-					<h2><?php echo esc_html( get_the_title( $post ) ); ?></h2>
-					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 30 ) ); ?></p>
-					<?php $destination = get_post_meta( $post->ID, 'labm_destino_url', true ); ?>
-					<?php
-					if ( $destination ) :
-						?>
-						<a href="<?php echo esc_url( $destination ); ?>"><?php echo esc_html( get_post_meta( $post->ID, 'labm_cta_texto', true ) ? get_post_meta( $post->ID, 'labm_cta_texto', true ) : __( 'Conocer más', 'labm' ) ); ?></a><?php endif; ?>
 				</article>
 			<?php endforeach; ?>
 		</div>

@@ -104,6 +104,11 @@ test('slider muestra dots circulares alineados y sin desborde vertical normal', 
     const indicators = slider.locator('.labm-home-slider__indicators');
 
     await expect(dots).toHaveCount(2);
+    await expect(slider.locator('[data-labm-slide] img')).toHaveCount(2);
+    await expect(slider.locator('[data-labm-slide] h2, [data-labm-slide] p, [data-labm-slide] a')).toHaveCount(0);
+    await expect(slider.locator('[data-labm-slide]').first().locator('img')).toHaveCSS('object-fit', 'cover');
+    await expect(controls).toBeVisible();
+    await expect(indicators).toBeVisible();
     const geometry = await slider.evaluate((element) => ({
       clientHeight: element.clientHeight,
       scrollHeight: element.scrollHeight,
@@ -117,14 +122,6 @@ test('slider muestra dots circulares alineados y sin desborde vertical normal', 
       return rect.top + (rect.height / 2);
     })));
     expect(Math.abs(alignment[0] - alignment[1]), `alineacion de controles a ${width}px`).toBeLessThanOrEqual(1);
-
-    const contentBottom = await slider.locator('[data-labm-slide]:visible').locator(':scope > h2, :scope > p, :scope > a').evaluateAll((elements) =>
-      Math.max(...elements.map((element) => element.getBoundingClientRect().bottom)),
-    );
-    const controlBandTop = await Promise.all([controls, indicators].map((locator) => locator.evaluate((element) =>
-      element.getBoundingClientRect().top,
-    )));
-    expect(contentBottom, `contenido separado de controles a ${width}px`).toBeLessThanOrEqual(Math.min(...controlBandTop) - 8);
 
     const dotStyles = await dots.evaluateAll((elements) => elements.map((element) => {
       const hitArea = getComputedStyle(element);
@@ -223,9 +220,8 @@ test('slider mantiene altura al usar anterior, siguiente e indicadores', async (
     const height = async () => slider.evaluate((element) => element.getBoundingClientRect().height);
     const initialHeight = await height();
 
-    await slider.locator('[data-labm-slide]').nth(1).locator('p').evaluate((paragraph) => {
-      paragraph.textContent = `${paragraph.textContent} ${'Contenido editorial extremo '.repeat(180)}`;
-    });
+    await expect(slider.locator('[data-labm-slide] h2, [data-labm-slide] p, [data-labm-slide] a')).toHaveCount(0);
+    await expect(slider.locator('[data-labm-slide] img')).toHaveCount(2);
     await slider.getByRole('button', { name: /siguiente/i }).click();
     expect(await height(), `siguiente a ${width}px`).toBe(initialHeight);
     await slider.getByRole('button', { name: /anterior/i }).click();
