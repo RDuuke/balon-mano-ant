@@ -1,6 +1,6 @@
 # Manual de usuario - Plataforma LABM
 
-Liga Antioqueña de Balonmano · Versión 1.6 · 16 de noviembre de 2026
+Liga Antioqueña de Balonmano · Versión 1.7 · 16 de noviembre de 2026
 
 Esta guía está dirigida a las personas que crean, revisan y publican contenido. La [cartilla visual en PDF](cartilla-manual-usuario-labm.pdf) complementa este documento con una explicación breve por sección.
 
@@ -125,9 +125,11 @@ Para editarlo, entra en **LABM > Actualidad**. Cambia únicamente los campos apr
 
 ### Evento Destacado en Inicio
 
-El bloque **Evento Destacado** se alimenta automáticamente de las publicaciones **publicadas** de **Actualidad** (`labm_actualidad`) que tengan el campo personalizado `labm_fecha_evento`. Para asignar ese campo, abre el editor de la publicación, pulsa **⋮ > Preferences / Preferencias > Panels / Paneles**, activa **Custom fields / Campos personalizados** y, si WordPress lo solicita, recarga el editor. En el panel que aparece, usa `labm_fecha_evento` como nombre del campo y escribe la fecha en formato `AAAA-MM-DD` (por ejemplo, `2026-10-12`); pulsa **Add Custom Field / Añadir campo personalizado** o **Update / Actualizar** y guarda o actualiza la publicación. La preferencia de visibilidad se guarda por usuario; puedes consultar los pasos ilustrados en **Activar los campos personalizados**, sección 3.
+El bloque **Evento Destacado** se configura desde **LABM > Actualidad**. La casilla **Mostrar Evento Destacado en Inicio** permite activarlo o desactivarlo. En **Evento seleccionado**, elige una publicación publicada de Actualidad para fijarla manualmente o deja **Automático** para que el sitio elija por fecha.
 
-El sitio elige la fecha de evento más antigua, en orden ascendente; si varias publicaciones tienen la misma fecha, gana la de ID menor. No hay un selector manual de evento ni se exige una categoría específica. El bloque muestra la imagen destacada si existe, la fecha del evento, el título, el extracto o un resumen del contenido y el enlace **Ver evento**. Si ninguna publicación publicada tiene `labm_fecha_evento`, el bloque no se muestra. Esta fecha corresponde al evento y es distinta de la fecha de publicación. En el listado y el detalle de Actualidad, una fecha válida en `labm_fecha_evento` también tiene prioridad; si falta o es inválida, se muestra la fecha de publicación.
+En modo automático, el bloque se alimenta de publicaciones **publicadas** de **Actualidad** (`labm_actualidad`) que tengan el campo personalizado `labm_fecha_evento`. Para asignar ese campo, abre el editor de la publicación, pulsa **⋮ > Preferences / Preferencias > Panels / Paneles**, activa **Custom fields / Campos personalizados** y, si WordPress lo solicita, recarga el editor. En el panel que aparece, usa `labm_fecha_evento` como nombre del campo y escribe la fecha en formato `AAAA-MM-DD` (por ejemplo, `2026-10-12`); pulsa **Add Custom Field / Añadir campo personalizado** o **Update / Actualizar** y guarda o actualiza la publicación. La preferencia de visibilidad se guarda por usuario; puedes consultar los pasos ilustrados en **Activar los campos personalizados**, sección 3.
+
+En modo automático, el sitio elige la fecha de evento más antigua, en orden ascendente; si varias publicaciones tienen la misma fecha, gana la de ID menor. No se exige una categoría específica. El bloque muestra la imagen destacada si existe, la fecha del evento, el título, el extracto o un resumen del contenido y el enlace **Ver evento**. Si no hay una publicación elegida manualmente o automáticamente, el bloque no se muestra. Si la publicación fijada deja de estar publicada, el sistema vuelve al modo automático. Esta fecha corresponde al evento y es distinta de la fecha de publicación. En el listado y el detalle de Actualidad, una fecha válida en `labm_fecha_evento` también tiene prioridad; si falta o es inválida, se muestra la fecha de publicación.
 
 El metadato `labm_demo_image` es técnico y sólo se usa en contenidos de demostración: permite seleccionar una de las imágenes de respaldo permitidas cuando una noticia no tiene imagen destacada. No lo uses para registrar fechas.
 
@@ -461,6 +463,6 @@ Si se realizan ediciones de contenido en el entorno local y se deben compartir o
 
 ### Fuentes de esta versión
 
-La versión 1.6 incorpora la administración del bloque institucional de Actualidad, la gestión del Organigrama, los enlaces de Aliados Oficiales, clubes sin imagen y la matriz de aliados institucionales del footer. Se revisaron las instrucciones contra el código y la estructura actual del panel; las capturas históricas pueden mostrar nombres o controles anteriores.
+La versión 1.7 incorpora la activación y selección manual del Evento Destacado desde LABM → Actualidad, además de la administración del bloque institucional de Actualidad, Organigrama, enlaces de Aliados Oficiales, clubes sin imagen y aliados institucionales del footer. Las capturas históricas pueden mostrar nombres o controles anteriores.
 
 Las instrucciones se contrastaron con las pantallas reales capturadas y con el registro de contenido de `labm-core`, el panel administrativo de Documentos y los renderizadores del tema `labm`. Las capturas se realizaron abriendo contenido existente sin publicar ni editar sus textos o archivos. Los cambios futuros de interfaz deben reflejarse en nuevas versiones del manual y sus imágenes.

@@ -151,7 +151,7 @@
       <p class="subtitle">Cartilla de uso de la plataforma</p>
       <p class="audience">Una guía para quienes administran y publican contenido en el sitio web de la Liga.</p>
     </div>
-    <p class="cover-footer">VERSIÓN 1.6  /  16 DE NOVIEMBRE DE 2026<br>WordPress · LABM</p>
+    <p class="cover-footer">VERSIÓN 1.7  /  16 DE NOVIEMBRE DE 2026<br>WordPress · LABM</p>
   </section>
 
   <section class="page" id="pagina-02">
@@ -231,14 +231,16 @@
 
   <section class="page manual-actualidad-evento" id="pagina-05a">
     <p class="eyebrow">LABM  /  MANUAL DE USUARIO</p><p class="chapter">05A</p><div class="identity-line"></div>
-    <h2>Cómo se elige el Evento Destacado</h2>
-    <p class="intro">El bloque de Inicio se alimenta automáticamente de publicaciones publicadas de Actualidad (<code>labm_actualidad</code>) que tengan el campo <code>labm_fecha_evento</code>.</p>
+    <h2>Cómo se configura el Evento Destacado</h2>
+    <p class="intro">En <b>LABM → Actualidad</b> puedes activar o desactivar el bloque y seleccionar una publicación manualmente. Si eliges Automático, el sitio usa la fecha del evento.</p>
 
-    <div class="step"><b>1</b><span>Abre una publicación de Actualidad nueva o existente. En el editor pulsa <b>⋮ → Preferences / Preferencias → Panels / Paneles</b> y activa <b>Custom fields / Campos personalizados</b>. Confirma la recarga si WordPress la solicita.</span></div>
-    <div class="step"><b>2</b><span>En el panel de campos, crea o actualiza el campo <code>labm_fecha_evento</code>. Escribe la fecha del evento en formato <code>AAAA-MM-DD</code>, por ejemplo <code>2026-10-12</code>, y pulsa <b>Add Custom Field / Añadir campo personalizado</b> o <b>Update / Actualizar</b>.</span></div>
-    <div class="step"><b>3</b><span>Guarda o actualiza la publicación. La preferencia de visibilidad de Campos personalizados queda guardada por usuario; consulta los pasos ilustrados en la página <a href="#pagina-04a">04A</a>.</span></div>
+    <div class="step"><b>1</b><span>Entra en <b>LABM → Actualidad</b> y marca o desmarca <b>Mostrar Evento Destacado en Inicio</b>.</span></div>
+    <div class="step"><b>2</b><span>En <b>Evento seleccionado</b>, elige una publicación publicada o deja <b>Automático</b> para que se seleccione por fecha.</span></div>
+    <div class="step"><b>3</b><span>Si usas Automático, agrega <code>labm_fecha_evento</code> desde Campos personalizados con formato <code>AAAA-MM-DD</code>.</span></div>
 
-    <div class="admin-guide"><b>Regla de selección:</b> entre las publicaciones publicadas que tengan una fecha válida, se elige la fecha de evento más antigua (orden ascendente). Si varias comparten la fecha, se elige el ID menor. No hay selector manual y no se exige una categoría específica.</div>
+    <div class="step"><b>4</b><span>Guarda los cambios. Si la publicación manual deja de estar publicada, el sistema vuelve al modo Automático.</span></div>
+
+    <div class="admin-guide"><b>Regla automática:</b> entre las publicaciones publicadas que tengan una fecha de evento, se elige la fecha más antigua (orden ascendente). Si varias comparten la fecha, se elige el ID menor. No se exige una categoría específica.</div>
     <div class="note"><b>Qué aparece:</b> imagen destacada si existe, fecha del evento, título, extracto o resumen del contenido y enlace <b>Ver evento</b>. Si ninguna publicación cumple los requisitos, el bloque no se muestra.</div>
     <div class="note"><b>Fechas distintas:</b> <code>labm_fecha_evento</code> es la fecha del evento; no cambia la fecha de publicación. En el listado y el detalle de Actualidad, si el campo contiene una fecha válida, se muestra esa fecha; si falta o es inválida, se muestra la fecha de publicación.</div>
     <div class="footer"><span>WORDPRESS LOCAL REAL · CONTENIDO DE DEMOSTRACIÓN</span><b>05A</b></div>
@@ -318,7 +320,7 @@
     <div class="step"><b>3</b><span>En <b>Post Attributes → Order / Atributos → Orden</b> escribe el número acordado: <b>10 aparece antes que 20</b>. Con el mismo número, se ordenan por nombre.</span></div>
     <div class="step"><b>4</b><span>Activa <b>Custom fields / Campos personalizados</b> y agrega <code>labm_destino_url</code> con la URL completa, comenzando por <code>https://</code>. Revisa nombre, logo y enlace; guarda como borrador si falta aprobación y pulsa <b>Publish / Publicar</b> cuando esté listo.</span></div>
     <div class="note"><b>Prepara el logo:</b> recomendamos PNG transparente, 1200 × 600 píxeles y hasta 200 KB. Deja margen y no estires el símbolo. Son recomendaciones: el límite real aparece en Medios.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>10</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>10</b></div>
   </section>
 
   <section class="page guided" id="pagina-10a">
@@ -333,7 +335,7 @@
     <h3>Si algo no sale como esperas</h3>
     <table><tr><th>Problema</th><th>Qué hacer</th></tr><tr><td>No veo el logo.</td><td>Revisa nombre, imagen destacada y estado publicado.</td></tr><tr><td>No encuentro Orden.</td><td>Busca <b>Quick Edit / Edición rápida</b> bajo el nombre en el listado; si no está, pide ayuda al administrador.</td></tr><tr><td>Quiero enlazar otra web.</td><td>Actualiza <code>labm_destino_url</code> con una URL completa. Prueba el logo después de recorrer el carrusel: el enlace debe conservarse.</td></tr></table>
     <div class="note">El encabezado «Aliados Oficiales» es fijo. No cambies fechas para ordenar ni borres el logo anterior desde Medios: podría utilizarse en otro lugar. Para retirar y recuperar contenido, consulta la <a href="#pagina-16">página 16</a>.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>10A</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>10A</b></div>
   </section>
 
 
@@ -350,7 +352,7 @@
     <div class="step"><b>2</b><span>En el panel derecho abre la pestaña <b>Integrante</b>. Selecciona la fotografía en <b>Set featured image / Establecer imagen destacada</b> y confirma. Añade un texto alternativo como «Retrato de Ana Pérez».</span></div>
     <div class="step"><b>3</b><span>Abre <b>Grupos de integrantes</b> y selecciona, para el ejemplo, <b>Entrenadores</b>. No crees una variante nueva. Continúa con el cargo en la <a href="#pagina-11a">página 11A</a> antes de publicar.</span></div>
     <div class="note"><b>Fotografía recomendada:</b> JPG/WebP de 1200 × 1400 píxeles y hasta 350 KB. Centra el rostro y deja espacio sobre la cabeza: la tarjeta recorta la imagen. El límite de carga real aparece en Medios.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>11</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>11</b></div>
   </section>
 
   <section class="page guided" id="pagina-11a">
@@ -367,7 +369,7 @@
     <div class="step"><b>4</b><span>Revisa nombre, foto, cargo y grupo. Guarda la publicación y pulsa <b>Publicar</b> cuando esté aprobada; confirma si se solicita.</span></div>
     <div class="step"><b>5</b><span>Abre <b>Nosotros → Quiénes hacen posible la Liga</b>. Revisa la tarjeta y prueba <b>Todos</b> y <b>Entrenadores</b>. Comprueba la foto en un teléfono.</span></div>
     <div class="note"><b>Para modificar:</b> abre el integrante, cambia sus datos, actualiza el campo del cargo y guarda también la publicación. <b>Si no aparece:</b> revisa los cuatro datos y el estado publicado; prueba Todos. Se consultan hasta 20 registros publicados por orden y nombre. Si persiste, pide ayuda; no dupliques la persona. Para retirarla, guarda como borrador y conserva su foto.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>11A</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>11A</b></div>
   </section>
 
 
@@ -382,7 +384,7 @@
     <div class="step"><b>2</b><span>En el panel derecho abre <b>Post / Entrada</b> y busca <b>Slug / Identificador</b>. Es el nombre interno que conecta ese texto con la página. Compruébalo sin cambiarlo.</span></div>
     <table><tr><th>Qué quieres editar</th><th>Identificador exacto</th></tr><tr><td>Presentación de Nosotros</td><td><code>banner-nosotros</code></td></tr><tr><td>Misión</td><td><code>mision-nosotros</code></td></tr><tr><td>Visión</td><td><code>vision-nosotros</code></td></tr><tr><td>Encabezado de Documentos</td><td><code>banner-documentos</code></td></tr></table>
     <div class="note">Si no encuentras la entrada o el identificador, solicita ayuda. No crees un duplicado ni cambies el identificador de otra entrada. Para la presentación sigue la <a href="#pagina-12a">página 12A</a>; para Misión y Visión, la <a href="#pagina-12b">12B</a>.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>12</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>12</b></div>
   </section>
 
   <section class="page guided" id="pagina-12a">
@@ -397,7 +399,7 @@
     <div class="step"><b>3</b><span>Para reemplazar la foto, pulsa la imagen destacada y elige la nueva. Mantén el identificador y el estado publicado. Pulsa <b>Save / Guardar</b> o <b>Update / Actualizar</b>.</span></div>
     <div class="step"><b>4</b><span>Abre <b>Nosotros</b> en el sitio público. Comprueba el título, el texto y la fotografía en computador y teléfono.</span></div>
     <div class="note"><b>Foto recomendada:</b> horizontal de 1600 × 900 píxeles, JPG/WebP y hasta 500 KB. Centra el motivo principal porque el recorte cambia según la pantalla. El máximo de carga se consulta en Medios.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>12A</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>12A</b></div>
   </section>
 
   <section class="page guided" id="pagina-12b">
@@ -412,7 +414,7 @@
     <h3>Si no ves el resultado esperado</h3>
     <table><tr><th>Qué ocurre</th><th>Primera comprobación</th></tr><tr><td>Sigue el texto anterior.</td><td>Revisa que guardaste la entrada correcta y actualizaste el Extracto. Recarga la página pública.</td></tr><tr><td>Desaparece el bloque.</td><td>Comprueba que la entrada esté publicada y tenga título y texto. Conserva su identificador.</td></tr><tr><td>No encuentro dónde editar.</td><td>Pide ayuda al administrador. Indica si es presentación, Misión o Visión y qué control no aparece.</td></tr></table>
     <div class="note">No vacíes ni envíes estas entradas a la papelera para ocultarlas sin coordinarlo: puede desaparecer el bloque. Misión y Visión no tienen una imagen pública editable en esta versión.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>12B</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>12B</b></div>
   </section>
 
 
@@ -452,7 +454,7 @@
     <div class="example"><b>Resumen ficticio:</b> «Club Ejemplo promueve el balonmano de piso para jóvenes del municipio».</div>
     <div class="step"><b>4</b><span>En <b>Modalidades</b> marca la opción existente que corresponda. Revisa el borrador y pulsa <b>Publish / Publicar</b> cuando esté aprobado; confirma si se solicita.</span></div>
     <div class="note"><b>Logo recomendado:</b> PNG transparente de 1000 × 1000 píxeles y hasta 200 KB. Deja margen: el logo se muestra completo, sin estirarse. No es un límite obligatorio; consulta el máximo real en Medios.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>15</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>15</b></div>
   </section>
 
   <section class="page guided" id="pagina-15a">
@@ -467,7 +469,7 @@
     <h3>Si no aparece o falta información</h3>
     <p>Comprueba el estado publicado. La portada muestra solo clubes publicados y, como máximo, 25. Si hay más, elige los primeros por <b>Orden</b> de menor a mayor y luego por nombre. Si necesitas cambiar el orden y no encuentras el control, pide ayuda. No alteres fechas ni dupliques el club.</p>
     <div class="note"><b>Para retirarlo:</b> cambia a <b>Draft / Borrador</b>, guarda y comprueba la página pública. No borres el logo desde Medios. Consulta la <a href="#pagina-16">página 16</a> para retirar y recuperar. El encabezado «Clubes asociados» se cambia con apoyo del administrador.</div>
-    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.6</span><b>15A</b></div>
+    <div class="footer"><span>CAPTURAS REALES · EJEMPLOS FICTICIOS · VERSIÓN 1.7</span><b>15A</b></div>
   </section>
 
 
@@ -497,7 +499,7 @@
       <p class="lead">Guía visual breve para crear, revisar y publicar contenido en WordPress.</p>
     </div>
     <div>
-    <p class="note"><b>Versión 1.6 · 16 de noviembre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
+    <p class="note"><b>Versión 1.7 · 16 de noviembre de 2026</b><br>Las imágenes de esta cartilla siguen la estructura nativa del panel Custom Fields. El idioma, los permisos y la posición de algunos controles pueden variar.</p>
     </div>
   </section>
 
@@ -647,7 +649,7 @@
       <tr><td>El sitio muestra contenido anterior</td><td>Confirma que actualizaste la publicación correcta y recarga.</td></tr>
     </table>
     <p style="margin-top: 22pt"><b>Recuerda:</b> no compartas contraseñas ni incluyas usuarios en paquetes de contenido.</p>
-    <div class="footer">LABM · Versión 1.6</div>
+    <div class="footer">LABM · Versión 1.7</div>
   </section>
 </body>
 </html>

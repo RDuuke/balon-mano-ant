@@ -541,6 +541,27 @@ function labm_theme_render_home_clubs() {
 
 /** Renderiza el evento editorial destacado. */
 function labm_theme_home_event_query() {
+	$settings = function_exists( 'labm_core_get_actualidad_intro' ) ? labm_core_get_actualidad_intro() : array(
+		'event_enabled' => true,
+		'event_post_id' => 0,
+	);
+	if ( empty( $settings['event_enabled'] ) ) {
+		return new WP_Query( array( 'post__in' => array( 0 ) ) );
+	}
+	if ( ! empty( $settings['event_post_id'] ) ) {
+		$manual = new WP_Query(
+			array(
+				'post_type'      => 'labm_actualidad',
+				'post_status'    => 'publish',
+				'post__in'       => array( absint( $settings['event_post_id'] ) ),
+				'posts_per_page' => 1,
+				'no_found_rows'  => true,
+			)
+		);
+		if ( $manual->have_posts() ) {
+			return $manual;
+		}
+	}
 
 	return new WP_Query(
 		array(
