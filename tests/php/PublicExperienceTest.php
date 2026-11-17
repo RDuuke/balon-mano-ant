@@ -24,6 +24,29 @@ final class PublicExperienceTest extends TestCase {
 		self::assertLessThan( $join, $team );
 	}
 
+	/** El Organigrama oculta el marcador editorial de los elementos de demostracion. */
+	public function test_about_organization_strips_demo_marker_from_item_titles(): void {
+		$term = wp_insert_term( 'Grupo prueba organigrama', 'labm_org_grupo' );
+		self::assertIsArray( $term );
+		$post_id = wp_insert_post(
+			array(
+				'post_type'   => 'labm_org_item',
+				'post_status' => 'publish',
+				'post_title'  => '[DEMO LABM — FICTICIO] Comité de prueba',
+			)
+		);
+		wp_set_post_terms( $post_id, array( $term['term_id'] ), 'labm_org_grupo' );
+
+		try {
+			$html = labm_theme_render_about_organization();
+			self::assertStringContainsString( 'Comité de prueba', $html );
+			self::assertStringNotContainsString( '[DEMO LABM', $html );
+		} finally {
+			wp_delete_post( $post_id, true );
+			wp_delete_term( $term['term_id'], 'labm_org_grupo' );
+		}
+	}
+
 	/** El CTA declara y usa Barlow Condensed como activo local con licencia. */
 	public function test_join_cta_uses_local_barlow_condensed_font(): void {
 		$theme_root = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/';

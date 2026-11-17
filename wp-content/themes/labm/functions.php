@@ -331,7 +331,11 @@ function labm_theme_render_about_organization() {
 		if ( is_wp_error( $terms ) || empty( $terms ) || ! isset( $groups[ $terms[0]->term_id ] ) ) {
 			continue;
 		}
-		$groups[ $terms[0]->term_id ]['items'][] = get_the_title( $item );
+		$title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $item ) ) ) );
+		$title = is_string( $title ) ? $title : '';
+		if ( '' !== $title ) {
+			$groups[ $terms[0]->term_id ]['items'][] = $title;
+		}
 	}
 	$groups = array_filter( $groups, static fn( $group ) => ! empty( $group['items'] ) );
 	if ( empty( $groups ) ) {
