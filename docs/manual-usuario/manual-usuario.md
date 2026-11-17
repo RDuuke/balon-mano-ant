@@ -1,6 +1,6 @@
 # Manual de usuario - Plataforma LABM
 
-Liga Antioqueña de Balonmano · Versión 1.5 · 19 de octubre de 2026
+Liga Antioqueña de Balonmano · Versión 1.6 · 16 de noviembre de 2026
 
 Esta guía está dirigida a las personas que crean, revisan y publican contenido. La [cartilla visual en PDF](cartilla-manual-usuario-labm.pdf) complementa este documento con una explicación breve por sección.
 
@@ -16,7 +16,7 @@ Las capturas reales del panel administrativo del proyecto se realizaron el 10 de
 6. [Documentos: publicar y sustituir PDF](#6-documentos-publicar-y-sustituir-pdf)
 7. [Inicio: slides](#7-inicio-slides)
 8. [Inicio: aliados y clubes](#8-inicio-aliados-y-clubes)
-9. [Nosotros: presentación, misión, visión e integrantes](#9-nosotros-presentación-misión-visión-e-integrantes)
+9. [Nosotros: presentación, misión, visión y Organigrama](#9-nosotros-presentación-misión-visión-y-organigrama)
 10. [Contacto y pie de página](#10-contacto-y-pie-de-página)
 11. [Biblioteca de medios y galerías](#11-biblioteca-de-medios-y-galerías)
 12. [Retirar y recuperar una publicación](#12-retirar-y-recuperar-una-publicación)
@@ -52,7 +52,7 @@ El menú público y el menú del administrador tienen funciones distintas. Para 
 | Una diapositiva de portada | **Slides de Inicio** | Carrusel de Inicio |
 | Un logo de aliado | **Aliados Oficiales** | Franja de aliados de Inicio |
 | Un club asociado | **Clubes** | Sección de clubes de Inicio |
-| Una persona de la Liga | **Integrantes** | Equipo de Nosotros, según su grupo |
+| La estructura institucional | **Organigrama** | Bloque “Cómo se organiza la Liga” |
 | Banner de Nosotros, Misión, Visión o banner de Documentos | **Posts / Entradas** | Bloques institucionales conectados por identificador |
 | Datos y enlaces del pie de página | **LABM** | Footer; correo y redes compartidos con Contacto |
 | Archivos e imágenes | **Media / Medios** | Biblioteca usada por las publicaciones |
@@ -117,6 +117,12 @@ La preferencia se guarda por usuario, no por publicación. La posición y el idi
 
 La portada consulta las publicaciones de Actualidad automáticamente. La publicación destacada del bloque de noticias depende de su orden editorial; no existe en el código actual un interruptor general de “destacar esta noticia”.
 
+### Presentación institucional de Actualidad
+
+La página pública de **Actualidad** muestra una presentación institucional de la Escuela de Balonmano LABM antes de los filtros y del listado de noticias. El bloque incluye el texto descriptivo y los datos clave de horario, lugar, edades y festivales.
+
+Para editarlo, entra en **LABM > Actualidad**. Cambia únicamente los campos aprobados: etiqueta, título, texto principal y datos clave. Pulsa **Guardar cambios** y comprueba `/actualidad/` en computador y teléfono. Esta sección es independiente de las publicaciones: modificarla no crea una noticia ni cambia el orden del listado.
+
 ### Evento Destacado en Inicio
 
 El bloque **Evento Destacado** se alimenta automáticamente de las publicaciones **publicadas** de **Actualidad** (`labm_actualidad`) que tengan el campo personalizado `labm_fecha_evento`. Para asignar ese campo, abre el editor de la publicación, pulsa **⋮ > Preferences / Preferencias > Panels / Paneles**, activa **Custom fields / Campos personalizados** y, si WordPress lo solicita, recarga el editor. En el panel que aparece, usa `labm_fecha_evento` como nombre del campo y escribe la fecha en formato `AAAA-MM-DD` (por ejemplo, `2026-10-12`); pulsa **Add Custom Field / Añadir campo personalizado** o **Update / Actualizar** y guarda o actualiza la publicación. La preferencia de visibilidad se guarda por usuario; puedes consultar los pasos ilustrados en **Activar los campos personalizados**, sección 3.
@@ -149,6 +155,8 @@ La clasificación de la publicación determina la selección en la que aparece y
 **Modalidades** y **Categorías** no son intercambiables. La selección oficial asignada en **Modalidades** determina el listado y el estado activo del menú. El campo adicional `labm_modalidad_detalle` permite un texto breve de contexto de la tarjeta; no sustituye la clasificación **Modalidades**. Si no está visible, activa el panel siguiendo la sección **Activar los campos personalizados**.
 
 El padre **Selecciones** abre el submenú por hover o clic; no lleva a una página. En móvil primero abre el menú general y luego Selecciones. Los enlaces de las seis selecciones oficiales sí navegan a sus listados.
+
+Cuando un visitante abre **Mayores Femenina** o **Mayores Masculina**, el encabezado identifica la modalidad seleccionada. Si una modalidad no tiene publicaciones, se muestra un aviso informativo sin botones de consulta adicionales; publica un registro asociado a esa modalidad cuando deba aparecer contenido.
 
 Para cambiar el nombre o el texto introductorio del listado, abre **Selecciones > Modalidades** y edita la selección correspondiente. **Nombre** controla la etiqueta de la selección y **Description / Descripción** controla el texto bajo la cabecera. Si la descripción está vacía, se muestra «Conoce las selecciones publicadas de la Liga Antioqueña de Balonmano». El prefijo «SELECCIÓN ANTIOQUIA ·» y el conteo se presentan automáticamente. El título de cada publicación se cambia en su propio campo **Título**; `labm_modalidad_detalle` es opcional y se omite si está vacío.
 
@@ -221,7 +229,7 @@ La imagen del slide usa `object-fit: cover`: llena el marco horizontal y puede r
 
 ### Aliados Oficiales
 
-**Qué vas a actualizar:** los logos que aparecen en la franja **Aliados Oficiales** de Inicio. Cada aliado necesita nombre y logo. No dispone de descripción ni de enlace externo editable.
+**Qué vas a actualizar:** los logos que aparecen en la franja **Aliados Oficiales** de Inicio. Cada aliado necesita nombre y logo; también puede tener un enlace externo editable.
 
 **Antes de empezar:** ten el nombre aprobado y el logo oficial. Recomendación: PNG con fondo transparente, en un espacio horizontal de 1200 × 600 píxeles, hasta 200 KB. Deja margen alrededor del símbolo y no lo estires. Son recomendaciones, no límites de carga; consulta el máximo que aparece en Medios.
 
@@ -234,27 +242,28 @@ La imagen del slide usa `object-fit: cover`: llena el marco horizontal y puede r
 3. En la columna derecha busca **Featured image / Imagen destacada**. Pulsa **Set featured image / Establecer imagen destacada**; si ya hay un logo, pulsa sobre él para reemplazarlo.
 4. Selecciona el logo existente o usa **Upload files / Subir archivos**. En **Alternative Text / Texto alternativo**, identifica la organización; por ejemplo, «Logo de Aliado Ejemplo». Confirma la imagen seleccionada.
 5. En **Post Attributes > Order / Atributos > Orden**, escribe el orden acordado. Por ejemplo, 10 aparece antes que 20. Si dos aliados tienen el mismo número, se ordenan por nombre.
-6. Revisa el nombre y el logo. Pulsa **Publish / Publicar**. Si estás revisando, guarda como borrador; un borrador no se muestra al visitante.
-7. Abre el sitio público, entra en **Inicio** y baja hasta **Aliados Oficiales**. Comprueba que el logo se vea completo, sin deformarse y en el orden esperado. Revisa también desde un teléfono.
+6. Activa **Custom fields / Campos personalizados** y agrega `labm_destino_url` con la URL completa, por ejemplo `https://ejemplo.org/`. Guarda el campo con **Add Custom Field / Añadir campo personalizado**. Si el aliado no debe enlazar a un sitio externo, deja el campo vacío.
+7. Revisa el nombre, el logo y la URL. Pulsa **Publish / Publicar**. Si estás revisando, guarda como borrador; un borrador no se muestra al visitante.
+8. Abre el sitio público, entra en **Inicio** y baja hasta **Aliados Oficiales**. Comprueba que el logo se vea completo, sin deformarse, en el orden esperado y que el enlace funcione incluso después de recorrer el carrusel. Revisa también desde un teléfono.
 
 #### Modificar o retirar un aliado
 
 1. Abre **Aliados Oficiales**, localiza el nombre y pulsa **Edit / Editar**.
 2. Cambia nombre, imagen u orden. Para reemplazar el logo, pulsa la imagen actual y selecciona la nueva; no borres el archivo anterior desde Medios.
-3. Pulsa **Update / Actualizar** y vuelve a comprobar Inicio.
+3. Actualiza el campo `labm_destino_url` si cambió el sitio externo. Pulsa **Update / Actualizar** y vuelve a comprobar Inicio. El logo enlaza en una pestaña nueva.
 4. Para retirarlo temporalmente, cambia **Status / Estado** a **Draft / Borrador** y guarda. Para recuperarlo, revisa los datos y vuelve a publicar. Consulta la sección 12 si necesitas usar la papelera.
 
 **Si no ves Orden:** busca **Quick Edit / Edición rápida** bajo el nombre en el listado. Si tampoco aparece, solicita el cambio al administrador.
 
-**Si no aparece el logo:** comprueba nombre, imagen destacada y estado publicado. La franja admite hasta 12 aliados completos; se eligen por orden y luego por nombre. Si hay más, coordina el orden con el administrador. No cambies la fecha para ordenarlos.
+**Si no aparece el logo:** comprueba nombre, imagen destacada y estado publicado. La franja muestra los aliados publicados según orden y luego nombre. Si el enlace no funciona, revisa que `labm_destino_url` contenga una URL completa y válida, comenzando por `https://`.
 
 El encabezado «Aliados Oficiales» es fijo. Para cambiarlo, solicita apoyo al administrador. Un aliado no tiene una página pública individual: se comprueba en Inicio.
 
 ### Clubes
 
-**Qué vas a actualizar:** el nombre, logo y resumen de un club asociado, y el contenido de su página individual. Clubes y Aliados Oficiales son secciones distintas.
+**Qué vas a actualizar:** el nombre, logo opcional y resumen de un club asociado, y el contenido de su página individual. Clubes y Aliados Oficiales son secciones distintas.
 
-**Antes de empezar:** prepara el nombre oficial, una descripción, un resumen de una o dos frases y el logo. Recomendación: PNG transparente de 1000 × 1000 píxeles y hasta 200 KB, con margen alrededor. El logo se muestra completo, sin recorte. Consulta en Medios el máximo de carga permitido.
+**Antes de empezar:** prepara el nombre oficial, una descripción y, si existe, un resumen de una o dos frases y el logo. El logo es opcional: un club publicado sin imagen se muestra como una tarjeta de texto. Si cargas logo, se recomienda PNG transparente de 1000 × 1000 píxeles y hasta 200 KB, con margen alrededor.
 
 ![Editor real de Clubes: imagen, extracto y Modalidades en la columna derecha](imagenes/clubes-editor.png)
 
@@ -263,7 +272,7 @@ El encabezado «Aliados Oficiales» es fijo. Para cambiarlo, solicita apoyo al a
 1. Entra en **Clubes > Añadir Club**.
 2. Escribe el nombre en **Título** y la descripción en el cuerpo de la publicación.
 3. En el panel derecho, abre la pestaña **Club**, no **Block / Bloque**.
-4. Pulsa **Set featured image / Establecer imagen destacada**, selecciona o sube el logo y confirma. Completa su texto alternativo con el nombre del club.
+4. Si tienes logo, pulsa **Set featured image / Establecer imagen destacada**, selecciona o sube el archivo y confirma. Completa su texto alternativo con el nombre del club. Si no tienes imagen, deja el campo vacío.
 5. Pulsa **Add an excerpt / Añadir un extracto** y escribe el resumen breve. Ejemplo ficticio: «Club Ejemplo promueve el balonmano de piso para jóvenes del municipio». Este es el texto de la tarjeta de Inicio; si lo dejas vacío, se genera desde la descripción.
 6. Abre **Modalidades** y marca Piso o Playa según corresponda al club. Usa las opciones existentes; no crees otra para corregir un nombre.
 7. Guarda como borrador, revisa los datos y pulsa **Publish / Publicar** cuando estén aprobados. Confirma si WordPress lo solicita.
@@ -276,11 +285,11 @@ El encabezado «Aliados Oficiales» es fijo. Para cambiarlo, solicita apoyo al a
 3. Pulsa **Save / Guardar** o **Update / Actualizar**, según tu editor.
 4. Revisa Inicio y la página individual. Si no está en Inicio, usa **View / Ver** desde el listado o el editor para comprobar su página publicada.
 
-**Si no aparece en Inicio:** comprueba que esté publicado. Inicio muestra únicamente clubes publicados y admite hasta ocho elementos, ordenados por **Orden** de menor a mayor y después por nombre. Si hay más de ocho clubes publicados, solo aparecen los primeros ocho según ese orden. Si necesitas cambiar el orden y no encuentras el control, solicita ayuda al administrador; no cambies fechas ni dupliques el club.
+**Si no aparece en Inicio:** comprueba que esté publicado. Inicio muestra hasta 25 clubes publicados, ordenados por **Orden** de menor a mayor y después por nombre. Los clubes sin imagen sí pueden aparecer: se muestran con una tarjeta de texto. Si necesitas cambiar el orden y no encuentras el control, solicita ayuda al administrador; no cambies fechas ni dupliques el club.
 
 Para retirar el club, guárdalo como borrador y comprueba el resultado público; consulta la sección 12. El encabezado «Clubes asociados» requiere apoyo del administrador para cambiarse.
 
-## 9. Nosotros: presentación, misión, visión e integrantes
+## 9. Nosotros: presentación, misión, visión y Organigrama
 
 ### Textos institucionales
 
@@ -327,40 +336,20 @@ Misión y Visión no tienen una imagen pública editable en esta versión. No ne
 
 **Si el texto no cambia:** confirma que guardaste la entrada correcta y revisa el extracto. Recarga la página pública. Si falta el bloque completo, revisa título, texto y estado publicado. Si continúa el problema, informa al administrador qué bloque editaste y adjunta el mensaje o una captura, sin contraseñas. No vacíes ni envíes estas entradas a la papelera para ocultarlas sin coordinarlo: puede desaparecer el bloque.
 
-### Integrantes
+### Organigrama
 
-**Qué vas a actualizar:** las personas de la sección **Quiénes hacen posible la Liga** en Nosotros, con nombre, foto, cargo y grupo.
+**Qué vas a actualizar:** los grupos y los elementos que forman la sección pública **Cómo se organiza la Liga**. Esta sección reemplaza la antigua colección de Integrantes; no se administran personas, fotografías ni cargos desde este módulo.
 
-**Antes de empezar:** confirma el nombre completo, el cargo y el grupo: Comité, Entrenadores o Representantes. Ten una fotografía autorizada. Recomendación: JPG/WebP de 1200 × 1400 píxeles, hasta 350 KB, con el rostro centrado y espacio sobre la cabeza. La tarjeta recorta la fotografía; comprueba el resultado en el sitio. Consulta el límite de carga en Medios.
+1. Entra en **Organigrama > Añadir** para crear un elemento.
+2. Escribe en **Título** el nombre del órgano, cargo o instancia, por ejemplo «Comité Ejecutivo».
+3. En **Grupos de organigrama**, selecciona un grupo existente. Los grupos controlan los bloques y su orden visual; usa nombres institucionales aprobados y no crees variantes por diferencias de mayúsculas.
+4. Si necesitas un grupo nuevo, entra en **Organigrama > Grupos**, créalo y define su nombre y descripción. Después vuelve al elemento y asígnalo.
+5. Publica el elemento cuando el texto y el grupo estén revisados. Los borradores no aparecen en la página pública.
+6. Abre **Nosotros** y comprueba **Cómo se organiza la Liga**. Revisa que cada grupo y cada elemento estén en el bloque esperado.
 
-![Editor real de Integrantes: fotografía y Grupos de integrantes a la derecha](imagenes/integrantes-editor.png)
+Para modificar o retirar un elemento, edítalo desde **Organigrama** y cambia su título, grupo o estado. Para retirar un grupo completo, primero mueve sus elementos a otro grupo o pásalos a borrador. Conserva los nombres de grupo aprobados para evitar duplicados visuales.
 
-#### Crear un integrante
-
-1. Entra en **Integrantes > Añadir Integrante**.
-2. Escribe el nombre completo en **Título**. Ejemplo ficticio: «Ana Pérez». No copies el prefijo de demostración de las capturas.
-3. En la pestaña **Integrante** del panel derecho, pulsa **Set featured image / Establecer imagen destacada**. Selecciona o sube la fotografía y confirma. Usa como texto alternativo una descripción breve, como «Retrato de Ana Pérez».
-4. Abre **Grupos de integrantes** y selecciona un grupo existente. Para el ejemplo, elige **Entrenadores**. No crees una variante como «Equipo de entrenadores»; si necesitas otro grupo, consulta al administrador.
-5. Activa **Custom fields / Campos personalizados** según la sección 3 si no lo ves. Baja al panel de campos personalizados para registrar el cargo.
-6. Busca si ya existe `labm_cargo`. Si existe, cambia su **Value / Valor** por el cargo aprobado, por ejemplo «Entrenadora», y pulsa **Update / Actualizar** junto a ese campo.
-7. Si no existe, en **Add Custom Field / Añadir campo personalizado** selecciona `labm_cargo` en **Name / Nombre**. Si no está en la lista, pulsa **Enter new / Introducir nuevo** y escribe exactamente `labm_cargo`. En **Value / Valor**, escribe «Entrenadora» y pulsa **Add Custom Field / Añadir campo personalizado**. No crees un segundo campo si ya está registrado.
-8. Guarda la publicación como borrador mientras revisas. Cuando nombre, foto, cargo y grupo estén correctos, publica y confirma si WordPress lo solicita.
-9. Abre **Nosotros**, baja hasta **Quiénes hacen posible la Liga** y comprueba la tarjeta. Pulsa **Entrenadores**: la persona debe verse en ese grupo. Revisa también **Todos** y la fotografía desde un teléfono.
-
-En Integrantes usa **únicamente `labm_cargo`** para el cargo. El ejemplo «Ana Pérez / Entrenadora» es una explicación, no una captura de un guardado real.
-
-#### Modificar o retirar un integrante
-
-1. En **Integrantes**, busca el nombre y pulsa **Edit / Editar**.
-2. Cambia nombre, foto o grupo según corresponda. Para cambiar el cargo, actualiza el valor de `labm_cargo` y pulsa **Update / Actualizar** junto al campo.
-3. Guarda o actualiza también la publicación. Después revisa la tarjeta y el filtro en Nosotros.
-4. Para retirarlo temporalmente, cambia su estado a **Draft / Borrador** y guarda. No borres su fotografía desde Medios. Para recuperarlo, revisa sus datos y vuelve a publicar; consulta la sección 12 para la papelera.
-
-**Si no aparece:** revisa nombre, fotografía destacada, cargo no vacío, grupo y estado publicado. Prueba el filtro **Todos**. La sección consulta hasta 20 registros publicados por orden y nombre; si hay más personas o el grupo esperado no funciona, solicita revisión al administrador. No dupliques el registro para hacerlo aparecer.
-
-El nombre visible se cambia en **Título** y el cargo en `labm_cargo`. Los encabezados y los filtros Comité, Entrenadores y Representantes no se renombran desde el registro de una persona: pide apoyo para cambiarlos.
-
-![Página pública de Nosotros para comprobar textos e integrantes](imagenes/14-nosotros-publico.png)
+![Página pública de Nosotros para comprobar textos y Organigrama](imagenes/14-nosotros-publico.png)
 
 ## 10. Contacto y pie de página
 
@@ -376,6 +365,10 @@ El nombre visible se cambia en **Título** y el cargo en `labm_cargo`. Los encab
 6. Comprueba el footer en varias páginas y la sección pública Contacto.
 
 Correo, teléfono, dirección y redes se reutilizan en Contacto. El mapa de Google Maps se genera automáticamente desde la dirección guardada. Si teléfono o dirección quedan vacíos, Contacto omite el dato correspondiente y no muestra el enlace del mapa cuando la dirección está vacía. Las etiquetas y URLs del footer no cambian el menú principal.
+
+### Aliados institucionales del footer
+
+En la parte inferior derecha del footer aparece una matriz 2×2 de logos enlazados: **Indeportes Antioquia**, **INDER Medellín**, **Federación Colombiana de Balonmano** e **IHF**. Estos aliados institucionales son distintos de la colección editable **Aliados Oficiales** de Inicio. Sus logos, destinos y disposición pertenecen a la configuración técnica del footer; si se necesita cambiar una entidad o su URL, solicita el ajuste al administrador técnico.
 
 ### Entrega de mensajes
 
@@ -423,8 +416,9 @@ También puedes usar **Move to trash / Mover a la papelera**. No uses **Delete p
 | Una publicación no aparece en el sitio | Estado publicado, sección correcta y filtros activos. Revisa también los límites de elementos de la portada. |
 | Una selección aparece en el listado equivocado | Taxonomía **Modalidades**, no sólo el texto del título o el campo de detalle. |
 | No se resalta la modalidad en la interna | Asignación Piso/Playa de esa selección; informa al administrador si está correcta y el fallo persiste. |
-| Un integrante publicado no aparece | Nombre, cargo `labm_cargo`, imagen destacada y grupo compatible. |
+| Un elemento del Organigrama no aparece | Título, grupo correcto y estado publicado. |
 | Un slide o aliado no se puede publicar | Título e imagen destacada o logo obligatorios. |
+| Un aliado no abre su sitio externo | Revisa `labm_destino_url`, incluida la URL completa con `https://`, y prueba el logo después de recorrer el carrusel. |
 | Un cambio de texto institucional no se ve | Identificador de la entrada y extracto existente; el extracto tiene prioridad sobre el cuerpo. |
 | No se guarda un PDF | Archivo realmente PDF, disponible, válido, bajo el límite efectivo y permitido para tu cuenta. |
 | No veo los datos adicionales de una sección | Activa **Custom fields / Campos personalizados** desde **⋮ → Preferences / Preferencias → Panels / Paneles**. Si el panel sigue sin aparecer, solicita revisión al administrador. |
@@ -449,8 +443,8 @@ También puedes usar **Move to trash / Mover a la papelera**. No uses **Delete p
 
 ### Después de publicar
 
-- [ ] Se comprobó la sección pública correspondiente: Inicio para Aliados y Clubes; Nosotros para textos e Integrantes.
-- [ ] Se abrió el detalle individual cuando exista; Aliados e Integrantes se comprueban en su sección.
+- [ ] Se comprobó la sección pública correspondiente: Inicio para Aliados y Clubes; Nosotros para textos y Organigrama.
+- [ ] Se abrió el detalle individual cuando exista; Aliados se comprueba en Inicio y el Organigrama en Nosotros.
 - [ ] Los botones y enlaces funcionan.
 - [ ] En Documentos se verificaron **Ver PDF** y **Descargar**.
 - [ ] En Selecciones el padre y la modalidad permanecen activos en la interna.
@@ -467,6 +461,6 @@ Si se realizan ediciones de contenido en el entorno local y se deben compartir o
 
 ### Fuentes de esta versión
 
-La versión 1.5 amplía Aliados Oficiales, Clubes, Integrantes y Nosotros para personal no técnico y alinea las reglas compartidas con la cartilla. Se revisaron las capturas existentes y el código; no se guardó ni publicó contenido en WordPress durante esta actualización. La comprobación documental no certifica una prueba de guardado ni reemplaza la revisión pendiente de cada responsable.
+La versión 1.6 incorpora la administración del bloque institucional de Actualidad, la gestión del Organigrama, los enlaces de Aliados Oficiales, clubes sin imagen y la matriz de aliados institucionales del footer. Se revisaron las instrucciones contra el código y la estructura actual del panel; las capturas históricas pueden mostrar nombres o controles anteriores.
 
 Las instrucciones se contrastaron con las pantallas reales capturadas y con el registro de contenido de `labm-core`, el panel administrativo de Documentos y los renderizadores del tema `labm`. Las capturas se realizaron abriendo contenido existente sin publicar ni editar sus textos o archivos. Los cambios futuros de interfaz deben reflejarse en nuevas versiones del manual y sus imágenes.

@@ -32,7 +32,7 @@ final class ClosingCoverageTest extends TestCase {
 		for ( $attempt = 0; $attempt < 2; ++$attempt ) {
 			labm_core_register_content_types();
 			labm_core_register_meta();
-			foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_documento' ) as $type ) {
+			foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_documento' ) as $type ) {
 				$object = get_post_type_object( $type );
 				self::assertTrue( $object->public );
 				self::assertTrue( $object->show_in_rest );
@@ -40,7 +40,7 @@ final class ClosingCoverageTest extends TestCase {
 				self::assertSame( 'labm_club' !== $type, post_type_supports( $type, 'custom-fields' ) );
 			}
 			self::assertSame( 'selecciones', get_post_type_object( 'labm_seleccion' )->rewrite['slug'] );
-			foreach ( array( 'labm_modalidad', 'labm_categoria', 'labm_documento_categoria', 'labm_grupo_integrante' ) as $taxonomy ) {
+			foreach ( array( 'labm_modalidad', 'labm_categoria', 'labm_documento_categoria' ) as $taxonomy ) {
 				self::assertTrue( get_taxonomy( $taxonomy )->show_in_rest );
 				self::assertTrue( get_taxonomy( $taxonomy )->hierarchical );
 			}

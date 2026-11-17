@@ -306,6 +306,34 @@ function labm_core_footer_links( $settings, $prefix, $count ) {
 	return $html;
 }
 
+/** Entidades aliadas mostradas en la matriz de logos del footer. */
+function labm_core_footer_allies() {
+	$asset_base = get_template_directory_uri() . '/assets/images/footer-aliados/';
+
+	return array(
+		array(
+			'name' => 'Indeportes Antioquia',
+			'url'  => 'https://indeportesantioquia.gov.co/',
+			'logo' => $asset_base . 'indeportes-antioquia.png',
+		),
+		array(
+			'name' => 'INDER Medellín',
+			'url'  => 'https://www.inder.gov.co/',
+			'logo' => $asset_base . 'inder-medellin.svg',
+		),
+		array(
+			'name' => 'Federación Colombiana de Balonmano',
+			'url'  => 'https://web.facebook.com/balonmanoColombia/?locale=es_LA&_rdc=1&_rdr#',
+			'logo' => $asset_base . 'federacion-colombiana-balonmano.png',
+		),
+		array(
+			'name' => 'IHF',
+			'url'  => 'https://www.ihf.info/',
+			'logo' => $asset_base . 'ihf.png',
+		),
+	);
+}
+
 /** Renderiza el footer público con salida escapada. */
 function labm_core_render_footer() {
 	$s          = labm_core_get_footer_settings();
@@ -331,7 +359,11 @@ function labm_core_render_footer() {
 		$html .= '' !== $column[1] ? '<ul class="wp-block-list labm-footer__links">' . $column[1] . '</ul>' : '';
 		$html .= '</div>';
 	}
-	$html .= '</div><div class="wp-block-group alignwide labm-footer__legal">';
+	$html .= '</div><div class="wp-block-group alignwide labm-footer__allies" aria-label="Entidades aliadas"><div class="labm-footer__allies-grid">';
+	foreach ( labm_core_footer_allies() as $ally ) {
+		$html .= '<a class="labm-footer__ally" href="' . esc_url( $ally['url'] ) . '" target="_blank" rel="noopener noreferrer"><img class="labm-footer__ally-logo" src="' . esc_url( $ally['logo'] ) . '" alt="' . esc_attr( $ally['name'] ) . '"></a>';
+	}
+	$html .= '</div></div><div class="wp-block-group alignwide labm-footer__legal">';
 	$html .= '' !== $s['copyright'] ? '<p>' . esc_html( $s['copyright'] ) . '</p>' : '';
 	if ( '' !== $s['policy_label'] && '' !== $s['policy_url'] ) {
 		$html .= '<p><a href="' . esc_url( $s['policy_url'] ) . '">' . esc_html( $s['policy_label'] ) . '</a></p>';

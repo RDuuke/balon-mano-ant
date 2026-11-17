@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /** Version del esquema de capacidades. */
-const LABM_CORE_CAPABILITIES_VERSION = '7';
+const LABM_CORE_CAPABILITIES_VERSION = '8';
 /** Version del vocabulario administrativo de documentos. */
 const LABM_CORE_DOCUMENT_TYPES_VERSION = '1';
 /** Version de las rutas publicas del dominio. */
@@ -28,8 +28,8 @@ function labm_core_register_content_types() {
 		'labm_actualidad' => array( __( 'Actualidad', 'labm-core' ), __( 'Entrada de actualidad', 'labm-core' ), 'labm_actualidad', 'labm_actualidades' ),
 		'labm_seleccion'  => array( __( 'Selecciones', 'labm-core' ), __( 'Selección', 'labm-core' ), 'labm_seleccion', 'labm_selecciones' ),
 		'labm_club'       => array( __( 'Clubes', 'labm-core' ), __( 'Club', 'labm-core' ), 'labm_club', 'labm_clubes' ),
-		'labm_integrante' => array( __( 'Integrantes', 'labm-core' ), __( 'Integrante', 'labm-core' ), 'labm_integrante', 'labm_integrantes' ),
 		'labm_documento'  => array( __( 'Documentos', 'labm-core' ), __( 'Documento', 'labm-core' ), 'labm_documento', 'labm_documentos' ),
+		'labm_org_item' => array( __( 'Organigrama', 'labm-core' ), __( 'Item del organigrama', 'labm-core' ), 'labm_org_item', 'labm_org_items' ),
 	);
 
 	foreach ( $types as $post_type => $names ) {
@@ -39,27 +39,37 @@ function labm_core_register_content_types() {
 		if ( 'labm_club' !== $post_type ) {
 			$supports[] = 'custom-fields';
 		}
+		if ( 'labm_org_item' === $post_type ) {
+			$supports[] = 'page-attributes';
+		}
 		register_post_type(
 			$post_type,
 			array(
 				'labels'          => array(
 					'name'          => $names[0],
 					'singular_name' => $names[1],
+					'menu_name'     => $names[0],
+					'all_items'     => sprintf( __( 'Todos los %s', 'labm-core' ), strtolower( $names[0] ) ),
+					'add_new'       => __( 'Añadir nuevo', 'labm-core' ),
 					'add_new_item'  => sprintf(
 						/* translators: %s: singular content type label. */
 						__( 'Añadir %s', 'labm-core' ),
 						$names[1]
 					),
 				),
-				'public'          => true,
+				'public'          => 'labm_org_item' !== $post_type,
+				'show_ui'         => true,
+				'show_in_menu'    => true,
 				'show_in_rest'    => true,
-				'has_archive'     => true,
+				'publicly_queryable' => 'labm_org_item' !== $post_type,
+				'has_archive'     => 'labm_org_item' !== $post_type,
 				'rewrite'         => array(
 					'slug' => 'labm_seleccion' === $post_type ? 'selecciones' : substr( $post_type, 5 ),
 				),
 				'supports'        => $supports,
 				'capability_type' => array( $singular, $plural ),
 				'map_meta_cap'    => true,
+				'menu_icon'      => 'labm_org_item' === $post_type ? 'dashicons-networking' : null,
 			)
 		);
 	}
@@ -115,18 +125,22 @@ function labm_core_register_content_types() {
 	);
 
 	register_taxonomy(
-		'labm_grupo_integrante',
-		array( 'labm_integrante' ),
+		'labm_org_grupo',
+		array( 'labm_org_item' ),
 		array(
-			'labels'       => array(
-				'name'          => __( 'Grupos de integrantes', 'labm-core' ),
-				'singular_name' => __( 'Grupo de integrante', 'labm-core' ),
+			'labels'            => array(
+				'name'          => __( 'Grupos del organigrama', 'labm-core' ),
+				'singular_name' => __( 'Grupo del organigrama', 'labm-core' ),
 			),
-			'public'       => true,
-			'hierarchical' => true,
-			'show_in_rest' => true,
+			'public'            => false,
+			'show_ui'           => true,
+			'show_in_rest'      => true,
+			'hierarchical'      => true,
+			'show_admin_column' => true,
+			'rewrite'           => false,
 		)
 	);
+
 }
 add_action( 'init', 'labm_core_register_content_types', 5 );
 
@@ -151,10 +165,6 @@ function labm_core_render_editor_guidance_notice() {
 		'labm_seleccion' => array(
 			__( 'Datos adicionales de Selecciones', 'labm-core' ),
 			__( 'Usa solo Modalidad detallada (labm_modalidad_detalle) cuando necesites ampliar la clasificación. La modalidad principal se elige en la taxonomía Modalidades.', 'labm-core' ),
-		),
-		'labm_integrante' => array(
-			__( 'Datos adicionales de Integrantes', 'labm-core' ),
-			__( 'Usa Cargo (labm_cargo) para el texto que acompaña al nombre. El grupo del integrante se selecciona en la taxonomía Grupos de integrantes.', 'labm-core' ),
 		),
 	);
 
@@ -210,7 +220,9 @@ function labm_core_validate_identifier( $value ) {
  * @return true|WP_Error
  */
 function labm_core_validate_publishable( $post_type, $data ) {
-	$required = 'labm_documento' === $post_type ? array( 'post_title', 'labm_documento_pdf_id' ) : array( 'post_title', 'post_content' );
+	$required = 'labm_documento' === $post_type
+		? array( 'post_title', 'labm_documento_pdf_id' )
+		: ( 'labm_org_item' === $post_type ? array( 'post_title' ) : array( 'post_title', 'post_content' ) );
 	$missing  = array();
 	foreach ( $required as $field ) {
 		if ( empty( trim( (string) ( $data[ $field ] ?? '' ) ) ) ) {
@@ -258,8 +270,8 @@ function labm_core_register_meta() {
 	$fields = array(
 		'labm_actualidad' => array( 'labm_fecha_evento' => 'labm_core_sanitize_iso_date' ),
 		'labm_seleccion'  => array( 'labm_modalidad_detalle' => 'sanitize_text_field' ),
-		'labm_integrante' => array( 'labm_cargo' => 'sanitize_text_field' ),
 		'labm_documento'  => array(),
+		'labm_org_item' => array(),
 	);
 
 	foreach ( $fields as $post_type => $meta_fields ) {
@@ -422,7 +434,7 @@ function labm_core_ensure_capabilities() {
 		) {
 			$role->remove_cap( $retired_capability );
 		}
-		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_integrante', 'labm_documento', 'labm_slide', 'labm_aliado' ) as $post_type ) {
+		foreach ( array( 'labm_actualidad', 'labm_seleccion', 'labm_club', 'labm_documento', 'labm_org_item', 'labm_slide', 'labm_aliado' ) as $post_type ) {
 			$object = get_post_type_object( $post_type );
 			if ( $object ) {
 				foreach ( array_unique( (array) $object->cap ) as $capability ) {

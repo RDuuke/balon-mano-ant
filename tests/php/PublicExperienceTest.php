@@ -15,7 +15,7 @@ final class PublicExperienceTest extends TestCase {
 		$root  = dirname( __DIR__, 2 ) . '/wp-content/themes/labm/patterns/';
 		$home  = file_get_contents( $root . 'inicio.php' );
 		$about = file_get_contents( $root . 'nosotros.php' );
-		$team  = strpos( $about, 'labm_theme_render_about_team()' );
+		$team  = strpos( $about, 'labm_theme_render_about_organization()' );
 		$join  = strpos( $about, 'labm_theme_render_join_cta()' );
 		self::assertSame( 1, substr_count( $home, 'labm_theme_render_join_cta()' ) );
 		self::assertSame( 1, substr_count( $about, 'labm_theme_render_join_cta()' ) );
@@ -52,61 +52,6 @@ final class PublicExperienceTest extends TestCase {
 
 		$css = (string) file_get_contents( $theme_root . 'style.css' );
 		self::assertMatchesRegularExpression( '/\.labm-home-join h2\s*\{[^}]*font-family:\s*var\(--wp--preset--font-family--barlow-condensed\),\s*sans-serif;/s', $css );
-	}
-
-	/** Nosotros muestra integrantes completos y permite filtrar por grupo. */
-	public function test_about_team_renders_editable_published_members_and_filters(): void {
-		$html = labm_theme_render_about_team();
-		self::assertStringContainsString( 'data-labm-section="nosotros-equipo"', $html );
-		self::assertStringContainsString( 'Quiénes hacen posible la Liga', $html );
-		self::assertSame( 4, substr_count( $html, 'data-labm-team-card' ) );
-		self::assertStringContainsString( 'Andrés Montoya', $html );
-		self::assertStringContainsString( 'Director técnico', $html );
-
-		$filtered = labm_theme_render_about_team( 'entrenadores' );
-		self::assertSame( 2, substr_count( $filtered, 'data-labm-team-group="entrenadores">' ) );
-		self::assertStringContainsString( 'aria-current="true"', $filtered );
-		self::assertSame( 2, preg_match_all( '/<article\b[^>]*data-labm-team-card[^>]* hidden>/', $filtered ) );
-		self::assertStringContainsString( 'Mateo Giraldo', $filtered );
-	}
-
-	/** Un grupo seleccionado sin miembros mantiene filtros y anuncia el vacío. */
-	public function test_about_team_selected_empty_group_keeps_filters(): void {
-		$members = get_posts( array( 'post_type' => 'labm_integrante', 'posts_per_page' => -1, 'tax_query' => array( array( 'taxonomy' => 'labm_grupo_integrante', 'field' => 'slug', 'terms' => 'entrenadores' ) ) ) );
-		self::assertNotEmpty( $members );
-		try {
-			foreach ( $members as $member ) {
-				wp_update_post( array( 'ID' => $member->ID, 'post_status' => 'private' ) );
-			}
-			$html = labm_theme_render_about_team( 'entrenadores' );
-			self::assertStringContainsString( 'No hay integrantes publicados en este grupo.', $html );
-			self::assertStringContainsString( 'data-labm-team-empty role="status"', $html );
-			self::assertStringContainsString( 'data-labm-team-filter-group="entrenadores" aria-current="true"', $html );
-			self::assertSame( 4, substr_count( $html, 'data-labm-team-filter' ) - substr_count( $html, 'data-labm-team-filter-group' ) );
-			foreach ( $members as $member ) {
-				self::assertStringNotContainsString( preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $member->post_title ), $html );
-			}
-		} finally {
-			foreach ( $members as $member ) {
-				wp_update_post( array( 'ID' => $member->ID, 'post_status' => $member->post_status ) );
-			}
-		}
-		self::assertSame( labm_theme_render_about_team( '' ), labm_theme_render_about_team( 'desconocido' ) );
-	}
-
-	/** Integrantes incompletos o no públicos nunca se revelan. */
-	public function test_about_team_omits_incomplete_and_restricted_members(): void {
-		$draft = get_page_by_path( 'demo-labm-integrante-vacante', OBJECT, 'labm_integrante' );
-		self::assertInstanceOf( WP_Post::class, $draft );
-		$html = labm_theme_render_about_team();
-		self::assertStringNotContainsString( 'Vacante de ejemplo', $html );
-
-		$member = get_page_by_path( 'demo-labm-integrante-andres-montoya', OBJECT, 'labm_integrante' );
-		self::assertInstanceOf( WP_Post::class, $member );
-		$thumbnail = get_post_thumbnail_id( $member->ID );
-		delete_post_thumbnail( $member->ID );
-		self::assertStringNotContainsString( 'Andrés Montoya', labm_theme_render_about_team() );
-		set_post_thumbnail( $member->ID, $thumbnail );
 	}
 
 	/** Misión y Visión se renderizan como artículos independientes. */

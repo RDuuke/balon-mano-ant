@@ -36,11 +36,6 @@ function labm_theme_enqueue_public_style() {
 	if ( is_front_page() ) {
 		wp_enqueue_script( 'labm-home', get_theme_file_uri( 'assets/home.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 	}
-	if ( is_page( 'nosotros' ) ) {
-		$team_script_path    = get_theme_file_path( 'assets/about-team.js' );
-		$team_script_version = file_exists( $team_script_path ) ? (string) filemtime( $team_script_path ) : wp_get_theme()->get( 'Version' );
-		wp_enqueue_script( 'labm-about-team', get_theme_file_uri( 'assets/about-team.js' ), array(), $team_script_version, true );
-	}
 	if ( is_page( 'contacto' ) ) {
 		$contact_script_path    = get_theme_file_path( 'assets/contact.js' );
 		$contact_script_version = file_exists( $contact_script_path ) ? (string) filemtime( $contact_script_path ) : wp_get_theme()->get( 'Version' );
@@ -293,89 +288,79 @@ function labm_theme_render_about_purpose() {
 }
 
 /**
- * Renderiza integrantes publicados y completos de la sección Nosotros.
+ * Renderiza el CTA compartido de vinculación.
  *
- * @param string|null $requested_group Grupo solicitado o valor de la URL.
- * @return string HTML seguro o cadena vacía sin integrantes.
+ * @return string HTML seguro.
  */
-function labm_theme_render_about_team( $requested_group = null ) {
-	$groups = array(
-		'comite'         => __( 'Comité', 'labm' ),
-		'entrenadores'   => __( 'Entrenadores', 'labm' ),
-		'representantes' => __( 'Representantes', 'labm' ),
+/**
+ * Renderiza el organigrama editorial de la Liga.
+ *
+ * @return string HTML seguro.
+ */
+function labm_theme_render_about_organization() {
+	$groups = array();
+	$group_terms = get_terms(
+		array(
+			'taxonomy'   => 'labm_org_grupo',
+			'hide_empty' => true,
+			'orderby'    => 'term_id',
+			'order'      => 'ASC',
+		)
 	);
-	if ( null === $requested_group ) {
-		$requested_group = isset( $_GET['grupo'] ) ? sanitize_key( wp_unslash( $_GET['grupo'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- filtro público de solo lectura.
+	$items = new WP_Query(
+		array(
+			'post_type'      => 'labm_org_item',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'orderby'        => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
+			'order'          => 'ASC',
+			'no_found_rows'  => true,
+		)
+	);
+	if ( ! is_wp_error( $group_terms ) ) {
+		foreach ( $group_terms as $term ) {
+			$groups[ $term->term_id ] = array(
+				'label' => $term->name,
+				'items' => array(),
+				'class' => sanitize_html_class( $term->slug ),
+			);
+		}
 	}
-	$group = array_key_exists( (string) $requested_group, $groups ) ? (string) $requested_group : '';
-	$args  = array(
-		'post_type'      => 'labm_integrante',
-		'post_status'    => 'publish',
-		'posts_per_page' => 20,
-		'orderby'        => array(
-			'menu_order' => 'ASC',
-			'title'      => 'ASC',
-		),
-	);
-	$items = array();
-	foreach ( ( new WP_Query( $args ) )->posts as $post ) {
-		$title     = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', trim( wp_strip_all_tags( get_the_title( $post ) ) ) );
-		$role      = trim( (string) get_post_meta( $post->ID, 'labm_cargo', true ) );
-		$thumbnail = get_post_thumbnail_id( $post->ID );
-		$terms     = wp_get_post_terms( $post->ID, 'labm_grupo_integrante' );
-		if ( ! is_string( $title ) || '' === $title || '' === $role || ! $thumbnail || is_wp_error( $terms ) || array() === $terms ) {
+	foreach ( $items->posts as $item ) {
+		$terms = wp_get_post_terms( $item->ID, 'labm_org_grupo' );
+		if ( is_wp_error( $terms ) || empty( $terms ) || ! isset( $groups[ $terms[0]->term_id ] ) ) {
 			continue;
 		}
-		$items[] = array(
-			'title'     => $title,
-			'role'      => $role,
-			'thumbnail' => $thumbnail,
-			'group'     => $terms[0]->slug,
-		);
+		$groups[ $terms[0]->term_id ]['items'][] = get_the_title( $item );
 	}
-	if ( array() === $items && '' === $group ) {
+	$groups = array_filter( $groups, static fn( $group ) => ! empty( $group['items'] ) );
+	if ( empty( $groups ) ) {
 		return '';
 	}
-	$visible_items = array_filter(
-		$items,
-		static function ( $item ) use ( $group ) {
-			return '' === $group || $group === $item['group'];
-		}
-	);
 
 	ob_start();
 	?>
-	<section class="labm-about-team" data-labm-section="nosotros-equipo" data-labm-team aria-labelledby="labm-about-team-title">
-		<header class="labm-about-team__header">
-			<h2 id="labm-about-team-title"><?php esc_html_e( 'Quiénes hacen posible la Liga', 'labm' ); ?></h2>
-			<nav class="labm-about-team__filters" aria-label="<?php esc_attr_e( 'Filtrar integrantes', 'labm' ); ?>">
-				<a href="<?php echo esc_url( home_url( '/nosotros/' ) ); ?>" data-labm-team-filter<?php echo '' === $group ? ' aria-current="true"' : ''; ?>><?php esc_html_e( 'Todos', 'labm' ); ?></a>
-				<?php foreach ( $groups as $slug => $label ) : ?>
-					<a href="<?php echo esc_url( add_query_arg( 'grupo', $slug, home_url( '/nosotros/' ) ) ); ?>" data-labm-team-filter data-labm-team-filter-group="<?php echo esc_attr( $slug ); ?>"<?php echo $group === $slug ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $label ); ?></a>
-				<?php endforeach; ?>
-			</nav>
+	<section class="labm-about-organization" data-labm-section="nosotros-organigrama" aria-labelledby="labm-about-organization-title">
+		<header class="labm-about-organization__header">
+			<h2 id="labm-about-organization-title"><?php esc_html_e( 'Cómo se organiza la Liga', 'labm' ); ?></h2>
 		</header>
-		<p class="labm-about-team__empty" data-labm-team-empty role="status"<?php echo array() !== $visible_items ? ' hidden' : ''; ?>><?php esc_html_e( 'No hay integrantes publicados en este grupo.', 'labm' ); ?></p>
-		<?php if ( array() !== $items ) : ?>
-			<div class="labm-about-team__grid">
-				<?php foreach ( $items as $item ) : ?>
-					<article class="labm-about-team__card" data-labm-team-card data-labm-team-group="<?php echo esc_attr( $item['group'] ); ?>"<?php echo '' !== $group && $group !== $item['group'] ? ' hidden' : ''; ?>>
-						<div class="labm-about-team__media"><?php echo wp_get_attachment_image( $item['thumbnail'], 'large', false, array( 'loading' => 'lazy' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado seguro. ?></div>
-						<div class="labm-about-team__body"><h3><?php echo esc_html( $item['title'] ); ?></h3><p><?php echo esc_html( $item['role'] ); ?></p></div>
-					</article>
-				<?php endforeach; ?>
-			</div>
-		<?php endif; ?>
+		<div class="labm-about-organization__chart" aria-label="<?php esc_attr_e( 'Organigrama de la Liga Antioqueña de Balonmano', 'labm' ); ?>">
+			<?php foreach ( $groups as $group ) : ?>
+				<section class="labm-about-organization__group labm-about-organization__group--<?php echo esc_attr( $group['class'] ); ?>" aria-labelledby="labm-organization-<?php echo esc_attr( $group['class'] ); ?>">
+					<h3 id="labm-organization-<?php echo esc_attr( $group['class'] ); ?>"><?php echo esc_html( $group['label'] ); ?></h3>
+					<div class="labm-about-organization__items">
+						<?php foreach ( $group['items'] as $item ) : ?>
+							<div class="labm-about-organization__item"><span><?php echo esc_html( $item ); ?></span></div>
+						<?php endforeach; ?>
+					</div>
+				</section>
+			<?php endforeach; ?>
+		</div>
 	</section>
 	<?php
 	return (string) ob_get_clean();
 }
 
-/**
- * Renderiza el CTA compartido de vinculación.
- *
- * @return string HTML seguro.
- */
 function labm_theme_render_join_cta() {
 	ob_start();
 	?>
@@ -533,12 +518,14 @@ function labm_theme_render_home_cards( $post_type, $limit, $section, $heading ) 
 			)
 		) : '';
 		?>
-		<article class="labm-card<?php echo 'clubes' === $section ? ' labm-card--club' : ''; ?>">
+		<article class="labm-card<?php echo 'clubes' === $section ? ' labm-card--club' . ( '' === $thumbnail ? ' labm-card--club-no-logo' : '' ) : ''; ?>">
 			<?php if ( '' !== $thumbnail ) : ?>
 				<a class="labm-card__logo-link" href="<?php echo esc_url( get_permalink( $post ) ); ?>" aria-label="<?php echo esc_attr( get_the_title( $post ) ); ?>"><?php echo $thumbnail; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WordPress genera el marcado. ?></a>
 			<?php endif; ?>
 			<h3><a href="<?php echo esc_url( get_permalink( $post ) ); ?>"><?php echo esc_html( get_the_title( $post ) ); ?></a></h3>
-			<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 24 ) ); ?></p>
+			<?php if ( '' !== trim( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ) ) ) : ?>
+				<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $post->post_excerpt ? $post->post_excerpt : $post->post_content ), 24 ) ); ?></p>
+			<?php endif; ?>
 		</article>
 	<?php endforeach; ?>
 	</div></section>
@@ -549,7 +536,7 @@ function labm_theme_render_home_cards( $post_type, $limit, $section, $heading ) 
 /** Renderiza clubes publicados. */
 function labm_theme_render_home_clubs() {
 
-	return labm_theme_render_home_cards( 'labm_club', 8, 'clubes', __( 'Clubes asociados', 'labm' ) );
+	return labm_theme_render_home_cards( 'labm_club', 25, 'clubes', __( 'Clubes asociados', 'labm' ) );
 }
 
 /** Renderiza el evento editorial destacado. */
@@ -1019,7 +1006,11 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 			$title       = trim( wp_strip_all_tags( get_the_title( $post ) ) );
 			$clean_title = preg_replace( '/^\[DEMO LABM[^\]]*\]\s*/u', '', $title );
 			$title       = null === $clean_title || '' === $clean_title ? $title : $clean_title;
+			$destination = esc_url( get_post_meta( $post->ID, 'labm_destino_url', true ) );
 			echo '<li class="labm-allies__item">';
+			if ( '' !== $destination ) {
+				echo '<a class="labm-allies__link" href="' . $destination . '" target="_blank" rel="noopener noreferrer">';
+			}
 			echo get_the_post_thumbnail(
 				$post,
 				'medium',
@@ -1029,6 +1020,9 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 					'class'   => 'labm-allies__logo',
 				)
 			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			if ( '' !== $destination ) {
+				echo '</a>';
+			}
 			echo '</li>';
 		}
 		return (string) ob_get_clean();
@@ -1041,7 +1035,7 @@ function labm_theme_render_home_allies( $post_type = 'labm_aliado' ) {
 		<div class="labm-allies__viewport">
 			<div class="labm-allies__track">
 				<ul class="labm-allies__list labm-allies__primary"><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado y saneado por APIs de WordPress. ?></ul>
-				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true" inert><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- réplica exacta del HTML generado. ?></ul>
+				<ul class="labm-allies__list labm-allies__replica" aria-hidden="true"><?php echo $list_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- réplica exacta del HTML generado. ?></ul>
 			</div>
 		</div>
 	</section>
@@ -1173,9 +1167,14 @@ function labm_theme_selection_request_state( $filters = array() ) {
 	$filters            = is_array( $filters ) ? $filters : array();
 	$requested_modality = isset( $filters['modalidad'] ) && is_scalar( $filters['modalidad'] ) ? sanitize_text_field( (string) $filters['modalidad'] ) : '';
 	$modalidad          = 'Piso';
-	foreach ( labm_theme_selection_terms() as $term ) {
-		if ( $requested_modality === $term->name ) {
-			$modalidad = $term->name;
+	$valid_terms        = array_merge( labm_theme_selection_terms(), labm_theme_selection_header_terms() );
+	$valid_names        = array();
+	foreach ( $valid_terms as $term ) {
+		$valid_names[ $term->name ] = true;
+	}
+	foreach ( array_keys( $valid_names ) as $term_name ) {
+		if ( $requested_modality === $term_name ) {
+			$modalidad = $term_name;
 			break;
 		}
 	}
@@ -1475,7 +1474,6 @@ function labm_theme_render_selection_listing( $filters = array() ) {
 			<div class="labm-selecciones__empty" data-labm-selecciones-vacio role="status">
 				<?php /* translators: %s is the selected modality name. */ ?>
 				<p><?php printf( esc_html__( 'No hay selecciones publicadas en %s.', 'labm' ), esc_html( $state['modalidad'] ) ); ?></p>
-				<p><a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Piso', $archive_url ) ); ?>"><?php esc_html_e( 'Consultar Piso', 'labm' ); ?></a> <a href="<?php echo esc_url( add_query_arg( 'modalidad', 'Playa', $archive_url ) ); ?>"><?php esc_html_e( 'Consultar Playa', 'labm' ); ?></a></p>
 			</div>
 		<?php endif; ?>
 		<?php if ( $query->max_num_pages > 1 ) : ?>
@@ -1569,6 +1567,44 @@ function labm_theme_actualidad_article_content( $post ) {
 	return (string) ob_get_clean();
 }
 
+/** Renderiza la presentación institucional editable de Actualidad. */
+function labm_theme_render_actualidad_intro() {
+	$defaults = array(
+		'eyebrow'   => 'FORMACIÓN DEPORTIVA',
+		'title'     => 'ESCUELA DE BALONMANO LABM',
+		'body'      => "La Escuela de Balonmano LABM tiene como fin la formación de los nuevos talentos del handball antioqueño y la masificación de este deporte en el Departamento.\n\nLas clases son todos los sábados en la mañana en el coliseo Jorge Valderrama de la Unidad Deportiva Atanasio Girardot de Medellín.\n\nSe reciben niños entre los 5 y 13 años de edad, los cuales cuentan con varios formadores que también los preparan para los distintos festivales que se juegan durante el año, especialmente los de Comfama.",
+		'schedule'  => 'SÁBADOS · MAÑANA',
+		'location'  => 'COLISEO JORGE VALDERRAMA',
+		'ages'      => 'NIÑOS DE 5 A 13 AÑOS',
+		'festivals' => 'FESTIVALES DE COMFAMA',
+	);
+	$settings = function_exists( 'labm_core_get_actualidad_intro' ) ? labm_core_get_actualidad_intro() : $defaults;
+	$settings = wp_parse_args( is_array( $settings ) ? $settings : array(), $defaults );
+	$facts    = array_filter( array( $settings['schedule'], $settings['location'], $settings['ages'], $settings['festivals'] ) );
+	if ( '' === trim( $settings['title'] ) && '' === trim( $settings['body'] ) ) {
+		return '';
+	}
+	ob_start();
+	?>
+	<section class="labm-actualidad-intro" aria-labelledby="labm-actualidad-intro-title">
+		<div class="labm-actualidad-intro__inner">
+			<div class="labm-actualidad-intro__copy">
+				<?php if ( '' !== trim( $settings['eyebrow'] ) ) : ?><p class="labm-actualidad-intro__eyebrow"><?php echo esc_html( $settings['eyebrow'] ); ?></p><?php endif; ?>
+				<?php if ( '' !== trim( $settings['title'] ) ) : ?><h2 id="labm-actualidad-intro-title"><?php echo esc_html( $settings['title'] ); ?></h2><?php endif; ?>
+				<?php if ( '' !== trim( $settings['body'] ) ) : ?><div class="labm-actualidad-intro__body"><?php echo wpautop( esc_html( $settings['body'] ) ); ?></div><?php endif; ?>
+			</div>
+			<?php if ( ! empty( $facts ) ) : ?>
+				<aside class="labm-actualidad-intro__facts" aria-label="Datos clave">
+					<p>DATOS CLAVE</p>
+					<ul><?php foreach ( $facts as $fact ) : ?><li><?php echo esc_html( $fact ); ?></li><?php endforeach; ?></ul>
+				</aside>
+			<?php endif; ?>
+		</div>
+	</section>
+	<?php
+	return (string) ob_get_clean();
+}
+
 /**
  * Renderiza un listado publico con filtro, vacio y paginacion.
  *
@@ -1619,6 +1655,9 @@ function labm_theme_render_listing( $post_type, $filters ) {
 
 	ob_start();
 	?>
+	<?php if ( $is_news ) : ?>
+		<?php echo labm_theme_render_actualidad_intro(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML generado con valores escapados. ?>
+	<?php endif; ?>
 	<form class="labm-filter" method="get"
 	<?php
 	if ( $is_news ) :

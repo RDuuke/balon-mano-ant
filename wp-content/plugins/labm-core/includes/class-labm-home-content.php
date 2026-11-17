@@ -18,7 +18,7 @@ function labm_core_register_home_content_types() {
 
 	foreach ( $types as $post_type => $names ) {
 		$supports = 'labm_aliado' === $post_type
-			? array( 'title', 'thumbnail', 'page-attributes' )
+			? array( 'title', 'thumbnail', 'page-attributes', 'custom-fields' )
 			: array( 'title', 'editor', 'excerpt', 'thumbnail', 'page-attributes', 'custom-fields' );
 		$singular = $names[1];
 		register_post_type(
@@ -89,6 +89,18 @@ function labm_core_register_home_meta() {
 	);
 
 	register_post_meta(
+		'labm_aliado',
+		'labm_destino_url',
+		array(
+			'type'              => 'string',
+			'single'            => true,
+			'show_in_rest'      => true,
+			'sanitize_callback' => 'esc_url_raw',
+			'auth_callback'     => 'labm_core_auth_post_meta',
+		)
+	);
+
+	register_post_meta(
 		'labm_slide',
 		'labm_cta_texto',
 		array(
@@ -132,7 +144,7 @@ function labm_core_validate_home_publishable( $post_type, $data ) {
 		);
 	}
 
-	$url = 'labm_slide' === $post_type ? (string) ( $data['labm_destino_url'] ?? '' ) : '';
+	$url = (string) ( $data['labm_destino_url'] ?? '' );
 	if ( '' !== $url && '' === esc_url_raw( $url ) ) {
 		return new WP_Error( 'labm_invalid_home_url', __( 'El destino editorial no es una URL segura.', 'labm-core' ) );
 	}
@@ -179,7 +191,7 @@ function labm_core_render_home_content_nonce() {
 	$title = 'labm_slide' === $post->post_type ? __( 'Cómo completar un slide', 'labm-core' ) : __( 'Cómo completar un aliado', 'labm-core' );
 	$help  = 'labm_slide' === $post->post_type
 		? __( 'La imagen destacada y el título son obligatorios. En Atributos > Orden, un número menor aparece antes. Si tu pantalla muestra Campos personalizados, usa solo Destino del enlace (labm_destino_url) y Texto del botón (labm_cta_texto).', 'labm-core' )
-		: __( 'La imagen destacada funciona como logo y el título identifica al aliado. Define el orden en Atributos > Orden. Esta versión no tiene un campo editorial para enlace externo.', 'labm-core' );
+		: __( 'La imagen destacada funciona como logo y el título identifica al aliado. Define el orden en Atributos > Orden y agrega labm_destino_url en Campos personalizados para enlazar el logo.', 'labm-core' );
 	echo '<div class="notice notice-info inline"><p><strong>' . esc_html( $title ) . '</strong> ' . esc_html( $help ) . '</p></div>';
 }
 add_action( 'edit_form_after_title', 'labm_core_render_home_content_nonce' );

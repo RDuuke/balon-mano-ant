@@ -104,18 +104,16 @@ class LABM_Fixtures_Command {
 	}
 
 	/**
-	 * Aliados ficticios compuestos exclusivamente por logos ordenados.
+	 * Aliados oficiales compuestos por logos ordenados y enlaces externos.
 	 *
 	 * @return array
 	 */
 	private static function home_allies_fixtures() {
 		$definitions = array(
-			array( 'arco-comun', 'Arco Comun' ),
-			array( 'brote-activo', 'Brote Activo' ),
-			array( 'cumbre-viva', 'Cumbre Viva' ),
-			array( 'mosaico-unido', 'Mosaico Unido' ),
-			array( 'rio-dinamico', 'Rio Dinamico' ),
-			array( 'sol-abierto', 'Sol Abierto' ),
+			array( 'molten-colombia', 'Molten Colombia', 'https://molten.com.co' ),
+			array( 'coscabal', 'Coscabal', 'https://handballsca.com/es/' ),
+			array( 'los-paisitas', 'Corporacion Deportiva Los Paisitas', 'https://lospaisitas.co/' ),
+			array( 'gatorade', 'Gatorade', 'https://www.gatoradeco.com/' ),
 		);
 
 		return array_map(
@@ -128,11 +126,60 @@ class LABM_Fixtures_Command {
 					'post_type'      => 'labm_aliado',
 					'post_status'    => 'publish',
 					'menu_order'     => $order,
-					'featured_image' => 'assets/images/aliados-demo/' . $definition[0] . '.png',
+					'meta'           => array( 'labm_destino_url' => $definition[2] ),
+					'featured_image' => 'assets/images/aliados-oficiales/' . $definition[0] . ( 'gatorade' === $definition[0] ? '.jpg' : '.png' ),
+					'featured_image_alt' => $definition[1],
 				);
 			},
 			$definitions,
 			array_keys( $definitions )
+		);
+	}
+
+	/** Clubes afiliados cargados sin imagen hasta contar con sus logos oficiales. */
+	private static function home_club_fixtures() {
+		$names = array(
+			'Katíos Handball Club',
+			'Club Deportivo Corazonista',
+			'Ravens de Balonmano',
+			'Instituto Tecnológico Metropolitano-ITM',
+			'Ave Fénix',
+			'Club Deportivo Omega',
+			'Dynamo Handball Club',
+			'Forza Handbol',
+			'SJB Handball',
+			'Club UPB',
+			'Club Universitario Eafit',
+			'Club Deportivo Colegio Colombo Británico',
+			'Universidad Nacional',
+			'Lobos de Bello',
+			'Deyavú',
+			'El Carmen de Viboral',
+			'La Estrella',
+			'Inder Medellín',
+			'UPB Máster',
+			'Universidad de Antioquia',
+			'Paisitas',
+			'Big Máster',
+			'IE Alberto Díaz',
+			'La Salle San Juan Bautista',
+			'Escuela LABM',
+		);
+
+		return array_map(
+			static function ( $name, $order ) {
+				return array(
+					'post_name'    => 'club-' . sanitize_title( $name ),
+					'post_title'   => $name,
+					'post_content' => '',
+					'post_excerpt' => '',
+					'post_type'    => 'labm_club',
+					'post_status'  => 'publish',
+					'menu_order'   => $order,
+				);
+			},
+			$names,
+			array_keys( $names )
 		);
 	}
 
@@ -199,36 +246,35 @@ class LABM_Fixtures_Command {
 		);
 	}
 
-	/**
-	 * Integrantes ficticios para la sección editorial de Nosotros.
-	 *
-	 * @return array
-	 */
-	private static function about_team_fixtures() {
-		$definitions = array(
-			array( 'andres-montoya', 'Andrés Montoya', 'Director técnico', 'Comité', 'entrenador-principal.png' ),
-			array( 'daniel-restrepo', 'Daniel Restrepo', 'Preparador físico', 'Entrenadores', 'preparador-fisico.png' ),
-			array( 'valentina-rios', 'Valentina Ríos', 'Entrenadora juvenil', 'Entrenadores', 'entrenadora-juvenil.png' ),
-			array( 'mateo-giraldo', 'Mateo Giraldo', 'Representante comunitario', 'Representantes', 'representante-comunitario.png' ),
+	/** Items ficticios del organigrama editorial y sus grupos administrables. */
+	private static function about_organization_fixtures() {
+		$items = array(
+			array( 'asamblea-clubes-afiliados', 'Asamblea de clubes afiliados', 'Órgano de gobierno' ),
+			array( 'comite-ejecutivo', 'Comité Ejecutivo', 'Dirección y administración' ),
+			array( 'presidente', 'Presidente', 'Dirección y administración' ),
+			array( 'contadora', 'Contadora', 'Dirección y administración' ),
+			array( 'auxiliar-administrativa', 'Auxiliar Administrativa', 'Dirección y administración' ),
+			array( 'revisora-fiscal', 'Revisora Fiscal', 'Control y comisiones' ),
+			array( 'comision-disciplinaria', 'Comisión Disciplinaria', 'Control y comisiones' ),
+			array( 'comision-juzgamiento', 'Comisión de Juzgamiento', 'Control y comisiones' ),
+			array( 'comision-tecnica', 'Comisión Técnica', 'Área técnica y deportiva' ),
+			array( 'entrenadores-seleccion-masculina', 'Entrenadores Selección Masculina', 'Área técnica y deportiva' ),
+			array( 'entrenadoras-seleccion-femenina', 'Entrenadoras Selección Femenina', 'Área técnica y deportiva' ),
+			array( 'programacion-estadisticas', 'Programación y Estadísticas', 'Área técnica y deportiva' ),
 		);
-
-		return array_map(
-			static function ( $definition, $order ) {
-				return array(
-					'post_name'      => 'demo-labm-integrante-' . $definition[0],
-					'post_title'     => self::MARKER . ' ' . $definition[1],
-					'post_content'   => '<p>' . self::MARKER . ' Perfil ficticio para demostración editorial.</p>',
-					'post_type'      => 'labm_integrante',
-					'post_status'    => 'publish',
-					'menu_order'     => $order,
-					'meta'           => array( 'labm_cargo' => $definition[2] ),
-					'terms'          => array( 'labm_grupo_integrante' => array( $definition[3] ) ),
-					'featured_image' => 'assets/images/quienes-demo/' . $definition[4],
-				);
-			},
-			$definitions,
-			array_keys( $definitions )
-		);
+		$fixtures = array();
+		foreach ( $items as $order => $item ) {
+			$fixtures[] = array(
+				'post_name'    => 'demo-labm-organigrama-' . $item[0],
+				'post_title'   => self::MARKER . ' ' . $item[1],
+				'post_content' => '',
+				'post_type'    => 'labm_org_item',
+				'post_status'  => 'publish',
+				'menu_order'   => $order,
+				'terms'        => array( 'labm_org_grupo' => array( $item[2] ) ),
+			);
+		}
+		return $fixtures;
 	}
 
 	/**
@@ -576,13 +622,6 @@ class LABM_Fixtures_Command {
 					'terms'        => array( 'labm_modalidad' => array( 'Piso' ) ),
 				),
 				array(
-					'post_name'    => 'demo-labm-club-frontera',
-					'post_title'   => self::MARKER . ' Club Frontera',
-					'post_content' => '<p>' . self::MARKER . ' Club completamente ficticio.</p>',
-					'post_type'    => 'labm_club',
-					'post_status'  => 'publish',
-				),
-				array(
 					'post_name'    => 'demo-labm-seleccion-piso',
 					'post_title'   => self::MARKER . ' Seleccion Piso',
 					'post_content' => '<p>' . self::MARKER . ' Plantel de piso ficticio.</p>',
@@ -599,20 +638,37 @@ class LABM_Fixtures_Command {
 					'terms'        => array( 'labm_modalidad' => array( 'Playa' ) ),
 				),
 				array(
-					'post_name'    => 'demo-labm-integrante-vacante',
-					'post_title'   => self::MARKER . ' Vacante de ejemplo',
-					'post_content' => '<p>' . self::MARKER . ' Sin persona real asociada.</p>',
-					'post_type'    => 'labm_integrante',
-					'post_status'  => 'draft',
-					'meta'         => array( 'labm_cargo' => 'Cargo ficticio' ),
+					'post_name'        => 'demo-labm-seleccion-mayores-femenina',
+					'post_title'       => self::MARKER . ' Mayores Femenina',
+					'post_excerpt'     => self::MARKER . ' Registro demostrativo de la SelecciÃ³n Mayores Femenina.',
+					'post_content'     => '<p>' . self::MARKER . ' Contenido demostrativo para validar la presentaciÃ³n de la SelecciÃ³n Mayores Femenina.</p>',
+					'post_type'        => 'labm_seleccion',
+					'post_status'      => 'publish',
+					'meta'             => array( 'labm_modalidad_detalle' => 'DemostraciÃ³n Mayores Femenina' ),
+					'terms'            => array( 'labm_modalidad' => array( 'Mayores Femenina' ) ),
+					'featured_image'   => 'assets/images/hero-balonmano-seleccion-v1.png',
+					'featured_image_alt' => 'Imagen demostrativa de Mayores Femenina',
+				),
+				array(
+					'post_name'        => 'demo-labm-seleccion-mayores-masculina',
+					'post_title'       => self::MARKER . ' Mayores Masculina',
+					'post_excerpt'     => self::MARKER . ' Registro demostrativo de la SelecciÃ³n Mayores Masculina.',
+					'post_content'     => '<p>' . self::MARKER . ' Contenido demostrativo para validar la presentaciÃ³n de la SelecciÃ³n Mayores Masculina.</p>',
+					'post_type'        => 'labm_seleccion',
+					'post_status'      => 'publish',
+					'meta'             => array( 'labm_modalidad_detalle' => 'DemostraciÃ³n Mayores Masculina' ),
+					'terms'            => array( 'labm_modalidad' => array( 'Mayores Masculina' ) ),
+					'featured_image'   => 'assets/images/hero-balonmano-seleccion-v1.png',
+					'featured_image_alt' => 'Imagen demostrativa de Mayores Masculina',
 				),
 			),
 			self::home_news_fixtures(),
 			self::home_allies_fixtures(),
+			self::home_club_fixtures(),
 			self::about_banner_fixture(),
 			self::documents_banner_fixture(),
 			self::about_purpose_fixtures(),
-			self::about_team_fixtures()
+			self::about_organization_fixtures()
 		);
 
 		foreach ( $fixtures as $fixture ) {
